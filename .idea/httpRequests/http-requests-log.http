@@ -1,0 +1,834 @@
+PATCH http://localhost:8080/API/messages/202
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T160024.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T155948.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/152
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T154738.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T154727.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/102
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T154510.500.txt
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T154453.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/52
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T154057.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T154041.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/2
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T153825.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T153816.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T153644.500.txt
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T153630.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/52
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T153004.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T152956.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/2
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T152436.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T152425.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T151728.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T151715.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T151142.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T151134.201.json
+
+###
+
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 1116
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+destEmailAddr=ferraro.eli.99%40gmail.com&subject=Exciting+Updates+and+Invitation&textBody=Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+<> 2024-05-30T151028.200.json
+
+###
+
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 1116
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+destEmailAddr=ferraro.eli.99%40gmail.com&subject=Exciting+Updates+and+Invitation&textBody=Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+<> 2024-05-30T000848.200.json
+
+###
+
+PATCH http://localhost:8080/API/messages/2
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-30T000704.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-30T000651.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T234907.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-29T234844.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/2
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T234510.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-29T234452.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T233453.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-29T233442.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/104
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "DONE",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T233210.200.json
+
+###
+
+PATCH http://localhost:8080/API/messages/104
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T233154.400.txt
+
+###
+
+PATCH http://localhost:8080/API/messages/104
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T233144.400.txt
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-29T233129.201.json
+
+###
+
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 1116
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+destEmailAddr=ferraro.eli.99%40gmail.com&subject=Exciting+Updates+and+Invitation&textBody=Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+<> 2024-05-29T233101.200.json
+
+###
+
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 1116
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+destEmailAddr=ferraro.eli.99%40gmail.com&subject=Exciting+Updates+and+Invitation&textBody=Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+<> 2024-05-29T232952.200.json
+
+###
+
+PATCH http://localhost:8080/API/messages/103
+Content-Type: application/json;
+Content-Length: 92
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message.",
+  "priority": "HIGH"
+}
+
+<> 2024-05-29T232844.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-29T232832.201.json
+
+###
+
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 1116
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+destEmailAddr=ferraro.eli.99%40gmail.com&subject=Exciting+Updates+and+Invitation&textBody=Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+<> 2024-05-29T232802.200.json
+
+###
+
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 1109
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+destEmailAddr=example%40gmail.com&subject=Exciting+Updates+and+Invitation&textBody=Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+<> 2024-05-29T232711.200.json
+
+###
+
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 1109
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+destEmailAddr=example%40gmail.com&subject=Exciting+Updates+and+Invitation&textBody=Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+<> 2024-05-29T232307.500.json
+
+###
+
+PATCH http://localhost:8080/API/messages/102
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T232227.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-29T232212.201.json
+
+###
+
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 33
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+destEmailAddr=example%40gmail.com
+
+<> 2024-05-29T231324.500.json
+
+###
+
+PATCH http://localhost:8080/API/messages/52
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "DONE",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T231234.200.json
+
+###
+
+PATCH http://localhost:8080/API/messages/52
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T231218.400.txt
+
+###
+
+PATCH http://localhost:8080/API/messages/52
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T230954.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-29T230945.201.json
+
+###
+
+PATCH http://localhost:8080/API/messages/2
+Content-Type: application/json;
+Content-Length: 70
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+<> 2024-05-29T230139.200.json
+
+###
+
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "sender": "ferraro.eli.99@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+<> 2024-05-29T230129.201.json
+
+###
+

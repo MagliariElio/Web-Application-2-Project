@@ -1,0 +1,128 @@
+# Test 1: Sending a complete email with destination address, subject, and body using application/x-www-form-urlencoded
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr = example@gmail.com &
+subject = Exciting+Updates+and+Invitation &
+textBody = Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+
+###
+
+# Test 2: Sending an email with only the destination address using application/x-www-form-urlencoded
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr = example@gmail.com
+
+###
+
+# Test 3: Sending a complete email with an attachment using multipart/form-data
+POST http://localhost:8081/API/emails
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="destEmailAddr"
+
+example@gmail.com
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="subject"
+
+Exciting Updates and Invitation
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="textBody"
+
+Dear Mario Rossi,
+
+I hope this email finds you well. I'm writing to share some exciting updates with you.
+
+Firstly, I wanted to express my gratitude for your continued support and collaboration. It means a lot to us, and we truly value our relationship with you.
+
+Secondly, I'm thrilled to inform you about our latest project developments. We've been working tirelessly to innovate and enhance our products/services to better meet your needs. Our team has been hard at work, and I'm confident that you'll be impressed with the results.
+
+Lastly, I'd like to extend an invitation to you for our upcoming event. We're hosting a [description of event] on [date] at [location]. It promises to be an engaging and insightful gathering, and we would be honored to have you join us.
+
+Please don't hesitate to reach out if you have any questions or would like further information.
+
+Thank you once again for your support and partnership.
+
+Best regards,
+Group 04
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="multipartFile"; filename="example.txt"
+Content-Type: text/plain
+
+This is the content of the file.
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# Test 4: Sending an email with an invalid email address using application/x-www-form-urlencoded
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr = example@
+
+###
+
+# Test 5: Sending an email with an empty destination address but valid subject and body using application/x-www-form-urlencoded
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr =  &
+subject = Exciting+Updates+and+Invitation &
+textBody = Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.%0A%0AFirstly%2C+I+wanted+to+express+my+gratitude+for+your+continued+support+and+collaboration.+It+means+a+lot+to+us%2C+and+we+truly+value+our+relationship+with+you.%0A%0ASecondly%2C+I%27m+thrilled+to+inform+you+about+our+latest+project+developments.+We%27ve+been+working+tirelessly+to+innovate+and+enhance+our+products%2Fservices+to+better+meet+your+needs.+Our+team+has+been+hard+at+work%2C+and+I%27m+confident+that+you%27ll+be+impressed+with+the+results.%0A%0ALastly%2C+I%27d+like+to+extend+an+invitation+to+you+for+our+upcoming+event.+We%27re+hosting+a+%5Bdescription+of+event%5D+on+%5Bdate%5D+at+%5Blocation%5D.+It+promises+to+be+an+engaging+and+insightful+gathering%2C+and+we+would+be+honored+to+have+you+join+us.%0A%0APlease+don%27t+hesitate+to+reach+out+if+you+have+any+questions+or+would+like+further+information.%0A%0AThank+you+once+again+for+your+support+and+partnership.%0A%0ABest+regards%2C%0AGroup+04
+
+###
+# Test 6: Test to verify sending an email with special characters
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr=example@gmail.com&
+subject=Exciting+Updates+and+Invitation&
+textBody=Dear+Mario+Rossi%2C%0A%0AI+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.
+%%%%
++%40+%23%24%25%5E%26*%28%29%5E%3F%3E%3C
+
+###
+# Get messages with no parameters (defaults to page 0 and limit 30)
+# Be careful to set the correct port number
+GET http://localhost:8082/API/messages/
+
+###
+
+# Test 7 with destination email, subject and body
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr=groupg04.polito@gmail.com &
+subject=Exciting Updates and Invitation &
+textBody=Dear+Mario+Rossi,+I+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.
+
+###
+
+# Test 8 with destination email and body
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr=groupg04.polito@gmail.com &
+textBody=Dear+Mario+Rossi,+I+hope+this+email+finds+you+well.+I%27m+writing+to+share+some+exciting+updates+with+you.
+
+###
+
+# Test 9 with destination email and subject
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr=groupg04.polito@gmail.com &
+subject=Exciting Updates and Invitation
+
+###
+
+# Test 10 with destination email only
+POST http://localhost:8081/API/emails
+Content-Type: application/x-www-form-urlencoded
+
+destEmailAddr=groupg04.polito@gmail.com
+
+###

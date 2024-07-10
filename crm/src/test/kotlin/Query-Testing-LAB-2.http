@@ -1,0 +1,957 @@
+# GET ALL MESSAGES TEST
+
+# Get messages with no parameters (defaults to page 0 and limit 30):
+GET http://localhost:8080/API/messages/
+
+###
+
+# Get all messages on the first page with the default limit (page 0, limit 30):
+GET http://localhost:8080/API/messages/?page=0
+
+###
+
+# Get messages sorted by a specific state (e.g., "READ") on the first page with a limit of 20:
+GET http://localhost:8080/API/messages/?page=0&limit=20&state=READ
+
+###
+
+# Get messages sorted by ascending date on the second page with a limit of 50:
+GET http://localhost:8080/API/messages/?page=1&limit=50&sortBy=date_asc
+
+###
+
+# Get messages sorted by descending date on the fourth page with a limit of 10:
+GET http://localhost:8080/API/messages/?page=3&limit=10&sortBy=date_desc
+
+###
+
+# Get messages with a custom page and limit:
+GET http://localhost:8080/API/messages/?page=5&limit=15
+
+###
+    
+# Get messages with a specific state and sorted by descending date:
+GET http://localhost:8080/API/messages/?state=RECEIVED&sortBy=date_desc
+
+###
+
+# Get messages with a priority sorting order:
+GET http://localhost:8080/API/messages/?sortBy=priority_asc
+
+###
+
+# Get messages with a negative page and limit:
+GET http://localhost:8080/API/messages/?page=-1&limit=-10
+
+###
+
+# Get messages with an invalid sorting option:
+GET http://localhost:8080/API/messages/?sortBy=INVALID_OPTION
+
+###
+
+# POST MESSAGES TEST
+
+# Valid Message: Send a valid message object with all required fields filled correctly.
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+
+{
+  "sender": "example@gmail.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+###
+
+# Good parameteres telephone.
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+
+{
+  "sender": "3313592617",
+  "subject": "Test Subject",
+  "channel": "Telephone",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+###
+
+# Missing Field: Send a message object with a missing required field.
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+
+{
+  "sender": "",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This is a test message."
+}
+
+###
+
+# Invalid Priority: Send a message object with an invalid priority value.
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+
+{
+  "sender": "jane.doe@example.com",
+  "subject": "Urgent Issue",
+  "channel": "Email",
+  "priority": "invalid",
+  "body": "Please address this issue immediately."
+}
+
+###
+
+# Invalid Sender: Send a message object with an invalid sender format.
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+
+{
+  "sender": "invalid_email",
+  "subject": "Invalid Sender Test",
+  "channel": "Email",
+  "priority": "medium",
+  "body": "This message has an invalid sender."
+}
+
+###
+
+# Empty Body: Send a message object with an empty body.
+POST http://localhost:8080/API/messages
+Content-Type: application/json;
+
+{
+  "sender": "alice@example.com",
+  "subject": "Empty Body Test",
+  "channel": "Email",
+  "priority": "low",
+  "body": ""
+}
+
+###
+
+# GET MESSAGE ID TEST
+
+# Correct Message Retrieval:
+GET http://localhost:8080/API/messages/1
+
+###
+
+# Invalid ID Format:
+GET http://localhost:8080/API/messages/abc
+
+###
+
+# Message Not Found:
+GET http://localhost:8080/API/messages/9999
+
+###
+
+# Negative ID:
+GET http://localhost:8080/API/messages/-5
+
+###
+
+# GET MESSAGE HISTORY TEST
+
+# Get Message History for Valid ID:
+GET http://localhost:8080/API/messages/1/history
+
+###
+
+# Invalid ID Format:
+GET http://localhost:8080/API/messages/abc/history
+
+###
+
+# Message Not Found:
+GET http://localhost:8080/API/messages/9999/history
+
+###
+
+# Negative ID:
+GET http://localhost:8080/API/messages/-5/history
+
+###
+
+# PATCH MESSAGE TEST
+
+# Update Actual State of Message:
+PATCH http://localhost:8080/API/messages/202
+Content-Type: application/json;
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message."
+}
+
+###
+
+# Update Actual State of Message with the value equal to RECEIVED even if it was already set to RECEIVED value:
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+
+{
+  "actualState": "RECEIVED",
+  "comment": "User has read the message."
+}
+
+###
+
+# Update Priority of Message:
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+
+{
+  "priority": "HIGH"
+}
+
+###
+
+# Update Actual State and Priority of Message:
+PATCH http://localhost:8080/API/messages/103
+Content-Type: application/json;
+
+{
+  "actualState": "READ",
+  "comment": "User has read the message.",
+  "priority": "HIGH"
+}
+
+###
+
+# Invalid Actual State:
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+
+{
+  "actualState": "INVALID_STATE"
+}
+
+###
+
+# Invalid Priority:
+PATCH http://localhost:8080/API/messages/1
+Content-Type: application/json;
+
+{
+  "priority": "INVALID_PRIORITY"
+}
+
+###
+
+# Message Not Found:
+PATCH http://localhost:8080/API/messages/-1
+Content-Type: application/json;
+
+{
+  "actualState": "READ"
+}
+
+###
+
+# Invalid Actual State:
+PATCH http://localhost:8080/API/messages/2
+Content-Type: application/json;
+
+{
+  "actualState": "INVALID",
+  "comment": "User has read the message.",
+  "priority": "HIGH"
+}
+
+###
+
+# Invalid Priority:
+PATCH http://localhost:8080/API/messages/2
+Content-Type: application/json;
+
+{
+  "actualState": "READ",
+  "comment": "User has DONE the message.",
+  "priority": "INVALID"
+}
+
+###
+
+# Invalid Actual State:
+PATCH http://localhost:8080/API/messages/2
+Content-Type: application/json;
+
+{
+  "actualState": "INVALID",
+  "comment": "User has read the message.",
+  "priority": "INVALID"
+}
+
+###
+
+# GET ALL CONTACTS TEST
+
+# Get All Contacts with Default Pagination:
+GET http://localhost:8080/API/contacts/
+
+###
+
+# Get Contacts with Custom Pagination and Name Filter:
+GET http://localhost:8080/API/contacts/?pageNumber=0&pageSize=20&name=John
+
+###
+
+# Get Contacts with Category Filter:
+GET http://localhost:8080/API/contacts/?category=CUSTOMER
+
+###
+
+# Get Contacts with SSN Code Filter:
+GET http://localhost:8080/API/contacts/?ssnCode=1234567890
+
+###
+
+# Invalid Pagination Values:
+GET http://localhost:8080/API/contacts/?pageNumber=-1&pageSize=20
+
+###
+
+
+# GET A CONTACT TEST
+
+# Get Contact by Valid ID:
+GET http://localhost:8080/API/contacts/1
+
+###
+
+# Invalid ID Format:
+GET http://localhost:8080/API/contacts/abc
+
+###
+
+# Contact Not Found:
+GET http://localhost:8080/API/contacts/9999
+
+###
+
+# Negative ID:
+GET http://localhost:8080/API/contacts/-5
+
+###
+
+# POST CONTACT TEST
+
+# Create New Contact:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!"
+}
+
+###
+
+# Missing Required Name Field:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!"
+}
+
+###
+
+# Missing Required Surname Field:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!"
+}
+
+###
+
+# Missing Required ssnCode Field:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "comment": "This is a comment!"
+}
+
+###
+
+# Missing Required Category Field:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "comment": "This is a comment!"
+}
+
+###
+
+# Missing Required Comment Field:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890"
+}
+
+###
+
+# Store a Contact with an Email:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "emails": [
+    {
+      "email": "john.doe@example.com",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+###
+
+# Store a Contact with an Address:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "addresses": [
+    {
+      "city": "Rome",
+      "region": "Lazio",
+      "address": "via Roma",
+      "state": "Italy",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+
+###
+
+# Store a Contact with an Telephone:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "telephones": [
+    {
+      "telephone": "1234567890",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+
+###
+
+# Store a Contact with an Email and an Address:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "emails": [
+    {
+      "email": "john.doe@example.com",
+      "comment": "This is a comment!"
+    }
+  ],
+  "addresses": [
+    {
+      "city": "Rome",
+      "region": "Lazio",
+      "address": "via Roma",
+      "state": "Italy",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+
+###
+
+# Store a Contact with an Email and a Telephone:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "emails": [
+    {
+      "email": "john.doe@example.com",
+      "comment": "This is a comment!"
+    }
+  ],
+  "telephones": [
+    {
+      "telephone": "1234567890",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+
+###
+
+# Store a Contact with an Address and a Telephone:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "addresses": [
+    {
+      "city": "Rome",
+      "region": "Lazio",
+      "address": "via Roma",
+      "state": "Italy",
+      "comment": "This is a comment!"
+    }
+  ],
+  "telephones": [
+    {
+      "telephone": "1234567890",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+
+###
+
+# Store a Contact with an Email, an Address and a Telephone:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "emails": [
+    {
+      "email": "john.doe@example.com",
+      "comment": "This is a comment!"
+    }
+  ],
+  "addresses": [
+    {
+      "city": "Rome",
+      "region": "Lazio",
+      "address": "via Roma",
+      "state": "Italy",
+      "comment": "This is a comment!"
+    }
+  ],
+  "telephones": [
+    {
+      "telephone": "1234567890",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+
+###
+
+# Invalid Email Format:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "emails": [
+    {
+      "email": "john.doe",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+###
+
+# Invalid Phone Number Format:
+POST http://localhost:8080/API/contacts/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "telephones": [
+    {
+      "telephone": "John Doe",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+
+###
+
+# POST EMAIL, PHONE OR ADDRESS FOR A CONTACT TEST
+
+# Store Email Contact:
+POST http://localhost:8080/API/contacts/1/email
+Content-Type: application/json;
+
+{
+  "emails": [
+    {
+      "email": "john.doe@example.com",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+###
+
+# Store Address Contact:
+POST http://localhost:8080/API/contacts/1/address
+Content-Type: application/json;
+
+{
+  "addresses": [
+    {
+      "city": "Rome",
+      "region": "Lazio",
+      "address": "via Roma",
+      "state": "Italy",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+###
+
+# Store Telephone Contact:
+POST http://localhost:8080/API/contacts/1/telephone
+Content-Type: application/json;
+
+{
+  "telephones": [
+    {
+      "telephone": "1234567890",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+
+###
+
+# Invalid Contact Type:
+POST http://localhost:8080/API/contacts/1/invalidType
+Content-Type: application/json;
+
+{
+  "email": {
+    "email": "john.doe@example.com",
+    "comment": "This is a comment!"
+  }
+}
+
+###
+
+# Invalid Email Format:
+POST http://localhost:8080/API/contacts/1/email
+Content-Type: application/json;
+
+{
+  "email": {
+    "email": "john.doe",
+    "comment": "This is a comment!"
+  }
+}
+
+###
+
+# Invalid Telephone Type:
+POST http://localhost:8080/API/contacts/1/telephone
+Content-Type: application/json;
+
+{
+  "telephone": {
+    "telephone": "John Doe",
+    "comment": "This is a comment!"
+  }
+}
+
+###
+
+# Missing State Field:
+POST http://localhost:8080/API/contacts/1/address
+Content-Type: application/json;
+
+{
+  "address": {
+    "city": "Rome",
+    "region": "Lazio",
+    "address": "via Roma"
+  }
+}
+
+###
+
+# Missing Address Field:
+POST http://localhost:8080/API/contacts/1/address
+Content-Type: application/json;
+
+{
+  "address": {
+    "city": "Rome",
+    "region": "Lazio",
+    "state": "Italy"
+  }
+}
+
+###
+
+# Missing Region Field:
+POST http://localhost:8080/API/contacts/1/address
+Content-Type: application/json;
+
+{
+  "address": {
+    "city": "Rome",
+    "address": "via Roma",
+    "state": "Italy"
+  }
+}
+
+###
+
+# Missing City Field:
+POST http://localhost:8080/API/contacts/1/address
+Content-Type: application/json;
+
+{
+  "address": {
+    "region": "Lazio",
+    "address": "via Roma",
+    "state": "Italy"
+  }
+}
+
+###
+
+# UPDATE CONTACT TEST
+
+# Update Contact Name and Surname:
+PATCH http://localhost:8080/API/contacts/1
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe"
+}
+
+###
+
+# Update Contact Category:
+PATCH http://localhost:8080/API/contacts/1
+Content-Type: application/json;
+
+{
+  "category": "CUSTOMER"
+}
+
+###
+
+# Update Contact ssnCode:
+PATCH http://localhost:8080/API/contacts/1
+Content-Type: application/json;
+
+{
+  "ssnCode": "123456789"
+}
+
+###
+
+# Update Contact Comment:
+PATCH http://localhost:8080/API/contacts/1
+Content-Type: application/json;
+
+{
+  "comment": "This is a new comment!"
+}
+
+###
+
+# Contact Not Found:
+PATCH http://localhost:8080/API/contacts/9999
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe"
+}
+
+###
+
+# DELETE RELATIONSHIP BETWEEN A CONTACT AND AN EMAIL/PHONE/ADDRESS
+
+# Delete Email Contact Detail:
+DELETE http://localhost:8080/API/contacts/1/email/1
+
+###
+
+# Delete Address Contact Detail:
+DELETE http://localhost:8080/API/contacts/1/address/1
+
+###
+
+# Delete Telephone Contact Detail:
+DELETE http://localhost:8080/API/contacts/1/telephone/1
+
+###
+
+# Contact Not Found:
+DELETE http://localhost:8080/API/contacts/9999/email/1
+
+###
+
+# Email Detail Not Found:
+DELETE http://localhost:8080/API/contacts/1/email/9999
+
+###
+
+# Address Detail Not Found:
+DELETE http://localhost:8080/API/contacts/1/address/9999
+
+###
+
+# Telephone Detail Not Found:
+DELETE http://localhost:8080/API/contacts/1/telephone/9999
+
+
+### Scenario: Retrieval and updating of contact information. ###
+
+# Retrieve all contacts
+GET http://localhost:8080/API/contacts/
+
+###
+# Choose a contactID from the list and update the contact
+PATCH http://localhost:8080/API/contacts/354
+Content-Type: application/json
+
+{
+  "name": "Updated Name",
+  "surname": "Updated Surname",
+  "category": "PROFESSIONAL",
+  "ssnCode": "1234567890",
+  "comment": "This is an updated comment!"
+}
+
+###
+# Confirm the data update
+GET http://localhost:8080/API/contacts/350
+
+
+
+
+
+### Scenario: Creation of a new contact and sending a message
+
+# Create a new contact
+POST http://localhost:8080/API/contacts
+Content-Type: application/json
+
+{
+  "name": "New Contact Name",
+  "surname": "New Contact Surname",
+  "category": "CUSTOMER",
+  "ssnCode": "1234567890",
+  "comment": "This is a new contact comment!"
+}
+
+###
+# Send a message to the new contact using the received contactID
+POST http://localhost:8080/API/messages
+Content-Type: application/json
+
+{
+  "sender": "john.doe@example.com",
+  "subject": "Test Subject",
+  "channel": "Email",
+  "priority": "MEDIUM",
+  "body": "This is a test message to the new contact."
+}
+
+
+### Scenario: Deleting a contact and verifying deletion.
+
+# Create a new contact
+POST http://localhost:8080/API/contacts
+Content-Type: application/json
+
+{
+  "name": "New Contact Name",
+  "surname": "New Contact Surname",
+  "category": "CUSTOMER",
+  "ssnCode": "1234567890",
+  "comment": "This is a new contact comment!"
+}
+

@@ -1,0 +1,22 @@
+{
+  "headers": {
+    "Content-Type": [
+      "application/json"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ],
+    "Date": [
+      "Thu, 30 May 2024 13:38:24 GMT"
+    ],
+    "Keep-Alive": [
+      "timeout=60"
+    ],
+    "Connection": [
+      "keep-alive"
+    ]
+  },
+  "body": "{\"sentEmail\":{\"destEmailAddr\":\"ferraro.eli.99@gmail.com\",\"subject\":\"Test subject\",\"textBody\":\"Text body test\",\"attachment\":\"no-attachment\"}}",
+  "statusCode": "OK",
+  "statusCodeValue": 200
+}

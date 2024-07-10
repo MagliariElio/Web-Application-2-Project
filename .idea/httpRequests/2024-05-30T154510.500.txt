@@ -1,0 +1,1 @@
+An error occurred while attempting to update the message: could not execute statement [ERROR: value too long for type character varying(255)] [update message set actual_state=?,body=?,channel=?,date=?,priority=?,sender=?,subject=? where id=?]; SQL [update message set actual_state=?,body=?,channel=?,date=?,priority=?,sender=?,subject=? where id=?]

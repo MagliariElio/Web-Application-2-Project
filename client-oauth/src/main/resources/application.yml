@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: client-oauth
+
+  cloud:
+    gateway:
+      mvc:
+        http-client:
+          type: autodetect
+        routes:
+          - id: documentStoreService
+            uri: http://localhost:8081
+            predicates:
+              - Path=/documentStoreService/v1/**
+            filters:
+              - StripPrefix=2
+              - TokenRelay
+
+          - id: crmService
+            uri: http://localhost:8082
+            predicates:
+              - Path=/crmService/v1/**
+            filters:
+              - StripPrefix=2
+              - TokenRelay
+
+          - id: comunicationManagerService
+            uri: http://localhost:8083
+            predicates:
+              - Path=/comunicationManagerService/v1/**
+            filters:
+              - StripPrefix=2
+              - TokenRelay
+
+          - id: ui
+            uri: http://localhost:5173
+            predicates:
+              - Path=/ui/**
+
+          - id: home
+            uri: http://localhost:8080
+            predicates:
+              -  Path=/
+            filters:
+              - RedirectTo=301,http://localhost:8080/ui
+
+  security:
+    oauth2:
+      client:
+        provider:
+          iam-name:
+            issuer-uri: http://localhost:9090/realms/lab5-g04
+            user-name-attribute: sub
+        registration:
+          oidc-app-client:
+            provider: iam-name
+            client-id: "lab5-g04-client"
+            client-secret: "5EN4Ql688ygcMWtJNU1tPUHthGuofGcQ"
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://localhost:8080/login/oauth2/code/oidc-app-client"
+            scope:
+              - openid
+              - offline_access
+              - roles
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+server:
+  port: 8080

@@ -1,0 +1,249 @@
+# GET ALL CUSTOMERS TEST
+
+# Get All customers with Default Pagination:
+GET http://localhost:8080/API/customers/
+
+###
+
+# Get customers with Custom Pagination and Name Filter:
+GET http://localhost:8080/API/customers/?pageNumber=0&pageSize=20&name=John
+
+###
+
+# Get customers with Category Filter:
+GET http://localhost:8080/API/customers/?category=CUSTOMER
+
+###
+
+# Get customers with SSN Code Filter:
+GET http://localhost:8080/API/customers/?ssnCode=1234567890
+
+###
+
+# Invalid Pagination Values:
+GET http://localhost:8080/API/customers/?pageNumber=-1&pageSize=20
+
+###
+
+# POST NEW CUSTOMER TESTS
+
+# Store new customer correctly
+POST http://localhost:8080/API/customers/
+Content-Type: application/json;
+
+{
+  "name": "John",
+  "surname": "Doe",
+  "category": "Customer",
+  "ssnCode": "1234567890",
+  "comment": "This is a comment!",
+  "emails": [
+    {
+      "email": "john.doe@example.com",
+      "comment": "This is a comment!"
+    }
+  ],
+  "addresses": [
+    {
+      "city": "Rome",
+      "region": "Lazio",
+      "address": "via Roma",
+      "state": "Italy",
+      "comment": "This is a comment!"
+    }
+  ],
+  "telephones": [
+    {
+      "telephone": "1234567890",
+      "comment": "This is a comment!"
+    }
+  ]
+}
+
+###
+
+# POST NEW PROFESSIONAL TESTS
+
+# Store new professional correctly
+POST http://localhost:8080/API/professionals/
+Content-Type: application/json;
+
+{
+  "information": {
+    "name": "John",
+    "surname": "Smith",
+    "ssnCode": "abcdef123456",
+    "category": "professional",
+    "comment": "Example of comment"
+  },
+  "skills": [
+    "Skill 1",
+    "Skill 2"
+  ],
+  "employmentState": "Unemployed",
+  "geographicalLocation": "Turin, Italy",
+  "dailyRate": 3
+}
+
+###
+
+# POST NEW JOB OFFER TESTS
+
+# Store new job offer succesfully
+POST http://localhost:8080/API/joboffers/
+Content-Type: application/json;
+
+{
+  "customerId": 1,
+  "requiredSkills": [
+    "Skill 1",
+    "Skill 2"
+  ],
+  "duration": 1.0,
+  "note": "No note here"
+}
+
+###
+
+# Store Customer with empty required skills:
+POST http://localhost:8080/API/joboffers/
+Content-Type: application/json;
+
+{
+  "customerId": 2,
+  "requiredSkills": [],
+  "duration": 1.0,
+  "note": "No note here"
+}
+
+###
+
+# Store Customer with empty duration:
+POST http://localhost:8080/API/joboffers/
+Content-Type: application/json;
+
+{
+  "customerId": 2,
+  "requiredSkills": [
+    "Skill 1",
+    "Skill 2"
+  ],
+  "duration": "",
+  "note": "No note here"
+}
+
+###
+
+# Store Customer with invalid customer id:
+POST http://localhost:8080/API/joboffers/
+Content-Type: application/json;
+
+{
+  "customerId": -1,
+  "requiredSkills": [
+    "Skill 1",
+    "Skill 2"
+  ],
+  "duration": 1.0,
+  "note": "No note here"
+}
+
+###
+
+# GET ALL JOB OFFER TESTS
+
+# Get All job offer with Default Pagination:
+GET http://localhost:8080/API/joboffers/
+
+###
+
+# Invalid Pagination Values:
+GET http://localhost:8080/API/joboffers/?pageNumber=-1&pageSize=20
+
+###
+
+# DELETE CUSTOMER TESTS
+
+# Delete customer successfully:
+DELETE http://localhost:8080/API/customers/1
+
+###
+
+# Delete customer with a job offer linked:
+DELETE http://localhost:8080/API/customers/1
+
+###
+
+# PATCH CUSTOMER TESTS
+
+# Update customer successfully
+PATCH http://localhost:8080/API/customers/2
+Content-Type: application/json;
+
+{
+  "contactID": 1
+}
+
+###
+
+# Update customer with empty body
+PATCH http://localhost:8080/API/customers/2
+Content-Type: application/json;
+
+{
+}
+
+###
+
+# Update customer with negative contact id
+PATCH http://localhost:8080/API/customers/2
+Content-Type: application/json;
+
+{
+  "contactID": -1
+}
+
+###
+
+# GET ALL PROFESSIONALS TEST
+
+# Get All professionals with Default Pagination:
+GET http://localhost:8080/API/professionals/
+
+###
+
+# PATCH JOB OFFERS TEST
+
+# Update job offer to selection phase
+PATCH http://localhost:8080/API/joboffers/1
+Content-Type: application/json;
+
+{
+  "nextStatus": "dONE",
+  "professionalsId": [1]
+}
+
+###
+
+# Update job offer to candidate proposal
+PATCH http://localhost:8080/API/joboffers/152
+Content-Type: application/json;
+
+{
+  "nextStatus": "CANDIDATE_PROPOSAL",
+  "professionalId": 152
+}
+
+###
+
+# DELETE PROFESSIONALS TESTS
+
+# Delete professionals successfully:
+DELETE http://localhost:8080/API/professionals/1
+
+###
+
+# Delete professionals with a job offer linked:
+DELETE http://localhost:8080/API/professionals/152
+
+###

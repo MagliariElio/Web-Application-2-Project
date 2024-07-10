@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - '5433:5432'
+
+# in quest laboratorio non possiamo utilizzare l'applicazione attraverso un container
+# altrimenti non riusciamo ad usare l'api gateway
+
+#  crm:
+#    image: 'crm:latest'
+#    ports:
+#      - '8082:8080'
+#    depends_on:
+#      - 'postgres'
+#    environment:
+#      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase'
+#      - 'SPRING_DATASOURCE_USERNAME=myuser'
+#      - 'SPRING_DATASOURCE_PASSWORD=secret'

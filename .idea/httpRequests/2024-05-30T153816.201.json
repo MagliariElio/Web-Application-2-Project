@@ -1,0 +1,18 @@
+{
+  "id": 2,
+  "date": [
+    2024,
+    5,
+    30,
+    15,
+    38,
+    15,
+    648892400
+  ],
+  "subject": "Test Subject",
+  "body": "This is a test message.",
+  "actualState": "RECEIVED",
+  "priority": "MEDIUM",
+  "channel": "Email",
+  "sender": "ferraro.eli.99@gmail.com"
+}

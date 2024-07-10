@@ -1,0 +1,240 @@
+# Retrieve all documents details with correct parameters
+GET http://localhost:8080/API/documents/?limit=20&page=0
+###
+GET http://localhost:8080/API/documents/
+###
+GET http://localhost:8080/API/documents/?limit=2
+###
+GET http://localhost:8080/API/documents/?page=0
+###
+GET http://localhost:8080/API/documents/?limit=2&page=1000
+###
+GET http://localhost:8080/API/documents/?limit=1000&page=0
+###
+
+# Retrieve all documents details with incorrect parameters
+GET http://localhost:8080/API/documents/?limit=-20&page=-1
+###
+GET http://localhost:8080/API/documents/?limit=-2&page=0
+###
+GET http://localhost:8080/API/documents/?limit=2&page=-1
+###
+GET http://localhost:8080/API/documents/?limit=incorrect&page=0
+###
+GET http://localhost:8080/API/documents/?limit=2&page=incorrect
+###
+GET http://localhost:8080/API/documents/?limit=incorrect&page=incorrect
+###
+
+# GET DOCUMENT METADATA
+# Retrieve document metadata with correct parameters
+GET http://localhost:8080/API/documents/1
+###
+
+# Retrieve document metadata with incorrect parameters
+GET http://localhost:8080/API/documents/-3
+###
+GET http://localhost:8080/API/documents/incorrect
+###
+GET http://localhost:8080/API/documents/200000
+###
+
+# GET DOCUMENT DATA
+# Retrieve document data with correct parameters
+GET http://localhost:8080/API/documents/1/data
+###
+
+# Retrieve document data with incorrect parameters
+GET http://localhost:8080/API/documents/-3/data
+###
+GET http://localhost:8080/API/documents/incorrect/data
+###
+GET http://localhost:8080/API/documents/200000/data
+###
+
+# POST NEW DOCUMENT
+# Upload a new document with correct parameters
+POST http://localhost:8080/API/documents/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+< ../../../../resources/Pdf File.pdf
+--boundary--
+###
+
+# Upload a new document with incorrect parameters (without file attached)
+POST http://localhost:8080/API/documents/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="files"; filename="Png Image.png"
+Content-Type: image/png
+
+--boundary--
+###
+
+# Upload a new document with incorrect parameters (incorrect file name)
+POST http://localhost:8080/API/documents/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="invalid"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+< ../../../../resources/Pdf File.pdf
+--boundary--
+###
+
+# Upload a new document with incorrect parameters (incorrect content type)
+POST http://localhost:8080/API/documents/
+Content-Type: invalid/pdf; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: invalid/pdf
+
+< ../../../../resources/Pdf File.pdf
+--boundary--
+###
+
+# Upload a new document with incorrect parameters (empty file)
+POST http://localhost:8080/API/documents/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Empty File.txt"
+Content-Type: text/plain
+
+< ../../../../resources/Empty File.txt
+--boundary--
+###
+
+# Upload a new document with incorrect parameters (file with the same name already exists)
+POST http://localhost:8080/API/documents/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+< ../../../../resources/Pdf File.pdf
+--boundary--
+###
+
+# UPDATE DOCUMENT
+# Update an existing document with correct parameters
+PUT http://localhost:8080/API/documents/1
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+< ../../../../resources/Pdf File.pdf
+###
+
+# Update an existing document with incorrect parameters (invalid metadataId)
+PUT http://localhost:8080/API/documents/-3
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+< ../../../../resources/Pdf File.pdf
+###
+
+# Update an existing document with incorrect parameters (invalid metadataId)
+PUT http://localhost:8080/API/documents/incorrect
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+< ../../../../resources/Pdf File.pdf
+###
+
+# Update an existing document with incorrect parameters (too high value of metadataId)
+PUT http://localhost:8080/API/documents/200000
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+< ../../../../resources/Pdf File.pdf
+###
+
+# Update an existing document with incorrect parameters (without file attached)
+PUT http://localhost:8080/API/documents/1
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+###
+
+# Update an existing document with incorrect parameters (incorrect file name)
+PUT http://localhost:8080/API/documents/1
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="invalid"; filename="Pdf File.pdf"
+Content-Type: application/pdf
+
+< ../../../../resources/Pdf File.pdf
+###
+
+# Update an existing document with incorrect parameters (incorrect content type)
+PUT http://localhost:8080/API/documents/1
+Content-Type: invalid/content; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: invalid/content
+
+< ../../../../resources/Pdf File.pdf
+###
+
+# Update an existing document with incorrect parameters (empty file)
+PUT http://localhost:8080/API/documents/1
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Empty File.txt"
+Content-Type: text/plain
+
+< ../../../../resources/Empty File.txt
+###
+
+# Update an existing document with incorrect parameters (file with the same name already exists)
+# To be sure to have the metadataId equal to 2 with a different filename
+PUT http://localhost:8080/API/documents/2
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Pdf File.pdf"
+Content-Type: invalid/content
+
+< ../../../../resources/Pdf File.pdf
+###
+
+# DELETE DOCUMENT
+# Delete an existing document with correct parameters
+DELETE http://localhost:8080/API/documents/1
+###
+
+# Delete an existing document with incorrect parameters (invalid metadataId)
+DELETE http://localhost:8080/API/documents/-3
+###
+# Delete an existing document with incorrect parameters (invalid metadataId)
+DELETE http://localhost:8080/API/documents/incorrect
+###
+# Delete an existing document with incorrect parameters (too high value of metadataId)
+DELETE http://localhost:8080/API/documents/200000
+###
