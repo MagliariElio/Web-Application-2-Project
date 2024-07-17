@@ -30,6 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:3.1.4")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")

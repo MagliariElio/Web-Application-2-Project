@@ -1,4 +1,4 @@
-package it.polito.students.clientouth
+    package it.polito.students.clientouth
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

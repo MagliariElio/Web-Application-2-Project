@@ -29,8 +29,11 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.*
+import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.annotation.KafkaListeners
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
@@ -268,19 +271,21 @@ class CrmMessagesController(
         }
     }
 
-    /**
-     *  Convert in a PriorityOptions and check whether priority is a valid String
-     *
-     *  @return contact
-     *  @throws IllegalArgumentException if priority cannot be converted in PriorityOptions
-     */
-    @Throws
-    fun checkPriorityIsValid(priorityIn: String): PriorityEnumOptions {
-        try {
-            val priority = PriorityEnumOptions.valueOf(priorityIn.uppercase())
-            return priority
-        } catch (e: IllegalArgumentException) {
-            throw IllegalArgumentException(PRIORITY_ERROR)
+    companion object {
+        /**
+         *  Convert in a PriorityOptions and check whether priority is a valid String
+         *
+         *  @return contact
+         *  @throws IllegalArgumentException if priority cannot be converted in PriorityOptions
+         */
+        @Throws
+        fun checkPriorityIsValid(priorityIn: String): PriorityEnumOptions {
+            try {
+                val priority = PriorityEnumOptions.valueOf(priorityIn.uppercase())
+                return priority
+            } catch (e: IllegalArgumentException) {
+                throw IllegalArgumentException(PRIORITY_ERROR)
+            }
         }
     }
 

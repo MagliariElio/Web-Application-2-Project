@@ -180,3 +180,10 @@ class ErrorsPage {
 
     }
 }
+
+class SuccessPage {
+    companion object {
+        const val MESSAGE_SENT_SUCCESSFULLY = "The message is saved successfully!"
+        const val MESSAGE_RECEIVED = "Received a message by: "
+    }
+}

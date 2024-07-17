@@ -6,6 +6,11 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9090/realms/lab5-g04
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 gmail-account:
   application_name: comunication-manager-project

@@ -18,3 +18,9 @@ class ErrorsPage {
 
     }
 }
+
+class UtilsInformation {
+    companion object {
+        const val TOPIC_CRM = "email_message_cm_to_crm"
+    }
+}
