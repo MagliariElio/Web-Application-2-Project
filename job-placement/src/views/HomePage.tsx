@@ -1,5 +1,7 @@
-import { Container, Row, Card, Col } from 'react-bootstrap';
+import { Container, Row, Card, Col, Navbar, Nav, Button } from 'react-bootstrap';
 import {MeInterface} from "../interfaces/MeInterface.ts";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 //import {useState} from "react";
 
 interface JPHomePageProps {
@@ -7,7 +9,7 @@ interface JPHomePageProps {
     role: string; // Use the type defined earlier for role
 }
 
-const JPHomePage: React.FC<JPHomePageProps> = ({ me, role }) => {
+/*const JPHomePage: React.FC<JPHomePageProps> = ({ me, role }) => {
     //const [authenticated, setAuthenticated] = useState(false);
     return (
         <Container className="mt-5 pt-5 w-100">
@@ -44,6 +46,14 @@ const JPHomePage: React.FC<JPHomePageProps> = ({ me, role }) => {
             </Row>
         </Container>
     );
-}
+}*/
 
-export default JPHomePage;
+const HomePage: React.FC<JPHomePageProps> = () => {
+    return (
+      <Container fluid className="vh-100 d-flex flex-column p-0">
+        <h1>DISPLAY HERE INFORMATION</h1>
+      </Container>
+    );
+  }
+
+export default HomePage;
