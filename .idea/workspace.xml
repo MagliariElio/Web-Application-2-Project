@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39cbdab1-e826-4e81-87d9-2d228c36d114" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/compose.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -112,6 +113,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ferra\Desktop\Politecnico\Web applications II\Project\Web-Application-2-Project" />
+    </key>
+  </component>
   <component name="RunDashboard">
     <option name="configurationTypes">
       <set>
@@ -120,7 +126,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.ClientOAuthApplication">
+  <component name="RunManager" selected="Spring Boot.DocumentStoreApplication">
     <configuration name="Query-Testing-LAB-2 | #11" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/crm/src/test/kotlin/Query-Testing-LAB-2.http" index="11" requestIdentifier="#11" runType="Run single request">
       <method v="2" />
     </configuration>
@@ -236,7 +242,7 @@
       <workItem from="1718124316818" duration="643000" />
       <workItem from="1718125755501" duration="428000" />
       <workItem from="1718183365661" duration="10000" />
-      <workItem from="1722693904840" duration="541000" />
+      <workItem from="1722693904840" duration="2742000" />
     </task>
     <servers />
   </component>
