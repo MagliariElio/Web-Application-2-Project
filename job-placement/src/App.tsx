@@ -20,11 +20,13 @@ function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
   const [role, setRole] = useState<string>("");
 
+
   useEffect(() => {
     JPAPIAuth.fetchMe(setMe).then(async () => {
       if (me?.principal !== null) {
         const res = await fetch("/documentStoreService/v1/API/documents/auth");
         const json = await res.json();
+
 
         if (JSON.stringify(json.principal.claims.realm_access.roles[0])) {
           var i = 0;
@@ -55,15 +57,17 @@ function App() {
 
   return (
     <Router>
-      <Container fluid className="vh-100 d-flex flex-column p-0">
-        {/* Navbar */}
-        <NavBar me={me} />
+      <Container fluid className="min-vh-100 d-flex flex-row p-0">
+        {/* Sidebar */}
+        <Col md={4} className="text-white d-flex flex-column p-0 position-sticky background-white">
+          <Sidebar />
+        </Col>
 
-        <Row className="flex-grow-1 no-gutters">
-          {/* Sidebar */}
-          <Col md={2} className="bg-dark text-white d-flex flex-column p-0 sidebar">
-            <Sidebar />
-          </Col>
+        <Col className="flex-grow-1 no-gutters">
+          {/* Navbar 
+          <Row md={2} className="bg-dark text-white d-flex flex-column p-0 sidebar">
+            <NavBar me={me} />
+          </Row>*/}
 
           {/* Main Content */}
           <Col md={10} className="d-flex flex-column p-0">
@@ -74,7 +78,7 @@ function App() {
             </Container>
           </Col>
 
-        </Row>
+        </Col>
       </Container>
     </Router>
   );
@@ -82,23 +86,34 @@ function App() {
 
 function Sidebar() {
   return (
-    <Nav className="flex-column w-100 p-3">
-      <Nav.Link href="#" className="text-white">
+    <Nav className="h-100 flex-column w-100 p-3 sidebar">
+      <div className="text-white">
+        <div className="w-100 d-flex justify-content-center mb-3">
+          <img
+            src="https://www.bgscareerventures.com/uploads/source/Logos/JobConnectLogoFINAL-400.png?1620160597743"
+            alt="Logo"
+            className=""
+            width="200"
+          />
+        </div>
+        <hr className="border-top border-light" /> {/* Riga orizzontale */}
+      </div>
+      <Nav.Link href="#" className="text-white nav-link-hover">
         Home Page
       </Nav.Link>
-      <Nav.Link href="#" className="text-white">
+      <Nav.Link href="#" className="text-white nav-link-hover">
         Feature 1
       </Nav.Link>
-      <Nav.Link href="#" className="text-white">
+      <Nav.Link href="#" className="text-white nav-link-hover">
         Feature 2
       </Nav.Link>
-      <Nav.Link href="#" className="text-white">
+      <Nav.Link href="#" className="text-white nav-link-hover">
         Feature 3
       </Nav.Link>
-      <Nav.Link href="#" className="text-white">
+      <Nav.Link href="#" className="text-white nav-link-hover">
         Feature 4
       </Nav.Link>
-      <Nav.Link href="#" className="text-white mt-auto">
+      <Nav.Link href="#" className="text-white nav-link-hover mt-auto">
         Settings
       </Nav.Link>
     </Nav>

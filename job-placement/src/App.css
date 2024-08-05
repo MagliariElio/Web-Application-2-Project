@@ -46,9 +46,30 @@
   color: #ffffff !important;
 }
 
-.sidebar {
-  height: 100vh; 
+.background-white {
+  background-color: #f8f9fa !important;
 }
+
+.sidebar {
+  height: 100vh;
+  background-color: #162250 !important;
+  border-radius: 0 5px 5px 0;
+  box-shadow: #162250 0px 0px 10px;
+}
+
+.custom-hr {
+  border-top: 2px solid #fff;
+  width: 100%;
+}
+
+.nav-link-hover {
+  border-radius: 7px;
+}
+
+.nav-link-hover:hover {
+  background-color: #ffa600a1;
+}
+
 
 .no-gutters {
   margin-right: 0;
