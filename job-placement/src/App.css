@@ -57,6 +57,14 @@
   box-shadow: #162250 0px 0px 10px;
 }
 
+.sticky-sidebar {
+  position: -webkit-sticky;
+  max-height: 100vh;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
 .custom-hr {
   border-top: 2px solid #fff;
   width: 100%;

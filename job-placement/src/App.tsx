@@ -57,17 +57,17 @@ function App() {
 
   return (
     <Router>
-      <Container fluid className="min-vh-100 d-flex flex-row p-0">
+      <Row fluid className="min-vh-100 d-flex flex-row p-0">
         {/* Sidebar */}
-        <Col md={4} className="text-white d-flex flex-column p-0 position-sticky background-white">
+        <Col md={4} className="text-white d-flex flex-column p-0 sticky-sidebar background-white me-5">
           <Sidebar />
         </Col>
 
         <Col className="flex-grow-1 no-gutters">
-          {/* Navbar 
-          <Row md={2} className="bg-dark text-white d-flex flex-column p-0 sidebar">
+          {/* Navbar */}
+          <Row md={2} className="bg-dark text-white d-flex flex-column p-0">
             <NavBar me={me} />
-          </Row>*/}
+          </Row>
 
           {/* Main Content */}
           <Col md={10} className="d-flex flex-column p-0">
@@ -79,7 +79,7 @@ function App() {
           </Col>
 
         </Col>
-      </Container>
+      </Row>
     </Router>
   );
 }
@@ -98,22 +98,22 @@ function Sidebar() {
         </div>
         <hr className="border-top border-light" /> {/* Riga orizzontale */}
       </div>
-      <Nav.Link href="#" className="text-white nav-link-hover">
+      <Nav.Link href="#" className="text-white nav-link-hover ms-2">
         Home Page
       </Nav.Link>
-      <Nav.Link href="#" className="text-white nav-link-hover">
+      <Nav.Link href="#" className="text-white nav-link-hover ms-2">
         Feature 1
       </Nav.Link>
-      <Nav.Link href="#" className="text-white nav-link-hover">
+      <Nav.Link href="#" className="text-white nav-link-hover ms-2">
         Feature 2
       </Nav.Link>
-      <Nav.Link href="#" className="text-white nav-link-hover">
+      <Nav.Link href="#" className="text-white nav-link-hover ms-2">
         Feature 3
       </Nav.Link>
-      <Nav.Link href="#" className="text-white nav-link-hover">
+      <Nav.Link href="#" className="text-white nav-link-hover ms-2">
         Feature 4
       </Nav.Link>
-      <Nav.Link href="#" className="text-white nav-link-hover mt-auto">
+      <Nav.Link href="#" className="text-white nav-link-hover ms-2 mt-auto">
         Settings
       </Nav.Link>
     </Nav>
