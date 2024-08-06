@@ -52,9 +52,7 @@
 
 .sidebar {
   background-color: #162250 !important;
-  height: 100vh;
-  top: 0;
-  z-index: 1000;
+  max-height: 100vh;
   border-radius: 0 5px 5px 0;
   box-shadow: #162250 0px 0px 10px;
 }
@@ -70,6 +68,11 @@
 
 .nav-link-hover:hover {
   background-color: #ffa600a1;
+}
+
+.navbarStyle {
+  border: none;
+  border-bottom: 1px solid #ddd;
 }
 
 

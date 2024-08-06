@@ -1,6 +1,7 @@
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface.ts";
+import { BsPerson } from "react-icons/bs";
 //import JPAPIAuth from "../apis/JPAuth.ts";
 
 function NavBar({ me }: { me: MeInterface | null }) {
@@ -45,11 +46,10 @@ function NavBar({ me }: { me: MeInterface | null }) {
             </Nav>
         </Navbar>*/
 
-    <Navbar bg="light" className="justify-content-between">
-      <Navbar.Brand href="#">LOGO</Navbar.Brand>
+    <Navbar className="justify-content-between navbarStyle">
       {me?.principal && (
         <Navbar.Text>
-          <span className="mr-2">👤</span>{" "}
+          <span className="mr-2"><BsPerson /></span>{" "}
           {me?.principal?.fullName ?? "Loading..."}
         </Navbar.Text>
       )}

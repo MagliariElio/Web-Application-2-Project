@@ -62,9 +62,9 @@ function App() {
         <Col xs={12} md={4} lg={2} className="text-white d-flex flex-column p-0 background-white">
           <Sidebar />
         </Col>
-        <Col xs={12} md={8} lg={10}>
+        <Col xs={12} md={8} lg={10} className="ps-4 pt-2">
            {/* Navbar */}
-           <Row md={2} className="bg-dark text-white d-flex flex-column p-0">
+           <Row className="w-100 text-white">
             <NavBar me={me} />
           </Row>
 
