@@ -15,6 +15,7 @@ import {
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
 import HomePage from "./views/HomePage.tsx";
+import { BsFillHouseDoorFill, BsGearFill } from "react-icons/bs";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -57,7 +58,7 @@ function App() {
 
   return (
     <Router>
-      <Row className="vw-100 d-flex">
+      <Row className="vw-100  d-flex">
         {/* Sidebar */}
         <Col xs={12} md={4} lg={2} className="text-white d-flex flex-column p-0 background-white">
           <Sidebar />
@@ -69,12 +70,10 @@ function App() {
           </Row>
 
           {/* Main Content */}
-          <Col md={10} className="d-flex flex-column p-0">
-            <Container className="d-flex flex-grow-1 align-items-center justify-content-center p-0">
+          <Col className="d-flex flex-column">
               <Routes>
                 <Route path="/ui" element={<HomePage me={me} role={role} />} />
               </Routes>
-            </Container>
           </Col>
         </Col>
       </Row>
@@ -90,7 +89,7 @@ function Sidebar() {
   const navigate = useNavigate();
 
   return (
-    <Nav className="h-100 flex-column w-100 p-3 sidebar">
+    <Nav className="vh-100 flex-column w-100 p-3 sidebar">
       <div className="text-white mb-3">
         <div className="w-100 d-flex justify-content-center mb-3">
           <img
@@ -104,7 +103,8 @@ function Sidebar() {
         </div>
         <hr className="border-top border-light" /> {/* Riga orizzontale */}
       </div>
-      <Nav.Link href="#" className="text-white nav-link-hover ms-2">
+      <Nav.Link href="#" className="text-white nav-link-hover ms-2 d-flex flex-row align-items-center">
+        <BsFillHouseDoorFill className="me-2" />
         Home Page
       </Nav.Link>
       <Nav.Link href="#" className="text-white nav-link-hover ms-2">
@@ -119,7 +119,8 @@ function Sidebar() {
       <Nav.Link href="#" className="text-white nav-link-hover ms-2">
         Feature 4
       </Nav.Link>
-      <Nav.Link href="#" className="text-white nav-link-hover ms-2 mt-auto">
+      <Nav.Link href="#" className="text-white nav-link-hover ms-2 mt-auto d-flex flex-row align-items-center">
+        <BsGearFill className="me-2"/>
         Settings
       </Nav.Link>
     </Nav>
