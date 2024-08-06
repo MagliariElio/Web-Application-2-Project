@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { MeInterface } from "./interfaces/MeInterface.ts";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Row,
@@ -57,15 +57,14 @@ function App() {
 
   return (
     <Router>
-      <Row fluid className="min-vh-100 d-flex flex-row p-0">
+      <Row className="vw-100 d-flex">
         {/* Sidebar */}
-        <Col md={4} className="text-white d-flex flex-column p-0 sticky-sidebar background-white me-5">
+        <Col xs={12} md={4} lg={2} className="text-white d-flex flex-column p-0 background-white">
           <Sidebar />
         </Col>
-
-        <Col className="flex-grow-1 no-gutters">
-          {/* Navbar */}
-          <Row md={2} className="bg-dark text-white d-flex flex-column p-0">
+        <Col xs={12} md={8} lg={10}>
+           {/* Navbar */}
+           <Row md={2} className="bg-dark text-white d-flex flex-column p-0">
             <NavBar me={me} />
           </Row>
 
@@ -77,23 +76,30 @@ function App() {
               </Routes>
             </Container>
           </Col>
-
         </Col>
       </Row>
     </Router>
   );
 }
 
+
+
 function Sidebar() {
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
   return (
     <Nav className="h-100 flex-column w-100 p-3 sidebar">
-      <div className="text-white">
+      <div className="text-white mb-3">
         <div className="w-100 d-flex justify-content-center mb-3">
           <img
             src="https://www.bgscareerventures.com/uploads/source/Logos/JobConnectLogoFINAL-400.png?1620160597743"
             alt="Logo"
-            className=""
-            width="200"
+            className="handpointeronhover"
+            width="75%"
+            style={{ maxWidth: "200px" }}
+            onClick={ () => { if (location.pathname !== '/ui') navigate('/ui') }}
           />
         </div>
         <hr className="border-top border-light" /> {/* Riga orizzontale */}

@@ -51,18 +51,12 @@
 }
 
 .sidebar {
-  height: 100vh;
   background-color: #162250 !important;
-  border-radius: 0 5px 5px 0;
-  box-shadow: #162250 0px 0px 10px;
-}
-
-.sticky-sidebar {
-  position: -webkit-sticky;
-  max-height: 100vh;
-  position: sticky;
+  height: 100vh;
   top: 0;
   z-index: 1000;
+  border-radius: 0 5px 5px 0;
+  box-shadow: #162250 0px 0px 10px;
 }
 
 .custom-hr {
@@ -87,4 +81,8 @@
     padding-right: 0;
     padding-left: 0;
   }
+}
+
+.handpointeronhover:hover {
+  cursor: pointer;
 }
