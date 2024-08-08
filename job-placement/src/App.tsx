@@ -24,6 +24,9 @@ function App() {
 
   useEffect(() => {
     JPAPIAuth.fetchMe(setMe).then(async () => {
+
+      
+
       if (me?.principal !== null) {
         const res = await fetch("/documentStoreService/v1/API/documents/auth");
         const json = await res.json();

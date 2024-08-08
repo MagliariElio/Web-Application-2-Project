@@ -2,7 +2,7 @@ import {MeInterface} from "../interfaces/MeInterface.ts";
 
 const fetchMe = async (setMe: (arg0: MeInterface | null) => void) => {
     try {
-        const res = await fetch("/me")
+        const res = await fetch("http://localhost:8080/me")
         const me = await res.json() as MeInterface
         setMe(me)
     } catch (err) {

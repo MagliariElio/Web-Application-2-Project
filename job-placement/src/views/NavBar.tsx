@@ -1,7 +1,7 @@
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface.ts";
-import { BsPerson } from "react-icons/bs";
+import { BsPerson, BsPersonCircle } from "react-icons/bs";
 //import JPAPIAuth from "../apis/JPAuth.ts";
 
 function NavBar({ me }: { me: MeInterface | null }) {
@@ -46,14 +46,14 @@ function NavBar({ me }: { me: MeInterface | null }) {
             </Nav>
         </Navbar>*/
 
-    <Navbar className="justify-content-between navbarStyle">
+    <Navbar className="justify-content-between align-items-center navbarStyle">
       {me?.principal && (
         <Navbar.Text>
-          <span className="mr-2"><BsPerson /></span>{" "}
-          {me?.principal?.fullName ?? "Loading..."}
+          <span className="ms-4 fs-3"><BsPersonCircle /></span>{" "}
+          <span className="fs-5 ms-2 fw-semibold">{me?.principal?.fullName ?? "Loading..."}</span>
         </Navbar.Text>
       )}
-      <Nav.Item className="ml-auto">
+      <Nav.Item className="ml-auto me-4">
         {me && me.principal && (
           <>
             <form method={"post"} action={me.logoutUrl}>
