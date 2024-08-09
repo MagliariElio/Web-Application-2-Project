@@ -51,8 +51,11 @@ function NavBar({ me }: { me: MeInterface | null }) {
 
     <Navbar className="justify-content-between align-items-center navbarStyle">
       {me?.principal && (
-        <Navbar.Text>
-          <span className="ms-4 fs-3"><BsPersonCircle /></span>{" "}
+        <Navbar.Text
+          className="ms-4 me-4 px-1 py-0 handpointeronhover floatingOnHover smallBorders d-flex align-items-center justify-content-center" 
+          onClick={() => navigate("/ui/profile")}
+        >
+          <span className="fs-3"><BsPersonCircle /></span>{" "}
           <span className="fs-5 ms-2 fw-semibold">{me?.principal?.fullName ?? "Loading..."}</span>
         </Navbar.Text>
       )}

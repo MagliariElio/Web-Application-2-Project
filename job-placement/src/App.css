@@ -67,7 +67,7 @@
 }
 
 .nav-link-hover:hover {
-  background-color: #ffa600a1;
+  background-color: #ffa600a1 !important;
 }
 
 .navbarStyle {
@@ -88,4 +88,17 @@
 
 .handpointeronhover:hover {
   cursor: pointer;
+}
+
+.smallBorders {
+  border: 2px solid #16225041 ;
+  border-radius: 5px;
+}
+
+.floatingOnHover {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.floatingOnHover:hover {
+  box-shadow: 0 0 10px #16225041;
 }
