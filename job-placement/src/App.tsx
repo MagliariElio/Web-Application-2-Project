@@ -25,12 +25,9 @@ function App() {
   useEffect(() => {
     JPAPIAuth.fetchMe(setMe).then(async () => {
 
-      
-
       if (me?.principal !== null) {
         const res = await fetch("/documentStoreService/v1/API/documents/auth");
         const json = await res.json();
-
 
         if (JSON.stringify(json.principal.claims.realm_access.roles[0])) {
           var i = 0;

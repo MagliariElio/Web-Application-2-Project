@@ -53,6 +53,14 @@ function NavBar({ me }: { me: MeInterface | null }) {
           <span className="fs-5 ms-2 fw-semibold">{me?.principal?.fullName ?? "Loading..."}</span>
         </Navbar.Text>
       )}
+      {
+        !me?.principal && (
+          <Navbar.Text>
+            <span className="ms-4 fs-3"><BsPersonCircle /></span>{" "}
+            <span className="fs-5 ms-2 fw-semibold">Guest</span>
+          </Navbar.Text>
+        )
+      }
       <Nav.Item className="ml-auto me-4">
         {me && me.principal && (
           <>
