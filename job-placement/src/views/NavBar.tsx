@@ -1,10 +1,13 @@
 import { Navbar, Nav, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface.ts";
 import { BsPerson, BsPersonCircle } from "react-icons/bs";
 //import JPAPIAuth from "../apis/JPAuth.ts";
 
 function NavBar({ me }: { me: MeInterface | null }) {
+
+  const navigate = useNavigate();
+
   /*const handleLoginClick = () => {
         if(me !== null)
             window.location.href = me?.loginUrl
@@ -75,7 +78,7 @@ function NavBar({ me }: { me: MeInterface | null }) {
         {me && me.principal == null && me.loginUrl && (
           <Button
             variant="warning"
-            onClick={() => (window.location.href = me?.loginUrl)}
+            onClick={() => navigate(me?.loginUrl)}
             className="ml-auto"
           >
             Login

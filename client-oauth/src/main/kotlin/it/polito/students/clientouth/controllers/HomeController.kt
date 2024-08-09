@@ -22,7 +22,7 @@ class HomeController {
         return mapOf(
             "name" to name,
             "surname" to surname,
-            "loginUrl" to "/oauth2/authorization/oidc-app-client",
+            "loginUrl" to "http://localhost:8080",       //"/oauth2/authorization/oidc-app-client",
             "logoutUrl" to "/logout",
             "principal" to principal,
             "xsrfToken" to xsrf
