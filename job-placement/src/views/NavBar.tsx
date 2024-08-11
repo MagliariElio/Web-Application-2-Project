@@ -81,7 +81,7 @@ function NavBar({ me }: { me: MeInterface | null }) {
         {me && me.principal == null && me.loginUrl && (
           <Button
             variant="warning"
-            onClick={() => navigate(me?.loginUrl)}
+            onClick={() => window.location.href = me?.loginUrl}
             className="ml-auto"
           >
             Login
