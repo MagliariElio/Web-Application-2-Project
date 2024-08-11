@@ -113,15 +113,30 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened }) => {
             </div>
             <hr className="border-top border-light" />
           </div>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2 d-flex flex-row align-items-center">
+          <Nav.Link
+            href="#"
+            className="text-white nav-link-hover ms-2 d-flex flex-row align-items-center"
+            onClick={() => {
+              if (location.pathname !== '/ui') navigate('/ui');
+            }}
+          >
             <BsFillHouseDoorFill className="me-2" />
             Home Page
           </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2">
-            Feature 1
+          <Nav.Link href="#"
+            className="text-white nav-link-hover ms-2 d-flex flex-row align-items-center"
+            onClick={() => {
+              if (location.pathname !== '/ui/customers') navigate('/ui/customers');
+            }}
+          >
+            Customers
           </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2">
-            Feature 2
+          <Nav.Link href="#"
+            className="text-white nav-link-hover ms-2 d-flex flex-row align-items-center"
+            onClick={() => {
+              if (location.pathname !== '/ui/professionals') navigate('/ui/professionals');
+          }}>
+            Professionals
           </Nav.Link>
           <Nav.Link href="#" className="text-white nav-link-hover ms-2">
             Feature 3
@@ -142,7 +157,11 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened }) => {
         </Nav>
       ) : (
         <Nav className="vh-100 flex-column w-100 p-3 sidebar">
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center">
+          <Nav.Link href="#" className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
+            onClick={() => {
+              if (location.pathname !== '/ui') navigate('/ui');
+            }}
+          >
             <BsFillHouseDoorFill />
           </Nav.Link>
           <Nav.Link href="#" className="text-white nav-link-hover ms-2">
