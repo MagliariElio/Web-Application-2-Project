@@ -102,3 +102,19 @@
 .floatingOnHover:hover {
   box-shadow: 0 0 10px #16225041;
 }
+
+
+.primaryButton {
+  background-color: #162250 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
+}
+
+.primaryButton:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 20px #1622507a;
+  background-color: #162250c2 !important;
+}
