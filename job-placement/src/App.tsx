@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import "./App.css";
 import { MeInterface } from "./interfaces/MeInterface.ts";
-import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation, Navigate } from "react-router-dom";
 import {
   Container,
   Row,
@@ -15,8 +15,11 @@ import {
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
 import HomePage from "./views/HomePage.tsx";
-import { BsCaretLeftFill, BsCaretRightFill, BsFillHouseDoorFill, BsGearFill } from "react-icons/bs";
+import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsFillHouseDoorFill, BsGearFill } from "react-icons/bs";
 import ProfilePage from "./views/ProfilePage.tsx";
+import CustomersPage from "./views/CustomersPage.tsx";
+import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
+import JPPageNotFound from "./views/PageNotFound.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -64,7 +67,7 @@ function App() {
       <Row className="vw-100  d-flex">
         {/* Sidebar */}
         <Col xs={sidebarOpened ? 12 : 4} md={sidebarOpened ? 4 : 2} lg={sidebarOpened ? 2 : 1} className="text-white d-flex flex-column p-0 background-white">
-          <Sidebar opened={sidebarOpened} setOpened={setSidebarOpened} />
+          <Sidebar opened={sidebarOpened} setOpened={setSidebarOpened} me={me} />
         </Col>
         <Col xs={sidebarOpened ? 12 : 8} md={sidebarOpened ? 8 : 10} lg={sidebarOpened ? 10 : 11} className="ps-4 pt-2">
            {/* Navbar */}
@@ -77,6 +80,10 @@ function App() {
               <Routes>
                 <Route path="/ui" element={<HomePage me={me} role={role} />} />
                 <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
+                <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
+
+                <Route path="*" element={<JPPageNotFound />} />
               </Routes>
           </Col>
         </Col>
@@ -88,17 +95,20 @@ function App() {
 interface SidebarProps {
   opened: boolean;
   setOpened: (opened: boolean) => void;
+  me: MeInterface | null;
 }
 
-const Sidebar: FC<SidebarProps> = ({ opened, setOpened }) => {
+const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const navLinkClassnameOpened = "text-white nav-link-hover ms-2 d-flex flex-row align-items-center";
+  const navLinkClassnameClosed = "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center";
+
   return (
     <>
-      {opened ? (
         <Nav className="vh-100 flex-column w-100 p-3 sidebar">
-          <div className="text-white mb-3">
+          {opened && <div className="text-white mb-3">
             <div className="w-100 d-flex justify-content-center mb-3">
               <img
                 src="https://www.bgscareerventures.com/uploads/source/Logos/JobConnectLogoFINAL-400.png?1620160597743"
@@ -112,81 +122,54 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened }) => {
               />
             </div>
             <hr className="border-top border-light" />
-          </div>
+          </div>}
           <Nav.Link
             href="#"
-            className="text-white nav-link-hover ms-2 d-flex flex-row align-items-center"
+            className={opened ? navLinkClassnameOpened : navLinkClassnameClosed} 
             onClick={() => {
               if (location.pathname !== '/ui') navigate('/ui');
             }}
           >
-            <BsFillHouseDoorFill className="me-2" />
-            Home Page
+            <BsFillHouseDoorFill className={opened ? "me-2" : ""} />
+            {opened && "Home Page"}
           </Nav.Link>
-          <Nav.Link href="#"
-            className="text-white nav-link-hover ms-2 d-flex flex-row align-items-center"
-            onClick={() => {
-              if (location.pathname !== '/ui/customers') navigate('/ui/customers');
-            }}
-          >
-            Customers
-          </Nav.Link>
-          <Nav.Link href="#"
-            className="text-white nav-link-hover ms-2 d-flex flex-row align-items-center"
-            onClick={() => {
-              if (location.pathname !== '/ui/professionals') navigate('/ui/professionals');
-          }}>
-            Professionals
-          </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2">
-            Feature 3
-          </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2">
-            Feature 4
-          </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2 mt-auto d-flex flex-row align-items-center">
-            <BsGearFill className="me-2" />
-            Settings
-          </Nav.Link>
-          <Button
-            className="w-25 align-self-end text-white ms-2 bg-transparent border-0 nav-link-hover"
-            onClick={() => setOpened(false)}
-          >
-            <BsCaretLeftFill />
-          </Button>
-        </Nav>
-      ) : (
-        <Nav className="vh-100 flex-column w-100 p-3 sidebar">
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
-            onClick={() => {
-              if (location.pathname !== '/ui') navigate('/ui');
-            }}
-          >
-            <BsFillHouseDoorFill />
-          </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2">
-            {/* Insert here just the icon */}
-          </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2">
-            {/* Insert here just the icon */}
-          </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2">
-            {/* Insert here just the icon */}
-          </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2">
-            {/* Insert here just the icon */}
-          </Nav.Link>
-          <Nav.Link href="#" className="text-white nav-link-hover ms-2 mt-auto d-flex flex-row justify-content-center align-items-center">
-            <BsGearFill />
+          {
+            me && me.principal !== null && (    // Only logged user links here
+              <>
+              <Nav.Link href="#"
+                className={opened ? navLinkClassnameOpened : navLinkClassnameClosed} 
+                onClick={() => {
+                  if (location.pathname !== '/ui/customers') navigate('/ui/customers');
+                }}
+              >
+                <BsBuildingsFill className={opened ? "me-2" : ""} />
+                {opened && "Customers"}
+              </Nav.Link>
+              <Nav.Link href="#"
+                className={opened ? navLinkClassnameOpened : navLinkClassnameClosed} 
+                onClick={() => {
+                  if (location.pathname !== '/ui/professionals') navigate('/ui/professionals');
+              }}>
+                <BsBriefcaseFill className={opened ? "me-2" : ""} />
+                {opened && "Professionals"}
+              </Nav.Link>
+              </>
+            )
+          }
+          
+          
+          <Nav.Link href="#" className={opened ? navLinkClassnameOpened + " mt-auto" : navLinkClassnameClosed  + " mt-auto"} >
+            <BsGearFill className={opened ? "me-2" : ""} />
+            {opened && "Settings"}
           </Nav.Link>
           <Button
-            className="w-100 align-self-center text-white ms-2 bg-transparent border-0 nav-link-hover"
-            onClick={() => setOpened(true)}
+            className={opened ? "w-25 align-self-end text-white ms-2 bg-transparent border-0 nav-link-hover" : "w-100 align-self-center text-white ms-2 bg-transparent border-0 nav-link-hover" }
+            onClick={() => setOpened(!opened)}
           >
-            <BsCaretRightFill />
+            {opened ? <BsCaretLeftFill /> : <BsCaretRightFill />}
           </Button>
         </Nav>
-      )}
+     
     </>
   );
 }
