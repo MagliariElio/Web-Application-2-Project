@@ -7,6 +7,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.filter.CorsFilter
 
 @Configuration
 @EnableWebSecurity
@@ -63,9 +66,20 @@ class SecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .csrf { it.disable() }
-            .cors { it.disable() }
-            //.formLogin { it.disable() } per ora è commentato, poi con il frontend si può disabilitare
+            .cors { }
+            .formLogin { it.disable() }
             .build()
     }
 
+    @Bean
+    fun corsFilter(): CorsFilter {
+        val source = UrlBasedCorsConfigurationSource()
+        val config = CorsConfiguration()
+        config.allowedOrigins = listOf("http://localhost:8080") // Permetti richieste da questo indirizzo
+        config.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH") // Permetti questi metodi
+        config.allowedHeaders = listOf("*") // Permetti tutti gli headers
+        config.allowCredentials = true
+        source.registerCorsConfiguration("/**", config)
+        return CorsFilter(source)
+    }
 }
