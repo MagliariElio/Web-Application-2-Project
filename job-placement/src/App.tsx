@@ -20,6 +20,7 @@ import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
 import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
 import JPPageNotFound from "./views/PageNotFound.tsx";
+import AddCustomerPage from "./views/AddCustomerPage.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -82,6 +83,7 @@ function App() {
                 <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
                 <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage /> : <Navigate to="/not-found" />} />
 
                 <Route path="*" element={<JPPageNotFound />} />
               </Routes>

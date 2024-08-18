@@ -118,3 +118,33 @@
   box-shadow: 0 10px 20px #1622507a;
   background-color: #162250c2 !important;
 }
+
+.secondaryButton {
+  background-color: #f8f9fa !important;
+  color: #162250 !important;
+  border: 2px solid #162250 !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease !important;
+}
+
+.secondaryButton:hover {
+  box-shadow: 0 5px 10px #1622507a;
+  background-color: #162250 !important;
+  color: #f8f9fa !important;
+}
+
+.secondaryDangerButton {
+  background-color: #f8f9fa !important;
+  color: #dc3545 !important;
+  border: 2px solid #dc3545 !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease !important;
+}
+
+.secondaryDangerButton:hover {
+  box-shadow: 0 5px 10px #dc35457a;
+  background-color: #dc3545 !important;
+  color: #f8f9fa !important;
+}

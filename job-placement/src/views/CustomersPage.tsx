@@ -1,20 +1,35 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Row, Toast, ToastContainer } from "react-bootstrap";
 import { BsPlus } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function CustomersPage() {
+
+    const navigate = useNavigate();
 
     const [customers, setCustomers] = useState<PagedResponse<Customer> | null>(null);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    const location = useLocation();
+    var { success } = location.state || {};
+    const [showAlert, setShowAlert] = useState(false);
+
     useEffect(() => {
+
+        if (success != null){
+            setShowAlert(true);
+            setTimeout(() => {
+                setShowAlert(false);
+            }, 3000);
+        }
 
         fetch("/crmService/v1/API/customers")
             .then(res => {
                 if (!res.ok) {
+                    console.log(res);
                     throw new Error('/API/customers : Network response was not ok');
                 }
                 return res.json();
@@ -38,12 +53,25 @@ function CustomersPage() {
 
   return (
     <div>
+        { showAlert &&
+            <ToastContainer position="top-end" className="p-3">
+            <Toast show={success != null} onClose={() => success = null}>
+              <Toast.Header>
+                <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
+                <strong className="me-auto">JobConnect</strong>
+                <small>now</small>
+              </Toast.Header>
+              <Toast.Body>{success ? "Operation correctly executed!" : "Operation failed!"}</Toast.Body>
+            </Toast>
+          </ToastContainer>
+        }
+        
         <Row className="d-flex flex-row p-0 mb-3 align-items-center">
             <Col>
                 <h3>Customers</h3> 
             </Col>
             <Col className="d-flex justify-content-end">
-                <Button className="d-flex align-items-center primaryButton" >
+                <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/customers/add") } >
                     <BsPlus size={"1.5em"} className="me-1" />
                     Add Customer
                 </Button>
