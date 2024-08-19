@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/../lab5-g04/client-oauth" />
+    <file type="web" url="file://$PROJECT_DIR$/client-oauth" />
     <file type="web" url="file://$PROJECT_DIR$/comunication_manager" />
     <file type="web" url="file://$PROJECT_DIR$/crm" />
     <file type="web" url="file://$PROJECT_DIR$/document_store" />

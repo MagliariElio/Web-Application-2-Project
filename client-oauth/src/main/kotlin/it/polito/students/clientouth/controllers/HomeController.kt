@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("")
 class HomeController {
 
-    @GetMapping("/me", "/me")
+    @GetMapping("/me", "  /me")
     fun me(
         @CookieValue(name="XSRF-TOKEN", required = false)
         xsrf: String?,

@@ -2,9 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="client-oauth" target="17" />
-      <module name="client-oauth.main" target="17" />
-      <module name="client-oauth.test" target="17" />
+      <module name="comunication_manager.test" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

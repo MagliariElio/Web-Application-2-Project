@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39cbdab1-e826-4e81-87d9-2d228c36d114" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/compose.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comunication_manager/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/comunication_manager/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,6 +18,9 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/client-oauth">
+      <ProjectState />
+    </projectState>
     <projectState path="$PROJECT_DIR$/comunication_manager">
       <ProjectState />
     </projectState>
@@ -23,11 +30,17 @@
     <projectState path="$PROJECT_DIR$/document_store">
       <ProjectState />
     </projectState>
+    <projectState path="$PROJECT_DIR$/../lab5-g04/client-oauth">
+      <ProjectState />
+    </projectState>
   </component>
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
         <task path="$PROJECT_DIR$/comunication_manager">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/../lab5-g04/client-oauth">
           <activation />
         </task>
         <projects_view>
@@ -67,13 +80,16 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Docker.client-oauth/compose.yaml: Compose Deployment.executor": "Run",
     "Docker.compose.yaml.keycloak: Compose Deployment.executor": "Run",
+    "Gradle.Build client-oauth.executor": "Run",
     "Gradle.Build comunication_manager.executor": "Run",
     "Gradle.Build crm.executor": "Run",
     "Gradle.Build document_store.executor": "Run",
     "Gradle.ComunicationManagerApplicationUnitTest.executor": "Run",
     "Gradle.ComunicationManagerApplicationUnitTests.executor": "Run",
     "Gradle.ComunitationManagerApplicationUnitTest.testSendEmail.executor": "Run",
+    "Gradle.comunication_manager [assemble].executor": "Run",
     "HTTP Request.All in HTTP requests.executor": "Run",
     "HTTP Request.HTTP requests | #1.executor": "Run",
     "HTTP Request.HTTP requests | #2.executor": "Run",
@@ -98,18 +114,18 @@
     "git-widget-placeholder": "main",
     "jdk.selected.JAVA_MODULE": "corretto-21",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/ferra/Desktop/Politecnico/Web applications II/Project/Web-Application-2-Project",
+    "last_opened_file_path": "C:/Users/39328/Desktop/Universita/polito/Web App 2/Web-Application-2-Project",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
     "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "editor.preferences.gutterIcons",
-    "ts.external.directory.path": "C:\\Users\\39328\\Desktop\\Universita\\polito\\Web App 2\\lab5-g04\\job-placement\\node_modules\\typescript\\lib",
+    "settings.editor.selected.configurable": "build.tools",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.3.6\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -117,6 +133,11 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ferra\Desktop\Politecnico\Web applications II\Project\Web-Application-2-Project" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="gradle assemble" />
+    </option>
   </component>
   <component name="RunDashboard">
     <option name="configurationTypes">
@@ -126,14 +147,30 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.DocumentStoreApplication">
-    <configuration name="Query-Testing-LAB-2 | #11" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/crm/src/test/kotlin/Query-Testing-LAB-2.http" index="11" requestIdentifier="#11" runType="Run single request">
+  <component name="RunManager" selected="Spring Boot.ClientOAuthApplication">
+    <configuration name="comunication_manager [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/comunication_manager" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="assemble" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
     <configuration name="Query-Testing-LAB-2 | #25" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/crm/src/test/kotlin/Query-Testing-LAB-2.http" index="25" requestIdentifier="#25" runType="Run single request">
-      <method v="2" />
-    </configuration>
-    <configuration name="Query-Testing-LAB-2 | #26" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/crm/src/test/kotlin/Query-Testing-LAB-2.http" index="26" requestIdentifier="#26" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration name="ClientOAuthApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
@@ -176,6 +213,14 @@
       </deployment>
       <method v="2" />
     </configuration>
+    <configuration name="client-oauth/compose.yaml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="client-oauth/compose.yaml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
     <configuration name="compose.yaml.keycloak: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
       <deployment type="docker-compose.yml">
         <settings>
@@ -192,19 +237,12 @@
     <recent_temporary>
       <list>
         <item itemvalue="Spring Boot.ClientOAuthApplication" />
+        <item itemvalue="Docker.client-oauth/compose.yaml: Compose Deployment" />
+        <item itemvalue="Gradle.comunication_manager [assemble]" />
         <item itemvalue="Docker.compose.yaml.keycloak: Compose Deployment" />
         <item itemvalue="HTTP Request.Query-Testing-LAB-2 | #25" />
-        <item itemvalue="HTTP Request.Query-Testing-LAB-2 | #11" />
-        <item itemvalue="HTTP Request.Query-Testing-LAB-2 | #26" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="jdk-21.0.2-corretto-21.0.2-4caba194b151-51586f01" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -243,6 +281,11 @@
       <workItem from="1718125755501" duration="428000" />
       <workItem from="1718183365661" duration="10000" />
       <workItem from="1722693904840" duration="2742000" />
+      <workItem from="1722897044669" duration="2054000" />
+      <workItem from="1722937277140" duration="69000" />
+      <workItem from="1722937615354" duration="23000" />
+      <workItem from="1722947608627" duration="341000" />
+      <workItem from="1723043084243" duration="1025000" />
     </task>
     <servers />
   </component>
