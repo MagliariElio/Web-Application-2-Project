@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("")
 class HomeController {
-
-    @GetMapping("/me", "  /me")
+    @GetMapping("/me", "/me")
     fun me(
         @CookieValue(name="XSRF-TOKEN", required = false)
         xsrf: String?,
@@ -23,10 +22,11 @@ class HomeController {
         return mapOf(
             "name" to name,
             "surname" to surname,
-            "loginUrl" to "/oauth2/authorization/oidc-app-client",
+            "loginUrl" to "http://localhost:8080",       //"/oauth2/authorization/oidc-app-client",
             "logoutUrl" to "/logout",
             "principal" to principal,
             "xsrfToken" to xsrf
         )
     }
+
 }

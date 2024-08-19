@@ -50,9 +50,9 @@ interface JPHomePageProps {
 
 const HomePage: React.FC<JPHomePageProps> = () => {
     return (
-      <Container fluid className="vh-100 d-flex flex-column p-0">
+      <Row className="d-flex flex-column p-0">
         <h1>DISPLAY HERE INFORMATION</h1>
-      </Container>
+      </Row>
     );
   }
 

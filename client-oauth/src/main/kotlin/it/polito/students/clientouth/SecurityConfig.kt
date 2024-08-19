@@ -18,6 +18,9 @@ import org.springframework.util.StringUtils
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
 import java.util.function.Supplier
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @EnableWebSecurity
 @Configuration
@@ -33,6 +36,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
+            .cors {  }
             .csrf {
                 it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
@@ -45,6 +49,19 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
             .logout { it.logoutSuccessHandler(oidcLogoutSuccessHandler()) }
             .addFilterAfter(CsrfCookieFilter(), BasicAuthenticationFilter::class.java)
             .build()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins = listOf("http://localhost:5173", "http://192.168.252.250:5173", "http://172.29.224.1:5173") // Add your allowed origins here
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        configuration.allowedHeaders = listOf("Authorization", "Content-Type", "X-XSRF-TOKEN")
+        configuration.allowCredentials = true
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
     }
 }
 
