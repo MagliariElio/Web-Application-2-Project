@@ -30,13 +30,13 @@ function CustomersPage() {
             .then(res => {
                 if (!res.ok) {
                     console.log(res);
-                    throw new Error('/API/customers : Network response was not ok');
+                    throw new Error('GET /API/customers : Network response was not ok');
                 }
                 return res.json();
             })
             .then(
                 (result) => {
-                
+                    console.log("Customers fetched: ", result);
                     setCustomers(result);
                     setLoading(false);
                 

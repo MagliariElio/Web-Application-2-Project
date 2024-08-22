@@ -65,7 +65,8 @@ function AddCustomerPage() {
         .then(res => {
             if (!res.ok) {
                 navigate("/ui/customers", { state: { success: false } });
-                throw new Error('/API/customers : Network response was not ok');
+                console.log("Error during customer post: ", res);
+                throw new Error('POST /API/customers : Network response was not ok');
                 
             }
             else {
@@ -158,13 +159,13 @@ function AddCustomerPage() {
             {
                 emails.length > 0 && emails.map((email, index) => {
                     return (
-                    <Row className="mb-1 d-flex align-items-center">
+                    <Row key={index} className="mb-1 d-flex align-items-center">
                         <Col xs={8} md={6} lg={5}>
                             <Row>
                                 <Col xs={12} md={12} lg={6} className="mb-0">
                                     <p className="text-truncate">{email.email}</p>
                                 </Col>
-                                <Col xs={12} md={12} lg={6} className="mb-0">
+                                <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
                                     <p className="text-truncate">{email.comment}</p>
                                 </Col>
                             </Row>
@@ -252,7 +253,7 @@ function AddCustomerPage() {
                                 <Col xs={12} md={12} lg={6} className="mb-0">
                                     <p className="text-truncate">{telephone.telephone}</p>
                                 </Col>
-                                <Col xs={12} md={12} lg={6} className="mb-0">
+                                <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
                                     <p className="text-truncate">{telephone.comment}</p>
                                 </Col>
                             </Row>
