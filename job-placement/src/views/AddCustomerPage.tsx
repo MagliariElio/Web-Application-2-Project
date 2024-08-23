@@ -4,8 +4,9 @@ import Form from 'react-bootstrap/Form';
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
+import { MeInterface } from "../interfaces/MeInterface";
 
-function AddCustomerPage() {
+function AddCustomerPage({ me }: { me: MeInterface }) {
 
     const navigate = useNavigate();
 
@@ -58,7 +59,8 @@ function AddCustomerPage() {
         fetch("/crmService/v1/API/customers", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-XSRF-Token': me.xsrfToken,
             },
             body: JSON.stringify(customer)
         })

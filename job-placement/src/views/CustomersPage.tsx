@@ -55,7 +55,7 @@ function CustomersPage() {
     <div>
         { showAlert &&
             <ToastContainer position="top-end" className="p-3">
-            <Toast show={success != null} onClose={() => success = null}>
+            <Toast bg={success ? "success" : "danger"} show={success != null} onClose={() => success = null}>
               <Toast.Header>
                 <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
                 <strong className="me-auto">JobConnect</strong>
@@ -106,19 +106,11 @@ function CustomersPage() {
                     {
                     customers.content.map((customer, index) => {
                         return (
-                            <Row key={index} className="w-100 border border-dark rounded-3 p-3 mb-2">
+                            <Row key={index} className="w-100 border border-dark rounded-3 p-3 mb-2 d-flex align-items-center">
                                 <Col xs={12} md={6} lg={3}>
-                                    <h5>{customer.id}</h5>
+                                    <h5 className="mb-0">{`${customer.information.contactDTO.name} ${customer.information.contactDTO.surname}`}</h5>
                                 </Col>
-                                <Col xs={12} md={6} lg={3}>
-                                    <h5>{customer.id}</h5>
-                                </Col>
-                                <Col xs={12} md={6} lg={3}>
-                                    <h5>{customer.id}</h5>
-                                </Col>
-                                <Col xs={12} md={6} lg={3}>
-                                    <h5>{customer.id}</h5>
-                                </Col>
+                                
                             </Row>
                         )
                     })

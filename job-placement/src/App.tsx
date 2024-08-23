@@ -83,7 +83,7 @@ function App() {
                 <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
                 <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
-                <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
 
                 <Route path="*" element={<JPPageNotFound />} />
               </Routes>
