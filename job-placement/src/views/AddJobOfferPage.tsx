@@ -1,33 +1,34 @@
 import { useState } from "react";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { checkValidSkill } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
+import JobOfferRequests from "../apis/JobOfferRequests";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
 
-  const [name, setName] = useState(""); // da aggiungere backend
-  const [description, setDescription] = useState(""); // da aggiungere backend
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [duration, setDuration] = useState("");
   const [note, setNote] = useState("");
-  const [contractType, setContractType] = useState(""); // da aggiungere backend
-  const [location, setLocation] = useState("");         // da aggiungere backend
-  const [workMode, setWorkMode] = useState("");         // da aggiungere backend
+  const [contractType, setContractType] = useState("");
+  const [location, setLocation] = useState("");
+  const [workMode, setWorkMode] = useState("");
 
   const [requiredSkills, setRequiredSkills] = useState<any[]>([]);
   const [singleRequiredSkill, setSingleRequiredSkill] = useState("");
   const [requiredSkillError, setRequiredSkillError] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+  
     if (name === "") {
       return;
     }
-
+  
     const jobOffer = {
       name: name,
       description: description,
@@ -37,29 +38,15 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       requiredSkills: requiredSkills,
       duration: duration,
       note: note,
+      customerId: 1
     };
-
-    fetch("/crmService/v1/API/joboffers", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-XSRF-Token": me.xsrfToken,
-      },
-      body: JSON.stringify(jobOffer),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          navigate("/ui", { state: { success: false } });
-          console.log("Error during joboffers post: ", res);
-          throw new Error("POST /API/joboffers : Network response was not ok");
-        } else {
-          navigate("/ui", { state: { success: true } });
-        }
-        return res.json();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  
+    try {
+      await JobOfferRequests.submitJobOffer(jobOffer, me.xsrfToken);
+      navigate("/ui", { state: { success: true } });
+    } catch (error) {
+      navigate("/ui", { state: { success: false } });
+    }
   };
 
   return (
@@ -141,84 +128,83 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
         <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control as="textarea" placeholder="Note" value={note} onChange={(e) => setNote(e.target.value)} />
+            <Form.Control as="textarea" placeholder="Note" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
           </Col>
         </Row>
+
         <Row className="mt-4 justify-content-center">
-          <Col xs={12} md={10} lg={8}>
-            <Card className="shadow-sm p-4">
-              <Row className="align-items-center">
-                <Col>
-                  <hr />
-                </Col>
-                <Col xs="auto">
-                  <h5 className="fw-bold text-primary">Required Skills</h5>
-                </Col>
-                <Col>
-                  <hr />
+          <Col xs={12} md={10} lg={6}>
+            <Row className="align-items-center">
+              <Col>
+                <hr />
+              </Col>
+              <Col xs="auto">
+                <h5 className="fw-bold text-primary">Required Skills</h5>
+              </Col>
+              <Col>
+                <hr />
+              </Col>
+            </Row>
+
+            {requiredSkills.length === 0 && (
+              <Row className="justify-content-center mt-3">
+                <Col xs={12} className="text-center">
+                  <p className="text-muted">No required skills added yet</p>
                 </Col>
               </Row>
+            )}
 
-              {requiredSkills.length === 0 && (
-                <Row className="justify-content-center mt-3">
-                  <Col xs={12} className="text-center">
-                    <p className="text-muted">No required skills added yet</p>
+            {requiredSkills.length > 0 &&
+              requiredSkills.map((requiredSkill, index) => (
+                <Row key={index} className="mb-2 d-flex align-items-center justify-content-between">
+                  <Col xs={8} md={8} lg={9}>
+                    <p className="text-truncate fw-light mb-0">{requiredSkill}</p>
+                  </Col>
+                  <Col xs={4} md={4} lg={3} className="text-end">
+                    <Button variant="outline-danger" size="sm" onClick={() => setRequiredSkills(requiredSkills.filter((_, i) => i !== index))}>
+                      Remove
+                    </Button>
                   </Col>
                 </Row>
-              )}
+              ))}
 
-              {requiredSkills.length > 0 &&
-                requiredSkills.map((requiredSkill, index) => (
-                  <Row key={index} className="mb-2 d-flex align-items-center justify-content-between">
-                    <Col xs={8} md={8} lg={9}>
-                      <p className="text-truncate fw-light mb-0">{requiredSkill}</p>
-                    </Col>
-                    <Col xs={4} md={4} lg={3} className="text-end">
-                      <Button variant="outline-danger" size="sm" onClick={() => setRequiredSkills(requiredSkills.filter((_, i) => i !== index))}>
-                        Remove
-                      </Button>
-                    </Col>
-                  </Row>
-                ))}
-
-              <Row className="mt-4 justify-content-center">
-                <Col xs={12} md={8} lg={6}>
-                  <Form.Control
-                    placeholder="Add a skill"
-                    value={singleRequiredSkill}
-                    onChange={(e) => {
-                      setSingleRequiredSkill(e.target.value);
+            <Row className="mt-4 justify-content-center">
+              <Col xs={12} md={8} lg={6}>
+                <Form.Control
+                  placeholder="Add a skill"
+                  value={singleRequiredSkill}
+                  onChange={(e) => {
+                    setSingleRequiredSkill(e.target.value);
+                    setRequiredSkillError(false);
+                  }}
+                  className={`mb-2 ${requiredSkillError ? "is-invalid" : ""}`}
+                />
+              </Col>
+              <Col xs={12} md={4} lg={3} className="text-end">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    if (checkValidSkill(singleRequiredSkill)) {
+                      setRequiredSkills([...requiredSkills, singleRequiredSkill]);
+                      setSingleRequiredSkill("");
                       setRequiredSkillError(false);
-                    }}
-                    className={`mb-2 ${requiredSkillError ? "is-invalid" : ""}`}
-                  />
-                </Col>
-                <Col xs={12} md={4} lg={3} className="text-end">
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      if (checkValidSkill(singleRequiredSkill)) {
-                        setRequiredSkills([...requiredSkills, singleRequiredSkill]);
-                        setSingleRequiredSkill("");
-                        setRequiredSkillError(false);
-                      } else {
-                        setRequiredSkillError(true);
-                      }
-                    }}
-                  >
-                    Add Skill
-                  </Button>
+                    } else {
+                      setRequiredSkillError(true);
+                    }
+                  }}
+                >
+                  Add Skill
+                </Button>
+              </Col>
+            </Row>
+
+            {requiredSkillError && (
+              <Row className="mt-2">
+                <Col>
+                  <p className="text-danger text-center">Invalid skill entered. Please enter only alphabetic characters.</p>
                 </Col>
               </Row>
-
-              {requiredSkillError && (
-                <Row className="mt-2">
-                  <Col>
-                    <p className="text-danger text-center">Invalid skill entered. Please enter only alphabetic characters.</p>
-                  </Col>
-                </Row>
-              )}
-            </Card>
+            )}
           </Col>
         </Row>
 

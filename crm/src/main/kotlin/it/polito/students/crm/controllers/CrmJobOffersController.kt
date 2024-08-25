@@ -192,7 +192,6 @@ class CrmJobOffersController(
     fun getJobOfferById(
         @PathVariable jobOfferId: Long,
     ): ResponseEntity<Any> {
-
         if (jobOfferId < 0) {
             logger.info(ErrorsPage.JOB_OFFER_ID_ERROR)
             return ResponseEntity(ErrorsPage.JOB_OFFER_ID_ERROR, HttpStatus.BAD_REQUEST)
@@ -201,9 +200,8 @@ class CrmJobOffersController(
         try {
             val jobOffer = jobOfferService.getJobOfferById(jobOfferId)
             return ResponseEntity(jobOffer, HttpStatus.OK)
-
         } catch (e: NotFoundJobOfferException) {
-            logger.info("                    mapOf(\"error\" to \"No such a job offer with id = $jobOfferId or value not computable\"),\n")
+            logger.info("mapOf(\"error\" to \"No such a job offer with id = $jobOfferId or value not computable\"),\n")
             return ResponseEntity(mapOf("error" to e.message), HttpStatus.NOT_FOUND)
         } catch (e: Exception) {
             logger.info("Error: Internal server error, ${e.message}")

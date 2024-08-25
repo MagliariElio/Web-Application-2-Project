@@ -5,6 +5,11 @@ import it.polito.students.crm.utils.JobStatusEnum
 
 data class JobOfferDTO(
     var id: Long,
+    var name: String,
+    var description: String,
+    var contractType: String,
+    var location: String,
+    var workMode: String,
     var status: JobStatusEnum,
     var requiredSkills: List<String>,
     var duration: Long,
@@ -17,6 +22,11 @@ data class JobOfferDTO(
 
 fun JobOffer.toDTO(): JobOfferDTO = JobOfferDTO(
     this.id,
+    this.name,
+    this.description,
+    this.contractType,
+    this.location,
+    this.workMode,
     this.status,
     this.requiredSkills,
     this.duration,

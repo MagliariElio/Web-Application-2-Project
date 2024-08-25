@@ -6,6 +6,7 @@ import { BsPlus } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { useLocation, useNavigate } from "react-router-dom";
 import { JobOffer } from "../interfaces/JobOffer.ts";
+import JobOfferRequests from "../apis/JobOfferRequests.ts";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -26,25 +27,28 @@ function HomePage() {
       }, 3000);
     }
 
-    fetch("/crmService/v1/API/joboffers")
-      .then((res) => {
-        if (!res.ok) {
-          console.log(res);
-          throw new Error("GET /API/joboffers : Network response was not ok");
-        }
-        return res.json();
-      })
-      .then((result) => {
+    const loadJobOffers = async () => {
+      try {
+        const result = await JobOfferRequests.fetchJobOffers();
         console.log("Job Offers fetched: ", result);
         setJobOffers(result);
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         setError(true);
-        console.log(error);
         setLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    loadJobOffers();
+  }, [success]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading job offers</div>;
+  }
 
   return (
     <div>
@@ -98,19 +102,37 @@ function HomePage() {
       )}
 
       {!error && !loading && jobOffers !== null && jobOffers.totalElements > 0 && (
-        <Row className="w-100">
-          <Col className="w-100 d-flex justify-content-center align-items-center mt-3">
-            {jobOffers.content.map((joboffer, index) => {
-              return (
-                <Row key={index} className="w-100 border border-dark rounded-3 p-3 mb-2 d-flex align-items-center">
-                  <Col xs={12} md={6} lg={3}>
-                    <h5 className="mb-0">{`${joboffer.id}`}</h5>
-                  </Col>
-                </Row>
-              );
-            })}
-          </Col>
-        </Row>
+        <div className="job-offer-container">
+          <Row className="g-4">
+            {jobOffers.content.map((joboffer) => (
+              <Col key={joboffer.id} md={4} className="mb-4 d-flex align-items-stretch">
+                <Card className="job-card flex-fill" onClick={() => navigate("/ui/joboffers/" + joboffer.id)}>
+                  <Card.Body>
+                    <Card.Title className="mb-3 job-title">{joboffer.name}</Card.Title>
+                    <Card.Text>
+                      <strong>Contract Type:</strong> {joboffer.contractType}
+                    </Card.Text>
+                    <Card.Text>
+                      <strong>Location:</strong> {joboffer.location}
+                    </Card.Text>
+                    <Card.Text>
+                      <strong>Work Mode:</strong> {joboffer.workMode}
+                    </Card.Text>
+                    <Card.Text>
+                      <strong>Duration:</strong> {joboffer.duration} hours
+                    </Card.Text>
+                    <Card.Text>
+                      <strong>Value:</strong> ${joboffer.value}
+                    </Card.Text>
+                    <Card.Text>
+                      <strong>Status:</strong> <span className={`status ${joboffer.status.toLowerCase()}`}>{joboffer.status}</span>
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
       )}
     </div>
   );

@@ -9,10 +9,21 @@ class JobOffer {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var id: Long = 0
 
+    lateinit var name: String
+
+    lateinit var description: String
+
+    lateinit var contractType: String
+
+    lateinit var location: String
+
+    lateinit var workMode: String
+
     var status: JobStatusEnum = JobStatusEnum.CREATED
 
     @ElementCollection(fetch = FetchType.EAGER)
     lateinit var requiredSkills: List<String>
+
     var duration: Long = 1
 
     @Column(name = "offer_value") // specify custom column name

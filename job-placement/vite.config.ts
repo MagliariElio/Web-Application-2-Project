@@ -7,8 +7,8 @@ export default defineConfig({
   base: "/ui",
   server: {
     host: "0.0.0.0",
-    port: 5173, // Puoi cambiare la porta qui
-    proxy: {
+    port: 5173,
+    /*proxy: {
       // Server 1: API principale
       '/documentStoreService/v1': {
         target: 'http://localhost:8081', // Indirizzo del server 1
@@ -27,6 +27,6 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/comunicationManagerService\/v1/, '')
       }
-    }
+    }*/
   }
 })

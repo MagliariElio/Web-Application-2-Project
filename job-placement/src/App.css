@@ -55,6 +55,15 @@
   max-height: 100vh;
   border-radius: 0 5px 5px 0;
   box-shadow: #162250 0px 0px 10px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.main-content {
+  padding-left: 15px;
 }
 
 .custom-hr {
@@ -75,6 +84,73 @@
   border-bottom: 1px solid #ddd;
 }
 
+.job-offer-container {
+  padding: 10px;
+}
+
+.job-card {
+  display: inline-block;
+  width: 100%;
+  max-width: 100%;
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #ffffff;
+}
+
+.job-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.job-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #34495e;
+  margin-bottom: 1.5rem;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+}
+
+.card-text {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+  font-family: "Open Sans", sans-serif;
+}
+
+.status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.status.active {
+  color: #27ae60;
+}
+
+.status.inactive {
+  color: #e74c3c;
+}
+
+.status.pending {
+  color: #f39c12;
+}
+
+.skill-item {
+  background-color: #f0f0f0;
+  border: 1px solid #dcdcdc;
+  border-radius: 20px;
+  padding: 5px 15px;
+  font-size: 0.9em;
+  color: #333;
+}
 
 .no-gutters {
   margin-right: 0;
@@ -91,7 +167,7 @@
 }
 
 .smallBorders {
-  border: 2px solid #16225041 ;
+  border: 2px solid #16225041;
   border-radius: 5px;
 }
 
@@ -102,7 +178,6 @@
 .floatingOnHover:hover {
   box-shadow: 0 0 10px #16225041;
 }
-
 
 .primaryButton {
   background-color: #162250 !important;

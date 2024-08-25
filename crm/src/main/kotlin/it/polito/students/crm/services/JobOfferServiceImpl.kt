@@ -76,6 +76,11 @@ class JobOfferServiceImpl(
         val customer = customerService.getCustomer(jobOfferDto.customerId).toEntity(factory)
 
         val jobOffer = JobOffer().apply {
+            name = jobOfferDto.name
+            description = jobOfferDto.description
+            contractType = jobOfferDto.contractType
+            location = jobOfferDto.location
+            workMode = jobOfferDto.workMode
             status = JobStatusEnum.CREATED
             requiredSkills = jobOfferDto.requiredSkills
             duration = jobOfferDto.duration
@@ -298,7 +303,8 @@ class JobOfferServiceImpl(
         return if (jobOffer.isPresent) {
             val getJobOffer = jobOffer.get()
 
-            if (getJobOffer.professional != null && !getJobOffer.deleted) {
+            //if (getJobOffer.professional != null && !getJobOffer.deleted) {
+            if (!getJobOffer.deleted) {
                 getJobOffer.toDTO()
             } else {
                 null
