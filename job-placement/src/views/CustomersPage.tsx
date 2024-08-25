@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Row, Toast, ToastContainer } from "react-bootstrap";
-import { BsPlus } from "react-icons/bs";
+import { Button, Col, Form, InputGroup, Row, Toast, ToastContainer } from "react-bootstrap";
+import { BsPencilSquare, BsPlus, BsSearch, BsTrash } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -50,12 +50,22 @@ function CustomersPage() {
 
     }, []);
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortField, setSortField] = useState('');
+
+    const handleSearchChange = () => {
+    };
+
+    const handleSort: React.ChangeEventHandler<HTMLSelectElement> = (event) => {
+        setSortField(event.target.value);
+    };
+
 
   return (
-    <div>
+    <div className="w-100">
         { showAlert &&
             <ToastContainer position="top-end" className="p-3">
-            <Toast bg={success ? "success" : "danger"} show={success != null} onClose={() => success = null}>
+            <Toast bg={success ? "success" : "danger"} show={success != null} onClose={() => location.state = null}>
               <Toast.Header>
                 <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
                 <strong className="me-auto">JobConnect</strong>
@@ -99,16 +109,46 @@ function CustomersPage() {
         }
 
         {
-            !error && !loading && customers!== null && customers.totalElements > 0 && 
+            !error && !loading && customers!== null && customers.totalElements > 0 && <>
 
-            <Row className="w-100">
-                <Col className="w-100 d-flex justify-content-center align-items-center mt-3">
+            <Row className="mb-3">
+                <Col className="d-flex flex-row align-items-center">
+                    <InputGroup className="flex-grow-1 me-4">
+                        <Form.Control
+                            type="text"
+                            placeholder="Cerca per nome o codice SSN"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                        />
+                            <Button className="secondaryButton d-flex justify-content-center align-items-center" variant="outline-secondary" onClick={handleSearchChange}>
+                                <BsSearch />
+                            </Button>
+                        
+                    </InputGroup>
+                    <Form.Select className="ml-2 me-4" onChange={handleSort}>
+                        <option value="">Ordina per...</option>
+                        <option value="name">Nome</option>
+                        <option value="ssnCode">Codice SSN</option>
+                    </Form.Select>
+                </Col>
+            </Row>
+
+            <Row className="w-100 d-flex justify-content-center">
+                <Col className="d-flex-column justify-content-center align-items-center mt-3">
                     {
                     customers.content.map((customer, index) => {
                         return (
-                            <Row key={index} className="w-100 border border-dark rounded-3 p-3 mb-2 d-flex align-items-center">
+                            <Row key={index} className="w-100 border border-dark rounded-3 p-3 mb-2 ms-1 d-flex align-items-center secondaryButton"
+                                onClick={() => navigate(`/ui/customers/${customer.id}`)}
+                            >
                                 <Col xs={12} md={6} lg={3}>
                                     <h5 className="mb-0">{`${customer.information.contactDTO.name} ${customer.information.contactDTO.surname}`}</h5>
+                                </Col>
+                                <Col xs={12} md={6} lg={3}>
+                                    <p className="mb-0 fw-light">{`${customer.information.contactDTO.ssnCode}`}</p>
+                                </Col>
+                                <Col xs={12} md={6} lg={3}>
+                                    <p className="mb-0"><span className="fw-semibold fs-5">{`${customer.jobOffers.length} `}</span>job offers</p>
                                 </Col>
                                 
                             </Row>
@@ -118,6 +158,7 @@ function CustomersPage() {
 
                 </Col>
             </Row>
+            </>
 
         }
 

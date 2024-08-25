@@ -15,6 +15,7 @@ import JPPageNotFound from "./views/PageNotFound.tsx";
 import AddCustomerPage from "./views/AddCustomerPage.tsx";
 import AddJobOfferPage from "./views/AddJobOfferPage.tsx";
 import JobOfferDetail from "./views/JobOfferDetailPage.tsx";
+import CustomerPage from "./views/CustomerPage.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -75,6 +76,7 @@ function App() {
               <Route path="/ui" element={<HomePage />} />
               <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
               <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
+              <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage /> : <Navigate to="/not-found" />} />
               <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
               <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
               <Route path="/ui/joboffers/add" element={me && me.principal !== null ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />} />
