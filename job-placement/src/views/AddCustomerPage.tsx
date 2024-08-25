@@ -121,6 +121,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
                 <Form.Control
                     placeholder="Ssn code"
                     value={ssnCode}
+                    required
                     onChange={(e) => setSsnCode(e.target.value)}
                 />
                 </Col>
