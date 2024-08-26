@@ -84,65 +84,101 @@
   border-bottom: 1px solid #ddd;
 }
 
-.job-offer-container {
-  padding: 10px;
+/* HomePage */
+.job-offer-list {
+  display: flex;
+  flex-direction: column;
 }
 
-.job-card {
-  display: inline-block;
-  width: 100%;
-  max-width: 100%;
-  border: none;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.job-offer-item {
   background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
 }
 
-.job-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+.job-offer-item:hover {
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
-.card-body {
-  padding: 2rem;
-}
-
+/* Stile del Titolo dell'Offerta */
 .job-title {
   font-size: 1.5rem;
-  font-weight: bold;
-  color: #34495e;
-  margin-bottom: 1.5rem;
-  font-family: "Roboto", sans-serif;
-  text-align: center;
+  font-weight: 600;
+  color: #495057;
 }
 
-.card-text {
-  font-size: 1.1rem;
-  color: #7f8c8d;
-  margin-bottom: 1rem;
-  font-family: "Open Sans", sans-serif;
-}
-
-.status {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-weight: bold;
+/* Stile dei Testi nell'Offerta */
+.job-offer-item p {
   font-size: 1rem;
+  color: #6c757d;
 }
 
-.status.active {
-  color: #27ae60;
+/* Stile dello Stato */
+.status {
+  font-weight: bold;
 }
 
-.status.inactive {
-  color: #e74c3c;
+.status.created {
+  color: #007bff;
 }
 
-.status.pending {
-  color: #f39c12;
+.status.selection_phase {
+  color: #17a2b8;
 }
 
+.status.candidate_proposal {
+  color: #ffc107;
+}
+
+.status.consolidated {
+  color: #28a745;
+}
+
+.status.abort {
+  color: #dc3545;
+}
+
+.status.done {
+  color: #6c757d;
+}
+
+.sidebar-search {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-search h5 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #343a40;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-search .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-search .form-control {
+  border-radius: 5px;
+}
+
+.sidebar-search .btn-primary {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+/* End HomePage */
+
+/* JobOfferDetailPage */
 .skill-item {
   background-color: #f0f0f0;
   border: 1px solid #dcdcdc;
@@ -150,6 +186,21 @@
   padding: 5px 15px;
   font-size: 0.9em;
   color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; 
+}
+
+.skill-text {
+  flex-grow: 1;
+  padding-right: 10px;
+}
+
+.skill-item button {
+  margin-left: auto;
+  text-align: center;
+  justify-content: center;
 }
 
 .progress-container {
@@ -203,6 +254,7 @@
   text-align: center;
   font-size: 0.9rem;
 }
+/* End JobOfferDetailPage */
 
 .no-gutters {
   margin-right: 0;

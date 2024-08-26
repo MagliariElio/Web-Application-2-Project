@@ -5,6 +5,7 @@ import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
 import JobOfferRequests from "../apis/JobOfferRequests";
+import { contractTypeList, toTitleCase, workModeList } from "../utils/costants";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -82,18 +83,21 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Select value={contractType} onChange={(e) => setContractType(e.target.value)} required>
               <option value="">Select Contract Type</option>
-              <option value="Full Time">Full Time</option>
-              <option value="Part Time">Part Time</option>
-              <option value="Contract">Contract</option>
-              <option value="Freelance">Freelance</option>
+              {contractTypeList.map((contract, index) => (
+                <option key={index} value={contract}>
+                  {toTitleCase(contract)}
+                </option>
+              ))}
             </Form.Select>
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Select value={workMode} onChange={(e) => setWorkMode(e.target.value)} required>
               <option value="">Select Work Mode</option>
-              <option value="Remote">Remote</option>
-              <option value="Hybrid">Hybrid</option>
-              <option value="In-Person">In-Person</option>
+              {workModeList.map((workMode, index) => (
+                <option key={index} value={workMode}>
+                  {toTitleCase(workMode)}
+                </option>
+              ))}
             </Form.Select>
           </Col>
         </Row>
