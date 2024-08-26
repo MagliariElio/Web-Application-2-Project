@@ -19,6 +19,7 @@ class JobOffer {
 
     lateinit var workMode: String
 
+    var oldStatus: JobStatusEnum = JobStatusEnum.CREATED    // traccia lo stato precedente a status
     var status: JobStatusEnum = JobStatusEnum.CREATED
 
     @ElementCollection(fetch = FetchType.EAGER)

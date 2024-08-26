@@ -119,7 +119,6 @@ class JobOfferServiceImpl(
         professionalsId: List<Long>?,
         note: String?
     ): JobOfferDTO {
-
         val oldJobOfferOptional = jobOfferRepository.findById(jobOfferId)
 
         if (!oldJobOfferOptional.isPresent) {
@@ -127,6 +126,7 @@ class JobOfferServiceImpl(
         }
 
         val oldJobOffer = oldJobOfferOptional.get()
+        val oldStatus = oldJobOffer.status
 
         if (oldJobOffer.deleted){
             throw NotFoundJobOfferException(ErrorsPage.JOB_OFFER_NOT_FOUND_ERROR)
@@ -292,6 +292,7 @@ class JobOfferServiceImpl(
 
         oldJobOffer.professional?.let { professionalRepository.save(it) }
         oldJobOffer.candidateProfessionals.forEach{professionalRepository.save(it)}
+        oldJobOffer.oldStatus = oldStatus
         val newJobOffer = jobOfferRepository.save(oldJobOffer)
 
         return newJobOffer.toDTO()

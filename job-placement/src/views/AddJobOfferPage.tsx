@@ -3,7 +3,6 @@ import { Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import { checkValidSkill } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import JobOfferRequests from "../apis/JobOfferRequests";
 
@@ -20,15 +19,14 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
   const [requiredSkills, setRequiredSkills] = useState<any[]>([]);
   const [singleRequiredSkill, setSingleRequiredSkill] = useState("");
-  const [requiredSkillError, setRequiredSkillError] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-  
+
     if (name === "") {
       return;
     }
-  
+
     const jobOffer = {
       name: name,
       description: description,
@@ -38,14 +36,14 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       requiredSkills: requiredSkills,
       duration: duration,
       note: note,
-      customerId: 1
+      customerId: 1,
     };
-  
+
     try {
       await JobOfferRequests.submitJobOffer(jobOffer, me.xsrfToken);
       navigate("/ui", { state: { success: true } });
     } catch (error) {
-      navigate("/ui", { state: { success: false } });
+      // navigate("/ui", { state: { success: false } });
     }
   };
 
@@ -84,18 +82,18 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Select value={contractType} onChange={(e) => setContractType(e.target.value)} required>
               <option value="">Select Contract Type</option>
-              <option value="full-time">Full Time</option>
-              <option value="part-time">Part Time</option>
-              <option value="contract">Contract</option>
-              <option value="freelance">Freelance</option>
+              <option value="Full Time">Full Time</option>
+              <option value="Part Time">Part Time</option>
+              <option value="Contract">Contract</option>
+              <option value="Freelance">Freelance</option>
             </Form.Select>
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Select value={workMode} onChange={(e) => setWorkMode(e.target.value)} required>
               <option value="">Select Work Mode</option>
-              <option value="remote">Remote</option>
-              <option value="hybrid">Hybrid</option>
-              <option value="in-person">In-Person</option>
+              <option value="Remote">Remote</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="In-Person">In-Person</option>
             </Form.Select>
           </Col>
         </Row>
@@ -156,11 +154,15 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
             {requiredSkills.length > 0 &&
               requiredSkills.map((requiredSkill, index) => (
-                <Row key={index} className="mb-2 d-flex align-items-center justify-content-between">
-                  <Col xs={8} md={8} lg={9}>
-                    <p className="text-truncate fw-light mb-0">{requiredSkill}</p>
+                <Row key={index} className="mt-3 d-flex align-items-center justify-content-between">
+                  <Col xs={8} md={8} lg={10}>
+                    <li>
+                      <ul>
+                        <p className="text-truncate fw-light mb-0">{requiredSkill}</p>
+                      </ul>
+                    </li>
                   </Col>
-                  <Col xs={4} md={4} lg={3} className="text-end">
+                  <Col xs={4} md={4} lg={2} className="text-end">
                     <Button variant="outline-danger" size="sm" onClick={() => setRequiredSkills(requiredSkills.filter((_, i) => i !== index))}>
                       Remove
                     </Button>
@@ -175,36 +177,22 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                   value={singleRequiredSkill}
                   onChange={(e) => {
                     setSingleRequiredSkill(e.target.value);
-                    setRequiredSkillError(false);
                   }}
-                  className={`mb-2 ${requiredSkillError ? "is-invalid" : ""}`}
+                  className="mb-2"
                 />
               </Col>
               <Col xs={12} md={4} lg={3} className="text-end">
                 <Button
                   variant="primary"
                   onClick={() => {
-                    if (checkValidSkill(singleRequiredSkill)) {
-                      setRequiredSkills([...requiredSkills, singleRequiredSkill]);
-                      setSingleRequiredSkill("");
-                      setRequiredSkillError(false);
-                    } else {
-                      setRequiredSkillError(true);
-                    }
+                    setRequiredSkills([...requiredSkills, singleRequiredSkill]);
+                    setSingleRequiredSkill("");
                   }}
                 >
                   Add Skill
                 </Button>
               </Col>
             </Row>
-
-            {requiredSkillError && (
-              <Row className="mt-2">
-                <Col>
-                  <p className="text-danger text-center">Invalid skill entered. Please enter only alphabetic characters.</p>
-                </Col>
-              </Row>
-            )}
           </Col>
         </Row>
 
