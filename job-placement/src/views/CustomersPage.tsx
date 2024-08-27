@@ -8,7 +8,7 @@ import {
   Toast,
   ToastContainer,
 } from "react-bootstrap";
-import { BsPencilSquare, BsPlus, BsSearch, BsTrash } from "react-icons/bs";
+import { BsChevronLeft, BsChevronRight, BsPencilSquare, BsPlus, BsSearch, BsTrash } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -74,21 +74,9 @@ function CustomersPage() {
 
   const [sortCriteria, setSortCriteria] = useState("name");
 
-  const presentedCustomers =
+  var presentedCustomers =
     customers?.content.filter((customer) => {
       return (
-        (!filters.name ||
-          customer.information.contactDTO.name
-            .toLowerCase()
-            .includes(filters.name.toLowerCase())) &&
-        (!filters.surname ||
-          customer.information.contactDTO.surname
-            .toLowerCase()
-            .includes(filters.surname.toLowerCase())) &&
-        (!filters.ssnCode ||
-          customer.information.contactDTO.ssnCode
-            .toLowerCase()
-            .includes(filters.ssnCode.toLowerCase())) &&
         customer.jobOffers.length >= filters.jobOffersNumberFrom &&
         customer.jobOffers.length <= filters.jobOffersNumberTo
       );
@@ -167,7 +155,7 @@ function CustomersPage() {
         customers.totalElements > 0 && (
           <>
             <Row className="w-100 d-flex justify-content-center">
-              <Col xs={12} lg={4} className="order-1 order-lg-2">
+              <Col xs={12} lg={4} className="order-1 order-lg-2 mt-3">
                 <div className="sidebar-search p-4">
                   <h5>Filter Customers</h5>
                   <Form>
@@ -213,6 +201,7 @@ function CustomersPage() {
                             name="jobOffersNumberFrom"
                             value={filters.jobOffersNumberFrom}
                             onChange={handleFilterChange}
+                            min={0}
                           />
                         </Col>
                         <Col className="d-flex justify-content-center">
@@ -224,23 +213,82 @@ function CustomersPage() {
                             name="jobOffersNumberTo"
                             value={filters.jobOffersNumberTo}
                             onChange={handleFilterChange}
+                            max={10000}
                           />
                         </Col>
                       </Row>
                     </Form.Group>
 
                     <Button
+                      className="primaryButton mb-2"
+                      variant="primary"
+                      onClick={() => {
+                        var query = "";
+                        if (filters.name || filters.surname || filters.ssnCode) query += "?";
+                        if (filters.name) query += `&name=${filters.name}`;
+                        if (filters.surname) query += `&surname=${filters.surname}`;
+                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
+                        setLoading(true);
+                        fetch(
+                            `/crmService/v1/API/customers${query}`
+                            )
+                            .then((res) => {
+                                if (!res.ok) {
+                                console.log(res);
+                                setLoading(false);
+                                throw new Error(
+                                    "GET /API/customers : Network response was not ok"
+                                );
+                                }
+                                return res.json();
+                            })
+                            .then((result) => {
+                                console.log("Customers fetched: ", result);
+                                setCustomers(result);
+                                setLoading(false);
+                            })
+                            .catch((error) => {
+                                setError(true);
+                                setLoading(false);
+                                console.log(error);
+                            });
+                      }}
+                    >
+                        <BsSearch className="me-1" />
+                        Filter
+                    </Button>
+
+                    <Button
                       className="secondaryButton"
                       variant="primary"
-                      onClick={() =>
+                      onClick={() => {
                         setFilters({
                           name: "",
                           surname: "",
                           ssnCode: "",
                           jobOffersNumberFrom: 0,
                           jobOffersNumberTo: 10000,
-                        })
-                      }
+                        });
+                        fetch("/crmService/v1/API/customers")
+                          .then((res) => {
+                            if (!res.ok) {
+                              console.log(res);
+                              throw new Error("GET /API/customers : Network response was not ok");
+                            }
+                            return res.json();
+                          })
+                          .then((result) => {
+                            console.log("Customers fetched: ", result);
+                            setCustomers(result);
+                            presentedCustomers = result.content;
+                            setLoading(false);
+                          })
+                          .catch((error) => {
+                            setError(true);
+                            setLoading(false);
+                            console.log(error);
+                          });
+                      }}
                     >
                       Clear Filters
                     </Button>
@@ -359,6 +407,94 @@ function CustomersPage() {
                     )}
                   </Col>
                 </Row>
+                {
+                    customers.totalPages > 1 && (
+                        <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
+                            {
+                                customers.currentPage > 0 && (
+                                    <Col xs="auto" className="d-flex align-items-center">
+                                <BsChevronLeft onClick={() => {
+                                    
+                                    var query = "";
+                                    if (filters.name) query += `&name=${filters.name}`;
+                                    if (filters.surname) query += `&surname=${filters.surname}`;
+                                    if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
+
+                                    fetch(
+                                        `/crmService/v1/API/customers?pageNumber=${customers.currentPage - 1}${query}`
+                                    )
+                                    .then((res) => {
+                                        if (!res.ok) {
+                                        console.log(res);
+                                        throw new Error(
+                                            "GET /API/customers : Network response was not ok"
+                                        );
+                                        }
+                                        return res.json();
+                                    })
+                                    .then((result) => {
+                                        console.log("Customers fetched: ", result);
+                                        setCustomers(result);
+                                        presentedCustomers = result.content;
+                                        setLoading(false);
+                                    })
+                                    .catch((error) => {
+                                        setError(true);
+                                        setLoading(false);
+                                        console.log(error);
+                                    });
+
+                                }} style={{ cursor: 'pointer' }} />
+                            </Col>
+                                )
+                            }
+                            
+                            <Col xs="auto" className="d-flex align-items-center">
+                                {customers.currentPage}
+                            </Col>
+                            {
+                                customers.totalPages > customers.currentPage + 1 && (
+                                    <Col xs="auto" className="d-flex align-items-center">
+                                <BsChevronRight onClick={() => {
+
+                                        var query = "";
+                                        if (filters.name) query += `&name=${filters.name}`;
+                                        if (filters.surname) query += `&surname=${filters.surname}`;
+                                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
+
+                                        
+                                        fetch(
+                                            `/crmService/v1/API/customers?pageNumber=${customers.currentPage + 1}${query}`
+                                        )
+                                        .then((res) => {
+                                            if (!res.ok) {
+                                            console.log(res);
+                                            throw new Error(
+                                                "GET /API/customers : Network response was not ok"
+                                            );
+                                            }
+                                            return res.json();
+                                        })
+                                        .then((result) => {
+                                            console.log("Customers fetched: ", result);
+                                            setCustomers(result);
+                                            presentedCustomers = result.content;
+                                            setLoading(false);
+                                        })
+                                        .catch((error) => {
+                                            setError(true);
+                                            setLoading(false);
+                                            console.log(error);
+                                        }); 
+                                }} style={{ cursor: 'pointer' }} />
+                            </Col>
+                                )
+                            }
+                            
+                        </Row>
+                    )
+                }
+                
               </Col>
             </Row>
           </>

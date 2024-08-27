@@ -40,11 +40,11 @@ class CustomerServiceImpl(
 
         filterMap.entries.forEach { filter ->
             list = when (filter.key) {
-                ContactEnumFields.NAME -> list.filter { it.information.contactDTO.name == filter.value }
-                ContactEnumFields.SURNAME -> list.filter { it.information.contactDTO.surname == filter.value }
+                ContactEnumFields.NAME -> list.filter { it.information.contactDTO.name.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.SURNAME -> list.filter { it.information.contactDTO.surname.contains(filter.value, ignoreCase = true) }
                 ContactEnumFields.CATEGORY -> list.filter { it.information.contactDTO.category == CategoryOptions.CUSTOMER }
-                ContactEnumFields.SSN_CODE -> list.filter { it.information.contactDTO.ssnCode == filter.value }
-                ContactEnumFields.COMMENT -> list.filter { it.information.contactDTO.comment == filter.value }
+                ContactEnumFields.SSN_CODE -> list.filter { it.information.contactDTO.ssnCode.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.COMMENT -> list.filter { it.information.contactDTO.comment.contains(filter.value, ignoreCase = true) }
             }
         }
 

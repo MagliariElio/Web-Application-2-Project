@@ -1,10 +1,7 @@
 export interface PagedResponse<T>{
     content: T[],
-    totalPages: number,
+    currentPage: number,
+    elementPerPage: number,
     totalElements: number,
-    last: boolean,
-    first: boolean,
-    empty: boolean,
-    size: number,
-    number: number
+    totalPages: number
 }

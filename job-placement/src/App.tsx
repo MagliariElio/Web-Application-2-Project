@@ -62,11 +62,21 @@ function App() {
           xs={sidebarOpened ? 12 : 4}
           md={sidebarOpened ? 4 : 2}
           lg={sidebarOpened ? 2 : 1}
-          className="text-white d-flex flex-column p-0 background-white"
+          className="text-white d-flex flex-column p-0 background-white vh-100"
+          style={{ position: 'fixed', top: 0, left: 0 }}
         >
           <Sidebar opened={sidebarOpened} setOpened={setSidebarOpened} me={me} />
         </Col>
-        <Col xs={sidebarOpened ? 12 : 8} md={sidebarOpened ? 8 : 10} lg={sidebarOpened ? 10 : 11} className="ps-4 pt-2">
+        <Col
+          xs={sidebarOpened ? 12 : 4}
+          md={sidebarOpened ? 4 : 2}
+          lg={sidebarOpened ? 2 : 1}
+          className="text-white d-flex flex-column p-0 background-white vh-100"
+        >
+          
+        </Col>
+        
+        <Col xs={sidebarOpened ? 12 : 8} md={sidebarOpened ? 8 : 10} lg={sidebarOpened ? 10 : 11} className="ps-4 pt-2" >
           {/* Navbar */}
           <Row className="w-100 text-white">
             <NavBar me={me} />
