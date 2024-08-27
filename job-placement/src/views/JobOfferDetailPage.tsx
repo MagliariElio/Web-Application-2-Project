@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert, Form, Modal } from "react-bootstrap";
 import { JobOffer } from "../interfaces/JobOffer";
 import JobOfferRequests from "../apis/JobOfferRequests";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaCircle, FaClock, FaMapMarkerAlt, FaMoneyBillWave, FaPen, FaTimesCircle, FaTrash, FaUser, FaUserTie } from "react-icons/fa";
 import { contractTypeList, statesJobOffer, toTitleCase, workModeList } from "../utils/costants";
+import { MeInterface } from "../interfaces/MeInterface";
 
-const JobOfferDetail = () => {
+const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
   const [jobOffer, setJobOffer] = useState<JobOffer | null>(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,8 @@ const JobOfferDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formDataJobOffer, setFormDataJobOffer] = useState<JobOffer | null>(null);
   const [singleRequiredSkill, setSingleRequiredSkill] = useState<string>("");
+
+  const [showModalDeleteConfirmation, setShowModalDeleteConfirmation] = useState(false);
 
   const navigate = useNavigate();
 
@@ -73,6 +76,20 @@ const JobOfferDetail = () => {
     }
   };
 
+  const handleDeleteJobOffer = async () => {
+    try {
+      await JobOfferRequests.deleteJobOfferById(jobOffer?.id ? jobOffer.id : -1, me.xsrfToken);
+      navigate("/ui", { state: { success: true } });
+    } catch (error) {
+      console.error("Failed to delete job offer:", error);
+      navigate("/ui", { state: { success: false } });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModalDeleteConfirmation(false);
+  };
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
@@ -95,6 +112,8 @@ const JobOfferDetail = () => {
 
   return (
     <Container className="mt-2">
+      <ConfirmDeleteModal show={showModalDeleteConfirmation} handleClose={handleCloseModal} handleConfirm={handleDeleteJobOffer} />
+
       <Row className="justify-content-center align-items-center">
         <div className="progress-container">
           {statesJobOffer.map(
@@ -127,15 +146,18 @@ const JobOfferDetail = () => {
           <Row className="pt-3 mb-3">
             {!isEditing && (
               <>
-                <Col md={11}>
+                <Col md={9}>
                   <h3 className="font-weight-bold">{jobOffer?.name}</h3>
                 </Col>
+                <Col md={2} className="d-flex justify-content-end">
+                  <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
+                    <FaTrash /> Delete
+                  </Button>
+                </Col>
                 <Col md={1} className="d-flex justify-content-end">
-                  {!isEditing && (
-                    <Button variant="primary" onClick={() => setIsEditing(true)}>
-                      <FaPen /> Edit
-                    </Button>
-                  )}
+                  <Button variant="primary" onClick={() => setIsEditing(true)}>
+                    <FaPen /> Edit
+                  </Button>
                 </Col>
               </>
             )}
@@ -151,6 +173,7 @@ const JobOfferDetail = () => {
                     placeholder="Enter a name"
                     value={formDataJobOffer?.name || ""}
                     onChange={handleInputChange}
+                    required
                   />
                 </Col>
               </Form.Group>
@@ -178,6 +201,7 @@ const JobOfferDetail = () => {
                       placeholder="Enter a description"
                       value={formDataJobOffer?.description || ""}
                       onChange={handleInputChange}
+                      required
                     />
                   </Col>
                 </Form.Group>
@@ -228,6 +252,7 @@ const JobOfferDetail = () => {
                       placeholder="Enter a location"
                       value={formDataJobOffer?.location || ""}
                       onChange={handleInputChange}
+                      required
                     />
                   </Col>
                 </Form.Group>
@@ -520,7 +545,7 @@ const JobOfferDetail = () => {
                 </Button>
               </Col>
               <Col className="text-center">
-                <Button variant="secondary" size="lg" onClick={() => navigate(-1)}>
+                <Button variant="secondary" size="lg" onClick={handleSave}>
                   Save
                 </Button>
               </Col>
@@ -539,6 +564,34 @@ const JobOfferDetail = () => {
         </Form>
       </div>
     </Container>
+  );
+};
+
+const ConfirmDeleteModal: React.FC<{
+  show: boolean;
+  handleClose: () => void;
+  handleConfirm: () => void;
+}> = ({ show, handleClose, handleConfirm }) => {
+  return (
+    <Modal show={show} onHide={handleClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Confirm Delete</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>
+          Are you sure you want to delete this job offer? This action is
+          <strong> irreversible</strong>.
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button variant="danger" onClick={handleConfirm}>
+          Confirm
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

@@ -1,4 +1,3 @@
-
 const submitJobOffer = async (jobOffer: any, xsrfToken: string) => {
   try {
     const response = await fetch("/crmService/v1/API/joboffers", {
@@ -32,7 +31,7 @@ export const fetchJobOffers = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching job offers:", error);
-    throw error; 
+    throw error;
   }
 };
 
@@ -46,9 +45,29 @@ export const fetchJobOfferById = async (id: number) => {
     return data;
   } catch (error) {
     console.error("Error fetching job offer:", error);
-    throw error; 
+    throw error;
   }
 };
 
-const JobOfferRequests = { submitJobOffer, fetchJobOffers, fetchJobOfferById };
+export const deleteJobOfferById = async (jobOfferId: number, xsrfToken: string) => {
+  try {
+    const response = await fetch(`/crmService/v1/API/joboffers/${jobOfferId}`, {
+      method: "DELETE",
+      headers: {
+        "X-XSRF-Token": xsrfToken,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`DELETE /API/joboffers/${jobOfferId} : Network response was not ok`);
+    }
+
+    return { success: true, message: "Job offer deleted successfully." };
+  } catch (error) {
+    console.error("Error deleting job offer:", error);
+    throw error;
+  }
+};
+
+const JobOfferRequests = { submitJobOffer, fetchJobOffers, fetchJobOfferById, deleteJobOfferById };
 export default JobOfferRequests;

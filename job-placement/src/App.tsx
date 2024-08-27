@@ -52,6 +52,8 @@ function App() {
     });
   }, []);
 
+  console.log(me?.principal);
+
   return (
     <Router>
       <Row className="vw-100  d-flex">
@@ -72,18 +74,22 @@ function App() {
 
           {/* Main Content */}
           <Col className="d-flex flex-column py-4 px-3">
-            <Routes>
-              <Route path="/ui" element={<HomePage />} />
-              <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
-              <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
-              <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage /> : <Navigate to="/not-found" />} />
-              <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
-              <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
-              <Route path="/ui/joboffers/add" element={me && me.principal !== null ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />} />
-              <Route path="/ui/joboffers/:id" element={<JobOfferDetail />} />
+            {me?.principal ? (
+              <Routes>
+                <Route path="/ui" element={<HomePage />} />
+                <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
+                <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/joboffers/add" element={me && me.principal !== null ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
 
-              <Route path="*" element={<JPPageNotFound />} />
-            </Routes>
+                <Route path="*" element={<JPPageNotFound />} />
+              </Routes>
+            ) : (
+              <LoginPrompt />
+            )}
           </Col>
         </Col>
       </Row>
@@ -178,4 +184,25 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
     </>
   );
 };
+
+const LoginPrompt = () => {
+  return (
+    <Container className="mt-5">
+      <Row className="justify-content-center">
+        <Col md={8} lg={6}>
+          <Card className="shadow-lg border-0">
+            <Card.Body className="text-center">
+              <Card.Title className="mb-4 fw-bold fs-3">Access Required</Card.Title>
+              <Card.Text className="mb-4 fs-5 text-muted">
+                To continue using this application, please log in with your credentials. Click the properly button to be redirected to the secure
+                login page.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
 export default App;

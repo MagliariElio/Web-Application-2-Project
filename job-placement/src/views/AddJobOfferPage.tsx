@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { useRef, useState } from "react";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,8 @@ import { contractTypeList, toTitleCase, workModeList } from "../utils/costants";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
+
+  const errorRef = useRef<HTMLDivElement | null>(null);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -20,11 +22,34 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
   const [requiredSkills, setRequiredSkills] = useState<any[]>([]);
   const [singleRequiredSkill, setSingleRequiredSkill] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleAddSkill = () => {
+    if (singleRequiredSkill.trim() === "") {
+      setErrorMessage("Please enter a skill before adding.");
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+
+      return;
+    }
+    setRequiredSkills([...requiredSkills, singleRequiredSkill]);
+    setSingleRequiredSkill("");
+    setErrorMessage("");
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (name === "") {
+    if (requiredSkills.length === 0) {
+      setErrorMessage("You must add at least one required skill before saving.");
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
       return;
     }
 
@@ -44,7 +69,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       await JobOfferRequests.submitJobOffer(jobOffer, me.xsrfToken);
       navigate("/ui", { state: { success: true } });
     } catch (error) {
-      // navigate("/ui", { state: { success: false } });
+      navigate("/ui", { state: { success: false } });
     }
   };
 
@@ -62,9 +87,24 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       </Row>
 
       <Form onSubmit={handleSubmit}>
+        {errorMessage && (
+          <Row className="justify-content-center" ref={errorRef}>
+            <Col xs={12} md={10} lg={6}>
+              <Alert
+                variant="danger"
+                onClose={() => setErrorMessage("")}
+                className="d-flex mt-3 justify-content-center align-items-center"
+                dismissible
+              >
+                {errorMessage}
+              </Alert>
+            </Col>
+          </Row>
+        )}
+
         <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <Form.Control placeholder="Job Offer Name" value={name} onChange={(e) => setName(e.target.value)} required />
           </Col>
         </Row>
         <Row className="justify-content-center">
@@ -124,6 +164,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                 }
               }}
               min="0"
+              required
             />
           </Col>
         </Row>
@@ -186,13 +227,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                 />
               </Col>
               <Col xs={12} md={4} lg={3} className="text-end">
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    setRequiredSkills([...requiredSkills, singleRequiredSkill]);
-                    setSingleRequiredSkill("");
-                  }}
-                >
+                <Button variant="primary" onClick={handleAddSkill}>
                   Add Skill
                 </Button>
               </Col>
