@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
-import { BsXLg } from "react-icons/bs";
+import { BsX, BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
@@ -31,48 +31,59 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
     const [state, setState] = useState('');
     const [addressComment, setAddressComment] = useState('');
 
+    const [skills, setSkills] = useState<string[]>([]);
+    const [singleSkill, setSingleSkill] = useState('');
+    const [geographicalLocation, setGeographicalLocation] = useState('');
+    const [dailyRate, setDailyRate] = useState(0);
+
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         
-        if(name === '' || surname === '') {
+        if(name === '' || surname === '' || ssnCode === '') {
             return;
         }
 
-        const customer = {
-            name: name,
-            surname: surname,
-            ssnCode: ssnCode,
-            comment: comment,
-            category: "CUSTOMER",
-            emails: emails,
-            telephones: telephones,
-            address: {
-                address: address,
-                city: city,
-                region: region,
-                state: state,
-                comment: addressComment
+        const professional = {
+            information: {
+                name: name,
+                surname: surname,
+                ssnCode: ssnCode,
+                comment: comment,
+                category: "PROFESSIONAL",
+                emails: emails,
+                telephones: telephones,
+                address: {
+                    address: address,
+                    city: city,
+                    region: region,
+                    state: state,
+                    comment: addressComment
+                }
+            },
+            skills: skills,
+            geographicalLocation: geographicalLocation,
+            dailyRate: dailyRate,
             }
-        };
+        
 
-        fetch("/crmService/v1/API/customers", {
+        fetch("/crmService/v1/API/professionals", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-XSRF-Token': me.xsrfToken,
             },
-            body: JSON.stringify(customer)
+            body: JSON.stringify(professional),
         })
         .then(res => {
             if (!res.ok) {
-                navigate("/ui/customers", { state: { success: false } });
-                console.log("Error during customer post: ", res);
-                throw new Error('POST /API/customers : Network response was not ok');
+                navigate("/ui/professionals", { state: { success: false } });
+                console.log("Error during professional post: ", res);
+                throw new Error('POST /API/professionals : Network response was not ok');
                 
             }
             else {
-                navigate("/ui/customers", { state: { success: true } });
+                navigate("/ui/professionals", { state: { success: true } });
             }
             return res.json();
         })
@@ -88,7 +99,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
     <div>
         <Row className="d-flex flex-row p-0 mb-5 align-items-center">
             <Col>
-                <h3>Add new customer</h3> 
+                <h3>Add new professional</h3> 
             </Col>
             <Col className="d-flex justify-content-end">
                 <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1) } >
@@ -136,6 +147,32 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                     />
                 </Col>
             </Row>
+
+            <Row>
+                <Col xs={12} md={12} lg={6} className="mb-4">
+                    <Form.Control
+                        placeholder="Geographical location"
+                        required
+                        value={geographicalLocation}
+                        onChange={(e) => setGeographicalLocation(e.target.value)}
+                    />
+                </Col>
+            </Row>
+
+            <Row>
+                <Col xs={12} md={6} lg={3} className="mb-4">
+                    <Form.Label>Daily rate</Form.Label>
+                    <Form.Control
+                        type="number"
+                        step="0.01"
+                        placeholder="Daily rate"
+                        value={dailyRate}
+                        onChange={(e) => setDailyRate(parseFloat(e.target.value))}
+                        min={0}
+                    />
+                </Col>
+            </Row>
+
             <Row className="mt-5">
                 <Col xs={12} md={12} lg={6} className="mb-2">
                     <Row className="align-items-center">
@@ -371,9 +408,70 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             </Row>
 
             <Row className="mt-5">
+                <Col xs={12} md={12} lg={6} className="mb-2">
+                    <Row className="align-items-center">
+                        <Col>
+                        <hr />
+                        </Col>
+                        <Col xs="auto">
+                        <h5 className="fw-normal">Skills</h5>
+                        </Col>
+                        <Col>
+                        <hr />
+                        </Col>
+                    </Row>
+                </Col>
+            </Row>
+
+            {
+                skills.length === 0 && 
+                    <Row>
+                    <Col xs={12} md={12} lg={6} className="mb-0">
+                                            <p>No skills added yet</p>
+                                        </Col>
+                                        </Row>
+            }
+            {
+                <Row>
+                  <Col xs={12} md={12} lg={6} className="mb-2">
+                    <Row className="d-flex flex-wrap ps-2">
+                      {skills.length > 0 && skills.map((skill, index) => (
+                        <div key={index} style={{width: "auto"}} className="text-truncate me-2 tag mb-1">
+                            {skill}
+
+                            <BsX size={20} className="ms-2" style={{cursor: "pointer"}} onClick={() => {
+                                setSkills(skills.filter((e, i) => i !== index));
+                            }} />
+                            
+                            </div>
+                      ))}
+                    </Row>
+                  </Col>
+                </Row>
+            }
+
+            <Row>
+                <Col xs={12} md={6} lg={5} className="mb-2">
+                    <Form.Control
+                        placeholder="New skill"
+                        value={singleSkill}
+                        onChange={(e) => setSingleSkill(e.target.value)}
+                    />
+                </Col>
+                <Col xs={12} md={6} lg={1} className="mb-2">
+                    <Button className="secondaryButton w-100" onClick={() => {
+                        setSkills([...skills, singleSkill]);
+                        setSingleSkill('');
+                    }}>
+                        Add skill
+                    </Button>
+                </Col>
+            </Row>
+
+            <Row className="mt-5">
               <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
                 <Button type="submit" className="primaryButton">
-                  Save customer
+                  Save professional
                 </Button>
               </Col>
             </Row>

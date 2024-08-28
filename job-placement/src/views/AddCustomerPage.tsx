@@ -35,7 +35,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         
-        if(name === '' || surname === '') {
+        if(name === '' || surname === '' || ssnCode === '') {
             return;
         }
 

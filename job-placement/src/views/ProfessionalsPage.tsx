@@ -190,7 +190,6 @@ function ProfessionalsPage() {
                       className="mb-3"
                     >
                       <Form.Label>Employment state</Form.Label>
-                      <Row className="align-items-center justify-content-between">
                        
                           <Form.Control
                             as="select"
@@ -198,14 +197,13 @@ function ProfessionalsPage() {
                             value={filters.employmentState}
                             onChange={handleFilterChange}
                           >
+                            <option value="">All</option>
                             <option value="EMPLOYED">Employed</option>
                             <option value="UNEMPLOYED">Unemployed</option>
-                            <option value="AVAILABLE_FOR_WORK">Available for Work</option>
-                            <option value="NOT_AVAILABLE">Not Available</option>
+                            <option value="AVAILABLE_FOR_WORK">Available for work</option>
+                            <option value="NOT_AVAILABLE">Not available</option>
                           </Form.Control>
                      
-                        
-                      </Row>
                     </Form.Group>
 
                     <Button
@@ -213,7 +211,7 @@ function ProfessionalsPage() {
                       variant="primary"
                       onClick={() => {
                         var query = "";
-                        if (filters.name || filters.surname || filters.ssnCode) query += "?";
+                        if (filters.name || filters.surname || filters.ssnCode || filters.employmentState ) query += "?";
                         if (filters.name) query += `&name=${filters.name}`;
                         if (filters.surname) query += `&surname=${filters.surname}`;
                         if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
@@ -328,28 +326,28 @@ function ProfessionalsPage() {
                     {presentedProfessionals
                       .sort((a, b) => {
                         if (sortCriteria === "asc_name") {
-                          return a.information.contactDTO.name.localeCompare(
-                            b.information.contactDTO.name
+                          return a.information.name.localeCompare(
+                            b.information.name
                           );
                         } else if (sortCriteria === "asc_surname") {
-                          return a.information.contactDTO.surname.localeCompare(
-                            b.information.contactDTO.surname
+                          return a.information.surname.localeCompare(
+                            b.information.surname
                           );
                         } else if (sortCriteria === "asc_ssnCode") {
-                          return a.information.contactDTO.ssnCode.localeCompare(
-                            b.information.contactDTO.ssnCode
+                          return a.information.ssnCode.localeCompare(
+                            b.information.ssnCode
                           );
                         } else if (sortCriteria === "desc_name") {
-                          return b.information.contactDTO.name.localeCompare(
-                            a.information.contactDTO.name
+                          return b.information.name.localeCompare(
+                            a.information.name
                           );
                         } else if (sortCriteria === "desc_surname") {
-                          return b.information.contactDTO.surname.localeCompare(
-                            a.information.contactDTO.surname
+                          return b.information.surname.localeCompare(
+                            a.information.surname
                           );
                         } else if (sortCriteria === "desc_ssnCode") {
-                          return b.information.contactDTO.ssnCode.localeCompare(
-                            a.information.contactDTO.ssnCode
+                          return b.information.ssnCode.localeCompare(
+                            a.information.ssnCode
                           );
                         } else if (sortCriteria === "employed_before") {
                           if (a.employmentState === "EMPLOYED") {
@@ -376,10 +374,10 @@ function ProfessionalsPage() {
                             }
                           >
                             <Col xs={12} md={6} lg={4}>
-                              <h5 className="mb-0">{`${professional.information.contactDTO.name} ${professional.information.contactDTO.surname}`}</h5>
+                              <h5 className="mb-0">{`${professional.information.name} ${professional.information.surname}`}</h5>
                             </Col>
                             <Col xs={12} md={6} lg={4}>
-                              <p className="mb-0 fw-light">{`${professional.information.contactDTO.ssnCode}`}</p>
+                              <p className="mb-0 fw-light">{`${professional.information.ssnCode}`}</p>
                             </Col>
                             <Col
                               xs={12}
@@ -540,10 +538,10 @@ function ProfessionalsPage() {
                             });
                         }}
                     >
-                        <option value="10">10 customers</option>
-                        <option value="20">20 customers</option>
-                        <option value="50">50 customers</option>
-                        <option value="100">100 customers</option>
+                        <option value="10">10 professionals</option>
+                        <option value="20">20 professionals</option>
+                        <option value="50">50 professionals</option>
+                        <option value="100">100 professionals</option>
 
                         </Form.Control>
                 </Row>

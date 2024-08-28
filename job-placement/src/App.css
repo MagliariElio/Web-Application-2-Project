@@ -327,3 +327,12 @@
   background-color: #dc3545 !important;
   color: #f8f9fa !important;
 }
+
+
+.tag{
+  background-color: #566bc0;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
