@@ -82,6 +82,8 @@ function CustomersPage() {
       );
     }) || [];
 
+    const [pageSize, setPageSize] = useState(10);
+
   return (
     <div className="w-100">
       {showAlert && (
@@ -113,7 +115,7 @@ function CustomersPage() {
         </Col>
         <Col className="d-flex justify-content-end">
           <Button
-            className="d-flex align-items-center primaryButton"
+            className="d-flex align-items-center primaryButton me-4"
             onClick={() => navigate("/ui/customers/add")}
           >
             <BsPlus size={"1.5em"} className="me-1" />
@@ -494,6 +496,51 @@ function CustomersPage() {
                         </Row>
                     )
                 }
+
+                <Row  className="w-100 d-flex justify-content-center align-items-center mt-3">
+                    <Form.Control
+                        style={{ width: 'auto' }}
+                        as="select"
+                        name="pageSize"
+                        value={pageSize}
+                        onChange={(e) => {
+                            setPageSize(parseInt(e.target.value));
+                            var query = "";
+                                        if (filters.name) query += `&name=${filters.name}`;
+                                        if (filters.surname) query += `&surname=${filters.surname}`;
+                                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
+                            fetch(
+                                `/crmService/v1/API/customers?pageSize=${e.target.value}${query}`
+                            )
+                            .then((res) => {
+                                if (!res.ok) {
+                                console.log(res);
+                                throw new Error(
+                                    "GET /API/customers : Network response was not ok"
+                                );
+                                }
+                                return res.json();
+                            })
+                            .then((result) => {
+                                console.log("Customers fetched: ", result);
+                                setCustomers(result);
+                                presentedCustomers = result.content;
+                                setLoading(false);
+                            })
+                            .catch((error) => {
+                                setError(true);
+                                setLoading(false);
+                                console.log(error);
+                            });
+                        }}
+                    >
+                        <option value="10">10 customers</option>
+                        <option value="20">20 customers</option>
+                        <option value="50">50 customers</option>
+                        <option value="100">100 customers</option>
+
+                        </Form.Control>
+                </Row>
                 
               </Col>
             </Row>
