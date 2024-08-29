@@ -64,9 +64,14 @@ function ProfessionalsPage() {
   }, []);
 
   const [filters, setFilters] = useState({
-    name: "",
-    surname: "",
-    ssnCode: "",
+    skill: "",
+    geographicalLocation: "",
+    employmentState: "",
+  });
+
+  const [activeFilters, setActiveFilters] = useState({
+    skill: "",
+    geographicalLocation: "",
     employmentState: "",
   });
 
@@ -163,32 +168,22 @@ function ProfessionalsPage() {
                 <div className="sidebar-search p-4">
                   <h5>Filter Professionals</h5>
                   <Form>
-                    <Form.Group controlId="name" className="mb-3">
-                      <Form.Label>Name</Form.Label>
+                    <Form.Group controlId="skill" className="mb-3">
+                      <Form.Label>Skill</Form.Label>
                       <Form.Control
                         type="text"
-                        name="name"
-                        value={filters.name}
+                        name="skill"
+                        value={filters.skill}
                         onChange={handleFilterChange}
                       />
                     </Form.Group>
 
-                    <Form.Group controlId="surname" className="mb-3">
-                      <Form.Label>Surname</Form.Label>
+                    <Form.Group controlId="geographicalLocation" className="mb-3">
+                      <Form.Label>Geographical location</Form.Label>
                       <Form.Control
                         type="text"
-                        name="surname"
-                        value={filters.surname}
-                        onChange={handleFilterChange}
-                      />
-                    </Form.Group>
-
-                    <Form.Group controlId="ssnCode" className="mb-3">
-                      <Form.Label>SsN Code</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="ssnCode"
-                        value={filters.ssnCode}
+                        name="geographicalLocation"
+                        value={filters.geographicalLocation}
                         onChange={handleFilterChange}
                       />
                     </Form.Group>
@@ -218,17 +213,14 @@ function ProfessionalsPage() {
                       onClick={() => {
                         var query = "";
                         if (
-                          filters.name ||
-                          filters.surname ||
-                          filters.ssnCode ||
+                          filters.skill ||
+                          filters.geographicalLocation ||
                           filters.employmentState
                         )
                           query += "?";
-                        if (filters.name) query += `&name=${filters.name}`;
-                        if (filters.surname)
-                          query += `&surname=${filters.surname}`;
-                        if (filters.ssnCode)
-                          query += `&ssnCode=${filters.ssnCode}`;
+                        if (filters.skill) query += `&skill=${filters.skill}`;
+                        if (filters.geographicalLocation)
+                          query += `&location=${filters.geographicalLocation}`;
                         if (filters.employmentState)
                           query += `&employmentState=${filters.employmentState}`;
                         setLoading(true);
@@ -236,6 +228,11 @@ function ProfessionalsPage() {
                           .then((res) => {
                             if (!res.ok) {
                               console.log(res);
+                              setActiveFilters({
+                                skill: "",
+                                geographicalLocation: "",
+                                employmentState: "",
+                              });
                               setLoading(false);
                               throw new Error(
                                 "GET /API/professionals : Network response was not ok"
@@ -246,10 +243,16 @@ function ProfessionalsPage() {
                           .then((result) => {
                             console.log("Professionals fetched: ", result);
                             setProfessionals(result);
+                            setActiveFilters(filters);
                             setLoading(false);
                           })
                           .catch((error) => {
                             setError(true);
+                            setActiveFilters({
+                              skill: "",
+                              geographicalLocation: "",
+                              employmentState: "",
+                            });
                             setLoading(false);
                             console.log(error);
                           });
@@ -264,9 +267,8 @@ function ProfessionalsPage() {
                       variant="primary"
                       onClick={() => {
                         setFilters({
-                          name: "",
-                          surname: "",
-                          ssnCode: "",
+                          skill: "",
+                          geographicalLocation: "",
                           employmentState: "",
                         });
                         fetch("/crmService/v1/API/professionals")
@@ -283,6 +285,11 @@ function ProfessionalsPage() {
                             console.log("Professionals fetched: ", result);
                             setProfessionals(result);
                             presentedProfessionals = result.content;
+                            setActiveFilters({
+                              skill: "",
+                              geographicalLocation: "",
+                              employmentState: "",
+                            });
                             setLoading(false);
                           })
                           .catch((error) => {
@@ -311,8 +318,11 @@ function ProfessionalsPage() {
                         <option value="asc_surname">
                           Alphabetically ascending surname
                         </option>
-                        <option value="asc_ssnCode">
-                          Alphabetically ascending ssnCode
+                        <option value="asc_num_skills">
+                          Ascending number of skills
+                        </option>
+                        <option value="asc_geographicalLocation">
+                          Alphabetically ascending location
                         </option>
                         <option value="desc_name">
                           Alphabetically descending name
@@ -320,8 +330,11 @@ function ProfessionalsPage() {
                         <option value="desc_surname">
                           Alphabetically descending surname
                         </option>
-                        <option value="desc_ssnCode">
-                          Alphabetically descending ssnCode
+                        <option value="desc_num_skills">
+                          Descending number of skills
+                        </option>
+                        <option value="desc_geographicalLocation">
+                          Alphabetically descending location
                         </option>
                         <option value="employed_before">Occupied before</option>
                         <option value="unemployed_before">
@@ -339,45 +352,48 @@ function ProfessionalsPage() {
                     {presentedProfessionals
                       .sort((a, b) => {
                         if (sortCriteria === "asc_name") {
-                          return a.information.name.localeCompare(
-                            b.information.name
-                          );
+                          return a.information.name.localeCompare(b.information.name);
                         } else if (sortCriteria === "asc_surname") {
-                          return a.information.surname.localeCompare(
-                            b.information.surname
-                          );
-                        } else if (sortCriteria === "asc_ssnCode") {
-                          return a.information.ssnCode.localeCompare(
-                            b.information.ssnCode
-                          );
+                          return a.information.surname.localeCompare(b.information.surname);
+                        } else if (sortCriteria === "asc_num_skills") {
+                          return a.skills.length - b.skills.length;
+                        } else if (sortCriteria === "asc_geographicalLocation") {
+                          return a.geographicalLocation.localeCompare(b.geographicalLocation);
                         } else if (sortCriteria === "desc_name") {
-                          return b.information.name.localeCompare(
-                            a.information.name
-                          );
+                          return b.information.name.localeCompare(a.information.name);
                         } else if (sortCriteria === "desc_surname") {
-                          return b.information.surname.localeCompare(
-                            a.information.surname
-                          );
-                        } else if (sortCriteria === "desc_ssnCode") {
-                          return b.information.ssnCode.localeCompare(
-                            a.information.ssnCode
-                          );
+                          return b.information.surname.localeCompare(a.information.surname);
+                        } else if (sortCriteria === "desc_num_skills") {
+                          return b.skills.length - a.skills.length;
+                        } else if (sortCriteria === "desc_geographicalLocation") {
+                          return b.geographicalLocation.localeCompare(a.geographicalLocation);
                         } else if (sortCriteria === "employed_before") {
-                          if (a.employmentState === "EMPLOYED") {
+                          if (a.employmentState === "EMPLOYED" && b.employmentState !== "EMPLOYED") {
                             return -1;
-                          } else if (b.employmentState === "EMPLOYED") {
+                          } else if (a.employmentState !== "EMPLOYED" && b.employmentState === "EMPLOYED") {
                             return 1;
                           }
                         } else if (sortCriteria === "unemployed_before") {
-                          if (a.employmentState === "UNEMPLOYED") {
+                          if (a.employmentState === "UNEMPLOYED" && b.employmentState !== "UNEMPLOYED") {
                             return -1;
-                          } else if (b.employmentState === "UNEMPLOYED") {
+                          } else if (a.employmentState !== "UNEMPLOYED" && b.employmentState === "UNEMPLOYED") {
                             return 1;
                           }
                         }
                         return 0;
                       })
                       .map((professional, index) => {
+                        const selectedSkill = professional.skills.reduce((bestMatch, skill) => {
+                          if (activeFilters.skill === "") {
+                            return professional.skills[0];
+                          }
+                          const skillLower = skill.toLowerCase();
+                          const filterSkillLower = activeFilters.skill.toLowerCase();
+                          const matchLength = skillLower.includes(filterSkillLower) ? filterSkillLower.length : 0;
+                          const bestMatchLower = bestMatch.toLowerCase();
+                          const bestMatchLength = bestMatchLower.includes(filterSkillLower) ? filterSkillLower.length : 0;
+                          return matchLength > bestMatchLength ? skill : bestMatch;
+                        }, professional.skills[0]);
                         return (
                           <Row
                             key={index}
@@ -386,16 +402,26 @@ function ProfessionalsPage() {
                               navigate(`/ui/professionals/${professional.id}`)
                             }
                           >
-                            <Col xs={12} md={6} lg={4}>
-                              <h5 className="mb-0">{`${professional.information.name} ${professional.information.surname}`}</h5>
+                            <Col xs={12} md={6} lg={3}>
+                              <h5 className="mb-0 text-center-sm">{`${professional.information.name} ${professional.information.surname}`}</h5>
                             </Col>
-                            <Col xs={12} md={6} lg={4}>
-                              <p className="mb-0 fw-light">{`${professional.information.ssnCode}`}</p>
+                            <Col xs={12} md={6} lg={3}>
+                            <p className="mb-0 fw-light  text-center-sm text-right-md">
+                              {`${selectedSkill} + `}
+                              <strong className="fw-semibold">{professional.skills.length - 1}</strong>
+                              {` skills`}
+                            </p>
+                            </Col>
+                            <Col xs={12} md={6} lg={3}>
+                              <p className="mb-0 fw-light  text-center-sm">
+                                {professional.geographicalLocation}
+                              </p>
                             </Col>
                             <Col
                               xs={12}
-                              lg={4}
-                              className="d-flex justify-content-end"
+                              md={6}
+                              lg={3}
+                              className="d-flex justify-content-end  text-center-sm"
                             >
                               <p className="mb-0">
                                 <span className="fw-semibold fs-5">
@@ -406,10 +432,10 @@ function ProfessionalsPage() {
                                     ? "Unemployed"
                                     : professional.employmentState ===
                                       "AVAILABLE_FOR_WORK"
-                                    ? "Available for Work"
+                                    ? "Available for work"
                                     : professional.employmentState ===
                                       "NOT_AVAILABLE"
-                                    ? "Not Available"
+                                    ? "Not available"
                                     : ""}
                                 </span>
                               </p>
@@ -436,11 +462,9 @@ function ProfessionalsPage() {
                         <BsChevronLeft
                           onClick={() => {
                             var query = "";
-                            if (filters.name) query += `&name=${filters.name}`;
-                            if (filters.surname)
-                              query += `&surname=${filters.surname}`;
-                            if (filters.ssnCode)
-                              query += `&ssnCode=${filters.ssnCode}`;
+                            if (filters.skill) query += `&skill=${filters.skill}`;
+                            if (filters.geographicalLocation)
+                              query += `&location=${filters.geographicalLocation}`;
                             if (filters.employmentState)
                               query += `&employmentState=${filters.employmentState}`;
 
@@ -484,11 +508,9 @@ function ProfessionalsPage() {
                         <BsChevronRight
                           onClick={() => {
                             var query = "";
-                            if (filters.name) query += `&name=${filters.name}`;
-                            if (filters.surname)
-                              query += `&surname=${filters.surname}`;
-                            if (filters.ssnCode)
-                              query += `&ssnCode=${filters.ssnCode}`;
+                            if (filters.skill) query += `&skill=${filters.skill}`;
+                            if (filters.geographicalLocation)
+                              query += `&location=${filters.geographicalLocation}`;
                             if (filters.employmentState)
                               query += `&employmentState=${filters.employmentState}`;
 
@@ -535,11 +557,9 @@ function ProfessionalsPage() {
                       setPageSize(parseInt(e.target.value));
 
                       var query = "";
-                      if (filters.name) query += `&name=${filters.name}`;
-                      if (filters.surname)
-                        query += `&surname=${filters.surname}`;
-                      if (filters.ssnCode)
-                        query += `&ssnCode=${filters.ssnCode}`;
+                      if (filters.skill) query += `&skill=${filters.skill}`;
+                      if (filters.geographicalLocation)
+                        query += `&location=${filters.geographicalLocation}`;
                       if (filters.employmentState)
                         query += `&employmentState=${filters.employmentState}`;
 
