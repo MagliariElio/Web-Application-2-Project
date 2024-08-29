@@ -8,7 +8,14 @@ import {
   Toast,
   ToastContainer,
 } from "react-bootstrap";
-import { BsChevronLeft, BsChevronRight, BsPencilSquare, BsPlus, BsSearch, BsTrash } from "react-icons/bs";
+import {
+  BsChevronLeft,
+  BsChevronRight,
+  BsPencilSquare,
+  BsPlus,
+  BsSearch,
+  BsTrash,
+} from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -17,9 +24,8 @@ import { Professional } from "../interfaces/Professional";
 function ProfessionalsPage() {
   const navigate = useNavigate();
 
-  const [professionals, setProfessionals] = useState<PagedResponse<Professional> | null>(
-    null
-  );
+  const [professionals, setProfessionals] =
+    useState<PagedResponse<Professional> | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +45,9 @@ function ProfessionalsPage() {
       .then((res) => {
         if (!res.ok) {
           console.log(res);
-          throw new Error("GET /API/professionals : Network response was not ok");
+          throw new Error(
+            "GET /API/professionals : Network response was not ok"
+          );
         }
         return res.json();
       })
@@ -185,25 +193,23 @@ function ProfessionalsPage() {
                       />
                     </Form.Group>
 
-                    <Form.Group
-                      controlId="employmentState"
-                      className="mb-3"
-                    >
+                    <Form.Group controlId="employmentState" className="mb-3">
                       <Form.Label>Employment state</Form.Label>
-                       
-                          <Form.Control
-                            as="select"
-                            name="employmentState"
-                            value={filters.employmentState}
-                            onChange={handleFilterChange}
-                          >
-                            <option value="">All</option>
-                            <option value="EMPLOYED">Employed</option>
-                            <option value="UNEMPLOYED">Unemployed</option>
-                            <option value="AVAILABLE_FOR_WORK">Available for work</option>
-                            <option value="NOT_AVAILABLE">Not available</option>
-                          </Form.Control>
-                     
+
+                      <Form.Control
+                        as="select"
+                        name="employmentState"
+                        value={filters.employmentState}
+                        onChange={handleFilterChange}
+                      >
+                        <option value="">All</option>
+                        <option value="EMPLOYED">Employed</option>
+                        <option value="UNEMPLOYED">Unemployed</option>
+                        <option value="AVAILABLE_FOR_WORK">
+                          Available for work
+                        </option>
+                        <option value="NOT_AVAILABLE">Not available</option>
+                      </Form.Control>
                     </Form.Group>
 
                     <Button
@@ -211,39 +217,46 @@ function ProfessionalsPage() {
                       variant="primary"
                       onClick={() => {
                         var query = "";
-                        if (filters.name || filters.surname || filters.ssnCode || filters.employmentState ) query += "?";
+                        if (
+                          filters.name ||
+                          filters.surname ||
+                          filters.ssnCode ||
+                          filters.employmentState
+                        )
+                          query += "?";
                         if (filters.name) query += `&name=${filters.name}`;
-                        if (filters.surname) query += `&surname=${filters.surname}`;
-                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
-                        if (filters.employmentState) query += `&employmentState=${filters.employmentState}`;
+                        if (filters.surname)
+                          query += `&surname=${filters.surname}`;
+                        if (filters.ssnCode)
+                          query += `&ssnCode=${filters.ssnCode}`;
+                        if (filters.employmentState)
+                          query += `&employmentState=${filters.employmentState}`;
                         setLoading(true);
-                        fetch(
-                            `/crmService/v1/API/professionals${query}`
-                            )
-                            .then((res) => {
-                                if (!res.ok) {
-                                console.log(res);
-                                setLoading(false);
-                                throw new Error(
-                                    "GET /API/professionals : Network response was not ok"
-                                );
-                                }
-                                return res.json();
-                            })
-                            .then((result) => {
-                                console.log("Professionals fetched: ", result);
-                                setProfessionals(result);
-                                setLoading(false);
-                            })
-                            .catch((error) => {
-                                setError(true);
-                                setLoading(false);
-                                console.log(error);
-                            });
+                        fetch(`/crmService/v1/API/professionals${query}`)
+                          .then((res) => {
+                            if (!res.ok) {
+                              console.log(res);
+                              setLoading(false);
+                              throw new Error(
+                                "GET /API/professionals : Network response was not ok"
+                              );
+                            }
+                            return res.json();
+                          })
+                          .then((result) => {
+                            console.log("Professionals fetched: ", result);
+                            setProfessionals(result);
+                            setLoading(false);
+                          })
+                          .catch((error) => {
+                            setError(true);
+                            setLoading(false);
+                            console.log(error);
+                          });
                       }}
                     >
-                        <BsSearch className="me-1" />
-                        Filter
+                      <BsSearch className="me-1" />
+                      Filter
                     </Button>
 
                     <Button
@@ -260,7 +273,9 @@ function ProfessionalsPage() {
                           .then((res) => {
                             if (!res.ok) {
                               console.log(res);
-                              throw new Error("GET /API/professionals : Network response was not ok");
+                              throw new Error(
+                                "GET /API/professionals : Network response was not ok"
+                              );
                             }
                             return res.json();
                           })
@@ -308,9 +323,7 @@ function ProfessionalsPage() {
                         <option value="desc_ssnCode">
                           Alphabetically descending ssnCode
                         </option>
-                        <option value="employed_before">
-                          Occupied before
-                        </option>
+                        <option value="employed_before">Occupied before</option>
                         <option value="unemployed_before">
                           Non-occupied before
                         </option>
@@ -385,14 +398,20 @@ function ProfessionalsPage() {
                               className="d-flex justify-content-end"
                             >
                               <p className="mb-0">
-                                <span className="fw-semibold fs-5">{
-                                  
-                                  professional.employmentState === "EMPLOYED" ? "Employed" :
-                                  professional.employmentState === "UNEMPLOYED" ? "Unemployed" :
-                                  professional.employmentState === "AVAILABLE_FOR_WORK" ? "Available for Work" :
-                                  professional.employmentState === "NOT_AVAILABLE" ? "Not Available" : ""
-                                  
-                                  }</span>
+                                <span className="fw-semibold fs-5">
+                                  {professional.employmentState === "EMPLOYED"
+                                    ? "Employed"
+                                    : professional.employmentState ===
+                                      "UNEMPLOYED"
+                                    ? "Unemployed"
+                                    : professional.employmentState ===
+                                      "AVAILABLE_FOR_WORK"
+                                    ? "Available for Work"
+                                    : professional.employmentState ===
+                                      "NOT_AVAILABLE"
+                                    ? "Not Available"
+                                    : ""}
+                                </span>
                               </p>
                             </Col>
                           </Row>
@@ -402,150 +421,159 @@ function ProfessionalsPage() {
                     {presentedProfessionals.length === 0 && (
                       <Row className="w-100">
                         <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-                          <h5>No professionals found with the selected filters!</h5>
+                          <h5>
+                            No professionals found with the selected filters!
+                          </h5>
                         </Col>
                       </Row>
                     )}
                   </Col>
                 </Row>
-                {
-                    professionals.totalPages > 1 && (
-                        <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
-                            {
-                                professionals.currentPage > 0 && (
-                                    <Col xs="auto" className="d-flex align-items-center">
-                                <BsChevronLeft onClick={() => {
-                                    
-                                    var query = "";
-                                    if (filters.name) query += `&name=${filters.name}`;
-                                    if (filters.surname) query += `&surname=${filters.surname}`;
-                                    if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
-                                    if (filters.employmentState) query += `&employmentState=${filters.employmentState}`;
-
-                                    fetch(
-                                        `/crmService/v1/API/professionals?pageNumber=${professionals.currentPage - 1}${query}`
-                                    )
-                                    .then((res) => {
-                                        if (!res.ok) {
-                                        console.log(res);
-                                        throw new Error(
-                                            "GET /API/professionals : Network response was not ok"
-                                        );
-                                        }
-                                        return res.json();
-                                    })
-                                    .then((result) => {
-                                        console.log("Professionals fetched: ", result);
-                                        setProfessionals(result);
-                                        presentedProfessionals = result.content;
-                                        setLoading(false);
-                                    })
-                                    .catch((error) => {
-                                        setError(true);
-                                        setLoading(false);
-                                        console.log(error);
-                                    });
-
-                                }} style={{ cursor: 'pointer' }} />
-                            </Col>
-                                )
-                            }
-                            
-                            <Col xs="auto" className="d-flex align-items-center">
-                                {professionals.currentPage}
-                            </Col>
-                            {
-                                professionals.totalPages > professionals.currentPage + 1 && (
-                                    <Col xs="auto" className="d-flex align-items-center">
-                                <BsChevronRight onClick={() => {
-
-                                        var query = "";
-                                        if (filters.name) query += `&name=${filters.name}`;
-                                        if (filters.surname) query += `&surname=${filters.surname}`;
-                                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
-                                        if (filters.employmentState) query += `&employmentState=${filters.employmentState}`;
-
-                                        
-                                        fetch(
-                                            `/crmService/v1/API/professionals?pageNumber=${professionals.currentPage + 1}${query}`
-                                        )
-                                        .then((res) => {
-                                            if (!res.ok) {
-                                            console.log(res);
-                                            throw new Error(
-                                                "GET /API/professionals : Network response was not ok"
-                                            );
-                                            }
-                                            return res.json();
-                                        })
-                                        .then((result) => {
-                                            console.log("Professionals fetched: ", result);
-                                            setProfessionals(result);
-                                            presentedProfessionals = result.content;
-                                            setLoading(false);
-                                        })
-                                        .catch((error) => {
-                                            setError(true);
-                                            setLoading(false);
-                                            console.log(error);
-                                        }); 
-                                }} style={{ cursor: 'pointer' }} />
-                            </Col>
-                                )
-                            }
-                            
-                        </Row>
-                    )
-                }
-
-<Row  className="w-100 d-flex justify-content-center align-items-center mt-3">
-                    <Form.Control
-                        style={{ width: 'auto' }}
-                        as="select"
-                        name="pageSize"
-                        value={pageSize}
-                        onChange={(e) => {
-                            setPageSize(parseInt(e.target.value));
-
+                {professionals.totalPages > 1 && (
+                  <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
+                    {professionals.currentPage > 0 && (
+                      <Col xs="auto" className="d-flex align-items-center">
+                        <BsChevronLeft
+                          onClick={() => {
                             var query = "";
-                                        if (filters.name) query += `&name=${filters.name}`;
-                                        if (filters.surname) query += `&surname=${filters.surname}`;
-                                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
-                                        if (filters.employmentState) query += `&employmentState=${filters.employmentState}`;
+                            if (filters.name) query += `&name=${filters.name}`;
+                            if (filters.surname)
+                              query += `&surname=${filters.surname}`;
+                            if (filters.ssnCode)
+                              query += `&ssnCode=${filters.ssnCode}`;
+                            if (filters.employmentState)
+                              query += `&employmentState=${filters.employmentState}`;
 
                             fetch(
-                                `/crmService/v1/API/professionals?pageSize=${e.target.value}${query}`
+                              `/crmService/v1/API/professionals?pageNumber=${
+                                professionals.currentPage - 1
+                              }${query}`
                             )
-                            .then((res) => {
+                              .then((res) => {
                                 if (!res.ok) {
-                                console.log(res);
-                                throw new Error(
+                                  console.log(res);
+                                  throw new Error(
                                     "GET /API/professionals : Network response was not ok"
-                                );
+                                  );
                                 }
                                 return res.json();
-                            })
-                            .then((result) => {
+                              })
+                              .then((result) => {
                                 console.log("Professionals fetched: ", result);
                                 setProfessionals(result);
                                 presentedProfessionals = result.content;
                                 setLoading(false);
-                            })
-                            .catch((error) => {
+                              })
+                              .catch((error) => {
                                 setError(true);
                                 setLoading(false);
                                 console.log(error);
-                            });
-                        }}
-                    >
-                        <option value="10">10 professionals</option>
-                        <option value="20">20 professionals</option>
-                        <option value="50">50 professionals</option>
-                        <option value="100">100 professionals</option>
+                              });
+                          }}
+                          style={{ cursor: "pointer" }}
+                        />
+                      </Col>
+                    )}
 
-                        </Form.Control>
+                    <Col xs="auto" className="d-flex align-items-center">
+                      {professionals.currentPage}
+                    </Col>
+                    {professionals.totalPages >
+                      professionals.currentPage + 1 && (
+                      <Col xs="auto" className="d-flex align-items-center">
+                        <BsChevronRight
+                          onClick={() => {
+                            var query = "";
+                            if (filters.name) query += `&name=${filters.name}`;
+                            if (filters.surname)
+                              query += `&surname=${filters.surname}`;
+                            if (filters.ssnCode)
+                              query += `&ssnCode=${filters.ssnCode}`;
+                            if (filters.employmentState)
+                              query += `&employmentState=${filters.employmentState}`;
+
+                            fetch(
+                              `/crmService/v1/API/professionals?pageNumber=${
+                                professionals.currentPage + 1
+                              }${query}`
+                            )
+                              .then((res) => {
+                                if (!res.ok) {
+                                  console.log(res);
+                                  throw new Error(
+                                    "GET /API/professionals : Network response was not ok"
+                                  );
+                                }
+                                return res.json();
+                              })
+                              .then((result) => {
+                                console.log("Professionals fetched: ", result);
+                                setProfessionals(result);
+                                presentedProfessionals = result.content;
+                                setLoading(false);
+                              })
+                              .catch((error) => {
+                                setError(true);
+                                setLoading(false);
+                                console.log(error);
+                              });
+                          }}
+                          style={{ cursor: "pointer" }}
+                        />
+                      </Col>
+                    )}
+                  </Row>
+                )}
+
+                <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
+                  <Form.Control
+                    style={{ width: "auto" }}
+                    as="select"
+                    name="pageSize"
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(parseInt(e.target.value));
+
+                      var query = "";
+                      if (filters.name) query += `&name=${filters.name}`;
+                      if (filters.surname)
+                        query += `&surname=${filters.surname}`;
+                      if (filters.ssnCode)
+                        query += `&ssnCode=${filters.ssnCode}`;
+                      if (filters.employmentState)
+                        query += `&employmentState=${filters.employmentState}`;
+
+                      fetch(
+                        `/crmService/v1/API/professionals?pageSize=${e.target.value}${query}`
+                      )
+                        .then((res) => {
+                          if (!res.ok) {
+                            console.log(res);
+                            throw new Error(
+                              "GET /API/professionals : Network response was not ok"
+                            );
+                          }
+                          return res.json();
+                        })
+                        .then((result) => {
+                          console.log("Professionals fetched: ", result);
+                          setProfessionals(result);
+                          presentedProfessionals = result.content;
+                          setLoading(false);
+                        })
+                        .catch((error) => {
+                          setError(true);
+                          setLoading(false);
+                          console.log(error);
+                        });
+                    }}
+                  >
+                    <option value="10">10 professionals</option>
+                    <option value="20">20 professionals</option>
+                    <option value="50">50 professionals</option>
+                    <option value="100">100 professionals</option>
+                  </Form.Control>
                 </Row>
-                
               </Col>
             </Row>
           </>
