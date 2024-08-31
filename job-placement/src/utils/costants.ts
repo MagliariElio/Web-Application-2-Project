@@ -1,4 +1,11 @@
-export const statesJobOffer = ["CREATED", "SELECTION_PHASE", "CANDIDATE_PROPOSAL", "CONSOLIDATED", "ABORT", "DONE"];
+export enum JobOfferState {
+  CREATED = "CREATED",
+  SELECTION_PHASE = "SELECTION_PHASE",
+  CANDIDATE_PROPOSAL = "CANDIDATE_PROPOSAL",
+  CONSOLIDATED = "CONSOLIDATED",
+  ABORT = "ABORT",
+  DONE = "DONE",
+}
 
 export const contractTypeList = ["Full Time", "Part Time", "Contract", "Freelance"];
 

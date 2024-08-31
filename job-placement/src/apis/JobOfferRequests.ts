@@ -1,4 +1,7 @@
-const submitJobOffer = async (jobOffer: any, xsrfToken: string) => {
+import { JobOffer } from "../interfaces/JobOffer";
+import { JobOfferState } from "../utils/costants";
+
+export const submitJobOffer = async (jobOffer: any, xsrfToken: string) => {
   try {
     const response = await fetch("/crmService/v1/API/joboffers", {
       method: "POST",
@@ -12,6 +15,29 @@ const submitJobOffer = async (jobOffer: any, xsrfToken: string) => {
     if (!response.ok) {
       console.log("Error during joboffers post: ", response);
       throw new Error("POST /API/joboffers : Network response was not ok");
+    }
+
+    return response.json();
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const updateJobOffer = async (jobOffer: JobOffer, xsrfToken: string) => {
+  try {
+    const response = await fetch("/crmService/v1/API/joboffers", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-Token": xsrfToken,
+      },
+      body: JSON.stringify(jobOffer),
+    });
+
+    if (!response.ok) {
+      console.log("Error during joboffers patch: ", response);
+      throw new Error("PATCH /API/joboffers : Network response was not ok");
     }
 
     return response.json();
@@ -69,5 +95,26 @@ export const deleteJobOfferById = async (jobOfferId: number, xsrfToken: string) 
   }
 };
 
-const JobOfferRequests = { submitJobOffer, fetchJobOffers, fetchJobOfferById, deleteJobOfferById };
-export default JobOfferRequests;
+export const goToSelectionPhase = async (jobOfferId: number, xsrfToken: string, jobOffer: any) => {
+  try {
+    jobOffer.nextStatus = JobOfferState.SELECTION_PHASE;
+
+    const response = await fetch(`/crmService/v1/API/joboffers/${jobOfferId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-Token": xsrfToken,
+      },
+      body: JSON.stringify(jobOffer),
+    });
+
+    if (!response.ok) {
+      throw new Error(`PATCH /API/joboffers/${jobOfferId} : Network response was not ok`);
+    }
+
+    return { success: true, message: "Job offer updated successfully." };
+  } catch (error) {
+    console.error("Error updating job offer:", error);
+    throw error;
+  }
+};

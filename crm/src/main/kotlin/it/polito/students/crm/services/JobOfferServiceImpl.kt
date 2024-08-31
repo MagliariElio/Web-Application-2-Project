@@ -93,6 +93,29 @@ class JobOfferServiceImpl(
         return saved.toDTO()
     }
 
+    override fun updateJobOffer(jobOfferDto: JobOfferDTO): JobOfferDTO {
+        val customer = customerService.getCustomer(jobOfferDto.customerId).toEntity(factory)
+        val oldJobOffer = getJobOfferById(jobOfferDto.id) ?: throw NoSuchElementException()
+
+        val jobOffer = JobOffer().apply {
+            id = oldJobOffer.id
+            name = jobOfferDto.name
+            description = jobOfferDto.description
+            contractType = jobOfferDto.contractType
+            location = jobOfferDto.location
+            workMode = jobOfferDto.workMode
+            status = oldJobOffer.status
+            requiredSkills = jobOfferDto.requiredSkills
+            duration = jobOfferDto.duration
+            value = oldJobOffer.value
+            note = jobOfferDto.note
+            this.customer = customer
+        }
+
+        val saved = jobOfferRepository.save(jobOffer)
+        return saved.toDTO()
+    }
+
     @Transactional
     override fun deleteJobOffer(jobOfferId: Long) {
         val jobOffer = jobOfferRepository.findById(jobOfferId)

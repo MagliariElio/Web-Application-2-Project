@@ -4,10 +4,10 @@ import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
-import JobOfferRequests from "../apis/JobOfferRequests";
 import { contractTypeList, toTitleCase, workModeList } from "../utils/costants";
 import { Customer } from "../interfaces/Customer";
 import { fetchCustomers } from "../apis/CustomerRequests";
+import { submitJobOffer } from "../apis/JobOfferRequests";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -59,6 +59,22 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       return;
     }
 
+    if (description.trim() === "") {
+      setErrorMessage("Description cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (location.trim() === "") {
+      setErrorMessage("Location cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
     if (requiredSkills.length === 0) {
       setErrorMessage("You must add at least one required skill before saving.");
 
@@ -92,7 +108,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
     };
 
     try {
-      await JobOfferRequests.submitJobOffer(jobOffer, me.xsrfToken);
+      await submitJobOffer(jobOffer, me.xsrfToken);
       navigate("/ui", { state: { success: true } });
     } catch (error) {
       navigate("/ui", { state: { success: false } });
@@ -272,7 +288,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
             {requiredSkills.length === 0 && (
               <Row className="justify-content-center mt-3">
                 <Col xs={12} className="text-center">
-                  <p className="text-muted">No required skills added yet</p>
+                  <p className="text-muted">No required skill added yet</p>
                 </Col>
               </Row>
             )}

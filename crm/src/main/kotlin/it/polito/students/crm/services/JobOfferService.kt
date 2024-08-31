@@ -37,6 +37,15 @@ interface JobOfferService {
     fun storeJobOffer(jobOfferDto: CreateJobOfferDTO): JobOfferDTO
 
     /**
+     * Update an existent job offer in the system.
+     *
+     * @param jobOfferDto The DTO containing information about the job offer to be stored.
+     * @return The DTO representing the updated job offer.
+     * @throws CustomerNotFoundException if the customer specified in the job offer DTO is not found.
+     */
+    fun updateJobOffer(jobOfferDto: JobOfferDTO): JobOfferDTO
+
+    /**
      * Delete a job offer in the system.
      *
      * @param jobOfferId The id of the joboffer to be deleted.

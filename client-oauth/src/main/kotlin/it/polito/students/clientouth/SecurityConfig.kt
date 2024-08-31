@@ -55,7 +55,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf("http://localhost:5173", "http://192.168.252.250:5173", "http://172.29.224.1:5173") // Add your allowed origins here
-        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("Authorization", "Content-Type", "X-XSRF-TOKEN")
         configuration.allowCredentials = true
 

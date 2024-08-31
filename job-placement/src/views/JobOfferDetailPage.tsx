@@ -1,23 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Container, Row, Col, Button, Alert, Form, Modal } from "react-bootstrap";
 import { JobOffer } from "../interfaces/JobOffer";
-import JobOfferRequests from "../apis/JobOfferRequests";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaCircle, FaClock, FaMapMarkerAlt, FaMoneyBillWave, FaPen, FaTimesCircle, FaTrash, FaUser, FaUserTie } from "react-icons/fa";
-import { contractTypeList, statesJobOffer, toTitleCase, workModeList } from "../utils/costants";
+import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants";
 import { MeInterface } from "../interfaces/MeInterface";
+import { fetchCustomer } from "../apis/CustomerRequests";
+import { Customer } from "../interfaces/Customer";
+import { fetchProfessional } from "../apis/ProfessionalRequests";
+import { Professional } from "../interfaces/Professional";
+import { deleteJobOfferById, fetchJobOfferById, goToSelectionPhase, updateJobOffer } from "../apis/JobOfferRequests";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
   const [jobOffer, setJobOffer] = useState<JobOffer | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [professional, setProfessional] = useState<Professional | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   const abortState = "ABORT";
 
   // Determine the index of the current state in the progress flow
-  const currentStepIndex = statesJobOffer.indexOf(jobOffer?.status || "") + 1;
-  const oldStatusIndex = statesJobOffer.indexOf(jobOffer?.oldStatus || "");
+  const currentStepIndex = Object.values(JobOfferState).indexOf(jobOffer?.status as JobOfferState) + 1;
+  const oldStatusIndex = Object.values(JobOfferState).indexOf(jobOffer?.oldStatus as JobOfferState);
 
   // Function to determine if a state is completed
   const isCompleted = (index: number) => index < currentStepIndex;
@@ -27,18 +33,29 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formDataJobOffer, setFormDataJobOffer] = useState<JobOffer | null>(null);
   const [singleRequiredSkill, setSingleRequiredSkill] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [showModalDeleteConfirmation, setShowModalDeleteConfirmation] = useState(false);
 
+  const errorRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
       const loadJobOffer = async () => {
         try {
-          const result = await JobOfferRequests.fetchJobOfferById(parseInt(id));
+          const result = await fetchJobOfferById(parseInt(id));
           setJobOffer(result);
           setFormDataJobOffer(result);
+
+          const resultCustomer = await fetchCustomer(result?.customerId);
+          setCustomer(resultCustomer);
+
+          if (result?.professionalId) {
+            const resultProfessional = await fetchProfessional(result?.professionalId);
+            setProfessional(resultProfessional);
+          }
+
           setLoading(false);
         } catch (error) {
           setError(true);
@@ -49,6 +66,30 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       loadJobOffer();
     }
   }, [id]);
+
+  const handleAddSkill = () => {
+    if (singleRequiredSkill.trim() === "") {
+      setErrorMessage("Please enter a skill before adding.");
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+
+      return;
+    }
+
+    setFormDataJobOffer(
+      (prevData) =>
+        ({
+          ...prevData,
+          requiredSkills: [...(prevData?.requiredSkills || []), singleRequiredSkill],
+        } as JobOffer)
+    );
+
+    setSingleRequiredSkill("");
+    setErrorMessage("");
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormDataJobOffer({
@@ -66,10 +107,49 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
   const handleSave = async () => {
     if (formDataJobOffer) {
+      if (formDataJobOffer?.name.trim() === "") {
+        setErrorMessage("Job offer name cannot be empty or just spaces.");
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+        return;
+      }
+
+      if (formDataJobOffer?.description.trim() === "") {
+        setErrorMessage("Description cannot be empty or just spaces.");
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+        return;
+      }
+
+      if (formDataJobOffer?.location.trim() === "") {
+        setErrorMessage("Location cannot be empty or just spaces.");
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+        return;
+      }
+
+      if (formDataJobOffer?.requiredSkills.length === 0) {
+        setErrorMessage("You must add at least one required skill before saving.");
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+        return;
+      }
+
       try {
-        //await JobOfferRequests.updateJobOfferById(parseInt(id), formData); // Assuming there's an API method to update
-        setJobOffer(formDataJobOffer);
-        setIsEditing(false);
+        if (id) {
+          setFormDataJobOffer({
+            ...formDataJobOffer,
+            ["id"]: parseInt(id),
+          } as JobOffer);
+
+          const result = await updateJobOffer(formDataJobOffer, me.xsrfToken);
+          setJobOffer(result);
+          setIsEditing(false);
+        }
       } catch (error) {
         setError(true);
       }
@@ -78,7 +158,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
   const handleDeleteJobOffer = async () => {
     try {
-      await JobOfferRequests.deleteJobOfferById(jobOffer?.id ? jobOffer.id : -1, me.xsrfToken);
+      await deleteJobOfferById(jobOffer?.id ? jobOffer.id : -1, me.xsrfToken);
       navigate("/ui", { state: { success: true } });
     } catch (error) {
       console.error("Failed to delete job offer:", error);
@@ -88,6 +168,20 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
   const handleCloseModal = () => {
     setShowModalDeleteConfirmation(false);
+  };
+
+  const handleGoToSelectionPhase = async () => {
+    const jobOffer = {
+        nextStatus: JobOfferState.SELECTION_PHASE,
+        professionalsId: [],            // TODO: ricordarsi di aggiungere questo campo
+        note: ""                       // TODO: ricordarsi di aggiungere questo campo
+    }
+
+    try {
+        await goToSelectionPhase(parseInt(id ? id : ""), me.xsrfToken, jobOffer);
+      } catch (error) {
+        setError(true);
+      }
   };
 
   if (loading) {
@@ -116,7 +210,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
       <Row className="justify-content-center align-items-center">
         <div className="progress-container">
-          {statesJobOffer.map(
+          {Object.values(JobOfferState).map(
             (state, index) =>
               state !== abortState &&
               !isOldStatus(index) && (
@@ -142,6 +236,21 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
       <div className="border rounded p-3 shadow-sm bg-white mt-4">
         <Form>
+          {errorMessage && (
+            <Row className="justify-content-center" ref={errorRef}>
+              <Col xs={12} md={10} lg={6}>
+                <Alert
+                  variant="danger"
+                  onClose={() => setErrorMessage("")}
+                  className="d-flex mt-3 justify-content-center align-items-center"
+                  dismissible
+                >
+                  {errorMessage}
+                </Alert>
+              </Col>
+            </Row>
+          )}
+
           {/* Job Offer Name */}
           <Row className="pt-3 mb-3">
             {!isEditing && (
@@ -347,7 +456,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               {!isEditing ? (
                 <div>
                   <strong>Status: </strong>
-                  {jobOffer?.status}
+                  {toTitleCase(jobOffer?.status || JobOfferState.CREATED)}
                 </div>
               ) : (
                 <Form.Group as={Row} controlId="status" className="d-flex align-items-center">
@@ -355,7 +464,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     Status
                   </Form.Label>
                   <Col xs={12} sm={9}>
-                    <Form.Control type="text" name="status" value={formDataJobOffer?.status || ""} disabled />
+                    <Form.Control type="text" name="status" value={toTitleCase(formDataJobOffer?.status || JobOfferState.CREATED)} disabled />
                   </Col>
                 </Form.Group>
               )}
@@ -369,32 +478,39 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 <Form.Label column xs={12} sm={2} className="mb-0 fw-bold">
                   Required Skills
                 </Form.Label>
-                <Col xs={12} sm={10}>
-                  <ul className="list-unstyled d-flex flex-wrap">
-                    {formDataJobOffer?.requiredSkills.map((skill, index) => (
-                      <li key={index} className="skill-item mb-3 d-flex justify-content-between align-items-center">
-                        <span className="skill-text">{skill}</span>
-                        {isEditing && (
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => {
-                              setFormDataJobOffer(
-                                (prevData) =>
-                                  ({
-                                    ...prevData,
-                                    requiredSkills: prevData?.requiredSkills.filter((_, i) => i !== index),
-                                  } as JobOffer)
-                              );
-                            }}
-                          >
-                            <FaTrash />
-                          </Button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </Col>
+
+                {formDataJobOffer?.requiredSkills.length === 0 ? (
+                  <Col xs={12} className="text-center">
+                    <p className="text-muted">No required skill added yet</p>
+                  </Col>
+                ) : (
+                  <Col xs={12} sm={10}>
+                    <ul className="list-unstyled d-flex flex-wrap">
+                      {formDataJobOffer?.requiredSkills.map((skill, index) => (
+                        <li key={index} className="skill-item mb-3 d-flex justify-content-between align-items-center">
+                          <span className="skill-text">{skill}</span>
+                          {isEditing && (
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => {
+                                setFormDataJobOffer(
+                                  (prevData) =>
+                                    ({
+                                      ...prevData,
+                                      requiredSkills: prevData?.requiredSkills.filter((_, i) => i !== index),
+                                    } as JobOffer)
+                                );
+                              }}
+                            >
+                              <FaTrash />
+                            </Button>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </Col>
+                )}
               </Form.Group>
             </Col>
           </Row>
@@ -413,19 +529,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 />
               </Col>
               <Col xs={12} md={4} lg={3}>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    setFormDataJobOffer(
-                      (prevData) =>
-                        ({
-                          ...prevData,
-                          requiredSkills: [...(prevData?.requiredSkills || []), singleRequiredSkill],
-                        } as JobOffer)
-                    );
-                    setSingleRequiredSkill("");
-                  }}
-                >
+                <Button variant="primary" onClick={handleAddSkill}>
                   Add Skill
                 </Button>
               </Col>
@@ -465,36 +569,19 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
             <Col md={6}>
               {!isEditing ? (
                 <div>
-                  <FaUser className="mr-2" /> <strong>Customer ID: </strong>
-                  {jobOffer?.customerId}
+                  <FaUser className="mr-2" /> <strong>Customer: </strong>
+                  {`${customer?.information.contactDTO.surname} ${customer?.information.contactDTO.name} (${customer?.information.contactDTO.ssnCode})`}
                 </div>
               ) : (
                 <Form.Group as={Row} controlId="customerId" className="d-flex align-items-center">
                   <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
-                    Customer ID
+                    Customer
                   </Form.Label>
                   <Col xs={12} sm={8}>
-                    <Form.Control type="text" name="customerId" value={formDataJobOffer?.customerId || ""} onChange={handleInputChange} disabled />
-                  </Col>
-                </Form.Group>
-              )}
-            </Col>
-            <Col md={6}>
-              {!isEditing ? (
-                <div>
-                  <FaUser className="mr-2" /> <strong>Professional ID: </strong>
-                  {jobOffer?.professionalId}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="professionalId" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
-                    Professional ID
-                  </Form.Label>
-                  <Col xs={12} sm={9}>
                     <Form.Control
                       type="text"
-                      name="professionalId"
-                      value={formDataJobOffer?.professionalId || ""}
+                      name="customerName"
+                      value={`${customer?.information.contactDTO.surname} ${customer?.information.contactDTO.name} (${customer?.information.contactDTO.ssnCode})`}
                       onChange={handleInputChange}
                       disabled
                     />
@@ -502,38 +589,66 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 </Form.Group>
               )}
             </Col>
+            {professional && (
+              <Col md={6}>
+                {!isEditing ? (
+                  <div>
+                    <FaUser className="mr-2" /> <strong>Professional: </strong>
+                    {`${professional?.information.surname} ${professional?.information.name} (${professional?.information.ssnCode})`}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="professionalId" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
+                      Professional
+                    </Form.Label>
+                    <Col xs={12} sm={9}>
+                      <Form.Control
+                        type="text"
+                        name="professionalId"
+                        value={`${professional?.information.surname} ${professional?.information.name} (${professional?.information.ssnCode})`}
+                        onChange={handleInputChange}
+                        disabled
+                      />
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+            )}
           </Row>
 
           {/* Candidate Professionals */}
-          <Row className="border-top pt-3 mb-3">
-            <Col md={12}>
-              {!isEditing ? (
-                <div>
-                  <strong>Candidate Professionals: </strong>
-                  {jobOffer?.candidateProfessionalIds.join(", ")}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="candidateProfessionalIds" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={4} md={2} className="mb-0 fw-bold">
-                    Candidate Professionals
-                  </Form.Label>
-                  <Col xs={12} sm={8} md={10}>
-                    <Form.Control
-                      type="text"
-                      name="candidateProfessionalIds"
-                      value={formDataJobOffer?.candidateProfessionalIds.join(", ") || ""}
-                      disabled
-                    />
-                  </Col>
-                </Form.Group>
-              )}
-            </Col>
-          </Row>
+          {!professional && (
+            <Row className="border-top pt-3 mb-3">
+              <Col md={12}>
+                {!isEditing ? (
+                  <div>
+                    <strong>Candidate Professionals: </strong>
+                    {jobOffer?.candidateProfessionalIds.join(", ")}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="candidateProfessionalIds" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={4} md={2} className="mb-0 fw-bold">
+                      Candidate Professionals
+                    </Form.Label>
+                    <Col xs={12} sm={8} md={10}>
+                      <Form.Control
+                        type="text"
+                        name="candidateProfessionalIds"
+                        value={formDataJobOffer?.candidateProfessionalIds.join(", ") || ""}
+                        disabled
+                      />
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+            </Row>
+          )}
 
           {isEditing && (
             <Row className="mt-5 mb-3">
               <Col className="text-center">
                 <Button
+                  className="secondaryDangerButton mb-2"
                   variant="danger"
                   size="lg"
                   onClick={() => {
@@ -545,7 +660,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 </Button>
               </Col>
               <Col className="text-center">
-                <Button variant="secondary" size="lg" onClick={handleSave}>
+                <Button className="primaryButton mb-2" variant="primary" size="lg" onClick={handleSave}>
                   Save
                 </Button>
               </Col>
@@ -555,8 +670,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
           {!isEditing && (
             <Row className="mt-5">
               <Col className="text-center">
-                <Button variant="secondary" size="lg" onClick={() => navigate(-1)}>
+                <Button className="secondaryButton mb-2" variant="danger" size="lg" onClick={() => navigate(-1)}>
                   Go Back
+                </Button>
+              </Col>
+              <Col className="text-center">
+                <Button className="primaryButton mb-2" variant="danger" size="lg" onClick={handleGoToSelectionPhase}>
+                  Go To Selection Phase
                 </Button>
               </Col>
             </Row>

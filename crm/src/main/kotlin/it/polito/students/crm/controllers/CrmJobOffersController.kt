@@ -2,6 +2,7 @@ package it.polito.students.crm.controllers
 
 import it.polito.students.crm.dtos.ChangeJobStatusDTO
 import it.polito.students.crm.dtos.CreateJobOfferDTO
+import it.polito.students.crm.dtos.JobOfferDTO
 import it.polito.students.crm.exception_handlers.*
 import it.polito.students.crm.services.JobOfferService
 import it.polito.students.crm.utils.ErrorsPage
@@ -72,6 +73,26 @@ class CrmJobOffersController(
     @PostMapping("", "/")
     fun storeJobOffer(@Valid @RequestBody jobOffer: CreateJobOfferDTO): ResponseEntity<out Any> {
         try {
+            if (jobOffer.name.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_NAME_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.description.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_DESCRIPTION_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.location.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_LOCATION_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.workMode.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_WORK_MODE_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.contractType.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_CONTRACT_TYPE_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
             if (jobOffer.requiredSkills.any { it.isBlank() }) {
                 return ResponseEntity(ErrorsPage.REQUIRED_SKILLS_EMPTY_ERROR, HttpStatus.BAD_REQUEST)
             }
@@ -85,6 +106,48 @@ class CrmJobOffersController(
             }
 
             val saved = jobOfferService.storeJobOffer(jobOffer)
+            return ResponseEntity(saved, HttpStatus.CREATED)
+        } catch (e: CustomerNotFoundException) {
+            logger.info("CustomerControl: Error with customer: ${e.message}")
+            return ResponseEntity(e.message, HttpStatus.NOT_FOUND)
+        } catch (e: Exception) {
+            logger.info("Error saving a new job offer: ${e.message}")
+            return ResponseEntity(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @PutMapping("", "/")
+    fun updateJobOffer(@Valid @RequestBody jobOffer: JobOfferDTO): ResponseEntity<out Any> {
+        try {
+            if (jobOffer.name.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_NAME_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.description.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_DESCRIPTION_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.location.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_LOCATION_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.workMode.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_WORK_MODE_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.contractType.isBlank()) {
+                return ResponseEntity(ErrorsPage.EMPTY_CONTRACT_TYPE_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.requiredSkills.any { it.isBlank() }) {
+                return ResponseEntity(ErrorsPage.REQUIRED_SKILLS_EMPTY_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            if (jobOffer.duration < 0) {
+                return ResponseEntity(ErrorsPage.NEGATIVE_DURATION_ERROR, HttpStatus.BAD_REQUEST)
+            }
+
+            val saved = jobOfferService.updateJobOffer(jobOffer)
             return ResponseEntity(saved, HttpStatus.CREATED)
         } catch (e: CustomerNotFoundException) {
             logger.info("CustomerControl: Error with customer: ${e.message}")

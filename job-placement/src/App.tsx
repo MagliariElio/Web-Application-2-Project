@@ -7,7 +7,7 @@ import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
 import HomePage from "./views/HomePage.tsx";
-import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsFillHouseDoorFill, BsGearFill } from "react-icons/bs";
+import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsFillHouseDoorFill, BsGearFill, BsPersonWorkspace } from "react-icons/bs";
 import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
 import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
@@ -123,14 +123,13 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
   return (
     <>
       <Nav className="vh-100 flex-column w-100 p-3 sidebar">
-        {opened && (
           <div className="text-white mb-3">
             <div className="w-100 d-flex justify-content-center mb-3">
               <img
                 src="https://www.bgscareerventures.com/uploads/source/Logos/JobConnectLogoFINAL-400.png?1620160597743"
                 alt="Logo"
                 className="handpointeronhover"
-                width="75%"
+                width={opened ? "75%" : "100%"}
                 style={{ maxWidth: "200px" }}
                 onClick={() => {
                   if (location.pathname !== "/ui") navigate("/ui");
@@ -139,7 +138,6 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
             </div>
             <hr className="border-top border-light" />
           </div>
-        )}
         <Nav.Link
           href="#"
           className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
@@ -147,8 +145,8 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
             if (location.pathname !== "/ui") navigate("/ui");
           }}
         >
-          <BsFillHouseDoorFill className={opened ? "me-2" : ""} />
-          {opened && "Home Page"}
+          <BsBriefcaseFill className={opened ? "me-2" : ""} />
+          {opened && "Job Offers"}
         </Nav.Link>
         {me &&
           me.principal !== null && ( // Only logged user links here

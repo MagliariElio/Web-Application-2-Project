@@ -40,6 +40,7 @@ class SecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
                 it.requestMatchers(HttpMethod.GET, "/API/joboffers").hasAnyAuthority(Roles.ROLE_MANAGER, Roles.ROLE_OPERATOR, Roles.ROLE_GUEST)
                 it.requestMatchers(HttpMethod.GET, "/API/joboffers/{jobOfferId}/value").hasAnyAuthority(Roles.ROLE_MANAGER, Roles.ROLE_OPERATOR, Roles.ROLE_GUEST)
                 it.requestMatchers(HttpMethod.POST, "/API/joboffers").hasAnyAuthority(Roles.ROLE_OPERATOR)
+                it.requestMatchers(HttpMethod.PUT, "/API/joboffers").hasAnyAuthority(Roles.ROLE_OPERATOR)
                 it.requestMatchers(HttpMethod.PATCH, "/API/joboffers/{jobOfferId}").hasAnyAuthority(Roles.ROLE_OPERATOR)
                 it.requestMatchers(HttpMethod.DELETE, "/API/joboffers/{jobOfferId}").hasAnyAuthority(Roles.ROLE_OPERATOR)
 

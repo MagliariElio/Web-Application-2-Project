@@ -5,8 +5,8 @@ import { BsPlus } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { useLocation, useNavigate } from "react-router-dom";
 import { JobOffer } from "../interfaces/JobOffer.ts";
-import JobOfferRequests from "../apis/JobOfferRequests.ts";
-import { contractTypeList, statesJobOffer, toTitleCase, workModeList } from "../utils/costants.ts";
+import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants.ts";
+import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ function HomePage() {
 
     const loadJobOffers = async () => {
       try {
-        const result = await JobOfferRequests.fetchJobOffers();
+        const result = await fetchJobOffers();
         setJobOffers(result);
         setLoading(false);
       } catch (error) {
@@ -226,7 +226,7 @@ function HomePage() {
                   <Form.Label>Status</Form.Label>
                   <Form.Control as="select" name="status" value={filters.status} onChange={handleFilterChange}>
                     <option value={""}>All</option>
-                    {statesJobOffer.map((state, index) => (
+                    {Object.values(JobOfferState).map((state, index) => (
                       <option key={index} value={state}>
                         {toTitleCase(state)}
                       </option>
