@@ -1,11 +1,13 @@
-import { useRef, useState } from "react";
-import { Alert, Button, Col, Row } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Button, Col, Container, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
 import JobOfferRequests from "../apis/JobOfferRequests";
 import { contractTypeList, toTitleCase, workModeList } from "../utils/costants";
+import { Customer } from "../interfaces/Customer";
+import { fetchCustomers } from "../apis/CustomerRequests";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -19,10 +21,16 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
   const [contractType, setContractType] = useState("");
   const [location, setLocation] = useState("");
   const [workMode, setWorkMode] = useState("");
+  const [customer, setCustomer] = useState<Customer | null>(null);
 
   const [requiredSkills, setRequiredSkills] = useState<any[]>([]);
   const [singleRequiredSkill, setSingleRequiredSkill] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [customersList, setCustomersList] = useState<Customer[]>([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const handleAddSkill = () => {
     if (singleRequiredSkill.trim() === "") {
@@ -43,8 +51,26 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (name.trim() === "") {
+      setErrorMessage("Job offer name cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
     if (requiredSkills.length === 0) {
       setErrorMessage("You must add at least one required skill before saving.");
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (customer === null) {
+      setErrorMessage("You must add a customer.");
 
       // Scroll to error message when it appears
       if (errorRef.current) {
@@ -62,7 +88,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       requiredSkills: requiredSkills,
       duration: duration,
       note: note,
-      customerId: 1,
+      customerId: customer.id,
     };
 
     try {
@@ -72,6 +98,41 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       navigate("/ui", { state: { success: false } });
     }
   };
+
+  useEffect(() => {
+    const loadCustomers = async () => {
+      try {
+        const result: Customer[] = await fetchCustomers();
+        setCustomersList(result);
+        setLoading(false);
+      } catch (error) {
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    loadCustomers();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+        <div className="spinner-border" role="status">
+          <span className="sr-only"></span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+        <Alert variant="danger" className="text-center w-50">
+          <h5>An error occurred. Please, reload the page!</h5>
+        </Alert>
+      </Container>
+    );
+  }
 
   return (
     <div>
@@ -147,6 +208,25 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         <Row className="justify-content-center">
+        <Col xs={12} md={6} lg={3} className="mb-4">
+            <Form.Select
+              value={customer?.id || ""}
+              onChange={(e) => {
+                const selectedCustomer = customersList.find(
+                  (customer) => customer.id.toString() === e.target.value
+                );
+                setCustomer(selectedCustomer || null);
+              }}
+              required
+            >
+              <option value="">Select Customer</option>
+              {customersList.map((customer, index) => (
+                <option key={index} value={customer.id}>
+                  {`${customer.information.contactDTO.surname} ${customer.information.contactDTO.name}`}
+                </option>
+              ))}
+            </Form.Select>
+          </Col>
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Control
               type="number"

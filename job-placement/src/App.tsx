@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import "./App.css";
 import { MeInterface } from "./interfaces/MeInterface.ts";
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation, Navigate } from "react-router-dom";
-import { Container, Row, Card, Col, Navbar, Nav, Button } from "react-bootstrap";
+import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
@@ -52,8 +52,6 @@ function App() {
       }
     });
   }, []);
-
-  console.log(me?.principal);
 
   return (
     <Router>

@@ -36,7 +36,12 @@ class CustomerServiceImpl(
     ): PageImpl<CustomerDTO> {
         val pageable = PageRequest.of(pageNumber, pageSize)
         val page: Page<Customer> = customerRepository.findAll(pageable)
-        var list = page.content.filter { !it.deleted && it.information.category == CategoryOptions.CUSTOMER }.map { it.toDTO() }
+        var list = page.content
+            .filter { !it.deleted && it.information.category == CategoryOptions.CUSTOMER }
+            .map{customer ->
+                customer.joboffers = customer.joboffers.filter { !it.deleted }.toMutableSet()
+                customer
+            }.map { it.toDTO() }
 
         filterMap.entries.forEach { filter ->
             list = when (filter.key) {
@@ -61,6 +66,7 @@ class CustomerServiceImpl(
         }
 
         val customer = existedCustomer.get()
+        customer.joboffers = customer.joboffers.filter { !it.deleted }.toMutableSet()
         return customer.toDTO()
     }
 

@@ -3,12 +3,11 @@ import {
   Button,
   Col,
   Form,
-  InputGroup,
   Row,
   Toast,
   ToastContainer,
 } from "react-bootstrap";
-import { BsChevronLeft, BsChevronRight, BsPencilSquare, BsPlus, BsSearch, BsTrash } from "react-icons/bs";
+import { BsChevronLeft, BsChevronRight, BsPlus, BsSearch } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -84,6 +83,9 @@ function CustomersPage() {
 
     const [pageSize, setPageSize] = useState(10);
 
+
+console.log(customers)
+
   return (
     <div className="w-100">
       {showAlert && (
@@ -109,7 +111,7 @@ function CustomersPage() {
         </ToastContainer>
       )}
 
-      <Row className="d-flex flex-row p-0 mb-3 align-items-center">
+      <Row className="d-flex flex-row p-0 mb-1 align-items-center">
         <Col>
           <h3>Customers</h3>
         </Col>
@@ -155,7 +157,6 @@ function CustomersPage() {
         !loading &&
         customers !== null &&
         customers.totalElements > 0 && (
-          <>
             <Row className="w-100 d-flex justify-content-center">
               <Col xs={12} lg={4} className="order-1 order-lg-2 mt-3">
                 <div className="sidebar-search p-4">
@@ -544,7 +545,6 @@ function CustomersPage() {
                 
               </Col>
             </Row>
-          </>
         )}
     </div>
   );

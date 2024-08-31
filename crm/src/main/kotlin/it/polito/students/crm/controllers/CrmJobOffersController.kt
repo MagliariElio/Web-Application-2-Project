@@ -87,7 +87,7 @@ class CrmJobOffersController(
             val saved = jobOfferService.storeJobOffer(jobOffer)
             return ResponseEntity(saved, HttpStatus.CREATED)
         } catch (e: CustomerNotFoundException) {
-            logger.info("CustomerControl: Error with customer id equal to ${jobOffer.customerId}: ${e.message}")
+            logger.info("CustomerControl: Error with customer: ${e.message}")
             return ResponseEntity(e.message, HttpStatus.NOT_FOUND)
         } catch (e: Exception) {
             logger.info("Error saving a new job offer: ${e.message}")

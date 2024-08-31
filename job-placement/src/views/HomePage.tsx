@@ -1,5 +1,4 @@
-import { Container, Row, Card, Col, Navbar, Nav, Button, Toast, ToastContainer, Form } from "react-bootstrap";
-import { MeInterface } from "../interfaces/MeInterface.ts";
+import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
 import { BsPlus } from "react-icons/bs";
@@ -38,7 +37,6 @@ function HomePage() {
     const loadJobOffers = async () => {
       try {
         const result = await JobOfferRequests.fetchJobOffers();
-        console.log("Job Offers fetched: ", result);
         setJobOffers(result);
         setLoading(false);
       } catch (error) {
@@ -69,11 +67,23 @@ function HomePage() {
     }) || [];
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+        <div className="spinner-border" role="status">
+          <span className="sr-only"></span>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error loading job offers</div>;
+    return (
+      <Container className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+        <Alert variant="danger" className="text-center w-50">
+          <h5>An error occurred. Please, reload the page!</h5>
+        </Alert>
+      </Container>
+    );
   }
 
   return (
@@ -130,45 +140,53 @@ function HomePage() {
       {!error && !loading && jobOffers !== null && jobOffers.totalElements > 0 && (
         <Row>
           <Col md={8}>
-            {filteredJobOffers.map((joboffer) => (
-              <div key={joboffer.id} className="job-offer-item mb-4 p-3" onClick={() => navigate(`/ui/joboffers/${joboffer.id}`)}>
-                <Row className="align-items-center">
-                  <Col xs={12} className="mb-2">
-                    <h5 className="job-title">{joboffer.name}</h5>
-                  </Col>
-                  <Col md={6} xs={12}>
-                    <p className="mb-1">
-                      <strong>Contract Type:</strong> {joboffer.contractType}
-                    </p>
-                  </Col>
-                  <Col md={6} xs={12}>
-                    <p className="mb-1">
-                      <strong>Location:</strong> {joboffer.location}
-                    </p>
-                  </Col>
-                  <Col md={6} xs={12}>
-                    <p className="mb-1">
-                      <strong>Work Mode:</strong> {joboffer.workMode}
-                    </p>
-                  </Col>
-                  <Col md={6} xs={12}>
-                    <p className="mb-1">
-                      <strong>Duration:</strong> {joboffer.duration} hours
-                    </p>
-                  </Col>
-                  <Col md={6} xs={12}>
-                    <p className="mb-1">
-                      <strong>Value:</strong> ${joboffer.value}
-                    </p>
-                  </Col>
-                  <Col md={6} xs={12}>
-                    <p className="mb-0">
-                      <strong>Status:</strong> <span className={`status ${joboffer.status.toLowerCase()}`}>{joboffer.status}</span>
-                    </p>
-                  </Col>
-                </Row>
-              </div>
-            ))}
+            {filteredJobOffers.length === 0 ? (
+              <Row className="w-100">
+                <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
+                  <h5>No job offers found with the selected filters!</h5>
+                </Col>
+              </Row>
+            ) : (
+              filteredJobOffers.map((joboffer) => (
+                <div key={joboffer.id} className="job-offer-item mb-4 p-3" onClick={() => navigate(`/ui/joboffers/${joboffer.id}`)}>
+                  <Row className="align-items-center">
+                    <Col xs={12} className="mb-2">
+                      <h5 className="job-title">{joboffer.name}</h5>
+                    </Col>
+                    <Col md={6} xs={12}>
+                      <p className="mb-1">
+                        <strong>Contract Type:</strong> {joboffer.contractType}
+                      </p>
+                    </Col>
+                    <Col md={6} xs={12}>
+                      <p className="mb-1">
+                        <strong>Location:</strong> {joboffer.location}
+                      </p>
+                    </Col>
+                    <Col md={6} xs={12}>
+                      <p className="mb-1">
+                        <strong>Work Mode:</strong> {joboffer.workMode}
+                      </p>
+                    </Col>
+                    <Col md={6} xs={12}>
+                      <p className="mb-1">
+                        <strong>Duration:</strong> {joboffer.duration} hours
+                      </p>
+                    </Col>
+                    <Col md={6} xs={12}>
+                      <p className="mb-1">
+                        <strong>Value:</strong> ${joboffer.value}
+                      </p>
+                    </Col>
+                    <Col md={6} xs={12}>
+                      <p className="mb-0">
+                        <strong>Status:</strong> <span className={`status ${joboffer.status.toLowerCase()}`}>{joboffer.status}</span>
+                      </p>
+                    </Col>
+                  </Row>
+                </div>
+              ))
+            )}
           </Col>
 
           <Col md={4}>
@@ -216,7 +234,11 @@ function HomePage() {
                   </Form.Control>
                 </Form.Group>
 
-                <Button variant="primary" onClick={() => setFilters({ contractType: "", location: "", workMode: "", status: "" })}>
+                <Button
+                  className="secondaryButton"
+                  variant="primary"
+                  onClick={() => setFilters({ contractType: "", location: "", workMode: "", status: "" })}
+                >
                   Clear Filters
                 </Button>
               </Form>
