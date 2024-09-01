@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Col, Container, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, Modal, Pagination, Row, Table } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { contractTypeList, toTitleCase, workModeList } from "../utils/costants";
 import { Customer } from "../interfaces/Customer";
 import { fetchCustomers } from "../apis/CustomerRequests";
 import { submitJobOffer } from "../apis/JobOfferRequests";
+import { debounce } from "../utils/checkers";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -27,10 +28,13 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
   const [singleRequiredSkill, setSingleRequiredSkill] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [customersList, setCustomersList] = useState<Customer[]>([]);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  // Customer Selection
+  const [showSelectCustomerModal, setShowSelectCustomerModal] = useState(false);
+  const handleOpenSelectCustomerModal = () => setShowSelectCustomerModal(true);
+  const handleCloseSelectCustomerModal = () => setShowSelectCustomerModal(false);
+  const handleCustomerSelect = (customer: Customer) => {
+    setCustomer(customer);
+  };
 
   const handleAddSkill = () => {
     if (singleRequiredSkill.trim() === "") {
@@ -115,41 +119,6 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
     }
   };
 
-  useEffect(() => {
-    const loadCustomers = async () => {
-      try {
-        const result: Customer[] = await fetchCustomers();
-        setCustomersList(result);
-        setLoading(false);
-      } catch (error) {
-        setError(true);
-        setLoading(false);
-      }
-    };
-
-    loadCustomers();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-        <div className="spinner-border" role="status">
-          <span className="sr-only"></span>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-        <Alert variant="danger" className="text-center w-50">
-          <h5>An error occurred. Please, reload the page!</h5>
-        </Alert>
-      </Container>
-    );
-  }
-
   return (
     <div>
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
@@ -224,25 +193,30 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         <Row className="justify-content-center">
-        <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Select
-              value={customer?.id || ""}
-              onChange={(e) => {
-                const selectedCustomer = customersList.find(
-                  (customer) => customer.id.toString() === e.target.value
-                );
-                setCustomer(selectedCustomer || null);
-              }}
-              required
-            >
-              <option value="">Select Customer</option>
-              {customersList.map((customer, index) => (
-                <option key={index} value={customer.id}>
-                  {`${customer.information.contactDTO.surname} ${customer.information.contactDTO.name}`}
-                </option>
-              ))}
-            </Form.Select>
+          <Col xs={12} md={6} lg={3} className="mb-4">
+            {showSelectCustomerModal && (
+              <CustomerSelectModal
+                show={showSelectCustomerModal}
+                handleClose={handleCloseSelectCustomerModal}
+                onSelectCustomer={handleCustomerSelect}
+              />
+            )}
+            <Form.Group controlId="customer">
+              <Form.Control
+                style={{ cursor: "pointer" }}
+                type="text"
+                placeholder="Select a customer"
+                value={
+                  customer
+                    ? `${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname} (${customer.information.contactDTO.ssnCode})`
+                    : "Select a customer"
+                }
+                readOnly
+                onClick={handleOpenSelectCustomerModal}
+              />
+            </Form.Group>
           </Col>
+
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Control
               type="number"
@@ -342,5 +316,187 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
     </div>
   );
 }
+
+const CustomerSelectModal: React.FC<{
+  show: boolean;
+  handleClose: () => void;
+  onSelectCustomer: (selectedCustomer: Customer) => void;
+}> = ({ show, handleClose, onSelectCustomer }) => {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchSurname, setSearchSurname] = useState("");
+  const [searchSsnCode, setSearchSsnCode] = useState("");
+  const [searchComment, setSearchComment] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const loadCustomers = async () => {
+      try {
+        setLoading(true);
+        const result: any = await fetchCustomers(currentPage, searchName, searchSurname, searchSsnCode, searchComment);
+        setCustomers(result.content);
+        setTotalPages(result.totalPages);
+        setLoading(false);
+      } catch (error) {
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    if (show) {
+      loadCustomers();
+    }
+  }, [show, currentPage, searchName, searchSurname, searchSsnCode, searchComment]);
+
+  const handleSearchChangeByName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchName(event.target.value);
+  };
+
+  const handleSearchChangeBySurname = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchSurname(event.target.value);
+  };
+
+  const handleSearchChangeBySsnCode = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchSsnCode(event.target.value);
+  };
+
+  const handleSearchChangeByComment = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchComment(event.target.value);
+  };
+
+  const handleCustomerSelect = (customer: Customer) => {
+    onSelectCustomer(customer);
+    handleClose();
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page !== currentPage) {
+      setCurrentPage(page);
+    }
+  };
+
+  const getPaginationItems = () => {
+    let pages = [];
+    if (currentPage > 0) {
+      pages.push(currentPage - 1);
+    }
+    pages.push(currentPage);
+    if (currentPage < totalPages) {
+      pages.push(currentPage + 1);
+    }
+    return pages;
+  };
+
+  return (
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title className="fw-bold">Select Customer</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form.Group controlId="search">
+          <Row>
+            <Col xs={12} sm={6}>
+              <Form.Control type="text" className="mb-2" placeholder="Search by name" value={searchName} onChange={handleSearchChangeByName} />
+            </Col>
+            <Col xs={12} sm={6}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by surname"
+                value={searchSurname}
+                onChange={handleSearchChangeBySurname}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12} sm={6}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by ssn code"
+                value={searchSsnCode}
+                onChange={handleSearchChangeBySsnCode}
+              />
+            </Col>
+            <Col xs={12} sm={6}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by comment"
+                value={searchComment}
+                onChange={handleSearchChangeByComment}
+              />
+            </Col>
+          </Row>
+        </Form.Group>
+        {loading ? (
+          <div className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
+            <div className="spinner-border" role="status">
+              <span className="sr-only"></span>
+            </div>
+          </div>
+        ) : error ? (
+          <Container className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
+            <Alert variant="danger" className="text-center w-75">
+              <h5>{error}</h5>
+            </Alert>
+          </Container>
+        ) : (
+          <>
+            <Table hover>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Surname</th>
+                  <th>SSN Code</th>
+                </tr>
+              </thead>
+              <tbody>
+                {customers.length === 0 && (
+                  <tr>
+                    <td colSpan={3}>
+                      <div className="d-flex justify-content-center align-items-center" style={{ height: "150px" }}>
+                        <span className="text-muted fw-bold">No Customer Found!</span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                {customers.map((customer) => (
+                  <tr
+                    key={customer.information.contactDTO.id}
+                    onClick={() => handleCustomerSelect(customer)}
+                    style={{
+                      cursor: "pointer",
+                    }}
+                  >
+                    <td>{customer.information.contactDTO.name}</td>
+                    <td>{customer.information.contactDTO.surname}</td>
+                    <td>{customer.information.contactDTO.ssnCode}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+            <Pagination>
+              {getPaginationItems().map((page) => (
+                <Pagination.Item key={page} active={page === currentPage} onClick={() => handlePageChange(page)}>
+                  {page}
+                </Pagination.Item>
+              ))}
+            </Pagination>
+          </>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
 
 export default AddJobOfferPage;

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Container, Row, Col, Button, Alert, Form, Modal } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination } from "react-bootstrap";
 import { JobOffer } from "../interfaces/JobOffer";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaCircle, FaClock, FaMapMarkerAlt, FaMoneyBillWave, FaPen, FaTimesCircle, FaTrash, FaUser, FaUserTie } from "react-icons/fa";
@@ -30,11 +30,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const isCurrent = (index: number) => index === currentStepIndex;
   const isOldStatus = (index: number) => index > oldStatusIndex && jobOffer?.status === abortState;
 
+  // Job Offer Props
   const [isEditing, setIsEditing] = useState(false);
   const [formDataJobOffer, setFormDataJobOffer] = useState<JobOffer | null>(null);
   const [singleRequiredSkill, setSingleRequiredSkill] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Delete Job Offer
   const [showModalDeleteConfirmation, setShowModalDeleteConfirmation] = useState(false);
 
   const errorRef = useRef<HTMLDivElement | null>(null);
@@ -564,7 +566,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
             </Col>
           </Row>
 
-          {/* Customer ID and Professional ID */}
+          {/* Customer and Professional */}
           <Row className="border-top pt-3 mb-3">
             <Col md={6}>
               {!isEditing ? (
@@ -573,7 +575,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   {`${customer?.information.contactDTO.surname} ${customer?.information.contactDTO.name} (${customer?.information.contactDTO.ssnCode})`}
                 </div>
               ) : (
-                <Form.Group as={Row} controlId="customerId" className="d-flex align-items-center">
+                <Form.Group as={Row} controlId="customerName" className="d-flex align-items-center">
                   <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
                     Customer
                   </Form.Label>
