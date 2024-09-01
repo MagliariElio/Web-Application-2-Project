@@ -49,12 +49,12 @@ spring:
       client:
         provider:
           iam-name:
-            issuer-uri: http://localhost:9090/realms/lab5-g04
+            issuer-uri: http://localhost:9090/realms/job-connect
             user-name-attribute: sub
         registration:
           oidc-app-client:
             provider: iam-name
-            client-id: "lab5-g04-client"
+            client-id: "job-connect-client"
             client-secret: "5EN4Ql688ygcMWtJNU1tPUHthGuofGcQ"
             authorization-grant-type: authorization_code
             redirect-uri: "http://localhost:8080/login/oauth2/code/oidc-app-client"

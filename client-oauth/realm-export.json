@@ -1,6 +1,6 @@
 [ {
   "id" : "d7d0af51-03b4-4de3-bf9b-576357618ac7",
-  "realm" : "lab5-g04",
+  "realm" : "job-connect",
   "notBefore" : 0,
   "defaultSignatureAlgorithm" : "RS256",
   "revokeRefreshToken" : false,
@@ -55,7 +55,7 @@
       "attributes" : { }
     }, {
       "id" : "dcc13403-1351-4e98-887f-e9aa2ce0ce17",
-      "name" : "default-roles-lab5-g04",
+      "name" : "default-roles-job-connect",
       "description" : "${role_default-roles}",
       "composite" : true,
       "composites" : {
@@ -269,7 +269,7 @@
         "containerId" : "a19b9635-3d41-4fc6-9229-7acfda04ea5f",
         "attributes" : { }
       } ],
-      "lab5-g04-client" : [ ],
+      "job-connect-client" : [ ],
       "security-admin-console" : [ ],
       "admin-cli" : [ ],
       "account-console" : [ ],
@@ -362,7 +362,7 @@
   "groups" : [ ],
   "defaultRole" : {
     "id" : "dcc13403-1351-4e98-887f-e9aa2ce0ce17",
-    "name" : "default-roles-lab5-g04",
+    "name" : "default-roles-job-connect",
     "description" : "${role_default-roles}",
     "composite" : true,
     "clientRole" : false,
@@ -420,7 +420,7 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-lab5-g04", "MANAGER" ],
+    "realmRoles" : [ "default-roles-job-connect", "MANAGER" ],
     "notBefore" : 0,
     "groups" : [ ]
   }, {
@@ -443,7 +443,7 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "OPERATOR", "default-roles-lab5-g04" ],
+    "realmRoles" : [ "OPERATOR", "default-roles-job-connect" ],
     "notBefore" : 0,
     "groups" : [ ]
   }, {
@@ -466,7 +466,7 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-lab5-g04", "GUEST" ],
+    "realmRoles" : [ "default-roles-job-connect", "GUEST" ],
     "notBefore" : 0,
     "groups" : [ ]
   } ],
@@ -485,12 +485,12 @@
     "clientId" : "account",
     "name" : "${client_account}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/lab5-g04/account/",
+    "baseUrl" : "/realms/job-connect/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/realms/lab5-g04/account/*" ],
+    "redirectUris" : [ "/realms/job-connect/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -515,12 +515,12 @@
     "clientId" : "account-console",
     "name" : "${client_account-console}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/lab5-g04/account/",
+    "baseUrl" : "/realms/job-connect/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/realms/lab5-g04/account/*" ],
+    "redirectUris" : [ "/realms/job-connect/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -603,7 +603,7 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "fc5ce14d-8c92-4bb6-b0fd-c9ee14a972cb",
-    "clientId" : "lab5-g04-client",
+    "clientId" : "job-connect-client",
     "name" : "",
     "description" : "",
     "rootUrl" : "http://localhost:8080",
@@ -670,12 +670,12 @@
     "clientId" : "security-admin-console",
     "name" : "${client_security-admin-console}",
     "rootUrl" : "${authAdminUrl}",
-    "baseUrl" : "/admin/lab5-g04/console/",
+    "baseUrl" : "/admin/job-connect/console/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/admin/lab5-g04/console/*" ],
+    "redirectUris" : [ "/admin/job-connect/console/*" ],
     "webOrigins" : [ "+" ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -1977,7 +1977,7 @@
       "composites" : {
         "realm" : [ "create-realm" ],
         "client" : {
-          "lab5-g04-realm" : [ "query-users", "view-realm", "manage-authorization", "query-realms", "manage-users", "manage-identity-providers", "view-events", "view-identity-providers", "impersonation", "manage-clients", "view-authorization", "view-clients", "query-clients", "manage-events", "create-client", "query-groups", "manage-realm", "view-users" ],
+          "job-connect-realm" : [ "query-users", "view-realm", "manage-authorization", "query-realms", "manage-users", "manage-identity-providers", "view-events", "view-identity-providers", "impersonation", "manage-clients", "view-authorization", "view-clients", "query-clients", "manage-events", "create-client", "query-groups", "manage-realm", "view-users" ],
           "master-realm" : [ "manage-clients", "query-realms", "manage-realm", "view-clients", "view-authorization", "view-realm", "manage-events", "create-client", "manage-users", "view-users", "view-identity-providers", "query-clients", "query-users", "manage-authorization", "impersonation", "view-events", "manage-identity-providers", "query-groups" ]
         }
       },
@@ -2016,7 +2016,7 @@
       "attributes" : { }
     } ],
     "client" : {
-      "lab5-g04-realm" : [ {
+      "job-connect-realm" : [ {
         "id" : "b52f3ab4-ed11-4cad-83fb-1b97519036c1",
         "name" : "query-users",
         "description" : "${role_query-users}",
@@ -2143,7 +2143,7 @@
         "composite" : true,
         "composites" : {
           "client" : {
-            "lab5-g04-realm" : [ "query-users", "query-groups" ]
+            "job-connect-realm" : [ "query-users", "query-groups" ]
           }
         },
         "clientRole" : true,
@@ -2164,7 +2164,7 @@
         "composite" : true,
         "composites" : {
           "client" : {
-            "lab5-g04-realm" : [ "query-clients" ]
+            "job-connect-realm" : [ "query-clients" ]
           }
         },
         "clientRole" : true,
@@ -2474,7 +2474,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-master", "admin" ],
     "clientRoles" : {
-      "lab5-g04-realm" : [ "query-users", "view-realm", "manage-authorization", "query-realms", "manage-users", "manage-events", "query-clients", "manage-identity-providers", "create-client", "query-groups", "view-events", "view-identity-providers", "manage-realm", "manage-clients", "view-users", "view-authorization", "view-clients" ]
+      "job-connect-realm" : [ "query-users", "view-realm", "manage-authorization", "query-realms", "manage-users", "manage-events", "query-clients", "manage-identity-providers", "create-client", "query-groups", "view-events", "view-identity-providers", "manage-realm", "manage-clients", "view-users", "view-authorization", "view-clients" ]
     },
     "notBefore" : 0,
     "groups" : [ ]
@@ -2612,8 +2612,8 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "e7367d41-e598-4f6d-9ade-16a24e0026ec",
-    "clientId" : "lab5-g04-realm",
-    "name" : "lab5-g04 Realm",
+    "clientId" : "job-connect-realm",
+    "name" : "job-connect Realm",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
