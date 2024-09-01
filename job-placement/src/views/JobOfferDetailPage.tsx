@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination } from "react-bootstrap";
 import { JobOffer } from "../interfaces/JobOffer";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FaCheckCircle, FaCircle, FaClock, FaMapMarkerAlt, FaMoneyBillWave, FaPen, FaTimesCircle, FaTrash, FaUser, FaUserTie } from "react-icons/fa";
 import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants";
 import { MeInterface } from "../interfaces/MeInterface";
@@ -20,6 +20,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [error, setError] = useState(false);
 
   const abortState = "ABORT";
+
+  const location = useLocation();
+  const { jobOfferSelected } = location.state || { jobOfferSelected: null };
 
   // Determine the index of the current state in the progress flow
   const currentStepIndex = Object.values(JobOfferState).indexOf(jobOffer?.status as JobOfferState) + 1;
@@ -43,30 +46,37 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (id) {
-      const loadJobOffer = async () => {
-        try {
-          const result = await fetchJobOfferById(parseInt(id));
-          setJobOffer(result);
-          setFormDataJobOffer(result);
+    const loadJobOffer = async (jobOfferSelected: JobOffer) => {
+      try {
+        var result = null;
 
-          const resultCustomer = await fetchCustomer(result?.customerId);
-          setCustomer(resultCustomer);
-
-          if (result?.professionalId) {
-            const resultProfessional = await fetchProfessional(result?.professionalId);
-            setProfessional(resultProfessional);
-          }
-
-          setLoading(false);
-        } catch (error) {
-          setError(true);
-          setLoading(false);
+        if (jobOfferSelected) {
+          result = jobOfferSelected;
+        } else if (id) {
+          result = await fetchJobOfferById(parseInt(id));
+        } else {
+          return;
         }
-      };
 
-      loadJobOffer();
-    }
+        setJobOffer(result);
+        setFormDataJobOffer(result);
+
+        const resultCustomer = await fetchCustomer(result?.customerId);
+        setCustomer(resultCustomer);
+
+        if (result?.professionalId) {
+          const resultProfessional = await fetchProfessional(result?.professionalId);
+          setProfessional(resultProfessional);
+        }
+
+        setLoading(false);
+      } catch (error) {
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    loadJobOffer(jobOfferSelected);
   }, [id]);
 
   const handleAddSkill = () => {
@@ -174,16 +184,16 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
   const handleGoToSelectionPhase = async () => {
     const jobOffer = {
-        nextStatus: JobOfferState.SELECTION_PHASE,
-        professionalsId: [],            // TODO: ricordarsi di aggiungere questo campo
-        note: ""                       // TODO: ricordarsi di aggiungere questo campo
-    }
+      nextStatus: JobOfferState.SELECTION_PHASE,
+      professionalsId: [], // TODO: ricordarsi di aggiungere questo campo
+      note: "", // TODO: ricordarsi di aggiungere questo campo
+    };
 
     try {
-        await goToSelectionPhase(parseInt(id ? id : ""), me.xsrfToken, jobOffer);
-      } catch (error) {
-        setError(true);
-      }
+      await goToSelectionPhase(parseInt(id ? id : ""), me.xsrfToken, jobOffer);
+    } catch (error) {
+      setError(true);
+    }
   };
 
   if (loading) {
@@ -544,7 +554,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               {!isEditing ? (
                 <div>
                   <strong>Note: </strong>
-                  {jobOffer?.note}
+                  {jobOffer?.note || "Any note found!"}
                 </div>
               ) : (
                 <Form.Group as={Row} controlId="note" className="d-flex align-items-center">
@@ -572,7 +582,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               {!isEditing ? (
                 <div>
                   <FaUser className="mr-2" /> <strong>Customer: </strong>
-                  {`${customer?.information.contactDTO.surname} ${customer?.information.contactDTO.name} (${customer?.information.contactDTO.ssnCode})`}
+                  {`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname} (${customer?.information.contactDTO.ssnCode})`}
                 </div>
               ) : (
                 <Form.Group as={Row} controlId="customerName" className="d-flex align-items-center">
@@ -672,7 +682,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
           {!isEditing && (
             <Row className="mt-5">
               <Col className="text-center">
-                <Button className="secondaryButton mb-2" variant="danger" size="lg" onClick={() => navigate(-1)}>
+                <Button className="secondaryButton mb-2" variant="danger" size="lg" onClick={() => navigate("/ui")}>
                   Go Back
                 </Button>
               </Col>

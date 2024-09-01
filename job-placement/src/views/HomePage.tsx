@@ -8,7 +8,7 @@ import { JobOffer } from "../interfaces/JobOffer.ts";
 import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants.ts";
 import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
 
-function HomePage() {
+const HomePage = () => {
   const navigate = useNavigate();
 
   const [jobOffers, setJobOffers] = useState<PagedResponse<JobOffer> | null>(null);
@@ -148,7 +148,11 @@ function HomePage() {
               </Row>
             ) : (
               filteredJobOffers.map((joboffer) => (
-                <div key={joboffer.id} className="job-offer-item mb-4 p-3" onClick={() => navigate(`/ui/joboffers/${joboffer.id}`)}>
+                <div
+                  key={joboffer.id}
+                  className="job-offer-item mb-4 p-3"
+                  onClick={() => navigate(`/ui/joboffers/${joboffer.id}`, { state: { jobOfferSelected: joboffer } })}
+                >
                   <Row className="align-items-center">
                     <Col xs={12} className="mb-2">
                       <h5 className="job-title">{joboffer.name}</h5>

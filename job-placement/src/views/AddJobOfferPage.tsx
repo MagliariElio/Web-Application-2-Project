@@ -126,7 +126,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
           <h3>Add New Job Offer</h3>
         </Col>
         <Col className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1)}>
+          <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate("/ui")}>
             <BsXLg size={"1.5em"} />
           </Button>
         </Col>
