@@ -7,7 +7,7 @@ import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../u
 import { MeInterface } from "../interfaces/MeInterface";
 import { fetchCustomer } from "../apis/CustomerRequests";
 import { Customer } from "../interfaces/Customer";
-import { fetchProfessional } from "../apis/ProfessionalRequests";
+import { fetchProfessional, fetchProfessionals } from "../apis/ProfessionalRequests";
 import { Professional } from "../interfaces/Professional";
 import { deleteJobOfferById, fetchJobOfferById, goToSelectionPhase, updateJobOffer } from "../apis/JobOfferRequests";
 
@@ -16,6 +16,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [jobOffer, setJobOffer] = useState<JobOffer | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [professional, setProfessional] = useState<Professional | null>(null);
+  const [candidateProfessionalList, setCandidateProfessionalList] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -42,10 +43,38 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   // Delete Job Offer
   const [showModalDeleteConfirmation, setShowModalDeleteConfirmation] = useState(false);
 
+  // Add Professional Candidate
+  const [showProfessionalCandidateModal, setProfessionalCandidateModal] = useState(false);
+  const handleOpenProfessionalCandidateModal = () => setProfessionalCandidateModal(true);
+  const handleCloseProfessionalCandidateModal = () => setProfessionalCandidateModal(false);
+  const handleAddCandidate = (professional: Professional) => {
+    setCandidateProfessionalList((prevList) => [
+      ...prevList,
+      professional,
+    ]);
+  };
+
   const errorRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const loadCandidateProfessionals = async (candidateList: number[]) => {
+      try {
+        const resultList: Professional[] = await Promise.all(
+          candidateList.map(async (id) => {
+            const result = await fetchProfessional(id);
+            return result;
+          })
+        );
+        setCandidateProfessionalList(resultList);
+      } catch (error) {
+        console.error(error);
+        setError(true);
+        setLoading(false);
+        setCandidateProfessionalList([]);
+      }
+    };
+
     const loadJobOffer = async (jobOfferSelected: JobOffer) => {
       try {
         var result = null;
@@ -69,8 +98,11 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
           setProfessional(resultProfessional);
         }
 
+        loadCandidateProfessionals(result?.candidateProfessionalIds);
+
         setLoading(false);
       } catch (error) {
+        console.error(error);
         setError(true);
         setLoading(false);
       }
@@ -629,28 +661,49 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
           </Row>
 
           {/* Candidate Professionals */}
-          {!professional && (
+          {!professional && !isEditing && (
             <Row className="border-top pt-3 mb-3">
-              <Col md={12}>
-                {!isEditing ? (
-                  <div>
-                    <strong>Candidate Professionals: </strong>
-                    {jobOffer?.candidateProfessionalIds.join(", ")}
-                  </div>
+              <Col md={6} className="d-flex align-items-center">
+                <strong>Candidate Professionals: </strong>
+              </Col>
+              <Col md={6} className="text-end">
+                <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
+                  Add Candidate
+                </Button>
+              </Col>
+              <Col md={12} className="mt-3">
+              {showProfessionalCandidateModal && (
+              <CandidateProfessionalModal
+                show={showProfessionalCandidateModal}
+                alreadyExistentCandidates={candidateProfessionalList}
+                handleClose={handleCloseProfessionalCandidateModal}
+                onSelectProfessional={handleAddCandidate}
+              />
+            )}
+
+                {candidateProfessionalList?.length > 0 ? (
+                  <Table striped bordered hover>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>SSN Code</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {candidateProfessionalList.map((professional, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{professional.information.name}</td>
+                          <td>{professional.information.surname}</td>
+                          <td>{professional.information.ssnCode}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
                 ) : (
-                  <Form.Group as={Row} controlId="candidateProfessionalIds" className="d-flex align-items-center">
-                    <Form.Label column xs={12} sm={4} md={2} className="mb-0 fw-bold">
-                      Candidate Professionals
-                    </Form.Label>
-                    <Col xs={12} sm={8} md={10}>
-                      <Form.Control
-                        type="text"
-                        name="candidateProfessionalIds"
-                        value={formDataJobOffer?.candidateProfessionalIds.join(", ") || ""}
-                        disabled
-                      />
-                    </Col>
-                  </Form.Group>
+                  <p>No candidate professionals.</p>
                 )}
               </Col>
             </Row>
@@ -721,6 +774,193 @@ const ConfirmDeleteModal: React.FC<{
         </Button>
         <Button variant="danger" onClick={handleConfirm}>
           Confirm
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+const CandidateProfessionalModal: React.FC<{
+  show: boolean;
+  handleClose: () => void;
+  alreadyExistentCandidates: Professional[],
+  onSelectProfessional: (selected: Professional) => void;
+}> = ({ show, handleClose, alreadyExistentCandidates, onSelectProfessional }) => {
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchSurname, setSearchSurname] = useState("");
+  const [searchSsnCode, setSearchSsnCode] = useState("");
+  const [searchComment, setSearchComment] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const loadProfessionals = async () => {
+      try {
+        setLoading(true);
+        const result: any = await fetchProfessionals(currentPage, searchName, searchSurname, searchSsnCode, searchComment);
+        
+        const existingCandidateIds = new Set(alreadyExistentCandidates.map(p => p.id));
+        result.content = result.content.filter((p: Professional) => !existingCandidateIds.has(p.id)); // filtraggio dei candidati già presenti
+        
+        setProfessionals(result.content);
+        setTotalPages(result.totalPages);
+        setLoading(false);
+      } catch (error) {
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    if (show) {
+      loadProfessionals();
+    }
+  }, [show, currentPage, searchName, searchSurname, searchSsnCode, searchComment]);
+
+  const handleSearchChangeByName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchName(event.target.value);
+  };
+
+  const handleSearchChangeBySurname = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchSurname(event.target.value);
+  };
+
+  const handleSearchChangeBySsnCode = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchSsnCode(event.target.value);
+  };
+
+  const handleSearchChangeByComment = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchComment(event.target.value);
+  };
+
+  const handleProfessionalSelect = (professional: Professional) => {
+    onSelectProfessional(professional);
+    handleClose();
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page !== currentPage) {
+      setCurrentPage(page);
+    }
+  };
+
+  const getPaginationItems = () => {
+    let pages = [];
+    if (currentPage > 0) {
+      pages.push(currentPage - 1);
+    }
+    pages.push(currentPage);
+    if (currentPage < totalPages) {
+      pages.push(currentPage + 1);
+    }
+    return pages;
+  };
+
+  return (
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title className="fw-bold">Select Professional</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form.Group controlId="search">
+          <Row>
+            <Col xs={12} sm={6}>
+              <Form.Control type="text" className="mb-2" placeholder="Search by name" value={searchName} onChange={handleSearchChangeByName} />
+            </Col>
+            <Col xs={12} sm={6}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by surname"
+                value={searchSurname}
+                onChange={handleSearchChangeBySurname}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12} sm={6}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by ssn code"
+                value={searchSsnCode}
+                onChange={handleSearchChangeBySsnCode}
+              />
+            </Col>
+            <Col xs={12} sm={6}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by comment"
+                value={searchComment}
+                onChange={handleSearchChangeByComment}
+              />
+            </Col>
+          </Row>
+        </Form.Group>
+        {loading ? (
+          <div className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
+            <div className="spinner-border" role="status">
+              <span className="sr-only"></span>
+            </div>
+          </div>
+        ) : error ? (
+          <Container className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
+            <Alert variant="danger" className="text-center w-75">
+              <h5>{error}</h5>
+            </Alert>
+          </Container>
+        ) : (
+          <>
+            <Table hover>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Surname</th>
+                  <th>SSN Code</th>
+                </tr>
+              </thead>
+              <tbody>
+                {professionals.length === 0 && (
+                  <tr>
+                    <td colSpan={3}>
+                      <div className="d-flex justify-content-center align-items-center" style={{ height: "150px" }}>
+                        <span className="text-muted fw-bold">No Customer Found!</span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                {professionals.map((professional) => (
+                  <tr
+                    key={professional.information.id}
+                    onClick={() => handleProfessionalSelect(professional)}
+                    style={{
+                      cursor: "pointer",
+                    }}
+                  >
+                    <td>{professional.information.name}</td>
+                    <td>{professional.information.surname}</td>
+                    <td>{professional.information.ssnCode}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+            <Pagination className="justify-content-center">
+              {getPaginationItems().map((page) => (
+                <Pagination.Item key={page} active={page === currentPage} onClick={() => handlePageChange(page)}>
+                  {page}
+                </Pagination.Item>
+              ))}
+            </Pagination>
+          </>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
         </Button>
       </Modal.Footer>
     </Modal>

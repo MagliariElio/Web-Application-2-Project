@@ -480,7 +480,7 @@ const CustomerSelectModal: React.FC<{
                 ))}
               </tbody>
             </Table>
-            <Pagination>
+            <Pagination className="justify-content-center">
               {getPaginationItems().map((page) => (
                 <Pagination.Item key={page} active={page === currentPage} onClick={() => handlePageChange(page)}>
                   {page}

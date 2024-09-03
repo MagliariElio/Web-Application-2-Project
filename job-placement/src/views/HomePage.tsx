@@ -8,6 +8,8 @@ import { JobOffer } from "../interfaces/JobOffer.ts";
 import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants.ts";
 import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
 
+// TODO: fare la paginazione per le job offers
+
 const HomePage = () => {
   const navigate = useNavigate();
 
