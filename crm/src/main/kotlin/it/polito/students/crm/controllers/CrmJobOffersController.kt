@@ -116,7 +116,7 @@ class CrmJobOffersController(
         }
     }
 
-    @PutMapping("", "/")
+    @PatchMapping("", "/")
     fun updateJobOffer(@Valid @RequestBody jobOffer: JobOfferDTO): ResponseEntity<out Any> {
         try {
             if (jobOffer.name.isBlank()) {

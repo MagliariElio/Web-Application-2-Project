@@ -94,6 +94,8 @@ class JobOfferServiceImpl(
     }
 
     override fun updateJobOffer(jobOfferDto: JobOfferDTO): JobOfferDTO {
+        // TODO: potrebbe non servire fare queste chiamate, controllare dopo
+
         val customer = customerService.getCustomer(jobOfferDto.customerId).toEntity(factory)
         val oldJobOffer = getJobOfferById(jobOfferDto.id) ?: throw NoSuchElementException()
 
@@ -155,7 +157,12 @@ class JobOfferServiceImpl(
             throw NotFoundJobOfferException(ErrorsPage.JOB_OFFER_NOT_FOUND_ERROR)
         }
 
-        if (!checkStatusTransition(oldJobOffer.status, nextStatus)) {
+        var updateProfessionalsId = false   // controlla che se avviene un aggiornamento della lista candidati, il check sullo stato non sia un problema
+        if(professionalsId != null && !oldJobOffer.candidateProfessionals.none { professionalsId.contains(it.id) }) {
+            updateProfessionalsId = true
+        }
+
+        if (!updateProfessionalsId && !checkStatusTransition(oldJobOffer.status, nextStatus)) {
             throw IllegalJobStatusTransition(ErrorsPage.INVALID_STATUS_TRANSITION)
         }
 
@@ -167,6 +174,11 @@ class JobOfferServiceImpl(
         when (nextStatus) {
             JobStatusEnum.SELECTION_PHASE -> {
                 oldJobOffer.status = nextStatus
+
+                // Rimozione dei precedenti candidate professional per l'aggiornamento con quelli nuovi
+                oldJobOffer.candidateProfessionals.forEach { candidateProfessional ->
+                    candidateProfessional.jobOffers.remove(oldJobOffer)
+                }
 
                 oldJobOffer.candidateProfessionals = professionalsId!!.map {
                     val professionalOptional: Optional<Professional>

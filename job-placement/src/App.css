@@ -290,6 +290,7 @@
   border-radius: 5px !important;
   cursor: pointer !important;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
+  font-size: 18px !important;
 }
 
 .primaryButton:hover {
@@ -305,6 +306,7 @@
   border-radius: 5px !important;
   cursor: pointer !important;
   transition: box-shadow 0.3s ease, background-color 0.3s ease !important;
+  font-size: 18px !important;
 }
 
 .secondaryButton:hover {
@@ -320,6 +322,7 @@
   border-radius: 5px !important;
   cursor: pointer !important;
   transition: box-shadow 0.3s ease, background-color 0.3s ease !important;
+  font-size: 18px !important;
 }
 
 .secondaryDangerButton:hover {

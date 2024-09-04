@@ -9,7 +9,7 @@ import { fetchCustomer } from "../apis/CustomerRequests";
 import { Customer } from "../interfaces/Customer";
 import { fetchProfessional, fetchProfessionals } from "../apis/ProfessionalRequests";
 import { Professional } from "../interfaces/Professional";
-import { deleteJobOfferById, fetchJobOfferById, goToSelectionPhase, updateJobOffer } from "../apis/JobOfferRequests";
+import { abortJobOffer, deleteJobOfferById, fetchJobOfferById, goToSelectionPhase, updateJobOffer } from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
@@ -25,7 +25,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const abortState = "ABORT";
 
   const location = useLocation();
-  const { jobOfferSelected } = location.state || { jobOfferSelected: null };
+  //const { jobOfferSelected } = location.state || { jobOfferSelected: null };
 
   // Determine the index of the current state in the progress flow
   const currentStepIndex = Object.values(JobOfferState).indexOf(jobOffer?.status as JobOfferState) + 1;
@@ -59,12 +59,15 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const loadCandidateProfessionals = async (candidateList: number[]) => {
     try {
       setLoadingCandidateProfessional(true);
+      setCandidateProfessionalList([]);
+
       const resultList: Professional[] = await Promise.all(
         candidateList.map(async (id) => {
           const result = await fetchProfessional(id);
           return result;
         })
       );
+
       setCandidateProfessionalList(resultList);
       setLoadingCandidateProfessional(false);
     } catch (error) {
@@ -119,7 +122,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   };
 
   useEffect(() => {
-    loadJobOffer(jobOfferSelected);
+    //loadJobOffer(jobOfferSelected);
+    loadJobOffer(null);
   }, [id]);
 
   const handleDeleteCandidateProfessional = (indexToRemove: number) => {
@@ -239,6 +243,16 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     setShowModalDeleteConfirmation(false);
   };
 
+  /**
+   * Handles the transition of a job offer to the selection phase.
+   *
+   * This function gathers the list of selected professionals and sends a PATCH request
+   * to update the job offer's status to "SELECTION_PHASE". If the request is successful,
+   * it reloads the job offer data. In case of an error, it sets an appropriate error message
+   * and ensures that the error message is scrolled into view.
+   *
+   * The function also manages the loading state during the asynchronous operations.
+   */
   const handleGoToSelectionPhase = async () => {
     const jobOffer = {
       //nextStatus: JobOfferState.SELECTION_PHASE,
@@ -247,8 +261,43 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
     try {
       setLoading(true);
-      await goToSelectionPhase(parseInt(id ? id : ""), me.xsrfToken, jobOffer);
-      await loadJobOffer(null);
+      const jobOfferResponse = await goToSelectionPhase(parseInt(id ? id : ""), me.xsrfToken, jobOffer);
+
+      await loadJobOffer(jobOfferResponse);
+
+      setLoading(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      setLoading(false);
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  /**
+   * Handles the abortion of a job offer.
+   *
+   * This function sends a request to abort (cancel) the job offer. If the request
+   * is successful, it reloads the job offer data to reflect the changes. In case of an error,
+   * it sets an appropriate error message and ensures that the error message is scrolled into view.
+   *
+   * The function also manages the loading state during the asynchronous operations.
+   */
+  const handleAbortJobOffer = async () => {
+    try {
+      setLoading(true);
+      const jobOfferResponse = await abortJobOffer(parseInt(id ? id : ""), me.xsrfToken);
+
+      await loadJobOffer(jobOfferResponse);
+
       setLoading(false);
     } catch (error) {
       if (error instanceof Error) {
@@ -334,16 +383,20 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 <Col md={9}>
                   <h3 className="font-weight-bold">{jobOffer?.name}</h3>
                 </Col>
-                <Col md={2} className="d-flex justify-content-end">
-                  <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
-                    <FaTrash /> Delete
-                  </Button>
-                </Col>
-                <Col md={1} className="d-flex justify-content-end">
-                  <Button variant="primary" onClick={() => setIsEditing(true)}>
-                    <FaPen /> Edit
-                  </Button>
-                </Col>
+                {jobOffer?.status !== JobOfferState.ABORT && (
+                  <>
+                    <Col md={2} className="d-flex justify-content-end">
+                      <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
+                        <FaTrash /> Delete
+                      </Button>
+                    </Col>
+                    <Col md={1} className="d-flex justify-content-end">
+                      <Button variant="primary" onClick={() => setIsEditing(true)}>
+                        <FaPen /> Edit
+                      </Button>
+                    </Col>
+                  </>
+                )}
               </>
             )}
             {isEditing && (
@@ -698,14 +751,15 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               <Col md={6} className="d-flex align-items-center">
                 <strong>Candidate Professionals: </strong>
               </Col>
-              <Col md={6} className="text-end">
-                <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
-                  Add Candidate
-                </Button>
-              </Col>
+              {jobOffer?.status !== JobOfferState.ABORT && (
+                <Col md={6} className="text-end">
+                  <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
+                    Add Candidate
+                  </Button>
+                </Col>
+              )}
               <Col md={12} className="mt-3">
                 {loadingCandidateProfessional && <LoadingSection h={100} />}
-
                 {showProfessionalCandidateModal && !loadingCandidateProfessional && (
                   <CandidateProfessionalModal
                     show={showProfessionalCandidateModal}
@@ -714,8 +768,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     onSelectProfessional={handleAddCandidate}
                   />
                 )}
-
-                {candidateProfessionalList?.length > 0 ? (
+                {candidateProfessionalList?.length > 0 && !loadingCandidateProfessional && (
                   <Table striped bordered hover className="align-middle">
                     <thead>
                       <tr>
@@ -734,7 +787,11 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           <td>{professional.information.surname}</td>
                           <td>{professional.information.ssnCode}</td>
                           <td className="text-center">
-                            <Button variant="danger" onClick={() => handleDeleteCandidateProfessional(index)}>
+                            <Button
+                              variant="danger"
+                              onClick={() => handleDeleteCandidateProfessional(index)}
+                              disabled={jobOffer?.status === JobOfferState.ABORT || jobOffer?.status !== JobOfferState.DONE}
+                            >
                               <FaTrash />
                             </Button>
                           </td>
@@ -742,9 +799,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       ))}
                     </tbody>
                   </Table>
-                ) : (
-                  <p>No candidate professionals.</p>
-                )}
+                )}{" "}
+                {candidateProfessionalList?.length === 0 && !loadingCandidateProfessional && <p>No candidate professionals.</p>}
               </Col>
             </Row>
           )}
@@ -774,12 +830,19 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
           {!isEditing && (
             <Row className="mt-5">
+              {jobOffer?.status !== JobOfferState.ABORT && (
+                <Col className="text-center">
+                  <Button className="secondaryDangerButton mb-2" variant="danger" size="lg" onClick={handleAbortJobOffer}>
+                    Abort
+                  </Button>
+                </Col>
+              )}
               <Col className="text-center">
                 <Button className="secondaryButton mb-2" variant="danger" size="lg" onClick={() => navigate("/ui")}>
                   Go Back
                 </Button>
               </Col>
-              {jobOffer?.candidateProfessionalIds.length !== candidateProfessionalList.length && (
+              {jobOffer?.candidateProfessionalIds.length !== candidateProfessionalList.length && !loadingCandidateProfessional && (
                 <Col className="text-center">
                   {/* Si attiva quando si aggiunge un nuovo professional candidato */}
                   <Button className="primaryButton mb-2" variant="danger" size="lg" onClick={handleGoToSelectionPhase}>

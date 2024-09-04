@@ -37,7 +37,7 @@ export const submitJobOffer = async (jobOffer: any, xsrfToken: string) => {
 export const updateJobOffer = async (jobOffer: JobOffer, xsrfToken: string) => {
   try {
     const response = await fetch("/crmService/v1/API/joboffers", {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         "X-XSRF-Token": xsrfToken,
@@ -143,9 +143,46 @@ export const goToSelectionPhase = async (jobOfferId: number, xsrfToken: string, 
       throw new Error(errorMessage);
     }
 
-    return { success: true, message: "Job offer updated successfully." };
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error in goToSelectionPhase:", error);
+    throw error;
+  }
+};
+
+export const abortJobOffer = async (jobOfferId: number, xsrfToken: string) => {
+  try {
+    const jobOffer = { nextStatus: JobOfferState.ABORT };
+
+    const response = await fetch(`/crmService/v1/API/joboffers/${jobOfferId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-Token": xsrfToken,
+      },
+      body: JSON.stringify(jobOffer),
+    });
+
+    if (!response.ok) {
+      let errorMessage = "An error occurred while aborting the job offer.";
+
+      try {
+        const message = await response.json();
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error in abortJobOffer:", error);
     throw error;
   }
 };
