@@ -26,7 +26,6 @@ import JobOfferDetail from "./views/JobOfferDetailPage.tsx";
 import CustomerPage from "./views/CustomerPage.tsx";
 import AddProfessionalPage from "./views/AddProfessionalPage.tsx";
 import ProfessionalPage from "./views/ProfessionalPage.tsx";
-import EditCustomerPage from "./views/EditCustomerPage.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -100,7 +99,6 @@ function App() {
                 <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/professionals/:id" element={me && me.principal !== null ? <ProfessionalPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
-                <Route path="/ui/customers/:id/edit" element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/professionals/add" element={me && me.principal !== null ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/joboffers/add" element={me && me.principal !== null ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />

@@ -748,15 +748,25 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
           {/* Candidate Professionals */}
           {!professional && !isEditing && (
             <Row className="border-top pt-3 mb-3">
-              <Col md={6} className="d-flex align-items-center">
+              <Col md={9} className="d-flex align-items-center">
                 <strong>Candidate Professionals: </strong>
               </Col>
               {jobOffer?.status !== JobOfferState.ABORT && (
-                <Col md={6} className="text-end">
-                  <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
-                    Add Candidate
-                  </Button>
-                </Col>
+                <>
+                  <Col md={2} className="text-end">
+                    <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
+                      Add Candidate
+                    </Button>
+                  </Col>
+                  {jobOffer?.candidateProfessionalIds.length !== candidateProfessionalList.length && !loadingCandidateProfessional && (
+                    <Col md={1} className="text-end">
+                      {/* Si attiva quando si aggiunge un nuovo professional candidato */}
+                      <Button variant="success" onClick={handleGoToSelectionPhase}>
+                        Confirm
+                      </Button>
+                    </Col>
+                  )}
+                </>
               )}
               <Col md={12} className="mt-3">
                 {loadingCandidateProfessional && <LoadingSection h={100} />}
@@ -790,7 +800,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                             <Button
                               variant="danger"
                               onClick={() => handleDeleteCandidateProfessional(index)}
-                              disabled={jobOffer?.status === JobOfferState.ABORT || jobOffer?.status !== JobOfferState.DONE}
+                              disabled={jobOffer?.status === JobOfferState.ABORT || jobOffer?.status === JobOfferState.DONE}
                             >
                               <FaTrash />
                             </Button>
@@ -842,14 +852,6 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   Go Back
                 </Button>
               </Col>
-              {jobOffer?.candidateProfessionalIds.length !== candidateProfessionalList.length && !loadingCandidateProfessional && (
-                <Col className="text-center">
-                  {/* Si attiva quando si aggiunge un nuovo professional candidato */}
-                  <Button className="primaryButton mb-2" variant="danger" size="lg" onClick={handleGoToSelectionPhase}>
-                    Confirm
-                  </Button>
-                </Col>
-              )}
             </Row>
           )}
         </Form>
@@ -893,10 +895,9 @@ const CandidateProfessionalModal: React.FC<{
   onSelectProfessional: (selected: Professional) => void;
 }> = ({ show, handleClose, alreadyExistentCandidates, onSelectProfessional }) => {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [searchName, setSearchName] = useState("");
-  const [searchSurname, setSearchSurname] = useState("");
-  const [searchSsnCode, setSearchSsnCode] = useState("");
-  const [searchComment, setSearchComment] = useState("");
+  const [searchSkill, setSkill] = useState("");
+  const [searchLocation, setSearchLocation] = useState("");
+  const [searchEmploymentState, setSearchEmploymentState] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -907,7 +908,7 @@ const CandidateProfessionalModal: React.FC<{
     const loadProfessionals = async () => {
       try {
         setLoading(true);
-        const result: any = await fetchProfessionals(currentPage, searchName, searchSurname, searchSsnCode, searchComment);
+        const result: any = await fetchProfessionals(currentPage, 10, searchSkill, searchLocation, searchEmploymentState);
 
         const existingCandidateIds = new Set(alreadyExistentCandidates.map((p) => p.id));
         result.content = result.content.filter((p: Professional) => !existingCandidateIds.has(p.id)); // filtraggio dei candidati già presenti
@@ -924,22 +925,18 @@ const CandidateProfessionalModal: React.FC<{
     if (show) {
       loadProfessionals();
     }
-  }, [show, currentPage, searchName, searchSurname, searchSsnCode, searchComment]);
+  }, [show, currentPage, searchSkill, searchLocation, searchEmploymentState]);
 
-  const handleSearchChangeByName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSearchName(event.target.value);
+  const handleSearchChangeBySkill = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSkill(event.target.value);
   };
 
-  const handleSearchChangeBySurname = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSearchSurname(event.target.value);
+  const handleSearchChangeByLocation = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchLocation(event.target.value);
   };
 
-  const handleSearchChangeBySsnCode = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSearchSsnCode(event.target.value);
-  };
-
-  const handleSearchChangeByComment = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSearchComment(event.target.value);
+  const handleSearchChangeByEmploymentState = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchEmploymentState(event.target.value);
   };
 
   const handleProfessionalSelect = (professional: Professional) => {
@@ -974,15 +971,15 @@ const CandidateProfessionalModal: React.FC<{
         <Form.Group controlId="search">
           <Row>
             <Col xs={12} sm={6}>
-              <Form.Control type="text" className="mb-2" placeholder="Search by name" value={searchName} onChange={handleSearchChangeByName} />
+              <Form.Control type="text" className="mb-2" placeholder="Search by skill" value={searchSkill} onChange={handleSearchChangeBySkill} />
             </Col>
             <Col xs={12} sm={6}>
               <Form.Control
                 type="text"
                 className="mb-2"
-                placeholder="Search by surname"
-                value={searchSurname}
-                onChange={handleSearchChangeBySurname}
+                placeholder="Search by location"
+                value={searchLocation}
+                onChange={handleSearchChangeByLocation}
               />
             </Col>
           </Row>
@@ -991,18 +988,9 @@ const CandidateProfessionalModal: React.FC<{
               <Form.Control
                 type="text"
                 className="mb-2"
-                placeholder="Search by ssn code"
-                value={searchSsnCode}
-                onChange={handleSearchChangeBySsnCode}
-              />
-            </Col>
-            <Col xs={12} sm={6}>
-              <Form.Control
-                type="text"
-                className="mb-2"
-                placeholder="Search by comment"
-                value={searchComment}
-                onChange={handleSearchChangeByComment}
+                placeholder="Search by employment state"
+                value={searchEmploymentState}
+                onChange={handleSearchChangeByEmploymentState}
               />
             </Col>
           </Row>
