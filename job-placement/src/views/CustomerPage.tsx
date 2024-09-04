@@ -99,15 +99,6 @@ function CustomerPage({ me }: { me: MeInterface }) {
           <Button variant="danger" onClick={
             () => {
               deleteCustomer(Number.parseInt(id!!), me)
-                .then((response) => {
-                  if (response.ok) {
-                    return response.text();
-                  } else {
-                    throw new Error(
-                      `DELETE /API/customers/${id} : Network response was not ok`
-                    );
-                  }
-                })
                 .then((json) => {
                   console.log("Deleted customer: ", json);
                   navigate("/ui/customers", { state: { success: true } });
