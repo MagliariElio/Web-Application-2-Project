@@ -17,7 +17,7 @@ class Telephone {
     lateinit var telephone: String
     lateinit var comment: String
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinTable(
         name = "telephone_contact",
         joinColumns = [JoinColumn(name = "telephone_id", referencedColumnName = "id")],

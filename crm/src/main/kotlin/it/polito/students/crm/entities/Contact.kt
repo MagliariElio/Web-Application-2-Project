@@ -16,7 +16,7 @@ class Contact {
     lateinit var category: CategoryOptions
     lateinit var comment: String
 
-    @ManyToMany(mappedBy = "contacts", cascade = [(CascadeType.MERGE)], fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "contacts", cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
     var emails = mutableSetOf<Email>()
 
     fun addEmail(email: Email) {
@@ -29,7 +29,7 @@ class Contact {
         email.contacts.remove(this)
     }
 
-    @ManyToMany(mappedBy = "contacts", cascade = [(CascadeType.MERGE)], fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "contacts", cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
     var addresses = mutableSetOf<Address>()
 
     fun addAddress(address: Address) {
@@ -42,7 +42,7 @@ class Contact {
         address.contacts.remove(this)
     }
 
-    @ManyToMany(mappedBy = "contacts", cascade = [(CascadeType.MERGE)], fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "contacts", cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
     var telephones = mutableSetOf<Telephone>()
 
     fun addTelephone(telephone: Telephone) {

@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import { Customer } from "../interfaces/Customer";
-import { fetchCustomer } from "../apis/CustomerRequests";
+import { fetchCustomer, updateCustomer } from "../apis/CustomerRequests";
 
 function EditCustomerPage({ me }: { me: MeInterface }) {
 
@@ -82,31 +82,18 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
             category: "CUSTOMER",
             emails: emails,
             telephones: telephones,
-            address: addresses
+            addresses: addresses
         };
 
-        fetch("/crmService/v1/API/customers", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-XSRF-Token': me.xsrfToken,
-            },
-            body: JSON.stringify(customer)
-        })
+        updateCustomer(Number.parseInt(id!!), customer, me)
         .then(res => {
-            if (!res.ok) {
-                navigate("/ui/customers", { state: { success: false } });
-                console.log("Error during customer post: ", res);
-                throw new Error('POST /API/customers : Network response was not ok');
-                
-            }
-            else {
                 navigate("/ui/customers", { state: { success: true } });
-            }
-            return res.json();
+          
         })
         .catch((error) => {
-            console.log(error);
+            navigate("/ui/customers", { state: { success: false } });
+            console.log("Error during customer post: ", error);
+            throw new Error('POST /API/customers : Network response was not ok');
         }
         );
 
