@@ -209,7 +209,7 @@ class CrmJobOffersController(
                 errors.add(ErrorsPage.JOBOFFERSTATUS_INVALID)
             }
 
-            if (professionalsId != null && professionalsId.all { it < 0 }) {
+            if (!professionalsId.isNullOrEmpty() && professionalsId.all { it < 0 }) {
                 logger.info("Error! Change joboffer status with negative professionalId")
                 errors.add("Professional id: " + ErrorsPage.ID_ERROR)
             }

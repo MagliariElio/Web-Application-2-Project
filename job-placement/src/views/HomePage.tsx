@@ -186,7 +186,7 @@ const HomePage = () => {
                     </Col>
                     <Col md={6} xs={12}>
                       <p className="mb-0">
-                        <strong>Status:</strong> <span className={`status ${joboffer.status.toLowerCase()}`}>{joboffer.status}</span>
+                        <strong>Status:</strong> <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
                       </p>
                     </Col>
                   </Row>
