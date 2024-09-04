@@ -186,3 +186,42 @@ export const abortJobOffer = async (jobOfferId: number, xsrfToken: string) => {
     throw error;
   }
 };
+
+export const goToCandidateProposalPhase = async (jobOfferId: number, xsrfToken: string, candidateId: number) => {
+  try {
+    const jobOffer = {
+      nextStatus: JobOfferState.CANDIDATE_PROPOSAL,
+      professionalsId: [candidateId]
+    };
+
+    const response = await fetch(`/crmService/v1/API/joboffers/${jobOfferId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-Token": xsrfToken,
+      },
+      body: JSON.stringify(jobOffer),
+    });
+
+    if (!response.ok) {
+      let errorMessage = "An error occurred while updating the job offer.";
+
+      try {
+        const message = await response.json();
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error in goToCandidateProposalPhase:", error);
+    throw error;
+  }
+};

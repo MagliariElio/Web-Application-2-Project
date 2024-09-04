@@ -1,15 +1,34 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination, ButtonGroup } from "react-bootstrap";
 import { JobOffer } from "../interfaces/JobOffer";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { FaCheckCircle, FaCircle, FaClock, FaMapMarkerAlt, FaMoneyBillWave, FaPen, FaTimesCircle, FaTrash, FaUser, FaUserTie } from "react-icons/fa";
+import {
+  FaCheck,
+  FaCheckCircle,
+  FaCircle,
+  FaClock,
+  FaMapMarkerAlt,
+  FaMoneyBillWave,
+  FaPen,
+  FaTimesCircle,
+  FaTrash,
+  FaUser,
+  FaUserTie,
+} from "react-icons/fa";
 import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants";
 import { MeInterface } from "../interfaces/MeInterface";
 import { fetchCustomer } from "../apis/CustomerRequests";
 import { Customer } from "../interfaces/Customer";
 import { fetchProfessional, fetchProfessionals } from "../apis/ProfessionalRequests";
 import { Professional } from "../interfaces/Professional";
-import { abortJobOffer, deleteJobOfferById, fetchJobOfferById, goToSelectionPhase, updateJobOffer } from "../apis/JobOfferRequests";
+import {
+  abortJobOffer,
+  deleteJobOfferById,
+  fetchJobOfferById,
+  goToCandidateProposalPhase,
+  goToSelectionPhase,
+  updateJobOffer,
+} from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
@@ -125,11 +144,6 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     //loadJobOffer(jobOfferSelected);
     loadJobOffer(null);
   }, [id]);
-
-  const handleDeleteCandidateProfessional = (indexToRemove: number) => {
-    const updatedList = candidateProfessionalList.filter((professional, index) => index !== indexToRemove);
-    setCandidateProfessionalList(updatedList);
-  };
 
   const handleAddSkill = () => {
     if (singleRequiredSkill.trim() === "") {
@@ -313,6 +327,36 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         errorRef.current.scrollIntoView({ behavior: "smooth" });
       }
     }
+  };
+
+  const handleSelectCandidateProfessional = async (indexCandidate: number) => {
+    const candidate = candidateProfessionalList[indexCandidate];
+    try {
+      setLoading(true);
+
+      const jobOfferResponse = await goToCandidateProposalPhase(parseInt(id ? id : ""), me.xsrfToken, candidate.id);
+      await loadJobOffer(jobOfferResponse);
+
+      setLoading(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCandidateProfessional = (indexToRemove: number) => {
+    const updatedList = candidateProfessionalList.filter((professional, index) => index !== indexToRemove);
+    setCandidateProfessionalList(updatedList);
   };
 
   if (loading) {
@@ -768,6 +812,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   )}
                 </>
               )}
+
+              {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
+                <Col md={12} className="mt-2">
+                  <p style={{ color: "gray", fontSize: "0.9rem" }}>Please select one of the candidates to propose them for this job offer.</p>
+                </Col>
+              )}
+
               <Col md={12} className="mt-3">
                 {loadingCandidateProfessional && <LoadingSection h={100} />}
                 {showProfessionalCandidateModal && !loadingCandidateProfessional && (
@@ -797,19 +848,29 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           <td>{professional.information.surname}</td>
                           <td>{professional.information.ssnCode}</td>
                           <td className="text-center">
-                            <Button
-                              variant="danger"
-                              onClick={() => handleDeleteCandidateProfessional(index)}
-                              disabled={jobOffer?.status === JobOfferState.ABORT || jobOffer?.status === JobOfferState.DONE}
-                            >
-                              <FaTrash />
-                            </Button>
+                            <ButtonGroup>
+                              <Button
+                                variant="success"
+                                className="me-2"
+                                onClick={() => handleSelectCandidateProfessional(index)}
+                                disabled={jobOffer?.status !== JobOfferState.SELECTION_PHASE}
+                              >
+                                <FaCheck />
+                              </Button>
+                              <Button
+                                variant="danger"
+                                onClick={() => handleDeleteCandidateProfessional(index)}
+                                disabled={jobOffer?.status === JobOfferState.ABORT || jobOffer?.status === JobOfferState.DONE}
+                              >
+                                <FaTrash />
+                              </Button>
+                            </ButtonGroup>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </Table>
-                )}{" "}
+                )}
                 {candidateProfessionalList?.length === 0 && !loadingCandidateProfessional && <p>No candidate professionals.</p>}
               </Col>
             </Row>
