@@ -5,6 +5,7 @@ import { Customer } from "../interfaces/Customer";
 import { BsChevronDown, BsChevronUp, BsPencilSquare, BsPlus, BsTrash } from "react-icons/bs";
 import { MeInterface } from "../interfaces/MeInterface";
 import { deleteCustomer, fetchCustomer } from "../apis/CustomerRequests";
+import { toTitleCase } from "../utils/costants";
 
 function CustomerPage({ me }: { me: MeInterface }) {
   // Estrai l'ID dall'URL
@@ -45,8 +46,6 @@ function CustomerPage({ me }: { me: MeInterface }) {
     }
 
     setLoading(true);
-
-    
       fetchCustomer(Number.parseInt(id))
       .then((json) => {
         setCustomer(json);
@@ -116,8 +115,19 @@ function CustomerPage({ me }: { me: MeInterface }) {
         </Modal.Footer>
       </Modal>
       
-
-      <Row className="d-flex flex-row p-0 mb-3 align-items-center">
+      {
+        loading && (
+          <Row className="d-flex justify-content-center align-items-center w-100 p-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </Row>
+        )
+      }
+      {
+        !loading && <>
+        
+        <Row className="d-flex flex-row p-0 mb-3 align-items-center">
         <Col>
           <h3>Customer</h3>
         </Col>
@@ -238,7 +248,86 @@ function CustomerPage({ me }: { me: MeInterface }) {
           </div>
         </Col>
       </Row>
+      </Row>
+
+      <Row className="d-flex justify-content-end mt-3">
+      <Col xs="auto" className="me-4">
+        <Button
+          className="d-flex align-items-center primaryButton"
+          onClick={() => navigate(`/ui/joboffers/add`, { state: { customer: customer } })}
+        >
+          <BsPlus size={"1.5em"} className="me-1" />
+          Add Job Offer
+        </Button>
+      </Col>
     </Row>
+
+      {
+        customer?.jobOffers && customer?.jobOffers.length > 0 && (
+          <Row className="d-flex flex-column mt-5">
+            <h4>Job Offers</h4>
+          </Row>
+        )
+      }
+
+      {
+        customer?.jobOffers && customer?.jobOffers.length === 0 && (
+          <Row className="d-flex flex-column text-center mt-5">
+            <h4>No job offers found yet!</h4>
+          </Row>
+        )
+      }
+
+      {
+        customer?.jobOffers.map((joboffer) => (
+          <div
+            key={joboffer.id}
+            className="job-offer-item mb-4 p-3"
+            onClick={() => navigate(`/ui/joboffers/${joboffer.id}`, { state: { jobOfferSelected: joboffer } })}
+          >
+            <Row className="align-items-center">
+              <Col xs={12} className="mb-2">
+                <h5 className="job-title">{joboffer.name}</h5>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Contract Type:</strong> {joboffer.contractType}
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Location:</strong> {joboffer.location}
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Work Mode:</strong> {joboffer.workMode}
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Duration:</strong> {joboffer.duration} hours
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Value:</strong> ${joboffer.value}
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-0">
+                  <strong>Status:</strong> <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
+                </p>
+              </Col>
+            </Row>
+          </div>
+        ))
+      }
+        
+        </>
+      }
+
+      
 
     </div>
   );
