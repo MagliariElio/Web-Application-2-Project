@@ -1,5 +1,6 @@
 import { CreateProfessional } from "../interfaces/CreateProfessional";
 import { MeInterface } from "../interfaces/MeInterface";
+import { PagedResponse } from "../interfaces/PagedResponse";
 import { Professional } from "../interfaces/Professional";
 
 export const fetchProfessional = async (professionalId: number): Promise<Professional> => {
@@ -35,7 +36,7 @@ export const fetchProfessional = async (professionalId: number): Promise<Profess
     skill: string = "",
     location: string = "",
     employmentState: string = "",
-  ): Promise<any> => {
+  ): Promise<PagedResponse<Professional>> => {
     try {
       const response = await fetch(
         `/crmService/v1/API/professionals?pageNumber=${page}&&pageSize=${pageSize}&&skill=${skill}&&location=${location}&&employmentState=${employmentState}`

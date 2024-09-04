@@ -43,15 +43,6 @@ function ProfessionalsPage() {
     }
 
     fetchProfessionals(0)
-      .then((res) => {
-        if (!res.ok) {
-          console.log(res);
-          throw new Error(
-            "GET /API/professionals : Network response was not ok"
-          );
-        }
-        return res.json();
-      })
       .then((result) => {
         console.log("professionals fetched: ", result);
         setProfessionals(result);
@@ -61,6 +52,9 @@ function ProfessionalsPage() {
         setError(true);
         console.log(error);
         setLoading(false);
+        throw new Error(
+          "GET /API/professionals : Network response was not ok"
+        );
       });
   }, []);
 
@@ -215,21 +209,7 @@ function ProfessionalsPage() {
                         
                         setLoading(true);
                         fetchProfessionals(0, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
-                          .then((res) => {
-                            if (!res.ok) {
-                              console.log(res);
-                              setActiveFilters({
-                                skill: "",
-                                geographicalLocation: "",
-                                employmentState: "",
-                              });
-                              setLoading(false);
-                              throw new Error(
-                                "GET /API/professionals : Network response was not ok"
-                              );
-                            }
-                            return res.json();
-                          })
+                          
                           .then((result) => {
                             console.log("Professionals fetched: ", result);
                             setProfessionals(result);
@@ -245,6 +225,9 @@ function ProfessionalsPage() {
                             });
                             setLoading(false);
                             console.log(error);
+                            throw new Error(
+                              "GET /API/professionals : Network response was not ok"
+                            );
                           });
                       }}
                     >
@@ -262,15 +245,7 @@ function ProfessionalsPage() {
                           employmentState: "",
                         });
                         fetchProfessionals(0, pageSize)
-                          .then((res) => {
-                            if (!res.ok) {
-                              console.log(res);
-                              throw new Error(
-                                "GET /API/professionals : Network response was not ok"
-                              );
-                            }
-                            return res.json();
-                          })
+                          
                           .then((result) => {
                             console.log("Professionals fetched: ", result);
                             setProfessionals(result);
@@ -286,6 +261,9 @@ function ProfessionalsPage() {
                             setError(true);
                             setLoading(false);
                             console.log(error);
+                            throw new Error(
+                              "GET /API/professionals : Network response was not ok"
+                            );
                           });
                       }}
                     >
@@ -459,15 +437,7 @@ function ProfessionalsPage() {
                               query += `&employmentState=${filters.employmentState}`;
 
                             fetchProfessionals(professionals.currentPage - 1, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
-                              .then((res) => {
-                                if (!res.ok) {
-                                  console.log(res);
-                                  throw new Error(
-                                    "GET /API/professionals : Network response was not ok"
-                                  );
-                                }
-                                return res.json();
-                              })
+                              
                               .then((result) => {
                                 console.log("Professionals fetched: ", result);
                                 setProfessionals(result);
@@ -478,6 +448,9 @@ function ProfessionalsPage() {
                                 setError(true);
                                 setLoading(false);
                                 console.log(error);
+                                throw new Error(
+                                  "GET /API/professionals : Network response was not ok"
+                                );
                               });
                           }}
                           style={{ cursor: "pointer" }}
@@ -501,15 +474,7 @@ function ProfessionalsPage() {
                               query += `&employmentState=${filters.employmentState}`;
 
                             fetchProfessionals(professionals.currentPage + 1, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
-                              .then((res) => {
-                                if (!res.ok) {
-                                  console.log(res);
-                                  throw new Error(
-                                    "GET /API/professionals : Network response was not ok"
-                                  );
-                                }
-                                return res.json();
-                              })
+                              
                               .then((result) => {
                                 console.log("Professionals fetched: ", result);
                                 setProfessionals(result);
@@ -520,6 +485,9 @@ function ProfessionalsPage() {
                                 setError(true);
                                 setLoading(false);
                                 console.log(error);
+                                throw new Error(
+                                  "GET /API/professionals : Network response was not ok"
+                                );
                               });
                           }}
                           style={{ cursor: "pointer" }}
@@ -538,23 +506,9 @@ function ProfessionalsPage() {
                     onChange={(e) => {
                       setPageSize(parseInt(e.target.value));
 
-                      var query = "";
-                      if (filters.skill) query += `&skill=${filters.skill}`;
-                      if (filters.geographicalLocation)
-                        query += `&location=${filters.geographicalLocation}`;
-                      if (filters.employmentState)
-                        query += `&employmentState=${filters.employmentState}`;
 
                       fetchProfessionals(0, parseInt(e.target.value), filters.skill, filters.geographicalLocation, filters.employmentState)
-                        .then((res) => {
-                          if (!res.ok) {
-                            console.log(res);
-                            throw new Error(
-                              "GET /API/professionals : Network response was not ok"
-                            );
-                          }
-                          return res.json();
-                        })
+                        
                         .then((result) => {
                           console.log("Professionals fetched: ", result);
                           setProfessionals(result);
@@ -565,6 +519,9 @@ function ProfessionalsPage() {
                           setError(true);
                           setLoading(false);
                           console.log(error);
+                          throw new Error(
+                            "GET /API/professionals : Network response was not ok"
+                          );
                         });
                     }}
                   >
