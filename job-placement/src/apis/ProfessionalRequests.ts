@@ -1,3 +1,5 @@
+import { CreateProfessional } from "../interfaces/CreateProfessional";
+import { MeInterface } from "../interfaces/MeInterface";
 import { Professional } from "../interfaces/Professional";
 
 export const fetchProfessional = async (professionalId: number): Promise<Professional> => {
@@ -20,14 +22,14 @@ export const fetchProfessional = async (professionalId: number): Promise<Profess
 
   export const fetchProfessionals = async (
     page: number,
-    name: string = "",
-    surname: string = "",
-    ssnCode: string = "",
-    comment: string = ""
+    pageSize: number = 10,
+    skill: string = "",
+    location: string = "",
+    employmentState: string = "",
   ): Promise<any> => {
     try {
       const response = await fetch(
-        `/crmService/v1/API/professionals?pageNumber=${page}&&name=${name}&&surname=${surname}&&ssnCode=${ssnCode}&&comment=${comment}`
+        `/crmService/v1/API/professionals?pageNumber=${page}&&pageSize=${pageSize}&&skill=${skill}&&location=${location}&&employmentState=${employmentState}`
       );
   
       if (!response.ok) {
@@ -43,3 +45,28 @@ export const fetchProfessional = async (professionalId: number): Promise<Profess
       throw error;
     }
   };
+
+export const createProfessional = async (professional: CreateProfessional, me: MeInterface ): Promise<Professional> => {
+    try {
+      const response = await fetch("/crmService/v1/API/professionals", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-XSRF-Token': me.xsrfToken,
+        },
+        body: JSON.stringify(professional)
+      });
+  
+      if (!response.ok) {
+        const errorMessage = `POST /API/professionals : ${response.status} ${response.statusText}`;
+        console.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+  
+      const data: Professional = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error creating professional:", error);
+      throw error;
+    }
+  }

@@ -5,6 +5,7 @@ import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
+import { createCustomer } from "../apis/CustomerRequests";
 
 function AddCustomerPage({ me }: { me: MeInterface }) {
 
@@ -25,11 +26,15 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
     const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] = useState('');
     const [telephoneError, setTelephoneError] = useState(false);
 
-    const [address, setAddress] = useState('');
-    const [city, setCity] = useState('');
-    const [region, setRegion] = useState('');
-    const [state, setState] = useState('');
-    const [addressComment, setAddressComment] = useState('');
+    const [addresses, setAddresses] = useState<any[]>([]);
+    const [singleAddress, setSingleAddress] = useState({
+        address: '',
+        city: '',
+        region: '',
+        state: '',
+        comment: ''
+    });
+    const [addressError, setAddressError] = useState(false);
 
 
     const handleSubmit = (event: React.FormEvent) => {
@@ -47,37 +52,17 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
             category: "CUSTOMER",
             emails: emails,
             telephones: telephones,
-            address: {
-                address: address,
-                city: city,
-                region: region,
-                state: state,
-                comment: addressComment
-            }
+            addresses: addresses
         };
 
-        fetch("/crmService/v1/API/customers", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-XSRF-Token': me.xsrfToken,
-            },
-            body: JSON.stringify(customer)
-        })
+        createCustomer(customer, me)
         .then(res => {
-            if (!res.ok) {
-                navigate("/ui/customers", { state: { success: false } });
-                console.log("Error during customer post: ", res);
-                throw new Error('POST /API/customers : Network response was not ok');
-                
-            }
-            else {
-                navigate("/ui/customers", { state: { success: true } });
-            }
-            return res.json();
+            navigate("/ui/customers", { state: { success: true } });
         })
         .catch((error) => {
-            console.log(error);
+            navigate("/ui/customers", { state: { success: false } });
+            console.log("Error during customer post: ", error);
+            throw new Error('POST /API/customers : Network response was not ok');
         }
         );
 
@@ -327,19 +312,55 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
                     </Row>
                 </Col>
             </Row>
+            {
+                addresses.length === 0 && 
+                    <Row>
+                    <Col xs={12} md={12} lg={6} className="mb-0">
+                                            <p>No addresses added yet</p>
+                                        </Col>
+                                        </Row>
+            }
+            {
+                addresses.length > 0 && addresses.map((address, index) => {
+                    return (
+                    <Row key={index} className="mb-1 d-flex align-items-center">
+                        <Col xs={8} md={6} lg={5}>
+                            <Row>
+                                <Col xs={12} md={12} lg={6} className="mb-0">
+                                <p className="text-truncate">
+                                    {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}
+                                </p>
+                                </Col>
+                                <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
+                                    <p className="text-truncate">{address.comment}</p>
+                                </Col>
+                            </Row>
+                        </Col>
+                        <Col xs={4} md={6} lg={1}>
+                            <Col className="mb-0">
+                                <Button className="secondaryDangerButton w-100" onClick={() => {
+                                    setAddresses(addresses.filter((e, i) => i !== index));
+                                }}>
+                                    Remove
+                                </Button>
+                            </Col>
+                        </Col>                                    
+                    </Row>)
+                })
+            }
             <Row>
                 <Col xs={12} md={6} lg={3} className="mb-2">
                     <Form.Control
                         placeholder="Address"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                        value={singleAddress.address}
+                        onChange={(e) => setSingleAddress({...singleAddress, address: e.target.value})}
                     />
                 </Col>
                 <Col xs={12} md={6} lg={3} className="mb-2">
                     <Form.Control
                         placeholder="City"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
+                        value={singleAddress.city}
+                        onChange={(e) => setSingleAddress({...singleAddress, city: e.target.value})}
                     />
                 </Col>
             </Row>
@@ -347,15 +368,15 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
                 <Col xs={12} md={6} lg={3} className="mb-2">
                     <Form.Control
                         placeholder="Region"
-                        value={region}
-                        onChange={(e) => setRegion(e.target.value)}
+                        value={singleAddress.region}
+                        onChange={(e) => setSingleAddress({...singleAddress, region: e.target.value})}
                     />
                 </Col>
                 <Col xs={12} md={6} lg={3} className="mb-2">
                     <Form.Control
                         placeholder="State"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
+                        value={singleAddress.state}
+                        onChange={(e) => setSingleAddress({...singleAddress, state: e.target.value})}
                     />
                 </Col>
             </Row>
@@ -364,9 +385,39 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
                     <Form.Control
                         as="textarea"
                         placeholder="Address comment"
-                        value={addressComment}
-                        onChange={(e) => setAddressComment(e.target.value)}
+                        value={singleAddress.comment}
+                        onChange={(e) => setSingleAddress({...singleAddress, comment: e.target.value})}
                     />
+                </Col>
+            </Row>
+            {
+                addressError && <Row>
+                                <Col xs={12} md={12} lg={6} className="mb-4">
+                                    <p className="text-danger">Address, city, region and state are required</p>
+                                </Col>
+                            </Row>
+            }
+            <Row>
+                <Col xs={12} md={12} lg={6} className="mb-2 d-flex justify-content-center">
+
+                    <Button className="secondaryButton" onClick={() => {
+                        if(singleAddress.address === '' || singleAddress.city === '' || singleAddress.region === '' || singleAddress.state === '') {
+                            setAddressError(true);
+                            return;
+                        }
+                        setAddresses([...addresses, singleAddress]);
+                        setSingleAddress({
+                            address: '',
+                            city: '',
+                            region: '',
+                            state: '',
+                            comment: ''
+                        });
+                        setAddressError(false);
+                    }}>
+                        Add address
+                    </Button>
+
                 </Col>
             </Row>
 

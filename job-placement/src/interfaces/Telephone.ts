@@ -3,3 +3,8 @@ export interface Telephone{
     telephone: string,
     comment: string
 }
+
+export interface CreateTelephone{
+    telephone: string,
+    comment: string
+}
