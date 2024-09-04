@@ -10,6 +10,7 @@ import { Customer } from "../interfaces/Customer";
 import { fetchProfessional, fetchProfessionals } from "../apis/ProfessionalRequests";
 import { Professional } from "../interfaces/Professional";
 import { deleteJobOfferById, fetchJobOfferById, goToSelectionPhase, updateJobOffer } from "../apis/JobOfferRequests";
+import { LoadingSection } from "../App";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [professional, setProfessional] = useState<Professional | null>(null);
   const [candidateProfessionalList, setCandidateProfessionalList] = useState<Professional[]>([]);
+  const [loadingCandidateProfessional, setLoadingCandidateProfessional] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -48,68 +50,82 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const handleOpenProfessionalCandidateModal = () => setProfessionalCandidateModal(true);
   const handleCloseProfessionalCandidateModal = () => setProfessionalCandidateModal(false);
   const handleAddCandidate = (professional: Professional) => {
-    setCandidateProfessionalList((prevList) => [
-      ...prevList,
-      professional,
-    ]);
+    setCandidateProfessionalList((prevList) => [...prevList, professional]);
   };
 
   const errorRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
+  const loadCandidateProfessionals = async (candidateList: number[]) => {
+    try {
+      setLoadingCandidateProfessional(true);
+      const resultList: Professional[] = await Promise.all(
+        candidateList.map(async (id) => {
+          const result = await fetchProfessional(id);
+          return result;
+        })
+      );
+      setCandidateProfessionalList(resultList);
+      setLoadingCandidateProfessional(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+
+      setLoadingCandidateProfessional(false);
+      setCandidateProfessionalList([]);
+    }
+  };
+
+  const loadJobOffer = async (jobOfferSelected: JobOffer | null) => {
+    try {
+      var result = null;
+      setLoading(true);
+
+      if (jobOfferSelected) {
+        result = jobOfferSelected;
+      } else if (id) {
+        result = await fetchJobOfferById(parseInt(id));
+      } else {
+        return;
+      }
+
+      setJobOffer(result);
+      setFormDataJobOffer(result);
+
+      const resultCustomer = await fetchCustomer(result?.customerId);
+      setCustomer(resultCustomer);
+
+      if (result?.professionalId) {
+        const resultProfessional = await fetchProfessional(result?.professionalId);
+        setProfessional(resultProfessional);
+      }
+
+      loadCandidateProfessionals(result?.candidateProfessionalIds);
+
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setError(true);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadCandidateProfessionals = async (candidateList: number[]) => {
-      try {
-        const resultList: Professional[] = await Promise.all(
-          candidateList.map(async (id) => {
-            const result = await fetchProfessional(id);
-            return result;
-          })
-        );
-        setCandidateProfessionalList(resultList);
-      } catch (error) {
-        console.error(error);
-        setError(true);
-        setLoading(false);
-        setCandidateProfessionalList([]);
-      }
-    };
-
-    const loadJobOffer = async (jobOfferSelected: JobOffer) => {
-      try {
-        var result = null;
-
-        if (jobOfferSelected) {
-          result = jobOfferSelected;
-        } else if (id) {
-          result = await fetchJobOfferById(parseInt(id));
-        } else {
-          return;
-        }
-
-        setJobOffer(result);
-        setFormDataJobOffer(result);
-
-        const resultCustomer = await fetchCustomer(result?.customerId);
-        setCustomer(resultCustomer);
-
-        if (result?.professionalId) {
-          const resultProfessional = await fetchProfessional(result?.professionalId);
-          setProfessional(resultProfessional);
-        }
-
-        loadCandidateProfessionals(result?.candidateProfessionalIds);
-
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        setError(true);
-        setLoading(false);
-      }
-    };
-
     loadJobOffer(jobOfferSelected);
   }, [id]);
+
+  const handleDeleteCandidateProfessional = (indexToRemove: number) => {
+    const updatedList = candidateProfessionalList.filter((professional, index) => index !== indexToRemove);
+    setCandidateProfessionalList(updatedList);
+  };
 
   const handleAddSkill = () => {
     if (singleRequiredSkill.trim() === "") {
@@ -195,7 +211,16 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
           setIsEditing(false);
         }
       } catch (error) {
-        setError(true);
+        if (error instanceof Error) {
+          setErrorMessage(error.message);
+        } else {
+          setErrorMessage("An unexpected error occurred");
+        }
+
+        // Scroll to error message when it appears
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
       }
     }
   };
@@ -216,26 +241,33 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
   const handleGoToSelectionPhase = async () => {
     const jobOffer = {
-      nextStatus: JobOfferState.SELECTION_PHASE,
-      professionalsId: [], // TODO: ricordarsi di aggiungere questo campo
-      note: "", // TODO: ricordarsi di aggiungere questo campo
+      //nextStatus: JobOfferState.SELECTION_PHASE,
+      professionalsId: candidateProfessionalList.map((p: Professional) => p.id),
     };
 
     try {
+      setLoading(true);
       await goToSelectionPhase(parseInt(id ? id : ""), me.xsrfToken, jobOffer);
+      await loadJobOffer(null);
+      setLoading(false);
     } catch (error) {
-      setError(true);
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      setLoading(false);
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
   if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-        <div className="spinner-border" role="status">
-          <span className="sr-only"></span>
-        </div>
-      </div>
-    );
+    return <LoadingSection h={null} />;
   }
 
   if (error) {
@@ -672,23 +704,26 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 </Button>
               </Col>
               <Col md={12} className="mt-3">
-              {showProfessionalCandidateModal && (
-              <CandidateProfessionalModal
-                show={showProfessionalCandidateModal}
-                alreadyExistentCandidates={candidateProfessionalList}
-                handleClose={handleCloseProfessionalCandidateModal}
-                onSelectProfessional={handleAddCandidate}
-              />
-            )}
+                {loadingCandidateProfessional && <LoadingSection h={100} />}
+
+                {showProfessionalCandidateModal && !loadingCandidateProfessional && (
+                  <CandidateProfessionalModal
+                    show={showProfessionalCandidateModal}
+                    alreadyExistentCandidates={candidateProfessionalList}
+                    handleClose={handleCloseProfessionalCandidateModal}
+                    onSelectProfessional={handleAddCandidate}
+                  />
+                )}
 
                 {candidateProfessionalList?.length > 0 ? (
-                  <Table striped bordered hover>
+                  <Table striped bordered hover className="align-middle">
                     <thead>
                       <tr>
                         <th>#</th>
                         <th>Name</th>
                         <th>Surname</th>
                         <th>SSN Code</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -698,6 +733,11 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           <td>{professional.information.name}</td>
                           <td>{professional.information.surname}</td>
                           <td>{professional.information.ssnCode}</td>
+                          <td className="text-center">
+                            <Button variant="danger" onClick={() => handleDeleteCandidateProfessional(index)}>
+                              <FaTrash />
+                            </Button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -739,11 +779,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   Go Back
                 </Button>
               </Col>
-              <Col className="text-center">
-                <Button className="primaryButton mb-2" variant="danger" size="lg" onClick={handleGoToSelectionPhase}>
-                  Go To Selection Phase
-                </Button>
-              </Col>
+              {jobOffer?.candidateProfessionalIds.length !== candidateProfessionalList.length && (
+                <Col className="text-center">
+                  {/* Si attiva quando si aggiunge un nuovo professional candidato */}
+                  <Button className="primaryButton mb-2" variant="danger" size="lg" onClick={handleGoToSelectionPhase}>
+                    Confirm
+                  </Button>
+                </Col>
+              )}
             </Row>
           )}
         </Form>
@@ -783,7 +826,7 @@ const ConfirmDeleteModal: React.FC<{
 const CandidateProfessionalModal: React.FC<{
   show: boolean;
   handleClose: () => void;
-  alreadyExistentCandidates: Professional[],
+  alreadyExistentCandidates: Professional[];
   onSelectProfessional: (selected: Professional) => void;
 }> = ({ show, handleClose, alreadyExistentCandidates, onSelectProfessional }) => {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
@@ -802,10 +845,10 @@ const CandidateProfessionalModal: React.FC<{
       try {
         setLoading(true);
         const result: any = await fetchProfessionals(currentPage, searchName, searchSurname, searchSsnCode, searchComment);
-        
-        const existingCandidateIds = new Set(alreadyExistentCandidates.map(p => p.id));
+
+        const existingCandidateIds = new Set(alreadyExistentCandidates.map((p) => p.id));
         result.content = result.content.filter((p: Professional) => !existingCandidateIds.has(p.id)); // filtraggio dei candidati già presenti
-        
+
         setProfessionals(result.content);
         setTotalPages(result.totalPages);
         setLoading(false);
@@ -902,11 +945,7 @@ const CandidateProfessionalModal: React.FC<{
           </Row>
         </Form.Group>
         {loading ? (
-          <div className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
-            <div className="spinner-border" role="status">
-              <span className="sr-only"></span>
-            </div>
-          </div>
+          <LoadingSection h={200} />
         ) : error ? (
           <Container className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
             <Alert variant="danger" className="text-center w-75">

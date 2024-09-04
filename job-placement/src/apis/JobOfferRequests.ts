@@ -13,8 +13,18 @@ export const submitJobOffer = async (jobOffer: any, xsrfToken: string) => {
     });
 
     if (!response.ok) {
-      console.log("Error during joboffers post: ", response);
-      throw new Error("POST /API/joboffers : Network response was not ok");
+      let errorMessage = "An error occurred while updating the job offer.";
+
+      try {
+        const message = await response.json();
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -36,8 +46,18 @@ export const updateJobOffer = async (jobOffer: JobOffer, xsrfToken: string) => {
     });
 
     if (!response.ok) {
-      console.log("Error during joboffers patch: ", response);
-      throw new Error("PATCH /API/joboffers : Network response was not ok");
+      let errorMessage = "An error occurred while updating the job offer.";
+
+      try {
+        const message = await response.json();
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -109,12 +129,23 @@ export const goToSelectionPhase = async (jobOfferId: number, xsrfToken: string, 
     });
 
     if (!response.ok) {
-      throw new Error(`PATCH /API/joboffers/${jobOfferId} : Network response was not ok`);
+      let errorMessage = "An error occurred while updating the job offer.";
+
+      try {
+        const message = await response.json();
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
     }
 
     return { success: true, message: "Job offer updated successfully." };
   } catch (error) {
-    console.error("Error updating job offer:", error);
+    console.error("Error in goToSelectionPhase:", error);
     throw error;
   }
 };

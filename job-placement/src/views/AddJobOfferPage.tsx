@@ -115,7 +115,16 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       await submitJobOffer(jobOffer, me.xsrfToken);
       navigate("/ui", { state: { success: true } });
     } catch (error) {
-      navigate("/ui", { state: { success: false } });
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 

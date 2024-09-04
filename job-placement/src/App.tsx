@@ -7,7 +7,15 @@ import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
 import HomePage from "./views/HomePage.tsx";
-import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsFillHouseDoorFill, BsGearFill, BsPersonWorkspace } from "react-icons/bs";
+import {
+  BsBriefcaseFill,
+  BsBuildingsFill,
+  BsCaretLeftFill,
+  BsCaretRightFill,
+  BsFillHouseDoorFill,
+  BsGearFill,
+  BsPersonWorkspace,
+} from "react-icons/bs";
 import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
 import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
@@ -64,7 +72,7 @@ function App() {
           md={sidebarOpened ? 4 : 2}
           lg={sidebarOpened ? 2 : 1}
           className="text-white d-flex flex-column p-0 background-white vh-100"
-          style={{ position: 'fixed', top: 0, left: 0 }}
+          style={{ position: "fixed", top: 0, left: 0 }}
         >
           <Sidebar opened={sidebarOpened} setOpened={setSidebarOpened} me={me} />
         </Col>
@@ -73,11 +81,9 @@ function App() {
           md={sidebarOpened ? 4 : 2}
           lg={sidebarOpened ? 2 : 1}
           className="text-white d-flex flex-column p-0 background-white vh-100"
-        >
-          
-        </Col>
-        
-        <Col xs={sidebarOpened ? 12 : 8} md={sidebarOpened ? 8 : 10} lg={sidebarOpened ? 10 : 11} className="ps-4 pt-2" >
+        ></Col>
+
+        <Col xs={sidebarOpened ? 12 : 8} md={sidebarOpened ? 8 : 10} lg={sidebarOpened ? 10 : 11} className="ps-4 pt-2">
           {/* Navbar */}
           <Row className="w-100 text-white">
             <NavBar me={me} />
@@ -127,21 +133,21 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
   return (
     <>
       <Nav className="vh-100 flex-column w-100 p-3 sidebar">
-          <div className="text-white mb-3">
-            <div className="w-100 d-flex justify-content-center mb-3">
-              <img
-                src="https://www.bgscareerventures.com/uploads/source/Logos/JobConnectLogoFINAL-400.png?1620160597743"
-                alt="Logo"
-                className="handpointeronhover"
-                width={opened ? "75%" : "100%"}
-                style={{ maxWidth: "200px" }}
-                onClick={() => {
-                  if (location.pathname !== "/ui") navigate("/ui");
-                }}
-              />
-            </div>
-            <hr className="border-top border-light" />
+        <div className="text-white mb-3">
+          <div className="w-100 d-flex justify-content-center mb-3">
+            <img
+              src="https://www.bgscareerventures.com/uploads/source/Logos/JobConnectLogoFINAL-400.png?1620160597743"
+              alt="Logo"
+              className="handpointeronhover"
+              width={opened ? "75%" : "100%"}
+              style={{ maxWidth: "200px" }}
+              onClick={() => {
+                if (location.pathname !== "/ui") navigate("/ui");
+              }}
+            />
           </div>
+          <hr className="border-top border-light" />
+        </div>
         <Nav.Link
           href="#"
           className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
@@ -214,6 +220,16 @@ const LoginPrompt = () => {
         </Col>
       </Row>
     </Container>
+  );
+};
+
+export const LoadingSection: FC<{ h: number | null }> = ({ h }) => {
+  return (
+    <div className="d-flex justify-content-center align-items-center" style={{ height: h ? `${h}px` : "100vh" }}>
+      <div className="spinner-border" role="status">
+        <span className="sr-only"></span>
+      </div>
+    </div>
   );
 };
 
