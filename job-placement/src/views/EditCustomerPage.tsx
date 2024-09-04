@@ -162,6 +162,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
                         placeholder="Comments"
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
+                        maxLength={255}
                     />
                 </Col>
             </Row>
