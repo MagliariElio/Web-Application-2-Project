@@ -13,7 +13,7 @@ export const fetchCustomers = async (
 ): Promise<PagedResponse<Customer>> => {
   try {
     const response = await fetch(
-      `/crmService/v1/API/customers?pageNumber=${page}&&pageSize=${pageSize}`
+      `/crmService/v1/API/customers?pageNumber=${page}&&pageSize=${pageSize}&&name=${name}&&surname=${surname}&&ssnCode=${ssnCode}&&comment=${comment}`
     );
 
     if (!response.ok) {
