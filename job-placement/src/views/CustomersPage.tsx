@@ -11,6 +11,7 @@ import { BsChevronLeft, BsChevronRight, BsPlus, BsSearch } from "react-icons/bs"
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
 import { useLocation, useNavigate } from "react-router-dom";
+import { fetchCustomers } from "../apis/CustomerRequests";
 
 function CustomersPage() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function CustomersPage() {
   const location = useLocation();
   var { success } = location.state || {};
   const [showAlert, setShowAlert] = useState(false);
-
+  
   useEffect(() => {
     if (success != null) {
       setShowAlert(true);
@@ -33,14 +34,7 @@ function CustomersPage() {
       }, 3000);
     }
 
-    fetch("/crmService/v1/API/customers")
-      .then((res) => {
-        if (!res.ok) {
-          console.log(res);
-          throw new Error("GET /API/customers : Network response was not ok");
-        }
-        return res.json();
-      })
+    fetchCustomers(0)
       .then((result) => {
         console.log("Customers fetched: ", result);
         setCustomers(result);
@@ -50,6 +44,7 @@ function CustomersPage() {
         setError(true);
         console.log(error);
         setLoading(false);
+        throw new Error("GET /API/customers : Network response was not ok");
       });
   }, []);
 
@@ -71,7 +66,7 @@ function CustomersPage() {
     }));
   };
 
-  const [sortCriteria, setSortCriteria] = useState("name");
+  const [sortCriteria, setSortCriteria] = useState("asc_name");
 
   var presentedCustomers =
     customers?.content.filter((customer) => {
@@ -82,9 +77,6 @@ function CustomersPage() {
     }) || [];
 
     const [pageSize, setPageSize] = useState(10);
-
-
-console.log(customers)
 
   return (
     <div className="w-100">
@@ -226,25 +218,8 @@ console.log(customers)
                       className="primaryButton mb-2"
                       variant="primary"
                       onClick={() => {
-                        var query = "";
-                        if (filters.name || filters.surname || filters.ssnCode) query += "?";
-                        if (filters.name) query += `&name=${filters.name}`;
-                        if (filters.surname) query += `&surname=${filters.surname}`;
-                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
                         setLoading(true);
-                        fetch(
-                            `/crmService/v1/API/customers${query}`
-                            )
-                            .then((res) => {
-                                if (!res.ok) {
-                                console.log(res);
-                                setLoading(false);
-                                throw new Error(
-                                    "GET /API/customers : Network response was not ok"
-                                );
-                                }
-                                return res.json();
-                            })
+                        fetchCustomers(0, filters.name, filters.surname, filters.ssnCode)
                             .then((result) => {
                                 console.log("Customers fetched: ", result);
                                 setCustomers(result);
@@ -254,6 +229,9 @@ console.log(customers)
                                 setError(true);
                                 setLoading(false);
                                 console.log(error);
+                                throw new Error(
+                                    "GET /API/customers : Network response was not ok"
+                                );
                             });
                       }}
                     >
@@ -272,14 +250,8 @@ console.log(customers)
                           jobOffersNumberFrom: 0,
                           jobOffersNumberTo: 10000,
                         });
-                        fetch("/crmService/v1/API/customers")
-                          .then((res) => {
-                            if (!res.ok) {
-                              console.log(res);
-                              throw new Error("GET /API/customers : Network response was not ok");
-                            }
-                            return res.json();
-                          })
+                        fetchCustomers(0)
+                          
                           .then((result) => {
                             console.log("Customers fetched: ", result);
                             setCustomers(result);
@@ -290,6 +262,7 @@ console.log(customers)
                             setError(true);
                             setLoading(false);
                             console.log(error);
+                            throw new Error("GET /API/customers : Network response was not ok");
                           });
                       }}
                     >
@@ -417,24 +390,9 @@ console.log(customers)
                                 customers.currentPage > 0 && (
                                     <Col xs="auto" className="d-flex align-items-center">
                                 <BsChevronLeft onClick={() => {
+                                   
+                                    fetchCustomers(customers.currentPage - 1, filters.name, filters.surname, filters.ssnCode)
                                     
-                                    var query = "";
-                                    if (filters.name) query += `&name=${filters.name}`;
-                                    if (filters.surname) query += `&surname=${filters.surname}`;
-                                    if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
-
-                                    fetch(
-                                        `/crmService/v1/API/customers?pageNumber=${customers.currentPage - 1}${query}`
-                                    )
-                                    .then((res) => {
-                                        if (!res.ok) {
-                                        console.log(res);
-                                        throw new Error(
-                                            "GET /API/customers : Network response was not ok"
-                                        );
-                                        }
-                                        return res.json();
-                                    })
                                     .then((result) => {
                                         console.log("Customers fetched: ", result);
                                         setCustomers(result);
@@ -445,6 +403,9 @@ console.log(customers)
                                         setError(true);
                                         setLoading(false);
                                         console.log(error);
+                                        throw new Error(
+                                          "GET /API/customers : Network response was not ok"
+                                      );
                                     });
 
                                 }} style={{ cursor: 'pointer' }} />
@@ -460,24 +421,9 @@ console.log(customers)
                                     <Col xs="auto" className="d-flex align-items-center">
                                 <BsChevronRight onClick={() => {
 
-                                        var query = "";
-                                        if (filters.name) query += `&name=${filters.name}`;
-                                        if (filters.surname) query += `&surname=${filters.surname}`;
-                                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
-
                                         
-                                        fetch(
-                                            `/crmService/v1/API/customers?pageNumber=${customers.currentPage + 1}${query}`
-                                        )
-                                        .then((res) => {
-                                            if (!res.ok) {
-                                            console.log(res);
-                                            throw new Error(
-                                                "GET /API/customers : Network response was not ok"
-                                            );
-                                            }
-                                            return res.json();
-                                        })
+                                        fetchCustomers(customers.currentPage + 1, filters.name, filters.surname, filters.ssnCode)
+                                        
                                         .then((result) => {
                                             console.log("Customers fetched: ", result);
                                             setCustomers(result);
@@ -488,6 +434,9 @@ console.log(customers)
                                             setError(true);
                                             setLoading(false);
                                             console.log(error);
+                                            throw new Error(
+                                              "GET /API/customers : Network response was not ok"
+                                          );
                                         }); 
                                 }} style={{ cursor: 'pointer' }} />
                             </Col>
@@ -506,22 +455,9 @@ console.log(customers)
                         value={pageSize}
                         onChange={(e) => {
                             setPageSize(parseInt(e.target.value));
-                            var query = "";
-                                        if (filters.name) query += `&name=${filters.name}`;
-                                        if (filters.surname) query += `&surname=${filters.surname}`;
-                                        if (filters.ssnCode) query += `&ssnCode=${filters.ssnCode}`;
-                            fetch(
-                                `/crmService/v1/API/customers?pageSize=${e.target.value}${query}`
-                            )
-                            .then((res) => {
-                                if (!res.ok) {
-                                console.log(res);
-                                throw new Error(
-                                    "GET /API/customers : Network response was not ok"
-                                );
-                                }
-                                return res.json();
-                            })
+                            
+                            fetchCustomers(0, filters.name, filters.surname, filters.ssnCode, undefined, parseInt(e.target.value))
+                           
                             .then((result) => {
                                 console.log("Customers fetched: ", result);
                                 setCustomers(result);
@@ -532,6 +468,9 @@ console.log(customers)
                                 setError(true);
                                 setLoading(false);
                                 console.log(error);
+                                throw new Error(
+                                  "GET /API/customers : Network response was not ok"
+                              );
                             });
                         }}
                     >

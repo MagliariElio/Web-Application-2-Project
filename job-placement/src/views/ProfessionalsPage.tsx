@@ -20,6 +20,7 @@ import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Professional } from "../interfaces/Professional";
+import { fetchProfessionals } from "../apis/ProfessionalRequests";
 
 function ProfessionalsPage() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ function ProfessionalsPage() {
       }, 3000);
     }
 
-    fetch("/crmService/v1/API/professionals")
+    fetchProfessionals(0)
       .then((res) => {
         if (!res.ok) {
           console.log(res);
@@ -211,20 +212,9 @@ function ProfessionalsPage() {
                       className="primaryButton mb-2"
                       variant="primary"
                       onClick={() => {
-                        var query = "";
-                        if (
-                          filters.skill ||
-                          filters.geographicalLocation ||
-                          filters.employmentState
-                        )
-                          query += "?";
-                        if (filters.skill) query += `&skill=${filters.skill}`;
-                        if (filters.geographicalLocation)
-                          query += `&location=${filters.geographicalLocation}`;
-                        if (filters.employmentState)
-                          query += `&employmentState=${filters.employmentState}`;
+                        
                         setLoading(true);
-                        fetch(`/crmService/v1/API/professionals${query}`)
+                        fetchProfessionals(0, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
                           .then((res) => {
                             if (!res.ok) {
                               console.log(res);
@@ -271,7 +261,7 @@ function ProfessionalsPage() {
                           geographicalLocation: "",
                           employmentState: "",
                         });
-                        fetch("/crmService/v1/API/professionals")
+                        fetchProfessionals(0, pageSize)
                           .then((res) => {
                             if (!res.ok) {
                               console.log(res);
@@ -468,11 +458,7 @@ function ProfessionalsPage() {
                             if (filters.employmentState)
                               query += `&employmentState=${filters.employmentState}`;
 
-                            fetch(
-                              `/crmService/v1/API/professionals?pageNumber=${
-                                professionals.currentPage - 1
-                              }${query}`
-                            )
+                            fetchProfessionals(professionals.currentPage - 1, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
                               .then((res) => {
                                 if (!res.ok) {
                                   console.log(res);
@@ -514,11 +500,7 @@ function ProfessionalsPage() {
                             if (filters.employmentState)
                               query += `&employmentState=${filters.employmentState}`;
 
-                            fetch(
-                              `/crmService/v1/API/professionals?pageNumber=${
-                                professionals.currentPage + 1
-                              }${query}`
-                            )
+                            fetchProfessionals(professionals.currentPage + 1, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
                               .then((res) => {
                                 if (!res.ok) {
                                   console.log(res);
@@ -563,9 +545,7 @@ function ProfessionalsPage() {
                       if (filters.employmentState)
                         query += `&employmentState=${filters.employmentState}`;
 
-                      fetch(
-                        `/crmService/v1/API/professionals?pageSize=${e.target.value}${query}`
-                      )
+                      fetchProfessionals(0, parseInt(e.target.value), filters.skill, filters.geographicalLocation, filters.employmentState)
                         .then((res) => {
                           if (!res.ok) {
                             console.log(res);

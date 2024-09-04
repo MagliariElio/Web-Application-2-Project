@@ -5,6 +5,7 @@ import { BsX, BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
+import { createProfessional } from "../apis/ProfessionalRequests";
 
 function AddProfessionalPage({ me }: { me: MeInterface }) {
 
@@ -53,13 +54,13 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 category: "PROFESSIONAL",
                 emails: emails,
                 telephones: telephones,
-                address: {
+                addresses: [{
                     address: address,
                     city: city,
                     region: region,
                     state: state,
                     comment: addressComment
-                }
+                }]
             },
             skills: skills,
             geographicalLocation: geographicalLocation,
@@ -67,28 +68,14 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             }
         
 
-        fetch("/crmService/v1/API/professionals", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-XSRF-Token': me.xsrfToken,
-            },
-            body: JSON.stringify(professional),
-        })
+        createProfessional(professional, me)
         .then(res => {
-            if (!res.ok) {
-                navigate("/ui/professionals", { state: { success: false } });
-                console.log("Error during professional post: ", res);
-                throw new Error('POST /API/professionals : Network response was not ok');
-                
-            }
-            else {
-                navigate("/ui/professionals", { state: { success: true } });
-            }
-            return res.json();
+            navigate("/ui/professionals", { state: { success: true } });
         })
         .catch((error) => {
-            console.log(error);
+            navigate("/ui/professionals", { state: { success: false } });
+            console.log("Error during professional post: ", error);
+            throw new Error('POST /API/professionals : Network response was not ok');
         }
         );
 

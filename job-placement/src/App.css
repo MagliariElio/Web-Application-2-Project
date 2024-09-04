@@ -315,6 +315,21 @@
   color: #f8f9fa !important;
 }
 
+.primaryDangerButton {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
+}
+
+.primaryDangerButton:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 20px #dc35457a;
+  background-color: #dc3545c2 !important;
+}
+
 .secondaryDangerButton {
   background-color: #f8f9fa !important;
   color: #dc3545 !important;
