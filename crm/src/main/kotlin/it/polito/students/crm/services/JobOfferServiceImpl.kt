@@ -206,6 +206,7 @@ class JobOfferServiceImpl(
                 oldJobOffer.professional?.jobOffers?.remove(oldJobOffer)
                 oldJobOffer.professional = null
                 oldJobOffer.value = 0.0
+                oldJobOffer.oldStatus = JobStatusEnum.CREATED
                 if (note != null) oldJobOffer.note = note
             }
 
@@ -241,6 +242,7 @@ class JobOfferServiceImpl(
                 oldJobOffer.professional = professional!!
                 oldJobOffer.value = oldJobOffer.duration * professional!!.dailyRate * profitMargin
                 if (note != null) oldJobOffer.note = note
+                oldJobOffer.oldStatus = JobStatusEnum.SELECTION_PHASE
             }
 
             JobStatusEnum.CONSOLIDATED -> {
@@ -275,6 +277,7 @@ class JobOfferServiceImpl(
                 oldJobOffer.professional!!.employmentState = EmploymentStateEnum.EMPLOYED
                 oldJobOffer.professional!!.jobOffers.add(oldJobOffer)
                 if (note != null) oldJobOffer.note = note
+                oldJobOffer.oldStatus = JobStatusEnum.CANDIDATE_PROPOSAL
             }
 
             JobStatusEnum.DONE -> {
@@ -313,12 +316,14 @@ class JobOfferServiceImpl(
                 oldJobOffer.professional = null
                 oldJobOffer.value = 0.0
                 if (note != null) oldJobOffer.note = note
+                oldJobOffer.oldStatus = JobStatusEnum.CONSOLIDATED
             }
 
             JobStatusEnum.ABORT -> {
                 oldJobOffer.status = nextStatus
                 oldJobOffer.professional?.employmentState = EmploymentStateEnum.UNEMPLOYED
                 oldJobOffer.professional?.let { professionalRepository.save(it) }
+                oldJobOffer.oldStatus = oldStatus
                 if (note != null) oldJobOffer.note = note
             }
 
@@ -327,7 +332,6 @@ class JobOfferServiceImpl(
 
         oldJobOffer.professional?.let { professionalRepository.save(it) }
         oldJobOffer.candidateProfessionals.forEach{professionalRepository.save(it)}
-        oldJobOffer.oldStatus = oldStatus
         val newJobOffer = jobOfferRepository.save(oldJobOffer)
 
         return newJobOffer.toDTO()

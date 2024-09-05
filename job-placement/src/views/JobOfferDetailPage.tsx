@@ -7,6 +7,7 @@ import {
   FaCheckCircle,
   FaCircle,
   FaClock,
+  FaInfo,
   FaMapMarkerAlt,
   FaMoneyBillWave,
   FaPen,
@@ -33,6 +34,8 @@ import {
   updateJobOffer,
 } from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
+import { FaCircleInfo } from "react-icons/fa6";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -341,6 +344,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
   };
 
+  /**
+   * Handles the selection of a candidate for a job offer.
+   * Fetches the job offer details after proposing the candidate and updates the state.
+   * Displays an error message if the operation fails.
+   *
+   * @param {number} indexCandidate - The index of the selected candidate in the candidateProfessionalList.
+   */
   const handleSelectCandidateProfessional = async (indexCandidate: number) => {
     const candidate = candidateProfessionalList[indexCandidate];
     try {
@@ -366,6 +376,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
   };
 
+  /**
+   * Moves the job offer to the "consolidated" state if the current state allows it.
+   * Displays an error message if the operation fails or if the state is not appropriate.
+   */
   const handleGoToConsolidated = async () => {
     if (jobOffer?.status !== JobOfferState.CANDIDATE_PROPOSAL || !professional?.id) {
       setErrorMessage("This action is not available in this moment.");
@@ -399,6 +413,11 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
   };
 
+  /**
+   * Cancels the candidation process for the job offer.
+   * Only available if the job offer is currently in the "candidate proposal" state.
+   * Displays an error message if the operation fails or if the state is not appropriate.
+   */
   const handleCancelCadidation = async () => {
     if (jobOffer?.status !== JobOfferState.CANDIDATE_PROPOSAL) {
       setErrorMessage("This action is not available in this moment.");
@@ -434,6 +453,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
   };
 
+  /**
+   * Completes the job offer process if the current state allows it.
+   * Displays an error message if the operation fails or if the state is not appropriate.
+   */
   const handleDoneJobOffer = async () => {
     if (jobOffer?.status !== JobOfferState.CONSOLIDATED || !professional?.id) {
       setErrorMessage("This action is not available in this moment.");
@@ -467,6 +490,11 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
   };
 
+  /**
+   * Removes a candidate from the list of professional candidates.
+   *
+   * @param {number} indexToRemove - The index of the candidate to be removed from the candidateProfessionalList.
+   */
   const handleDeleteCandidateProfessional = (indexToRemove: number) => {
     const updatedList = candidateProfessionalList.filter((professional, index) => index !== indexToRemove);
     setCandidateProfessionalList(updatedList);
@@ -853,14 +881,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
           {/* Customer Section */}
           <Row className="border-top pt-3 mb-3">
             <Col xs={12}>
-              <Form.Group as={Row} controlId="professionalId">
+              <Form.Group as={Row} controlId="customerId">
                 <Form.Label column xs={6} className="fw-bold">
                   Customer Information
                 </Form.Label>
 
                 {/* Buttons Section */}
                 <Col xs={6} className="text-end">
-                  <Button variant="primary" className="me-2" onClick={() => {}}>
+                  <Button variant="primary" className="me-2" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
                     Profile
                   </Button>
                 </Col>
@@ -892,7 +920,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
                   {/* Buttons Section */}
                   <Col xs={6} className="text-end">
-                    <Button variant="primary" className="me-2" onClick={() => {}}>
+                    <Button variant="primary" className="me-2" onClick={() => navigate(`/ui/professionals/${professional.id}`)}>
                       Profile
                     </Button>
                     {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && (
@@ -905,7 +933,20 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                         </Button>
                       </>
                     )}
+                    {jobOffer?.status === JobOfferState.CONSOLIDATED && (
+                      <Button variant="danger" onClick={handleGoToSelectionPhase}>
+                        Cancel
+                      </Button>
+                    )}
                   </Col>
+
+                  {jobOffer?.status === JobOfferState.CONSOLIDATED && (
+                    <Col xs={12} className="mt-2 align-items-center">
+                      <p style={{ color: "gray", fontSize: "0.9rem" }}>
+                        <AiOutlineInfoCircle /> To return to the candidate selection phase, please click the <strong>Cancel</strong> button.
+                      </p>
+                    </Col>
+                  )}
 
                   <Col xs={12} md={6} className="mb-3">
                     <Form.Label>Surname</Form.Label>
@@ -939,7 +980,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               <Col md={9} className="d-flex align-items-center">
                 <strong>Candidate Professionals: </strong>
               </Col>
-              {jobOffer?.status !== JobOfferState.ABORT && (
+              {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
                 <>
                   <Col md={2} className="text-end">
                     <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
@@ -958,8 +999,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               )}
 
               {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
-                <Col md={12} className="mt-2">
-                  <p style={{ color: "gray", fontSize: "0.9rem" }}>Please select one of the candidates to propose them for this job offer.</p>
+                <Col md={12} className="mt-2 align-items-center">
+                  <p style={{ color: "gray", fontSize: "0.9rem" }}>
+                    <AiOutlineInfoCircle /> Please select one of the candidates to propose them for this job offer.
+                  </p>
                 </Col>
               )}
 

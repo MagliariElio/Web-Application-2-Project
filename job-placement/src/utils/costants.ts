@@ -5,7 +5,13 @@ export enum JobOfferState {
   CONSOLIDATED = "CONSOLIDATED",
   ABORT = "ABORT",
   DONE = "DONE",
-}
+};
+
+export enum RoleState {
+  GUEST = "GUEST",
+  OPERATOR = "OPERATOR",
+  MANAGER = "MANAGER",
+};
 
 export const contractTypeList = ["Full Time", "Part Time", "Contract", "Freelance"];
 

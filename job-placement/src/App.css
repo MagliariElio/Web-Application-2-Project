@@ -124,27 +124,27 @@
 }
 
 .status.created {
-  color: #007bff;
+  color: #1d4ed8;
 }
 
 .status.selection_phase {
-  color: #17a2b8;
+  color: #0ea5e9;
 }
 
 .status.candidate_proposal {
-  color: #ffc107;
+  color: #f59e0b;
 }
 
 .status.consolidated {
-  color: #28a745;
+  color: #64748b;
 }
 
 .status.abort {
-  color: #dc3545;
+  color: #dc2626;
 }
 
 .status.done {
-  color: #6c757d;
+  color: #16a34a;
 }
 
 .sidebar-search {

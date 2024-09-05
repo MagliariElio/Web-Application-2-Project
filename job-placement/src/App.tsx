@@ -7,15 +7,7 @@ import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
 import HomePage from "./views/HomePage.tsx";
-import {
-  BsBriefcaseFill,
-  BsBuildingsFill,
-  BsCaretLeftFill,
-  BsCaretRightFill,
-  BsFillHouseDoorFill,
-  BsGearFill,
-  BsPersonWorkspace,
-} from "react-icons/bs";
+import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsGearFill } from "react-icons/bs";
 import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
 import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
@@ -27,40 +19,57 @@ import CustomerPage from "./views/CustomerPage.tsx";
 import AddProfessionalPage from "./views/AddProfessionalPage.tsx";
 import ProfessionalPage from "./views/ProfessionalPage.tsx";
 import EditCustomerPage from "./views/EditCustomerPage.tsx";
+import { RoleState } from "./utils/costants.ts";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
+  const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string>("");
 
   const [sidebarOpened, setSidebarOpened] = useState(true);
 
   useEffect(() => {
-    JPAPIAuth.fetchMe(setMe).then(async () => {
-      if (me?.principal !== null) {
-        const res = await fetch("/documentStoreService/v1/API/documents/auth");
-        const json = await res.json();
+    const fetchUserRoles = async () => {
+      setLoading(true);
 
-        if (JSON.stringify(json.principal.claims.realm_access.roles[0])) {
-          var i = 0;
-          while (
-            json.principal.claims.realm_access.roles[i] !== "GUEST" &&
-            json.principal.claims.realm_access.roles[i] !== "OPERATOR" &&
-            json.principal.claims.realm_access.roles[i] !== "MANAGER"
-          ) {
-            console.log(JSON.stringify(json.principal.claims.realm_access.roles[i]));
-            i = i + 1;
-          }
-          if (json.principal.claims.realm_access.roles[i]) {
-            console.log("New role: " + json.principal.claims.realm_access.roles[i]);
-            setRole(json.principal.claims.realm_access.roles[i]);
+      await JPAPIAuth.fetchMe(setMe).then(async () => {
+        if (me?.principal !== null) {
+          const res = await fetch("/documentStoreService/v1/API/documents/auth");
+          const json = await res.json();
+
+          if (JSON.stringify(json.principal.claims.realm_access.roles[0])) {
+            var i = 0;
+            while (
+              json.principal.claims.realm_access.roles[i] !== RoleState.GUEST &&
+              json.principal.claims.realm_access.roles[i] !== RoleState.OPERATOR &&
+              json.principal.claims.realm_access.roles[i] !== RoleState.MANAGER
+            ) {
+              console.log(JSON.stringify(json.principal.claims.realm_access.roles[i]));
+              i = i + 1;
+            }
+            if (json.principal.claims.realm_access.roles[i]) {
+              console.log("New role: " + json.principal.claims.realm_access.roles[i]);
+              setRole(json.principal.claims.realm_access.roles[i]);
+            } else {
+              setRole(RoleState.OPERATOR);
+            }
           } else {
-            setRole("OPERATOR");
+            setRole(RoleState.OPERATOR);
           }
-        } else {
-          setRole("OPERATOR");
         }
-      }
-    });
+      });
+
+      setLoading(false);
+    };
+
+    // Call immediately on component mount
+    fetchUserRoles();
+
+    // Call periodically every 5 minutes (300000 ms)
+    const interval = setInterval(fetchUserRoles, 300000);
+
+    // Cleanup on unmount to avoid memory leaks
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -91,25 +100,33 @@ function App() {
 
           {/* Main Content */}
           <Col className="d-flex flex-column py-4 px-3">
-            {me?.principal ? (
+            {loading && <LoadingSection h={null} />}
+
+            {!loading && me?.principal && (
               <Routes>
                 <Route path="/ui" element={<HomePage />} />
                 <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
                 <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage me={me} /> : <Navigate to="/not-found" />} />
-                <Route path="/ui/customers/:id/edit" element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />} />
+                <Route
+                  path="/ui/customers/:id/edit"
+                  element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />}
+                />
                 <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/professionals/:id" element={me && me.principal !== null ? <ProfessionalPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
-                <Route path="/ui/professionals/add" element={me && me.principal !== null ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />} />
+                <Route
+                  path="/ui/professionals/add"
+                  element={me && me.principal !== null ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />}
+                />
                 <Route path="/ui/joboffers/add" element={me && me.principal !== null ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
 
                 <Route path="*" element={<JPPageNotFound />} />
               </Routes>
-            ) : (
-              <LoginPrompt />
             )}
+
+            {!loading && !me?.principal && <LoginPrompt />}
           </Col>
         </Col>
       </Row>
