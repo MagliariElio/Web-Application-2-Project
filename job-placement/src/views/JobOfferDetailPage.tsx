@@ -1,22 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination, ButtonGroup } from "react-bootstrap";
 import { JobOffer } from "../interfaces/JobOffer";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { FaCheck, FaCheckCircle, FaCircle, FaClock, FaMapMarkerAlt, FaMoneyBillWave, FaPen, FaTimesCircle, FaTrash, FaUserTie } from "react-icons/fa";
 import {
-  FaCheck,
-  FaCheckCircle,
-  FaCircle,
-  FaClock,
-  FaInfo,
-  FaMapMarkerAlt,
-  FaMoneyBillWave,
-  FaPen,
-  FaTimesCircle,
-  FaTrash,
-  FaUser,
-  FaUserTie,
-} from "react-icons/fa";
-import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants";
+  contractTypeList,
+  EmploymentStateEnum,
+  EmploymentStateEnumSearchCandidateProfessional,
+  JobOfferState,
+  toTitleCase,
+  workModeList,
+} from "../utils/costants";
 import { MeInterface } from "../interfaces/MeInterface";
 import { fetchCustomer } from "../apis/CustomerRequests";
 import { Customer } from "../interfaces/Customer";
@@ -34,7 +28,6 @@ import {
   updateJobOffer,
 } from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
-import { FaCircleInfo } from "react-icons/fa6";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
@@ -49,7 +42,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
   const abortState = "ABORT";
 
-  const location = useLocation();
+  //const location = useLocation();
   //const { jobOfferSelected } = location.state || { jobOfferSelected: null };
 
   // Determine the index of the current state in the progress flow
@@ -77,6 +70,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const handleAddCandidate = (professional: Professional) => {
     setCandidateProfessionalList((prevList) => [...prevList, professional]);
   };
+  var isModifyCandidatesList =
+    candidateProfessionalList.filter((p: Professional) => !jobOffer?.candidateProfessionalIds.includes(p.id)).length !== 0 ||
+    candidateProfessionalList.length !== jobOffer?.candidateProfessionalIds.length;
+
+  // Boolean Confirm Action through a Modal
+  const [showModalConfirmAbort, setShowModalConfirmAbort] = useState(false);
+  const [showModalConfirmDone, setShowModalConfirmDone] = useState(false);
 
   const errorRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -89,7 +89,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       const resultList: Professional[] = await Promise.all(
         candidateList.map(async (id) => {
           const result = await fetchProfessional(id);
-          return result;
+          return result.professionalDTO;
         })
       );
 
@@ -134,7 +134,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       setProfessional(null);
       if (result?.professionalId) {
         const resultProfessional = await fetchProfessional(result?.professionalId);
-        setProfessional(resultProfessional);
+        setProfessional(resultProfessional.professionalDTO);
       }
 
       loadCandidateProfessionals(result?.candidateProfessionalIds);
@@ -322,6 +322,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
    */
   const handleAbortJobOffer = async () => {
     try {
+      setShowModalConfirmAbort(false);
       setLoading(true);
       const jobOfferResponse = await abortJobOffer(parseInt(id ? id : ""), me.xsrfToken);
 
@@ -431,8 +432,6 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       setLoading(true);
       const jobOfferResponse = await cancelCandidation(parseInt(id ? id : ""), me.xsrfToken, candidateProfessionalList);
 
-      console.log(jobOfferResponse);
-
       await loadJobOffer(jobOfferResponse);
 
       setErrorMessage("");
@@ -467,6 +466,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
 
     try {
+      setShowModalConfirmDone(false);
       setLoading(true);
       const jobOfferResponse = await doneJobOffer(parseInt(id ? id : ""), me.xsrfToken, professional.id);
 
@@ -517,6 +517,23 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   return (
     <Container className="mt-2">
       <ConfirmDeleteModal show={showModalDeleteConfirmation} handleClose={handleCloseModal} handleConfirm={handleDeleteJobOffer} />
+      <ModalConfirmation
+        show={showModalConfirmAbort}
+        handleCancel={() => setShowModalConfirmAbort(false)}
+        handleConfirm={handleAbortJobOffer}
+        title="Confirm Job Offer Termination"
+        body="<strong>Important:</strong> You are about to terminate this job offer. This action is <strong>permanent</strong> and cannot be undone.
+          Please confirm if you wish to proceed with the termination."
+        actionType={false}
+      />
+      <ModalConfirmation
+        show={showModalConfirmDone}
+        handleCancel={() => setShowModalConfirmDone(false)}
+        handleConfirm={handleDoneJobOffer}
+        title="Confirm Job Offer Completion"
+        body="<strong>Warning:</strong> You are about to mark this job offer as done. This action is <strong>permanent</strong> and cannot be undone. Please confirm if you wish to proceed."
+        actionType={true}
+      />
 
       <Row className="justify-content-center align-items-center">
         <div className="progress-container">
@@ -941,9 +958,12 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   </Col>
 
                   {jobOffer?.status === JobOfferState.CONSOLIDATED && (
-                    <Col xs={12} className="mt-2 align-items-center">
-                      <p style={{ color: "gray", fontSize: "0.9rem" }}>
-                        <AiOutlineInfoCircle /> To return to the candidate selection phase, please click the <strong>Cancel</strong> button.
+                    <Col xs={12} className="mt-2">
+                      <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
+                        <AiOutlineInfoCircle className="me-1" />
+                        To return to the
+                        <strong style={{ marginLeft: "0.25rem" }}>candidate selection phase</strong>, please click the
+                        <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Cancel</strong> button.
                       </p>
                     </Col>
                   )}
@@ -975,19 +995,19 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
           )}
 
           {/* Candidate Professionals */}
-          {!professional && !isEditing && (
+          {!isEditing && (
             <Row className="border-top pt-3 mb-3">
               <Col md={9} className="d-flex align-items-center">
                 <strong>Candidate Professionals: </strong>
               </Col>
-              {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
+              {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) && (
                 <>
                   <Col md={2} className="text-end">
                     <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
                       Add Candidate
                     </Button>
                   </Col>
-                  {jobOffer?.candidateProfessionalIds.length !== candidateProfessionalList.length && !loadingCandidateProfessional && (
+                  {isModifyCandidatesList && !loadingCandidateProfessional && (
                     <Col md={1} className="text-end">
                       {/* Si attiva quando si aggiunge un nuovo professional candidato */}
                       <Button variant="success" onClick={handleGoToSelectionPhase}>
@@ -999,9 +1019,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               )}
 
               {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
-                <Col md={12} className="mt-2 align-items-center">
-                  <p style={{ color: "gray", fontSize: "0.9rem" }}>
-                    <AiOutlineInfoCircle /> Please select one of the candidates to propose them for this job offer.
+                <Col md={12} className="mt-2">
+                  <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
+                    <AiOutlineInfoCircle className="me-1" /> Please select one of the candidates to propose them for this job offer.
                   </p>
                 </Col>
               )}
@@ -1042,9 +1062,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                   className="me-2"
                                   onClick={() => handleSelectCandidateProfessional(index)}
                                   disabled={
-                                    jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
-                                    jobOffer?.candidateProfessionalIds.length !== candidateProfessionalList.length ||
-                                    loadingCandidateProfessional
+                                    jobOffer?.status !== JobOfferState.SELECTION_PHASE || isModifyCandidatesList || loadingCandidateProfessional
                                   }
                                 >
                                   <FaCheck />
@@ -1053,7 +1071,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                               <Button
                                 variant="danger"
                                 onClick={() => handleDeleteCandidateProfessional(index)}
-                                disabled={jobOffer?.status === JobOfferState.ABORT || jobOffer?.status === JobOfferState.DONE}
+                                disabled={jobOffer?.status !== JobOfferState.SELECTION_PHASE}
                               >
                                 <FaTrash />
                               </Button>
@@ -1096,7 +1114,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
             <Row className="mt-5">
               {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
                 <Col className="text-center">
-                  <Button className="secondaryDangerButton mb-2" variant="danger" size="lg" onClick={handleAbortJobOffer}>
+                  <Button className="secondaryDangerButton mb-2" variant="danger" size="lg" onClick={() => setShowModalConfirmAbort(true)}>
                     Abort
                   </Button>
                 </Col>
@@ -1108,7 +1126,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               </Col>
               {jobOffer?.status === JobOfferState.CONSOLIDATED && (
                 <Col className="text-center">
-                  <Button className="primarySuccessButton mb-2" variant="primary" size="lg" onClick={handleDoneJobOffer}>
+                  <Button className="primarySuccessButton mb-2" variant="primary" size="lg" onClick={() => setShowModalConfirmDone(true)}>
                     Done
                   </Button>
                 </Col>
@@ -1158,7 +1176,7 @@ const CandidateProfessionalModal: React.FC<{
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [searchSkill, setSkill] = useState("");
   const [searchLocation, setSearchLocation] = useState("");
-  const [searchEmploymentState, setSearchEmploymentState] = useState("");
+  const [searchEmploymentState, setSearchEmploymentState] = useState<EmploymentStateEnum>(EmploymentStateEnum.AVAILABLE_FOR_WORK);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -1196,8 +1214,8 @@ const CandidateProfessionalModal: React.FC<{
     setSearchLocation(event.target.value);
   };
 
-  const handleSearchChangeByEmploymentState = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSearchEmploymentState(event.target.value);
+  const handleSearchChangeByEmploymentState = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setSearchEmploymentState(event.target.value as EmploymentStateEnum);
   };
 
   const handleProfessionalSelect = (professional: Professional) => {
@@ -1246,13 +1264,13 @@ const CandidateProfessionalModal: React.FC<{
           </Row>
           <Row>
             <Col xs={12} sm={6}>
-              <Form.Control
-                type="text"
-                className="mb-2"
-                placeholder="Search by employment state"
-                value={searchEmploymentState}
-                onChange={handleSearchChangeByEmploymentState}
-              />
+              <Form.Select name="employmentState" className="mb-2" value={searchEmploymentState || ""} onChange={handleSearchChangeByEmploymentState}>
+                {Object.values(EmploymentStateEnumSearchCandidateProfessional).map((state, index) => (
+                  <option key={index} value={state}>
+                    {toTitleCase(state)}
+                  </option>
+                ))}
+              </Form.Select>
             </Col>
           </Row>
         </Form.Group>
@@ -1279,7 +1297,7 @@ const CandidateProfessionalModal: React.FC<{
                   <tr>
                     <td colSpan={3}>
                       <div className="d-flex justify-content-center align-items-center" style={{ height: "150px" }}>
-                        <span className="text-muted fw-bold">No Customer Found!</span>
+                        <span className="text-muted fw-bold">No Professional Found!</span>
                       </div>
                     </td>
                   </tr>
@@ -1312,6 +1330,37 @@ const CandidateProfessionalModal: React.FC<{
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+const ModalConfirmation: React.FC<{
+  show: boolean;
+  handleCancel: () => void;
+  handleConfirm: () => Promise<void>;
+  title: string;
+  body: string;
+  actionType: boolean;
+}> = ({ show, handleCancel, handleConfirm, title, body, actionType }) => {
+  return (
+    <Modal show={show} onHide={handleCancel}>
+      <Modal.Header closeButton>
+        <Modal.Title className="fw-bold">{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p
+          style={{ color: "#856404", fontSize: "1rem", backgroundColor: "#fff3cd", padding: "10px", borderRadius: "5px" }}
+          dangerouslySetInnerHTML={{ __html: body }}
+        />
+      </Modal.Body>
+      <Modal.Footer className="justify-content-between">
+        <Button variant="secondary" onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button variant={actionType ? "success" : "danger"} onClick={handleConfirm}>
+          Confirm
         </Button>
       </Modal.Footer>
     </Modal>

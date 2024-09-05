@@ -32,73 +32,73 @@ export const fetchProfessional = async (professionalId: number): Promise<Profess
   }
 };
 
-  export const fetchProfessionals = async (
-    page: number,
-    pageSize: number = 10,
-    skill: string = "",
-    location: string = "",
-    employmentState: string = "",
-  ): Promise<PagedResponse<Professional>> => {
-    try {
-      const response = await fetch(
-        `/crmService/v1/API/professionals?pageNumber=${page}&&pageSize=${pageSize}&&skill=${skill}&&location=${location}&&employmentState=${employmentState}`
-      );
-  
-      if (!response.ok) {
-        const errorMessage = `GET /API/professionals : ${response.status} ${response.statusText}`;
-        console.error(errorMessage);
-        throw new Error(errorMessage);
-      }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error fetching professionals:", error);
-      throw error;
-    }
-  };
+export const fetchProfessionals = async (
+  page: number,
+  pageSize: number = 10,
+  skill: string = "",
+  location: string = "",
+  employmentState: string = ""
+): Promise<PagedResponse<Professional>> => {
+  try {
+    const response = await fetch(
+      `/crmService/v1/API/professionals?pageNumber=${page}&pageSize=${pageSize}&skill=${skill}&location=${location}&employmentState=${employmentState}`
+    );
 
-export const createProfessional = async (professional: CreateProfessional, me: MeInterface ): Promise<Professional> => {
-    try {
-      const response = await fetch("/crmService/v1/API/professionals", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-XSRF-Token': me.xsrfToken,
-        },
-        body: JSON.stringify(professional)
-      });
-  
-      if (!response.ok) {
-        const errorMessage = `POST /API/professionals : ${response.status} ${response.statusText}`;
-        console.error(errorMessage);
-        throw new Error(errorMessage);
-      }
-  
-      const data: Professional = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error creating professional:", error);
-      throw error;
+    if (!response.ok) {
+      const errorMessage = `GET /API/professionals : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
     }
-  }
 
-  export const deleteProfessional = async (professionalId: number, me: MeInterface): Promise<void> => {
-    try {
-      const response = await fetch(`/crmService/v1/API/professionals/${professionalId}`, {
-        method: 'DELETE',
-        headers: {
-          'X-XSRF-Token': me.xsrfToken,
-        }
-      });
-  
-      if (!response.ok) {
-        const errorMessage = `DELETE /API/professionals/${professionalId} : ${response.status} ${response.statusText}`;
-        console.error(errorMessage);
-        throw new Error(errorMessage);
-      }
-    } catch (error) {
-      console.error("Error deleting professional:", error);
-      throw error;
-    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching professionals:", error);
+    throw error;
   }
+};
+
+export const createProfessional = async (professional: CreateProfessional, me: MeInterface): Promise<Professional> => {
+  try {
+    const response = await fetch("/crmService/v1/API/professionals", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-Token": me.xsrfToken,
+      },
+      body: JSON.stringify(professional),
+    });
+
+    if (!response.ok) {
+      const errorMessage = `POST /API/professionals : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    const data: Professional = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error creating professional:", error);
+    throw error;
+  }
+};
+
+export const deleteProfessional = async (professionalId: number, me: MeInterface): Promise<void> => {
+  try {
+    const response = await fetch(`/crmService/v1/API/professionals/${professionalId}`, {
+      method: "DELETE",
+      headers: {
+        "X-XSRF-Token": me.xsrfToken,
+      },
+    });
+
+    if (!response.ok) {
+      const errorMessage = `DELETE /API/professionals/${professionalId} : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  } catch (error) {
+    console.error("Error deleting professional:", error);
+    throw error;
+  }
+};
