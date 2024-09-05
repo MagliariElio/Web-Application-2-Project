@@ -57,6 +57,9 @@ function App() {
             setRole(RoleState.OPERATOR);
           }
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
 
       setLoading(false);

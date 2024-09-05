@@ -52,13 +52,13 @@ class CrmProfessionalsController(
 
         try {
             val filter = HashMap<ProfessionalEnumFields, String>().apply {
-                if (skill != null) {
+                if (skill != null && skill.isNotBlank()) {
                     put(ProfessionalEnumFields.SKILL, skill)
                 }
-                if (location != null) {
+                if (location != null && location.isNotBlank()) {
                     put(ProfessionalEnumFields.LOCATION, location)
                 }
-                if (employmentState != null) {
+                if (employmentState != null && employmentState.isNotBlank()) {
                     put(ProfessionalEnumFields.EMPLOYMENT_STATE, employmentState)
                 }
             }
