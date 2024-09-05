@@ -2,8 +2,9 @@ import { CreateProfessional } from "../interfaces/CreateProfessional";
 import { MeInterface } from "../interfaces/MeInterface";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Professional } from "../interfaces/Professional";
+import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
 
-export const fetchProfessional = async (professionalId: number): Promise<Professional> => {
+export const fetchProfessional = async (professionalId: number): Promise<ProfessionalWithAssociatedData> => {
   try {
     const response = await fetch(`/crmService/v1/API/professionals/${professionalId}`);
 
@@ -23,7 +24,8 @@ export const fetchProfessional = async (professionalId: number): Promise<Profess
     }
 
     const data = await response.json();
-    return data.professionalDTO;
+    console.log("Data from serviceeeeeeee: ", data.jobOfferDTOS);
+    return data;
   } catch (error) {
     console.log(error);
     throw error;
@@ -77,6 +79,26 @@ export const createProfessional = async (professional: CreateProfessional, me: M
       return data;
     } catch (error) {
       console.error("Error creating professional:", error);
+      throw error;
+    }
+  }
+
+  export const deleteProfessional = async (professionalId: number, me: MeInterface): Promise<void> => {
+    try {
+      const response = await fetch(`/crmService/v1/API/professionals/${professionalId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-XSRF-Token': me.xsrfToken,
+        }
+      });
+  
+      if (!response.ok) {
+        const errorMessage = `DELETE /API/professionals/${professionalId} : ${response.status} ${response.statusText}`;
+        console.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+    } catch (error) {
+      console.error("Error deleting professional:", error);
       throw error;
     }
   }

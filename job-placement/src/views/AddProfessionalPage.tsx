@@ -26,11 +26,15 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
     const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] = useState('');
     const [telephoneError, setTelephoneError] = useState(false);
 
-    const [address, setAddress] = useState('');
-    const [city, setCity] = useState('');
-    const [region, setRegion] = useState('');
-    const [state, setState] = useState('');
-    const [addressComment, setAddressComment] = useState('');
+    const [addresses, setAddresses] = useState<any[]>([]);
+    const [singleAddress, setSingleAddress] = useState({
+        address: '',
+        city: '',
+        region: '',
+        state: '',
+        comment: ''
+    });
+    const [addressError, setAddressError] = useState(false);
 
     const [skills, setSkills] = useState<string[]>([]);
     const [singleSkill, setSingleSkill] = useState('');
@@ -54,13 +58,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 category: "PROFESSIONAL",
                 emails: emails,
                 telephones: telephones,
-                addresses: [{
-                    address: address,
-                    city: city,
-                    region: region,
-                    state: state,
-                    comment: addressComment
-                }]
+                addresses: addresses
             },
             skills: skills,
             geographicalLocation: geographicalLocation,
@@ -337,63 +335,154 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                             </Row>
             }
 
-            <Row className="mt-5">
-                <Col xs={12} md={12} lg={6} className="mb-2">
-                    <Row className="align-items-center">
-                        <Col>
-                        <hr />
-                        </Col>
-                        <Col xs="auto">
-                        <h5 className="fw-normal">Address</h5>
-                        </Col>
-                        <Col>
-                        <hr />
-                        </Col>
-                    </Row>
-                </Col>
+<Row className="mt-5">
+          <Col xs={12} md={12} lg={6} className="mb-2">
+            <Row className="align-items-center">
+              <Col>
+                <hr />
+              </Col>
+              <Col xs="auto">
+                <h5 className="fw-normal">Address</h5>
+              </Col>
+              <Col>
+                <hr />
+              </Col>
             </Row>
-            <Row>
-                <Col xs={12} md={6} lg={3} className="mb-2">
-                    <Form.Control
-                        placeholder="Address"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                    />
+          </Col>
+        </Row>
+        {addresses.length === 0 && (
+          <Row>
+            <Col xs={12} md={12} lg={6} className="mb-0">
+              <p>No addresses added yet</p>
+            </Col>
+          </Row>
+        )}
+        {addresses.length > 0 &&
+          addresses.map((address, index) => {
+            return (
+              <Row key={index} className="mb-1 d-flex align-items-center">
+                <Col xs={8} md={6} lg={5}>
+                  <Row>
+                    <Col xs={12} md={12} lg={6} className="mb-0">
+                      <p className="text-truncate">
+                        {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}
+                      </p>
+                    </Col>
+                    <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
+                      <p className="text-truncate">{address.comment}</p>
+                    </Col>
+                  </Row>
                 </Col>
-                <Col xs={12} md={6} lg={3} className="mb-2">
-                    <Form.Control
-                        placeholder="City"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                    />
+                <Col xs={4} md={6} lg={1}>
+                  <Col className="mb-0">
+                    <Button
+                      className="secondaryDangerButton w-100"
+                      onClick={() => {
+                        setAddresses(addresses.filter((e, i) => i !== index));
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </Col>
                 </Col>
-            </Row>
-            <Row>
-                <Col xs={12} md={6} lg={3} className="mb-2">
-                    <Form.Control
-                        placeholder="Region"
-                        value={region}
-                        onChange={(e) => setRegion(e.target.value)}
-                    />
-                </Col>
-                <Col xs={12} md={6} lg={3} className="mb-2">
-                    <Form.Control
-                        placeholder="State"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                    />
-                </Col>
-            </Row>
-            <Row>
-                <Col xs={12} md={12} lg={6} className="mb-2">
-                    <Form.Control
-                        as="textarea"
-                        placeholder="Address comment"
-                        value={addressComment}
-                        onChange={(e) => setAddressComment(e.target.value)}
-                    />
-                </Col>
-            </Row>
+              </Row>
+            );
+          })}
+        <Row>
+          <Col xs={12} md={6} lg={3} className="mb-2">
+            <Form.Control
+              placeholder="Address"
+              value={singleAddress.address}
+              onChange={(e) =>
+                setSingleAddress({ ...singleAddress, address: e.target.value })
+              }
+            />
+          </Col>
+          <Col xs={12} md={6} lg={3} className="mb-2">
+            <Form.Control
+              placeholder="City"
+              value={singleAddress.city}
+              onChange={(e) =>
+                setSingleAddress({ ...singleAddress, city: e.target.value })
+              }
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12} md={6} lg={3} className="mb-2">
+            <Form.Control
+              placeholder="Region"
+              value={singleAddress.region}
+              onChange={(e) =>
+                setSingleAddress({ ...singleAddress, region: e.target.value })
+              }
+            />
+          </Col>
+          <Col xs={12} md={6} lg={3} className="mb-2">
+            <Form.Control
+              placeholder="State"
+              value={singleAddress.state}
+              onChange={(e) =>
+                setSingleAddress({ ...singleAddress, state: e.target.value })
+              }
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12} md={12} lg={6} className="mb-2">
+            <Form.Control
+              as="textarea"
+              placeholder="Address comment"
+              value={singleAddress.comment}
+              onChange={(e) =>
+                setSingleAddress({ ...singleAddress, comment: e.target.value })
+              }
+            />
+          </Col>
+        </Row>
+        {addressError && (
+          <Row>
+            <Col xs={12} md={12} lg={6} className="mb-4">
+              <p className="text-danger">
+                Address, city, region and state are required
+              </p>
+            </Col>
+          </Row>
+        )}
+        <Row>
+          <Col
+            xs={12}
+            md={12}
+            lg={6}
+            className="mb-2 d-flex justify-content-center"
+          >
+            <Button
+              className="secondaryButton"
+              onClick={() => {
+                if (
+                  singleAddress.address === "" ||
+                  singleAddress.city === "" ||
+                  singleAddress.region === "" ||
+                  singleAddress.state === ""
+                ) {
+                  setAddressError(true);
+                  return;
+                }
+                setAddresses([...addresses, singleAddress]);
+                setSingleAddress({
+                  address: "",
+                  city: "",
+                  region: "",
+                  state: "",
+                  comment: "",
+                });
+                setAddressError(false);
+              }}
+            >
+              Add address
+            </Button>
+          </Col>
+        </Row>
 
             <Row className="mt-5">
                 <Col xs={12} md={12} lg={6} className="mb-2">

@@ -135,7 +135,12 @@ function CustomersPage() {
       {!error &&
         !loading &&
         customers !== null &&
-        customers.totalElements === 0 && (
+        customers.totalElements === 0 &&
+        filters.name === "" &&
+        filters.surname === "" &&
+        filters.ssnCode === "" &&
+        filters.jobOffersNumberFrom === 0 &&
+        filters.jobOffersNumberTo === 10000 && (
           <Row className="w-100">
             <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
               <h5>No customers found yet! Start adding one!</h5>
@@ -145,8 +150,7 @@ function CustomersPage() {
 
       {!error &&
         !loading &&
-        customers !== null &&
-        customers.totalElements > 0 && (
+        customers !== null && (
           <Row className="w-100 d-flex justify-content-center">
             <Col xs={12} lg={4} className="order-1 order-lg-2 mt-3">
               <div className="sidebar-search p-4">
