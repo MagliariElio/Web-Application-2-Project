@@ -135,11 +135,10 @@ export const goToSelectionPhase = async (jobOfferId: number, xsrfToken: string, 
       try {
         const message = await response.json();
 
-        console.log(message)
-        console.log(message.error)
-
         if (message.errors && Array.isArray(message.errors)) {
           errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
         } else if (message) {
           errorMessage = message;
         }

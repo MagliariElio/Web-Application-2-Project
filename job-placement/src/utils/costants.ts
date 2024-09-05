@@ -5,13 +5,25 @@ export enum JobOfferState {
   CONSOLIDATED = "CONSOLIDATED",
   ABORT = "ABORT",
   DONE = "DONE",
-};
+}
 
 export enum RoleState {
   GUEST = "GUEST",
   OPERATOR = "OPERATOR",
   MANAGER = "MANAGER",
-};
+}
+
+export enum EmploymentStateEnum {
+  EMPLOYED = "EMPLOYED",
+  UNEMPLOYED = "UNEMPLOYED",
+  AVAILABLE_FOR_WORK = "AVAILABLE_FOR_WORK",
+  NOT_AVAILABLE = "NOT_AVAILABLE",
+}
+
+export enum EmploymentStateEnumSearchCandidateProfessional {
+  UNEMPLOYED = "UNEMPLOYED",
+  AVAILABLE_FOR_WORK = "AVAILABLE_FOR_WORK",
+}
 
 export const contractTypeList = ["Full Time", "Part Time", "Contract", "Freelance"];
 

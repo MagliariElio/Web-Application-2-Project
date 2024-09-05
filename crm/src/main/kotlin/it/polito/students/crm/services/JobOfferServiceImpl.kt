@@ -203,7 +203,11 @@ class JobOfferServiceImpl(
                     professional!!
                 }.toMutableList()
                 oldJobOffer.professional?.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
-                oldJobOffer.professional?.jobOffers?.remove(oldJobOffer)
+
+                if(!oldJobOffer.candidateProfessionals.contains(oldJobOffer.professional)) {
+                    oldJobOffer.professional?.jobOffers?.remove(oldJobOffer)
+                }
+
                 oldJobOffer.professional = null
                 oldJobOffer.value = 0.0
                 oldJobOffer.oldStatus = JobStatusEnum.CREATED
