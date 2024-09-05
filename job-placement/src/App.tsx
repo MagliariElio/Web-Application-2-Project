@@ -113,7 +113,7 @@ function App() {
                   element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />}
                 />
                 <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
-                <Route path="/ui/professionals/:id" element={me && me.principal !== null ? <ProfessionalPage /> : <Navigate to="/not-found" />} />
+                <Route path="/ui/professionals/:id" element={me && me.principal !== null ? <ProfessionalPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route
                   path="/ui/professionals/add"

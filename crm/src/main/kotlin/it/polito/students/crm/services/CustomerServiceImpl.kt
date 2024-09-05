@@ -1,5 +1,6 @@
 package it.polito.students.crm.services
 
+
 import it.polito.students.crm.controllers.CrmCustomersController
 import it.polito.students.crm.dtos.*
 import it.polito.students.crm.entities.*
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,27 +36,41 @@ class CustomerServiceImpl(
         filterMap: HashMap<ContactEnumFields, String>
     ): PageImpl<CustomerDTO> {
         val pageable = PageRequest.of(pageNumber, pageSize)
-        val page: Page<Customer> = customerRepository.findAll(pageable)
-        var list = page.content
-            .filter { !it.deleted && it.information.category == CategoryOptions.CUSTOMER }
-            .map{customer ->
+
+        // Ottieni tutti i customers non cancellati dal database senza paginazione
+        val allCustomers: List<Customer> = customerRepository.findAllByDeletedFalse(Pageable.unpaged()).content
+
+        // Applica i filtri in memoria
+        var filteredList = allCustomers
+            .filter { it.information.category == CategoryOptions.CUSTOMER }
+            .map { customer ->
                 customer.joboffers = customer.joboffers.filter { !it.deleted }.toMutableSet()
                 customer
             }.map { it.toDTO() }
 
+        // Applica ulteriori filtri basati sui campi
         filterMap.entries.forEach { filter ->
-            list = when (filter.key) {
-                ContactEnumFields.NAME -> list.filter { it.information.contactDTO.name.contains(filter.value, ignoreCase = true) }
-                ContactEnumFields.SURNAME -> list.filter { it.information.contactDTO.surname.contains(filter.value, ignoreCase = true) }
-                ContactEnumFields.CATEGORY -> list.filter { it.information.contactDTO.category == CategoryOptions.CUSTOMER }
-                ContactEnumFields.SSN_CODE -> list.filter { it.information.contactDTO.ssnCode.contains(filter.value, ignoreCase = true) }
-                ContactEnumFields.COMMENT -> list.filter { it.information.contactDTO.comment.contains(filter.value, ignoreCase = true) }
+            filteredList = when (filter.key) {
+                ContactEnumFields.NAME -> filteredList.filter { it.information.contactDTO.name.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.SURNAME -> filteredList.filter { it.information.contactDTO.surname.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.CATEGORY -> filteredList.filter { it.information.contactDTO.category == CategoryOptions.CUSTOMER }
+                ContactEnumFields.SSN_CODE -> filteredList.filter { it.information.contactDTO.ssnCode.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.COMMENT -> filteredList.filter { it.information.contactDTO.comment.contains(filter.value, ignoreCase = true) }
             }
         }
 
-        val pageImpl = PageImpl(list, pageable, page.totalElements)
-        return pageImpl
+        // Calcola il numero totale di elementi dopo il filtraggio
+        val totalElements = filteredList.size
+
+        // Esegui la paginazione manuale sulla lista filtrata
+        val start = (pageNumber * pageSize).coerceAtMost(totalElements)
+        val end = (start + pageSize).coerceAtMost(totalElements)
+        val paginatedList = if (start <= end) filteredList.subList(start, end) else emptyList()
+
+        // Crea l'oggetto PageImpl usando la lista paginata e il totale degli elementi
+        return PageImpl(paginatedList, pageable, totalElements.toLong())
     }
+
 
     override fun getCustomer(customerId: Long): CustomerDTO {
         val existedCustomer = customerRepository.findById(customerId)

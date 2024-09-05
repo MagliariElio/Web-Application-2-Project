@@ -45,7 +45,7 @@ class ProfessionalServiceImpl(
         }
 
 
-        val pageImpl = PageImpl(list, pageable, page.totalElements)
+        val pageImpl = PageImpl(list, pageable, list.size.toLong())
         return pageImpl
     }
 
