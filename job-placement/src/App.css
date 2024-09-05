@@ -389,3 +389,24 @@
   border-radius: 5px;
   padding: 20px;
 }
+
+
+.custom-pagination .page-item.active .page-link {
+  background-color: #162250; /* Colore di sfondo per l'elemento attivo */
+  border-color: #162250; /* Colore del bordo per l'elemento attivo */
+  color: white; /* Colore del testo per l'elemento attivo */
+}
+
+.custom-pagination .page-item .page-link {
+  color: #162250; /* Colore del testo per gli elementi non attivi */
+}
+
+.custom-pagination .page-item .page-link:hover {
+  background-color: #162250c2; /* Colore di sfondo al passaggio del mouse */
+  border-color: #162250c2 !important; /* Colore del bordo al passaggio del mouse */
+  color: white; /* Colore del testo al passaggio del mouse */
+}
+
+.custom-pagination .page-item.disabled .page-link {
+  color: #6c757d; /* Colore del testo per gli elementi disabilitati */
+}

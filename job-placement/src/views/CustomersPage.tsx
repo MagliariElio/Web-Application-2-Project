@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Form, Row, Toast, ToastContainer } from "react-bootstrap";
+import { Button, Col, Form, Pagination, Row, Toast, ToastContainer } from "react-bootstrap";
 import {
   BsChevronLeft,
   BsChevronRight,
@@ -75,6 +75,29 @@ function CustomersPage() {
     }) || [];
 
   const [pageSize, setPageSize] = useState(10);
+
+  const changePage = (pageNumber: number) => {
+    fetchCustomers(
+      pageNumber,
+      filters.name,
+      filters.surname,
+      filters.ssnCode,
+      undefined,
+      pageSize
+    )
+      .then((result) => {
+        console.log("Customers fetched: ", result);
+        setCustomers(result);
+        presentedCustomers = result.content;
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(true);
+        setLoading(false);
+        console.log(error);
+        throw new Error("GET /API/customers : Network response was not ok");
+      });
+  };
 
   return (
     <div className="w-100">
@@ -391,74 +414,30 @@ function CustomersPage() {
                   )}
                 </Col>
               </Row>
-              {customers.totalPages > 1 && (
-                <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
-                  {customers.currentPage > 0 && (
-                    <Col xs="auto" className="d-flex align-items-center">
-                      <BsChevronLeft
-                        onClick={() => {
-                          fetchCustomers(
-                            customers.currentPage - 1,
-                            filters.name,
-                            filters.surname,
-                            filters.ssnCode
-                          )
-                            .then((result) => {
-                              console.log("Customers fetched: ", result);
-                              setCustomers(result);
-                              presentedCustomers = result.content;
-                              setLoading(false);
-                            })
-                            .catch((error) => {
-                              setError(true);
-                              setLoading(false);
-                              console.log(error);
-                              throw new Error(
-                                "GET /API/customers : Network response was not ok"
-                              );
-                            });
-                        }}
-                        style={{ cursor: "pointer" }}
-                      />
-                    </Col>
-                  )}
+              <Row>
+            <Col className="d-flex justify-content-center mt-4 justify-self-center">
+            <Pagination className="custom-pagination">
+            <Pagination.First onClick={() => changePage(0)} disabled={customers.currentPage === 0} />
+            <Pagination.Prev onClick={() => changePage(customers.currentPage - 1)} disabled={customers.currentPage === 0} />
 
-                  <Col xs="auto" className="d-flex align-items-center">
-                    {customers.currentPage}
-                  </Col>
-                  {customers.totalPages > customers.currentPage + 1 && (
-                    <Col xs="auto" className="d-flex align-items-center">
-                      <BsChevronRight
-                        onClick={() => {
-                          fetchCustomers(
-                            customers.currentPage + 1,
-                            filters.name,
-                            filters.surname,
-                            filters.ssnCode
-                          )
-                            .then((result) => {
-                              console.log("Customers fetched: ", result);
-                              setCustomers(result);
-                              presentedCustomers = result.content;
-                              setLoading(false);
-                            })
-                            .catch((error) => {
-                              setError(true);
-                              setLoading(false);
-                              console.log(error);
-                              throw new Error(
-                                "GET /API/customers : Network response was not ok"
-                              );
-                            });
-                        }}
-                        style={{ cursor: "pointer" }}
-                      />
-                    </Col>
-                  )}
-                </Row>
-              )}
+            {Array.from({ length: Math.min(5, customers.totalPages) }, (_, index) => {
+              const startPage = Math.max(Math.min(customers.currentPage - 2, customers.totalPages - 5), 0);
+              const actualPage = startPage + index;
 
-              <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
+              return (
+                <Pagination.Item key={actualPage} active={actualPage === customers.currentPage} onClick={() => changePage(actualPage)}>
+                  {actualPage + 1}
+                </Pagination.Item>
+              );
+            })}
+
+            <Pagination.Next onClick={() => changePage(customers.currentPage + 1)} disabled={customers.currentPage + 1 === customers.totalPages} />
+            <Pagination.Last onClick={() => changePage(customers.totalPages - 1)} disabled={customers.currentPage + 1 === customers.totalPages} />
+          </Pagination>
+            </Col>
+          </Row>
+
+              <Row className="w-100 d-flex justify-content-center align-items-center mt-3 justify-self-center">
                 <Form.Control
                   style={{ width: "auto" }}
                   as="select"

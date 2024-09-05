@@ -90,7 +90,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       const resultList: ProfessionalWithAssociatedData[] = await Promise.all(
         candidateList.map(async (id) => {
           const result = await fetchProfessional(id);
-          return result.professionalDTO;
+          return result;
         })
       );
 

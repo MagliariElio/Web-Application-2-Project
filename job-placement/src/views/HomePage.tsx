@@ -291,7 +291,7 @@ const HomePage = () => {
 
           {/* Pagination */}
           <Row>
-            <Col className="d-flex justify-content-center mt-4">
+            <Col className="d-flex justify-content-center mt-4 custom-pagination">
               <Pagination>
                 <Pagination.First onClick={() => changePage(1)} disabled={currentPage === 0} />
                 <Pagination.Prev onClick={() => changePage(currentPage - 1)} disabled={currentPage === 0} />

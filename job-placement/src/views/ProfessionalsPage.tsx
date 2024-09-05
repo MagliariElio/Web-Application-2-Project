@@ -4,6 +4,7 @@ import {
   Col,
   Form,
   InputGroup,
+  Pagination,
   Row,
   Toast,
   ToastContainer,
@@ -83,6 +84,31 @@ function ProfessionalsPage() {
   var presentedProfessionals = professionals?.content || [];
 
   const [pageSize, setPageSize] = useState(10);
+
+  const changePage = (page: number) => {
+    setLoading(true);
+    fetchProfessionals(
+      page,
+      pageSize,
+      filters.skill,
+      filters.geographicalLocation,
+      filters.employmentState
+    )
+      .then((result) => {
+        console.log("Professionals fetched: ", result);
+        setProfessionals(result);
+        presentedProfessionals = result.content;
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(true);
+        setLoading(false);
+        console.log(error);
+        throw new Error(
+          "GET /API/professionals : Network response was not ok"
+        );
+      });
+  };
 
   return (
     <div className="w-100">
@@ -473,91 +499,26 @@ function ProfessionalsPage() {
                     )}
                   </Col>
                 </Row>
-                {professionals.totalPages > 1 && (
-                  <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
-                    {professionals.currentPage > 0 && (
-                      <Col xs="auto" className="d-flex align-items-center">
-                        <BsChevronLeft
-                          onClick={() => {
-                            var query = "";
-                            if (filters.skill)
-                              query += `&skill=${filters.skill}`;
-                            if (filters.geographicalLocation)
-                              query += `&location=${filters.geographicalLocation}`;
-                            if (filters.employmentState)
-                              query += `&employmentState=${filters.employmentState}`;
+                <Col className="d-flex justify-content-center mt-4 justify-self-center">
+            <Pagination className="custom-pagination">
+            <Pagination.First onClick={() => changePage(0)} disabled={professionals.currentPage === 0} />
+            <Pagination.Prev onClick={() => changePage(professionals.currentPage - 1)} disabled={professionals.currentPage === 0} />
 
-                            fetchProfessionals(
-                              professionals.currentPage - 1,
-                              pageSize,
-                              filters.skill,
-                              filters.geographicalLocation,
-                              filters.employmentState
-                            )
-                              .then((result) => {
-                                console.log("Professionals fetched: ", result);
-                                setProfessionals(result);
-                                presentedProfessionals = result.content;
-                                setLoading(false);
-                              })
-                              .catch((error) => {
-                                setError(true);
-                                setLoading(false);
-                                console.log(error);
-                                throw new Error(
-                                  "GET /API/professionals : Network response was not ok"
-                                );
-                              });
-                          }}
-                          style={{ cursor: "pointer" }}
-                        />
-                      </Col>
-                    )}
+            {Array.from({ length: Math.min(5, professionals.totalPages) }, (_, index) => {
+              const startPage = Math.max(Math.min(professionals.currentPage - 2, professionals.totalPages - 5), 0);
+              const actualPage = startPage + index;
 
-                    <Col xs="auto" className="d-flex align-items-center">
-                      {professionals.currentPage}
-                    </Col>
-                    {professionals.totalPages >
-                      professionals.currentPage + 1 && (
-                      <Col xs="auto" className="d-flex align-items-center">
-                        <BsChevronRight
-                          onClick={() => {
-                            var query = "";
-                            if (filters.skill)
-                              query += `&skill=${filters.skill}`;
-                            if (filters.geographicalLocation)
-                              query += `&location=${filters.geographicalLocation}`;
-                            if (filters.employmentState)
-                              query += `&employmentState=${filters.employmentState}`;
+              return (
+                <Pagination.Item key={actualPage} active={actualPage === professionals.currentPage} onClick={() => changePage(actualPage)}>
+                  {actualPage + 1}
+                </Pagination.Item>
+              );
+            })}
 
-                            fetchProfessionals(
-                              professionals.currentPage + 1,
-                              pageSize,
-                              filters.skill,
-                              filters.geographicalLocation,
-                              filters.employmentState
-                            )
-                              .then((result) => {
-                                console.log("Professionals fetched: ", result);
-                                setProfessionals(result);
-                                presentedProfessionals = result.content;
-                                setLoading(false);
-                              })
-                              .catch((error) => {
-                                setError(true);
-                                setLoading(false);
-                                console.log(error);
-                                throw new Error(
-                                  "GET /API/professionals : Network response was not ok"
-                                );
-                              });
-                          }}
-                          style={{ cursor: "pointer" }}
-                        />
-                      </Col>
-                    )}
-                  </Row>
-                )}
+            <Pagination.Next onClick={() => changePage(professionals.currentPage + 1)} disabled={professionals.currentPage + 1 === professionals.totalPages} />
+            <Pagination.Last onClick={() => changePage(professionals.totalPages - 1)} disabled={professionals.currentPage + 1 === professionals.totalPages} />
+          </Pagination>
+            </Col>
 
                 <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
                   <Form.Control
