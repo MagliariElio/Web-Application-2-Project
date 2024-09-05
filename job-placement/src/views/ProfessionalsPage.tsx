@@ -143,7 +143,10 @@ function ProfessionalsPage() {
       {!error &&
         !loading &&
         professionals !== null &&
-        professionals.totalElements === 0 && (
+        presentedProfessionals.length === 0 &&
+        filters.employmentState === "" &&
+        filters.geographicalLocation === "" &&
+        filters.skill ==="" && (
           <Row className="w-100">
             <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
               <h5>No professional found yet! Start adding one!</h5>
@@ -153,8 +156,7 @@ function ProfessionalsPage() {
 
       {!error &&
         !loading &&
-        professionals !== null &&
-        professionals.totalElements > 0 && (
+        professionals !== null && (
           <>
             <Row className="w-100 d-flex justify-content-center">
               <Col xs={12} lg={4} className="order-1 order-lg-2 mt-3">

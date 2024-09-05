@@ -184,6 +184,53 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
 
             {expandedInfoSection && (
               <>
+
+                <Col xs={12} md={6} lg={4}>
+                  <Row className="d-flex flex-column mt-3">
+                    <Row className="d-flex">
+                      <h6 className="p-0 m-0">Geographical location</h6>
+                    </Row>
+                    
+                      <Row className="d-flex">
+                        <p className="p-0 m-0 fs-6">{professional?.professionalDTO.geographicalLocation} </p>
+                      </Row>
+            
+                  </Row>
+                </Col>
+
+                <Col xs={12} md={6} lg={4}>
+                  <Row className="d-flex flex-column mt-3">
+                    <Row className="d-flex">
+                      <h6 className="p-0 m-0">Daily rate</h6>
+                    </Row>
+                    
+                      <Row className="d-flex">
+                        <p className="p-0 m-0 fs-6">{professional?.professionalDTO.dailyRate} </p>
+                      </Row>
+                
+                    
+                  </Row>
+                </Col>
+
+                <Col xs={12} md={6} lg={4}>
+                  <Row className="d-flex flex-column mt-3">
+                    <Row className="d-flex">
+                      <h6 className="p-0 m-0">Skills</h6>
+                    </Row>
+                    <Row className="d-flex flex-wrap ps-2">
+                      {professional?.professionalDTO.skills && professional.professionalDTO.skills.length > 0 && professional.professionalDTO.skills.map((skill, index) => (
+                        <div key={index} style={{width: "auto"}} className="text-truncate me-2 tag mb-1">
+                            {skill}                            
+                            </div>
+                      ))}
+                    </Row>
+                    {professional?.professionalDTO.skills.length === 0 && (
+                      <Row className="d-flex">
+                        <p className="p-0 m-0 fs-6">No skill found</p>
+                      </Row>
+                    )}
+                  </Row>
+                </Col>
                 
               </>
             )}

@@ -1,4 +1,5 @@
 import { CreateProfessional } from "../interfaces/CreateProfessional";
+import { EditProfessional } from "../interfaces/EditProfessional";
 import { MeInterface } from "../interfaces/MeInterface";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Professional } from "../interfaces/Professional";
@@ -83,22 +84,48 @@ export const createProfessional = async (professional: CreateProfessional, me: M
   }
 };
 
-export const deleteProfessional = async (professionalId: number, me: MeInterface): Promise<void> => {
-  try {
-    const response = await fetch(`/crmService/v1/API/professionals/${professionalId}`, {
-      method: "DELETE",
-      headers: {
-        "X-XSRF-Token": me.xsrfToken,
-      },
-    });
-
-    if (!response.ok) {
-      const errorMessage = `DELETE /API/professionals/${professionalId} : ${response.status} ${response.statusText}`;
-      console.error(errorMessage);
-      throw new Error(errorMessage);
+  export const deleteProfessional = async (professionalId: number, me: MeInterface): Promise<void> => {
+    try {
+      const response = await fetch(`/crmService/v1/API/professionals/${professionalId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-XSRF-Token': me.xsrfToken,
+        }
+      });
+  
+      if (!response.ok) {
+        const errorMessage = `DELETE /API/professionals/${professionalId} : ${response.status} ${response.statusText}`;
+        console.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+    } catch (error) {
+      console.error("Error deleting professional:", error);
+      throw error;
     }
-  } catch (error) {
-    console.error("Error deleting professional:", error);
-    throw error;
   }
-};
+
+
+  export const updateProfessional = async (professional: EditProfessional, me: MeInterface): Promise<Professional> => {
+    try {
+      const response = await fetch(`/crmService/v1/API/professionals/${professional.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-XSRF-Token': me.xsrfToken,
+        },
+        body: JSON.stringify(professional)
+      });
+  
+      if (!response.ok) {
+        const errorMessage = `PUT /API/professionals/${professional.id} : ${response.status} ${response.statusText}`;
+        console.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+  
+      const data: Professional = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error updating professional:", error);
+      throw error
+    }
+  }

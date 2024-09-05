@@ -183,10 +183,10 @@ function CustomerPage({ me }: { me: MeInterface }) {
                 <Col xs={12} md={6} lg={4}>
                   <Row className="d-flex flex-column mt-3">
                     <Row className="d-flex">
-                      <h6 className="p-0 m-0">Emails</h6>
+                      <h6 className="p-0 m-0 mb-2">Emails</h6>
                     </Row>
                     {customer?.information.emailDTOs.map((email, index) => (
-                      <Row key={index} className="d-flex">
+                      <Row key={index} className="d-flex mb-2">
                         <p className="p-0 m-0 fs-6">{email.email} </p>
                         <small className="m-0 p-0">{email.comment}</small>
                       </Row>
@@ -202,10 +202,10 @@ function CustomerPage({ me }: { me: MeInterface }) {
                 <Col xs={12} md={6} lg={4}>
                   <Row className="d-flex flex-column mt-3">
                     <Row className="d-flex">
-                      <h6 className="p-0 m-0">Phones</h6>
+                      <h6 className="p-0 m-0 mb-2">Phones</h6>
                     </Row>
                     {customer?.information.telephoneDTOs.map((phone, index) => (
-                      <Row key={index} className="d-flex">
+                      <Row key={index} className="d-flex mb-2">
                         <p className="p-0 m-0 fs-6">{phone.telephone} </p>
                         <small className="m-0 p-0">{phone.comment}</small>
                       </Row>
@@ -220,11 +220,11 @@ function CustomerPage({ me }: { me: MeInterface }) {
 
                 <Col xs={12} md={6} lg={4}>
                   <Row className="d-flex flex-column mt-3">
-                    <Row className="d-flex">
-                      <h6 className="p-0 m-0">Addresses</h6>
+                    <Row className="d-flex"> 
+                      <h6 className="p-0 m-0 mb-2">Addresses</h6>
                     </Row>
                     {customer?.information.addressDTOs.map((address, index) => (
-                      <Row key={index} className="d-flex">
+                      <Row key={index} className="d-flex mb-2">
                         <p className="p-0 m-0 fs-6">
                           {" "}
                           {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}{" "}
@@ -265,8 +265,10 @@ function CustomerPage({ me }: { me: MeInterface }) {
             </Row>
           </Row>
 
-          <Row className="d-flex justify-content-end mt-3">
-            <Col xs="auto" className="me-4">
+          {customer?.jobOffers && customer?.jobOffers.length > 0 && (
+            <Row className="d-flex justify-content-between mt-5 mb-3">
+              <h4 className="w-25">Job Offers</h4>
+              <Col xs="auto" className="me-4">
               <Button
                 className="d-flex align-items-center primaryButton"
                 onClick={() =>
@@ -279,11 +281,6 @@ function CustomerPage({ me }: { me: MeInterface }) {
                 Add Job Offer
               </Button>
             </Col>
-          </Row>
-
-          {customer?.jobOffers && customer?.jobOffers.length > 0 && (
-            <Row className="d-flex flex-column mt-5">
-              <h4>Job Offers</h4>
             </Row>
           )}
 

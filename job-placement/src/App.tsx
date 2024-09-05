@@ -20,6 +20,7 @@ import AddProfessionalPage from "./views/AddProfessionalPage.tsx";
 import ProfessionalPage from "./views/ProfessionalPage.tsx";
 import EditCustomerPage from "./views/EditCustomerPage.tsx";
 import { RoleState } from "./utils/costants.ts";
+import EditProfessionalPage from "./views/EditProfessionalPage.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -57,6 +58,9 @@ function App() {
             setRole(RoleState.OPERATOR);
           }
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
 
       setLoading(false);
@@ -112,6 +116,7 @@ function App() {
                   path="/ui/customers/:id/edit"
                   element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />}
                 />
+                <Route path="/ui/professionals/:id/edit" element={me && me.principal !== null ? <EditProfessionalPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/professionals/:id" element={me && me.principal !== null ? <ProfessionalPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
