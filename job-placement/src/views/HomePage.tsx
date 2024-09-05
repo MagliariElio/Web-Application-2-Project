@@ -307,8 +307,8 @@ const HomePage = () => {
                   );
                 })}
 
-                <Pagination.Next onClick={() => changePage(currentPage + 1)} disabled={currentPage === totalPages} />
-                <Pagination.Last onClick={() => changePage(totalPages)} disabled={currentPage === totalPages} />
+                <Pagination.Next onClick={() => changePage(currentPage + 1)} disabled={currentPage + 1 === totalPages} />
+                <Pagination.Last onClick={() => changePage(totalPages)} disabled={currentPage + 1 === totalPages} />
               </Pagination>
             </Col>
           </Row>
