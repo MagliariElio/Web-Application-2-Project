@@ -23,9 +23,12 @@ import { fetchProfessional, fetchProfessionals } from "../apis/ProfessionalReque
 import { Professional } from "../interfaces/Professional";
 import {
   abortJobOffer,
+  cancelCandidation,
   deleteJobOfferById,
+  doneJobOffer,
   fetchJobOfferById,
   goToCandidateProposalPhase,
+  goToCondolidated,
   goToSelectionPhase,
   updateJobOffer,
 } from "../apis/JobOfferRequests";
@@ -125,6 +128,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       const resultCustomer = await fetchCustomer(result?.customerId);
       setCustomer(resultCustomer);
 
+      setProfessional(null);
       if (result?.professionalId) {
         const resultProfessional = await fetchProfessional(result?.professionalId);
         setProfessional(resultProfessional);
@@ -269,9 +273,16 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
    */
   const handleGoToSelectionPhase = async () => {
     const jobOffer = {
-      //nextStatus: JobOfferState.SELECTION_PHASE,
       professionalsId: candidateProfessionalList.map((p: Professional) => p.id),
     };
+
+    if (candidateProfessionalList?.length === 0) {
+      setErrorMessage("Select at least one candidate!");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
 
     try {
       setLoading(true);
@@ -279,6 +290,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
       await loadJobOffer(jobOfferResponse);
 
+      setErrorMessage("");
       setLoading(false);
     } catch (error) {
       if (error instanceof Error) {
@@ -351,6 +363,107 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       }
 
       setLoading(false);
+    }
+  };
+
+  const handleGoToConsolidated = async () => {
+    if (jobOffer?.status !== JobOfferState.CANDIDATE_PROPOSAL || !professional?.id) {
+      setErrorMessage("This action is not available in this moment.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const jobOfferResponse = await goToCondolidated(parseInt(id ? id : ""), me.xsrfToken, professional.id);
+
+      await loadJobOffer(jobOfferResponse);
+
+      setErrorMessage("");
+      setLoading(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      setLoading(false);
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  const handleCancelCadidation = async () => {
+    if (jobOffer?.status !== JobOfferState.CANDIDATE_PROPOSAL) {
+      setErrorMessage("This action is not available in this moment.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const jobOfferResponse = await cancelCandidation(parseInt(id ? id : ""), me.xsrfToken, candidateProfessionalList);
+
+      console.log(jobOfferResponse);
+
+      await loadJobOffer(jobOfferResponse);
+
+      setErrorMessage("");
+      setLoading(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      setLoading(false);
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  const handleDoneJobOffer = async () => {
+    if (jobOffer?.status !== JobOfferState.CONSOLIDATED || !professional?.id) {
+      setErrorMessage("This action is not available in this moment.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const jobOfferResponse = await doneJobOffer(parseInt(id ? id : ""), me.xsrfToken, professional.id);
+
+      await loadJobOffer(jobOfferResponse);
+
+      setErrorMessage("");
+      setLoading(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      setLoading(false);
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
@@ -427,7 +540,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 <Col md={9}>
                   <h3 className="font-weight-bold">{jobOffer?.name}</h3>
                 </Col>
-                {jobOffer?.status !== JobOfferState.ABORT && (
+                {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
                   <>
                     <Col md={2} className="d-flex justify-content-end">
                       <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
@@ -737,57 +850,88 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
             </Col>
           </Row>
 
-          {/* Customer and Professional */}
+          {/* Customer Section */}
           <Row className="border-top pt-3 mb-3">
-            <Col md={6}>
-              {!isEditing ? (
-                <div>
-                  <FaUser className="mr-2" /> <strong>Customer: </strong>
-                  {`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname} (${customer?.information.contactDTO.ssnCode})`}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="customerName" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
-                    Customer
+            <Col xs={12}>
+              <Form.Group as={Row} controlId="professionalId">
+                <Form.Label column xs={6} className="fw-bold">
+                  Customer Information
+                </Form.Label>
+
+                {/* Buttons Section */}
+                <Col xs={6} className="text-end">
+                  <Button variant="primary" className="me-2" onClick={() => {}}>
+                    Profile
+                  </Button>
+                </Col>
+
+                <Col xs={12} md={6} className="mb-3">
+                  <Form.Label>Surname</Form.Label>
+                  <Form.Control type="text" name="professionalSurname" value={customer?.information.contactDTO.surname || ""} disabled />
+                </Col>
+                <Col xs={12} md={6} className="mb-3">
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control type="text" name="professionalName" value={customer?.information.contactDTO.name || ""} disabled />
+                </Col>
+                <Col xs={12} md={6} className="mb-3">
+                  <Form.Label>SSN Code</Form.Label>
+                  <Form.Control type="text" name="professionalSSnCode" value={customer?.information.contactDTO.ssnCode || ""} disabled />
+                </Col>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          {/* Professional Section */}
+          {professional && (
+            <Row className="border-top pt-3 mb-3">
+              <Col xs={12}>
+                <Form.Group as={Row} controlId="professionalId">
+                  <Form.Label column xs={6} className="fw-bold">
+                    Professional Information
                   </Form.Label>
-                  <Col xs={12} sm={8}>
+
+                  {/* Buttons Section */}
+                  <Col xs={6} className="text-end">
+                    <Button variant="primary" className="me-2" onClick={() => {}}>
+                      Profile
+                    </Button>
+                    {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && (
+                      <>
+                        <Button variant="success" className="me-2" onClick={handleGoToConsolidated}>
+                          Confirm Candidation
+                        </Button>
+                        <Button variant="danger" onClick={handleCancelCadidation}>
+                          Cancel Candidation
+                        </Button>
+                      </>
+                    )}
+                  </Col>
+
+                  <Col xs={12} md={6} className="mb-3">
+                    <Form.Label>Surname</Form.Label>
+                    <Form.Control type="text" name="professionalSurname" value={professional?.information.surname || ""} disabled />
+                  </Col>
+                  <Col xs={12} md={6} className="mb-3">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control type="text" name="professionalName" value={professional?.information.name || ""} disabled />
+                  </Col>
+                  <Col xs={12} md={6} className="mb-3">
+                    <Form.Label>SSN Code</Form.Label>
+                    <Form.Control type="text" name="professionalSSnCode" value={professional?.information.ssnCode || ""} disabled />
+                  </Col>
+                  <Col xs={12} md={6} className="mb-3">
+                    <Form.Label>Daily Rate</Form.Label>
                     <Form.Control
                       type="text"
-                      name="customerName"
-                      value={`${customer?.information.contactDTO.surname} ${customer?.information.contactDTO.name} (${customer?.information.contactDTO.ssnCode})`}
-                      onChange={handleInputChange}
+                      name="professionalDailyRate"
+                      value={professional?.dailyRate ? `${professional.dailyRate} €` : ""}
                       disabled
                     />
                   </Col>
                 </Form.Group>
-              )}
-            </Col>
-            {professional && (
-              <Col md={6}>
-                {!isEditing ? (
-                  <div>
-                    <FaUser className="mr-2" /> <strong>Professional: </strong>
-                    {`${professional?.information.surname} ${professional?.information.name} (${professional?.information.ssnCode})`}
-                  </div>
-                ) : (
-                  <Form.Group as={Row} controlId="professionalId" className="d-flex align-items-center">
-                    <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
-                      Professional
-                    </Form.Label>
-                    <Col xs={12} sm={9}>
-                      <Form.Control
-                        type="text"
-                        name="professionalId"
-                        value={`${professional?.information.surname} ${professional?.information.name} (${professional?.information.ssnCode})`}
-                        onChange={handleInputChange}
-                        disabled
-                      />
-                    </Col>
-                  </Form.Group>
-                )}
               </Col>
-            )}
-          </Row>
+            </Row>
+          )}
 
           {/* Candidate Professionals */}
           {!professional && !isEditing && (
@@ -849,14 +993,20 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           <td>{professional.information.ssnCode}</td>
                           <td className="text-center">
                             <ButtonGroup>
-                              <Button
-                                variant="success"
-                                className="me-2"
-                                onClick={() => handleSelectCandidateProfessional(index)}
-                                disabled={jobOffer?.status !== JobOfferState.SELECTION_PHASE}
-                              >
-                                <FaCheck />
-                              </Button>
+                              {jobOffer?.status !== JobOfferState.CREATED && (
+                                <Button
+                                  variant="success"
+                                  className="me-2"
+                                  onClick={() => handleSelectCandidateProfessional(index)}
+                                  disabled={
+                                    jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                    jobOffer?.candidateProfessionalIds.length !== candidateProfessionalList.length ||
+                                    loadingCandidateProfessional
+                                  }
+                                >
+                                  <FaCheck />
+                                </Button>
+                              )}
                               <Button
                                 variant="danger"
                                 onClick={() => handleDeleteCandidateProfessional(index)}
@@ -901,7 +1051,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
           {!isEditing && (
             <Row className="mt-5">
-              {jobOffer?.status !== JobOfferState.ABORT && (
+              {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
                 <Col className="text-center">
                   <Button className="secondaryDangerButton mb-2" variant="danger" size="lg" onClick={handleAbortJobOffer}>
                     Abort
@@ -913,6 +1063,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   Go Back
                 </Button>
               </Col>
+              {jobOffer?.status === JobOfferState.CONSOLIDATED && (
+                <Col className="text-center">
+                  <Button className="primarySuccessButton mb-2" variant="primary" size="lg" onClick={handleDoneJobOffer}>
+                    Done
+                  </Button>
+                </Col>
+              )}
             </Row>
           )}
         </Form>

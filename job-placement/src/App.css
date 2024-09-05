@@ -299,6 +299,23 @@
   background-color: #162250c2 !important;
 }
 
+.primarySuccessButton {
+  background-color: #eaf7ea !important; 
+  color: #218838 !important;
+  border: 2px solid #218838 !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease !important;
+  font-size: 18px !important;
+}
+
+.primarySuccessButton:hover {
+  box-shadow: 0 5px 10px rgba(22, 34, 80, 0.2);
+  transform: translateY(-5px) scale(1.05);
+  background-color: #1e7e34 !important;
+  color: white !important;
+}
+
 .secondaryButton {
   background-color: #f8f9fa !important;
   color: #162250 !important;
