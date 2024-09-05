@@ -18,7 +18,7 @@ import {
 } from "react-icons/bs";
 import { MeInterface } from "../interfaces/MeInterface";
 import { deleteCustomer, fetchCustomer } from "../apis/CustomerRequests";
-import { toTitleCase } from "../utils/costants";
+import { employmentStateToText, toTitleCase } from "../utils/costants";
 import { Professional } from "../interfaces/Professional";
 import { deleteProfessional, fetchProfessional } from "../apis/ProfessionalRequests";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
@@ -168,14 +168,16 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
           </Row>
 
           <Row className="w-100 borderedSection heigth-transition">
-            <Row className="d-flex mb-2">
+            <div className="d-flex justify-content-between mb-2 ps-0">
               <h4 className="p-0 m-0 d-flex align-items-center">
                 {`${professional?.professionalDTO.information.name} ${professional?.professionalDTO.information.surname}`}
                 <span className="fw-light fs-6 ms-2">
                   ({professional?.professionalDTO.information.ssnCode})
                 </span>
               </h4>
-            </Row>
+
+              <span className="text-uppercase fs-4 fw-semibold" style={{color: "#162250"}}>{employmentStateToText(professional?.professionalDTO.employmentState || "")}</span>
+            </div>
             <Row className="d-flex">
               <p className="p-0 m-0 fs-6 fw-light">
                 {professional?.professionalDTO.information.comment}

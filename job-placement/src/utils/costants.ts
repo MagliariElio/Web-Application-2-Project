@@ -36,3 +36,18 @@ export const toTitleCase = (str: string) => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 };
+
+export const employmentStateToText = (state: string) => {
+  switch (state) {
+    case "EMPLOYED":
+      return "Employed";
+    case "UNEMPLOYED":
+      return "Unemployed";
+    case "AVAILABLE_FOR_WORK":
+      return "Available for work";
+    case "NOT_AVAILABLE":
+      return "Not available";
+    default:
+      return state;
+  }
+}

@@ -29,6 +29,7 @@ import {
 } from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -86,14 +87,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       setLoadingCandidateProfessional(true);
       setCandidateProfessionalList([]);
 
-      const resultList: Professional[] = await Promise.all(
+      const resultList: ProfessionalWithAssociatedData[] = await Promise.all(
         candidateList.map(async (id) => {
           const result = await fetchProfessional(id);
           return result.professionalDTO;
         })
       );
 
-      setCandidateProfessionalList(resultList);
+      setCandidateProfessionalList(resultList.map((p) => p.professionalDTO));
       setLoadingCandidateProfessional(false);
     } catch (error) {
       if (error instanceof Error) {
