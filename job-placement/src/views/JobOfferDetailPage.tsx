@@ -36,6 +36,7 @@ import {
 import { LoadingSection } from "../App";
 import { FaCircleInfo } from "react-icons/fa6";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -86,14 +87,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       setLoadingCandidateProfessional(true);
       setCandidateProfessionalList([]);
 
-      const resultList: Professional[] = await Promise.all(
+      const resultList: ProfessionalWithAssociatedData[] = await Promise.all(
         candidateList.map(async (id) => {
           const result = await fetchProfessional(id);
           return result;
         })
       );
 
-      setCandidateProfessionalList(resultList);
+      setCandidateProfessionalList(resultList.map((p) => p.professionalDTO));
       setLoadingCandidateProfessional(false);
     } catch (error) {
       if (error instanceof Error) {
@@ -134,7 +135,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       setProfessional(null);
       if (result?.professionalId) {
         const resultProfessional = await fetchProfessional(result?.professionalId);
-        setProfessional(resultProfessional);
+        setProfessional(resultProfessional.professionalDTO);
       }
 
       loadCandidateProfessionals(result?.candidateProfessionalIds);
