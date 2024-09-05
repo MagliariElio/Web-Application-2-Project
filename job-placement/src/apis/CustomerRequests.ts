@@ -13,7 +13,7 @@ export const fetchCustomers = async (
 ): Promise<PagedResponse<Customer>> => {
   try {
     const response = await fetch(
-      `/crmService/v1/API/customers?pageNumber=${page}&&pageSize=${pageSize}`
+      `/crmService/v1/API/customers?pageNumber=${page}&&pageSize=${pageSize}&&name=${name}&&surname=${surname}&&ssnCode=${ssnCode}&&comment=${comment}`
     );
 
     if (!response.ok) {
@@ -91,6 +91,32 @@ export const deleteCustomer = async (customerId: number, me: MeInterface): Promi
     } else {
       throw new Error(
         `DELETE /API/customers/${customerId} : Network response was not ok`
+      );
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+}
+
+export const updateCustomer = async (customerId: number, customer: CreateCustomer, me: MeInterface): Promise<Customer> => {
+  try {
+    const response = await fetch("/crmService/v1/API/customers/" + customerId + "/contactDetails", {
+      method: "PATCH",
+      headers: {
+          'Content-Type': 'application/json',
+          'X-XSRF-Token': me.xsrfToken
+      },
+      body: JSON.stringify(customer)
+    });
+
+    if (response.ok) {
+      const data: Customer = await response.json();
+      console.log("Updated customer: ", data);
+      return data;
+    } else {
+      throw new Error(
+        `PUT /API/customers/${customerId} : Network response was not ok`
       );
     }
   } catch (error) {

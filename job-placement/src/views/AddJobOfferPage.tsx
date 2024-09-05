@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Col, Container, Modal, Pagination, Row, Table } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
 import { contractTypeList, toTitleCase, workModeList } from "../utils/costants";
 import { Customer } from "../interfaces/Customer";
@@ -12,6 +12,8 @@ import { debounce } from "../utils/checkers";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
+
+  const selectedCustomer = useLocation().state as { customer: Customer } | undefined;
 
   const errorRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,6 +37,12 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
   const handleCustomerSelect = (customer: Customer) => {
     setCustomer(customer);
   };
+
+  useEffect(() => {
+    if (selectedCustomer) {
+      setCustomer(selectedCustomer.customer);
+    }
+  }, []);
 
   const handleAddSkill = () => {
     if (singleRequiredSkill.trim() === "") {
@@ -217,7 +225,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                 placeholder="Select a customer"
                 value={
                   customer
-                    ? `${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname} (${customer.information.contactDTO.ssnCode})`
+                    ? `${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname} (${customer?.information.contactDTO.ssnCode})`
                     : "Select a customer"
                 }
                 readOnly

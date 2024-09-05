@@ -52,9 +52,7 @@ function ProfessionalsPage() {
         setError(true);
         console.log(error);
         setLoading(false);
-        throw new Error(
-          "GET /API/professionals : Network response was not ok"
-        );
+        throw new Error("GET /API/professionals : Network response was not ok");
       });
   }, []);
 
@@ -173,7 +171,10 @@ function ProfessionalsPage() {
                       />
                     </Form.Group>
 
-                    <Form.Group controlId="geographicalLocation" className="mb-3">
+                    <Form.Group
+                      controlId="geographicalLocation"
+                      className="mb-3"
+                    >
                       <Form.Label>Geographical location</Form.Label>
                       <Form.Control
                         type="text"
@@ -206,10 +207,14 @@ function ProfessionalsPage() {
                       className="primaryButton mb-2"
                       variant="primary"
                       onClick={() => {
-                        
                         setLoading(true);
-                        fetchProfessionals(0, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
-                          
+                        fetchProfessionals(
+                          0,
+                          pageSize,
+                          filters.skill,
+                          filters.geographicalLocation,
+                          filters.employmentState
+                        )
                           .then((result) => {
                             console.log("Professionals fetched: ", result);
                             setProfessionals(result);
@@ -245,7 +250,6 @@ function ProfessionalsPage() {
                           employmentState: "",
                         });
                         fetchProfessionals(0, pageSize)
-                          
                           .then((result) => {
                             console.log("Professionals fetched: ", result);
                             setProfessionals(result);
@@ -320,48 +324,90 @@ function ProfessionalsPage() {
                     {presentedProfessionals
                       .sort((a, b) => {
                         if (sortCriteria === "asc_name") {
-                          return a.information.name.localeCompare(b.information.name);
+                          return a.information.name.localeCompare(
+                            b.information.name
+                          );
                         } else if (sortCriteria === "asc_surname") {
-                          return a.information.surname.localeCompare(b.information.surname);
+                          return a.information.surname.localeCompare(
+                            b.information.surname
+                          );
                         } else if (sortCriteria === "asc_num_skills") {
                           return a.skills.length - b.skills.length;
-                        } else if (sortCriteria === "asc_geographicalLocation") {
-                          return a.geographicalLocation.localeCompare(b.geographicalLocation);
+                        } else if (
+                          sortCriteria === "asc_geographicalLocation"
+                        ) {
+                          return a.geographicalLocation.localeCompare(
+                            b.geographicalLocation
+                          );
                         } else if (sortCriteria === "desc_name") {
-                          return b.information.name.localeCompare(a.information.name);
+                          return b.information.name.localeCompare(
+                            a.information.name
+                          );
                         } else if (sortCriteria === "desc_surname") {
-                          return b.information.surname.localeCompare(a.information.surname);
+                          return b.information.surname.localeCompare(
+                            a.information.surname
+                          );
                         } else if (sortCriteria === "desc_num_skills") {
                           return b.skills.length - a.skills.length;
-                        } else if (sortCriteria === "desc_geographicalLocation") {
-                          return b.geographicalLocation.localeCompare(a.geographicalLocation);
+                        } else if (
+                          sortCriteria === "desc_geographicalLocation"
+                        ) {
+                          return b.geographicalLocation.localeCompare(
+                            a.geographicalLocation
+                          );
                         } else if (sortCriteria === "employed_before") {
-                          if (a.employmentState === "EMPLOYED" && b.employmentState !== "EMPLOYED") {
+                          if (
+                            a.employmentState === "EMPLOYED" &&
+                            b.employmentState !== "EMPLOYED"
+                          ) {
                             return -1;
-                          } else if (a.employmentState !== "EMPLOYED" && b.employmentState === "EMPLOYED") {
+                          } else if (
+                            a.employmentState !== "EMPLOYED" &&
+                            b.employmentState === "EMPLOYED"
+                          ) {
                             return 1;
                           }
                         } else if (sortCriteria === "unemployed_before") {
-                          if (a.employmentState === "UNEMPLOYED" && b.employmentState !== "UNEMPLOYED") {
+                          if (
+                            a.employmentState === "UNEMPLOYED" &&
+                            b.employmentState !== "UNEMPLOYED"
+                          ) {
                             return -1;
-                          } else if (a.employmentState !== "UNEMPLOYED" && b.employmentState === "UNEMPLOYED") {
+                          } else if (
+                            a.employmentState !== "UNEMPLOYED" &&
+                            b.employmentState === "UNEMPLOYED"
+                          ) {
                             return 1;
                           }
                         }
                         return 0;
                       })
                       .map((professional, index) => {
-                        const selectedSkill = professional.skills.reduce((bestMatch, skill) => {
-                          if (activeFilters.skill === "") {
-                            return professional.skills[0];
-                          }
-                          const skillLower = skill.toLowerCase();
-                          const filterSkillLower = activeFilters.skill.toLowerCase();
-                          const matchLength = skillLower.includes(filterSkillLower) ? filterSkillLower.length : 0;
-                          const bestMatchLower = bestMatch.toLowerCase();
-                          const bestMatchLength = bestMatchLower.includes(filterSkillLower) ? filterSkillLower.length : 0;
-                          return matchLength > bestMatchLength ? skill : bestMatch;
-                        }, professional.skills[0]);
+                        const selectedSkill = professional.skills.reduce(
+                          (bestMatch, skill) => {
+                            if (activeFilters.skill === "") {
+                              return professional.skills[0];
+                            }
+                            const skillLower = skill.toLowerCase();
+                            const filterSkillLower =
+                              activeFilters.skill.toLowerCase();
+                            const matchLength = skillLower.includes(
+                              filterSkillLower
+                            )
+                              ? filterSkillLower.length
+                              : 0;
+                            const bestMatchLower = bestMatch.toLowerCase();
+                            const bestMatchLength = bestMatchLower.includes(
+                              filterSkillLower
+                            )
+                              ? filterSkillLower.length
+                              : 0;
+                            return matchLength > bestMatchLength
+                              ? skill
+                              : bestMatch;
+                          },
+                          professional.skills[0]
+                        );
                         return (
                           <Row
                             key={index}
@@ -374,11 +420,13 @@ function ProfessionalsPage() {
                               <h5 className="mb-0 text-center-sm">{`${professional.information.name} ${professional.information.surname}`}</h5>
                             </Col>
                             <Col xs={12} md={6} lg={3}>
-                            <p className="mb-0 fw-light  text-center-sm text-right-md">
-                              {`${selectedSkill} + `}
-                              <strong className="fw-semibold">{professional.skills.length - 1}</strong>
-                              {` skills`}
-                            </p>
+                              <p className="mb-0 fw-light  text-center-sm text-right-md">
+                                {`${selectedSkill} + `}
+                                <strong className="fw-semibold">
+                                  {professional.skills.length - 1}
+                                </strong>
+                                {` skills`}
+                              </p>
                             </Col>
                             <Col xs={12} md={6} lg={3}>
                               <p className="mb-0 fw-light  text-center-sm">
@@ -430,14 +478,20 @@ function ProfessionalsPage() {
                         <BsChevronLeft
                           onClick={() => {
                             var query = "";
-                            if (filters.skill) query += `&skill=${filters.skill}`;
+                            if (filters.skill)
+                              query += `&skill=${filters.skill}`;
                             if (filters.geographicalLocation)
                               query += `&location=${filters.geographicalLocation}`;
                             if (filters.employmentState)
                               query += `&employmentState=${filters.employmentState}`;
 
-                            fetchProfessionals(professionals.currentPage - 1, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
-                              
+                            fetchProfessionals(
+                              professionals.currentPage - 1,
+                              pageSize,
+                              filters.skill,
+                              filters.geographicalLocation,
+                              filters.employmentState
+                            )
                               .then((result) => {
                                 console.log("Professionals fetched: ", result);
                                 setProfessionals(result);
@@ -467,14 +521,20 @@ function ProfessionalsPage() {
                         <BsChevronRight
                           onClick={() => {
                             var query = "";
-                            if (filters.skill) query += `&skill=${filters.skill}`;
+                            if (filters.skill)
+                              query += `&skill=${filters.skill}`;
                             if (filters.geographicalLocation)
                               query += `&location=${filters.geographicalLocation}`;
                             if (filters.employmentState)
                               query += `&employmentState=${filters.employmentState}`;
 
-                            fetchProfessionals(professionals.currentPage + 1, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
-                              
+                            fetchProfessionals(
+                              professionals.currentPage + 1,
+                              pageSize,
+                              filters.skill,
+                              filters.geographicalLocation,
+                              filters.employmentState
+                            )
                               .then((result) => {
                                 console.log("Professionals fetched: ", result);
                                 setProfessionals(result);
@@ -506,9 +566,13 @@ function ProfessionalsPage() {
                     onChange={(e) => {
                       setPageSize(parseInt(e.target.value));
 
-
-                      fetchProfessionals(0, parseInt(e.target.value), filters.skill, filters.geographicalLocation, filters.employmentState)
-                        
+                      fetchProfessionals(
+                        0,
+                        parseInt(e.target.value),
+                        filters.skill,
+                        filters.geographicalLocation,
+                        filters.employmentState
+                      )
                         .then((result) => {
                           console.log("Professionals fetched: ", result);
                           setProfessionals(result);

@@ -14,7 +14,7 @@ class Email {
     lateinit var email: String
     lateinit var comment: String
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinTable(
         name = "email_contact",
         joinColumns = [JoinColumn(name = "email_id", referencedColumnName = "id")],

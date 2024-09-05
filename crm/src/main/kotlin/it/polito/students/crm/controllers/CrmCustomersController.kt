@@ -161,6 +161,52 @@ class CrmCustomersController(private val customerService: CustomerService) {
         }
     }
 
+    @PatchMapping("/{customerID}/contactDetails", "/{customerID}/contactDetails/")
+    fun updateContactDetails(
+        @PathVariable customerID: Long,
+        @RequestBody newContactDetails: CreateContactDTO
+    ): ResponseEntity<out Any> {
+
+        try {
+            if (newContactDetails.name.isBlank() || newContactDetails.surname.isBlank()) {
+                throw BadRequestException(ErrorsPage.NAME_SURNAME_ERROR)
+            }
+            //Check validity List of emails, telephones and addresses
+            if (newContactDetails.emails != null && newContactDetails.emails!!.isNotEmpty()) {
+                newContactDetails.emails?.forEach {
+                    if (!isValidEmail(it.email)) {
+                        throw BadRequestException(ErrorsPage.EMAILS_NOT_VALID)
+                    }
+                }
+            }
+            if (newContactDetails.addresses != null && newContactDetails.addresses!!.isNotEmpty()) {
+                newContactDetails.addresses?.forEach {
+                    if (!isValidAddress(it)) {
+                        throw BadRequestException(ErrorsPage.ADDRESSES_NOT_VALID)
+                    }
+                }
+            }
+            if (newContactDetails.telephones != null && newContactDetails.telephones!!.isNotEmpty()) {
+                //If a telephone number is not valid throws an exception
+                newContactDetails.telephones?.forEach {
+                    if (!isValidPhone(it.telephone)) {
+                        throw BadRequestException(ErrorsPage.TELEPHONES_NOT_VALID)
+                    }
+                }
+            }
+
+            val savedCustomer = customerService.updateCustomerDetails(customerID, newContactDetails)
+            return ResponseEntity(savedCustomer, HttpStatus.CREATED)
+        } catch (e: BadRequestException) {
+            logger.info("Error: ${e.message}")
+            return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+        } catch (e: Exception) {
+            logger.error("Error saving a new contact: ${e.message}")
+            return ResponseEntity(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+    }
+
     @DeleteMapping("/{customerID}", "/{customerID}/")
     fun deleteCustomer(
         @PathVariable customerID: Long

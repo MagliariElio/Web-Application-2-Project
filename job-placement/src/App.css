@@ -383,3 +383,9 @@
     text-align: right !important;
   }
 }
+
+.borderedSection {
+  border: 2px solid #16225041;
+  border-radius: 5px;
+  padding: 20px;
+}
