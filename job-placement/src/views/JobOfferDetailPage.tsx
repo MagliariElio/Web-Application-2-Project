@@ -1072,7 +1072,12 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                               <Button
                                 variant="danger"
                                 onClick={() => handleDeleteCandidateProfessional(index)}
-                                disabled={jobOffer?.status !== JobOfferState.SELECTION_PHASE}
+                                disabled={
+                                  jobOffer?.status === JobOfferState.ABORT ||
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
+                                  jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                  jobOffer?.status === JobOfferState.DONE
+                                }
                               >
                                 <FaTrash />
                               </Button>

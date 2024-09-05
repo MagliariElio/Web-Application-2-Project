@@ -7,8 +7,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { JobOffer } from "../interfaces/JobOffer.ts";
 import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants.ts";
 import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
+import { LoadingSection } from "../App.tsx";
 
-// TODO: è presente un problema con elements per page (limit) il backend non restituisce il numero di job offer corretto
+interface Filters {
+  contractType: string;
+  location: string;
+  workMode: string;
+  status: string;
+  elementsPerPage: number;
+  sortBy: "duration" | "value" | "";
+  sortDirection: "asc" | "desc" | "";
+}
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -24,12 +33,14 @@ const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     contractType: "",
     location: "",
     workMode: "",
     status: "",
     elementsPerPage: 10,
+    sortBy: "",
+    sortDirection: "",
   });
 
   useEffect(() => {
@@ -42,7 +53,16 @@ const HomePage = () => {
 
     const loadJobOffers = async (page: number) => {
       try {
-        const result = await fetchJobOffers(page, filters.elementsPerPage);
+        const result = await fetchJobOffers(
+          page,
+          filters.elementsPerPage,
+          filters.sortBy,
+          filters.sortDirection,
+          filters.contractType,
+          filters.location,
+          filters.status,
+          filters.workMode
+        );
         setJobOffers(result);
         setTotalPages(result.totalPages);
         setLoading(false);
@@ -53,7 +73,17 @@ const HomePage = () => {
     };
 
     loadJobOffers(currentPage);
-  }, [success, currentPage, filters.elementsPerPage]);
+  }, [
+    success,
+    currentPage,
+    filters.elementsPerPage,
+    filters.sortBy,
+    filters.sortDirection,
+    filters.contractType,
+    filters.location,
+    filters.status,
+    filters.workMode,
+  ]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -62,16 +92,6 @@ const HomePage = () => {
       [name]: value,
     }));
   };
-
-  const filteredJobOffers =
-    jobOffers?.content.filter((joboffer) => {
-      return (
-        (!filters.contractType || joboffer.contractType === filters.contractType) &&
-        (!filters.location || joboffer.location.includes(filters.location)) &&
-        (!filters.workMode || joboffer.workMode === filters.workMode) &&
-        (!filters.status || joboffer.status.toLowerCase() === filters.status.toLowerCase())
-      );
-    }) || [];
 
   const changePage = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -113,10 +133,73 @@ const HomePage = () => {
       )}
 
       <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-        <Col>
+        <Col md={4}>
           <h3>Job Offers</h3>
         </Col>
-        <Col className="d-flex justify-content-end">
+        <Col md={2} className="d-flex justify-content-end">
+          <Form.Group controlId="sortBy">
+            <Form.Select
+              name="sortBy"
+              value={filters.sortBy}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                const value = e.target.value as "duration" | "value";
+                setFilters((prevFilters) => ({
+                  ...prevFilters,
+                  sortBy: value,
+                }));
+              }}
+            >
+              <option value="">Sort By</option>
+              <option value="duration">Duration</option>
+              <option value="value">Value</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+
+        <Col md={2} className="d-flex justify-content-start">
+          <Form.Group controlId="sortDirection">
+            <Form.Select
+              name="sortDirection"
+              value={filters.sortDirection}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                const value = e.target.value as "asc" | "desc";
+                setFilters((prevFilters) => ({
+                  ...prevFilters,
+                  sortDirection: value,
+                }));
+              }}
+            >
+              <option value="">Sort Direction</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+
+        <Col md={2} className="d-flex justify-content-end">
+          <Form.Group controlId="elementsPerPage">
+            <Form.Select
+              name="elementsPerPage"
+              value={filters.elementsPerPage}
+              onChange={(e) => {
+                const value = parseInt(e.target.value, 10);
+                setFilters((prevFilters) => ({
+                  ...prevFilters,
+                  elementsPerPage: value,
+                }));
+              }}
+            >
+              <option value="5">5 job offers</option>
+              <option value="10">10 job offers</option>
+              <option value="15">15 job offers</option>
+              <option value="20">20 job offers</option>
+              <option value="30">30 job offers</option>
+              <option value="50">50 job offers</option>
+              <option value="100">100 job offers</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+        <Col md={2} className="d-flex justify-content-end">
           <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/joboffers/add")}>
             <BsPlus size={"1.5em"} className="me-1" />
             Add Job Offer
@@ -132,34 +215,20 @@ const HomePage = () => {
         </Row>
       )}
 
-      {loading && (
-        <Row className="w-100">
-          <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-            <h5>Loading...</h5>
-          </Col>
-        </Row>
-      )}
+      {loading && <LoadingSection h={null} />}
 
-      {!error && !loading && jobOffers !== null && jobOffers.totalElements === 0 && (
-        <Row className="w-100">
-          <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-            <h5>No job offers found yet! Start adding one!</h5>
-          </Col>
-        </Row>
-      )}
-
-      {!error && !loading && jobOffers !== null && jobOffers.totalElements > 0 && (
+      {!error && !loading && jobOffers !== null && (
         <>
           <Row>
             <Col md={8}>
-              {filteredJobOffers.length === 0 ? (
+              {jobOffers?.content.length === 0 ? (
                 <Row className="w-100">
                   <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
                     <h5>No job offers found with the selected filters!</h5>
                   </Col>
                 </Row>
               ) : (
-                filteredJobOffers.map((joboffer) => (
+                jobOffers?.content.map((joboffer) => (
                   <div
                     key={joboffer.id}
                     className="job-offer-item mb-4 p-3"
@@ -251,36 +320,20 @@ const HomePage = () => {
                     </Form.Control>
                   </Form.Group>
 
-                  <Form.Group controlId="elementsPerPage" className="mb-3">
-                    <Form.Label>Job Offer Per Page</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="elementsPerPage"
-                      placeholder="Enter a number"
-                      value={filters.elementsPerPage}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (/^\d*$/.test(value)) {
-                          const { name, value } = e.target;
-                          setFilters((prevFilters) => ({
-                            ...prevFilters,
-                            [name]: value,
-                          }));
-                        }
-                      }}
-                      onKeyPress={(e) => {
-                        if (!/^\d*$/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      min="1"
-                    />
-                  </Form.Group>
-
                   <Button
                     className="secondaryButton"
                     variant="primary"
-                    onClick={() => setFilters({ contractType: "", location: "", workMode: "", status: "", elementsPerPage: 10 })}
+                    onClick={() =>
+                      setFilters({
+                        contractType: "",
+                        location: "",
+                        workMode: "",
+                        status: "",
+                        elementsPerPage: 10,
+                        sortBy: "duration",
+                        sortDirection: "asc",
+                      })
+                    }
                   >
                     Clear Filters
                   </Button>
@@ -293,7 +346,7 @@ const HomePage = () => {
           <Row>
             <Col className="d-flex justify-content-center mt-4 custom-pagination">
               <Pagination>
-                <Pagination.First onClick={() => changePage(1)} disabled={currentPage === 0} />
+                <Pagination.First onClick={() => changePage(0)} disabled={currentPage === 0} />
                 <Pagination.Prev onClick={() => changePage(currentPage - 1)} disabled={currentPage === 0} />
 
                 {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
@@ -302,13 +355,13 @@ const HomePage = () => {
 
                   return (
                     <Pagination.Item key={actualPage} active={actualPage === currentPage} onClick={() => changePage(actualPage)}>
-                      {actualPage + 1} 
+                      {actualPage + 1}
                     </Pagination.Item>
                   );
                 })}
 
                 <Pagination.Next onClick={() => changePage(currentPage + 1)} disabled={currentPage + 1 === totalPages} />
-                <Pagination.Last onClick={() => changePage(totalPages)} disabled={currentPage + 1 === totalPages} />
+                <Pagination.Last onClick={() => changePage(totalPages - 1)} disabled={currentPage + 1 === totalPages} />
               </Pagination>
             </Col>
           </Row>

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Pagination, Row, Toast, ToastContainer } from "react-bootstrap";
 import {
-  BsChevronLeft,
-  BsChevronRight,
   BsPlus,
   BsSearch,
 } from "react-icons/bs";

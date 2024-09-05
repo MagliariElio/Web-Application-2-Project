@@ -16,15 +16,26 @@ interface JobOfferService {
      * @param customerId The Id of the customer related to the Job offer used for filtering. It can be null.
      * @param professionalId The Id of the professional related to the Job offer used for filtering. It can be null.
      * @param jobStatusGroup The status group used for filtering. It can be null.
-     * @return The Page Implementation of the array of job offers possibly filtered.
+     * @param sortBy Sort by duration or value fields. It can be null.
+     * @param sortDirection Sort direction, 'asc' or 'desc'. It can be null.
+     * @param contractType The contract type used for filtering. It can be null.
+     * @param location The location of the Job offer used for filtering. It can be null.
+     * @param workMode The work mode of the Job offer (e.g., remote, on-site) used for filtering. It can be null.
+     * @param status The status of the Job offer (e.g., CREATED, SELECTION_PHASE, DONE) used for filtering. It can be null.
+     * @return A PageImpl of JobOfferDTO containing the filtered and sorted list of job offers.
      */
-
     fun getAllJobOffers(
         page: Int,
         limit: Int,
         customerId: Long?,
         professionalId: Long?,
-        jobStatusGroup: JobStatusGroupEnum?
+        jobStatusGroup: JobStatusGroupEnum?,
+        sortBy: String?,
+        sortDirection: String?,
+        contractType: String?,
+        location: String?,
+        workMode: String?,
+        status: JobStatusEnum?
     ): PageImpl<JobOfferDTO>
 
     /**

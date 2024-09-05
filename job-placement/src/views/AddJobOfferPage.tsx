@@ -8,7 +8,6 @@ import { contractTypeList, toTitleCase, workModeList } from "../utils/costants";
 import { Customer } from "../interfaces/Customer";
 import { fetchCustomers } from "../apis/CustomerRequests";
 import { submitJobOffer } from "../apis/JobOfferRequests";
-import { debounce } from "../utils/checkers";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -120,8 +119,8 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
     };
 
     try {
-      await submitJobOffer(jobOffer, me.xsrfToken);
-      navigate("/ui", { state: { success: true } });
+      const response = await submitJobOffer(jobOffer, me.xsrfToken);
+      navigate(`/ui/joboffers/${response.id}`);
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);

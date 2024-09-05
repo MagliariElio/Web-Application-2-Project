@@ -8,18 +8,14 @@ import {
   ToastContainer,
 } from "react-bootstrap";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Customer } from "../interfaces/Customer";
 import {
   BsChevronDown,
   BsChevronUp,
   BsPencilSquare,
-  BsPlus,
   BsTrash,
 } from "react-icons/bs";
 import { MeInterface } from "../interfaces/MeInterface";
-import { deleteCustomer, fetchCustomer } from "../apis/CustomerRequests";
 import { employmentStateToText, toTitleCase } from "../utils/costants";
-import { Professional } from "../interfaces/Professional";
 import { deleteProfessional, fetchProfessional } from "../apis/ProfessionalRequests";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
 

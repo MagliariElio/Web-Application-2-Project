@@ -28,6 +28,12 @@ class CrmJobOffersController(
         @RequestParam(required = false) customerId: Long?,
         @RequestParam(required = false) professionalId: Long?,
         @RequestParam(required = false) jobStatusGroup: String?,
+        @RequestParam(required = false) sortBy: String?,
+        @RequestParam(required = false) sortDirection: String? = "asc",
+        @RequestParam(required = false) contractType: String?,
+        @RequestParam(required = false) location: String?,
+        @RequestParam(required = false) workMode: String?,
+        @RequestParam(required = false) status: String?
     ): ResponseEntity<Any> {
         try {
             val errorsList: MutableList<String> = mutableListOf()
@@ -44,6 +50,22 @@ class CrmJobOffersController(
                     errorsList.add(ErrorsPage.JOBSTATUSGROUP_INVALID)
                 }
             }
+            if (sortBy != null && sortBy !in listOf("duration", "value")) {
+                errorsList.add(ErrorsPage.SORT_BY_JOB_OFFER_INVALID)
+            }
+            if (sortDirection != null && sortDirection !in listOf("asc", "desc")) {
+                errorsList.add(ErrorsPage.SORT_DIRECTION_JOB_OFFER_INVALID)
+            }
+
+            val jobStatusEnum = status?.let {
+                try {
+                    JobStatusEnum.valueOf(it.uppercase())
+                } catch (e: IllegalArgumentException) {
+                    errorsList.add(ErrorsPage.STATUS_INVALID)
+                    null
+                }
+            }
+
             if (errorsList.isNotEmpty()) {
                 return ResponseEntity(mapOf("errors" to errorsList), HttpStatus.BAD_REQUEST)
             }
@@ -53,7 +75,14 @@ class CrmJobOffersController(
                 limit,
                 customerId,
                 professionalId,
-                jobStatusGroup?.let { JobStatusGroupEnum.valueOf(it.uppercase()) })
+                jobStatusGroup?.let { JobStatusGroupEnum.valueOf(it.uppercase()) },
+                sortBy,
+                sortDirection,
+                contractType,
+                location,
+                workMode,
+                jobStatusEnum
+            )
 
             val mapAnswer: Map<String, Any?> = mapOf(
                 "content" to pageImplDto.content,
@@ -97,7 +126,7 @@ class CrmJobOffersController(
                 return ResponseEntity(ErrorsPage.REQUIRED_SKILLS_EMPTY_ERROR, HttpStatus.BAD_REQUEST)
             }
 
-            if(jobOffer.customerId < 0) {
+            if (jobOffer.customerId < 0) {
                 return ResponseEntity(ErrorsPage.CUSTOMER_ID_ERROR, HttpStatus.BAD_REQUEST)
             }
 
@@ -229,8 +258,8 @@ class CrmJobOffersController(
         } catch (e: RequiredProfessionalIdException) {
             logger.info("Problem during jobOffer status editing: missing professionalId")
             return ResponseEntity(mapOf("error" to e.message), HttpStatus.BAD_REQUEST)
-        } catch (e: ProfessionalNotFoundException){
-          logger.info("Problem during jobOffer status change. Professional not found")
+        } catch (e: ProfessionalNotFoundException) {
+            logger.info("Problem during jobOffer status change. Professional not found")
             return ResponseEntity(mapOf("error" to ErrorsPage.PROFESSIONAL_ID_ERROR), HttpStatus.NOT_FOUND)
         } catch (e: NotAvailableProfessionalException) {
             logger.info("Problem during jobOffer status editing: professional not ready for a job")

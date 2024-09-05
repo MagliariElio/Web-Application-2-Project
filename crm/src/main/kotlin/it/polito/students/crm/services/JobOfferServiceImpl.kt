@@ -11,7 +11,6 @@ import it.polito.students.crm.repositories.ProfessionalRepository
 import it.polito.students.crm.utils.*
 import it.polito.students.crm.utils.Factory.Companion.toEntity
 import jakarta.transaction.Transactional
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -32,44 +31,82 @@ class JobOfferServiceImpl(
         limit: Int,
         customerId: Long?,
         professionalId: Long?,
-        jobStatusGroup: JobStatusGroupEnum?
+        jobStatusGroup: JobStatusGroupEnum?,
+        sortBy: String?,
+        sortDirection: String?,
+        contractType: String?,
+        location: String?,
+        workMode: String?,
+        status: JobStatusEnum?
     ): PageImpl<JobOfferDTO> {
-
-        val pageable = PageRequest.of(page, limit)
-        val pageJobOffers: Page<JobOffer> = jobOfferRepository.findAll(pageable)
-        var list = pageJobOffers.content.filter { !it.deleted }
+        var list = jobOfferRepository.findAll().filter { !it.deleted }
 
         if (customerId != null) {
             list = list.filter { it.customer.id == customerId }
         }
         if (professionalId != null) {
-            list = list.filter { it.professional != null && it.professional!!.id == professionalId }
+            list = list.filter { it.professional != null && it.professional?.id == professionalId }
         }
         if (jobStatusGroup != null) {
-            list = when (jobStatusGroup) {
-                JobStatusGroupEnum.OPEN -> list.filter {
-                    arrayOf(
+            list = list.filter {
+                when (jobStatusGroup) {
+                    JobStatusGroupEnum.OPEN -> it.status in listOf(
                         JobStatusEnum.CREATED,
                         JobStatusEnum.SELECTION_PHASE,
                         JobStatusEnum.CANDIDATE_PROPOSAL
-                    ).contains(it.status)
-                }
+                    )
 
-                JobStatusGroupEnum.ACCEPTED -> list.filter {
-                    arrayOf(
+                    JobStatusGroupEnum.ACCEPTED -> it.status in listOf(
                         JobStatusEnum.CONSOLIDATED,
                         JobStatusEnum.DONE
-                    ).contains(it.status)
-                }
+                    )
 
-                JobStatusGroupEnum.ABORTED -> list.filter { it.status == JobStatusEnum.ABORT }
+                    JobStatusGroupEnum.ABORTED -> it.status == JobStatusEnum.ABORT
+                }
             }
         }
 
-        val dtoList = list.map { it.toDTO() }
+        if (contractType != null) {
+            list = list.filter { it.contractType.equals(contractType, ignoreCase = true) }
+        }
 
-        val pageImpl = PageImpl(dtoList, pageable, pageJobOffers.totalElements)
-        return pageImpl
+        if (location != null) {
+            list = list.filter { it.location.equals(location, ignoreCase = true) }
+        }
+
+        if (workMode != null) {
+            list = list.filter { it.workMode.equals(workMode, ignoreCase = true) }
+        }
+
+        if (status != null) {
+            list = list.filter { it.status == status }
+        }
+
+        if (sortBy != null && sortDirection != null) {
+            list = when (sortBy.lowercase()) {
+                "duration" -> if (sortDirection.lowercase() == "asc") {
+                    list.sortedBy { it.duration }
+                } else {
+                    list.sortedByDescending { it.duration }
+                }
+
+                "value" -> if (sortDirection.lowercase() == "asc") {
+                    list.sortedBy { it.value }
+                } else {
+                    list.sortedByDescending { it.value }
+                }
+
+                else -> list
+            }
+        }
+
+        val fromIndex = page * limit
+        val toIndex = minOf(fromIndex + limit, list.size)
+        val pagedList = if (fromIndex <= toIndex) list.subList(fromIndex, toIndex) else emptyList()
+
+        val dtoList = pagedList.map { it.toDTO() }
+
+        return PageImpl(dtoList, PageRequest.of(page, limit), list.size.toLong())
     }
 
     override fun storeJobOffer(jobOfferDto: CreateJobOfferDTO): JobOfferDTO {
@@ -153,12 +190,13 @@ class JobOfferServiceImpl(
         val oldJobOffer = oldJobOfferOptional.get()
         val oldStatus = oldJobOffer.status
 
-        if (oldJobOffer.deleted){
+        if (oldJobOffer.deleted) {
             throw NotFoundJobOfferException(ErrorsPage.JOB_OFFER_NOT_FOUND_ERROR)
         }
 
-        var updateProfessionalsId = false   // controlla che se avviene un aggiornamento della lista candidati, il check sullo stato non sia un problema
-        if(professionalsId != null && !oldJobOffer.candidateProfessionals.none { professionalsId.contains(it.id) }) {
+        var updateProfessionalsId =
+            false   // controlla che se avviene un aggiornamento della lista candidati, il check sullo stato non sia un problema
+        if (professionalsId != null && !oldJobOffer.candidateProfessionals.none { professionalsId.contains(it.id) }) {
             updateProfessionalsId = true
         }
 
@@ -185,17 +223,17 @@ class JobOfferServiceImpl(
                     var professional: Professional? = null
 
                     professionalOptional = professionalRepository.findById(it)
-                    try{
+                    try {
                         professional = professionalOptional.get()
 
-                        if (professional!!.deleted){
+                        if (professional!!.deleted) {
                             throw ProfessionalNotFoundException("Professional not found")
                         }
 
                         professional!!.jobOffers.add(oldJobOffer)
 
 
-                    } catch (e: Exception){
+                    } catch (e: Exception) {
                         println(e.message)
                         throw ProfessionalNotFoundException("Professional not found")
                     }
@@ -204,7 +242,7 @@ class JobOfferServiceImpl(
                 }.toMutableList()
                 oldJobOffer.professional?.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
 
-                if(!oldJobOffer.candidateProfessionals.contains(oldJobOffer.professional)) {
+                if (!oldJobOffer.candidateProfessionals.contains(oldJobOffer.professional)) {
                     oldJobOffer.professional?.jobOffers?.remove(oldJobOffer)
                 }
 
@@ -217,29 +255,29 @@ class JobOfferServiceImpl(
             JobStatusEnum.CANDIDATE_PROPOSAL -> {
                 oldJobOffer.status = nextStatus
 
-                if (professionalsId!!.size > 1){
+                if (professionalsId!!.size > 1) {
                     throw InconsistentProfessionalStatusTransitionException("Only one professional can be the final proposal")
                 }
                 var professional: Professional? = null
 
                 val professionalOptional: Optional<Professional> = professionalRepository.findById(professionalsId[0])
-                try{
+                try {
                     professional = professionalOptional.get()
-                    if (professional!!.deleted){
+                    if (professional!!.deleted) {
                         throw ProfessionalNotFoundException("Professional not found")
                     }
 
                     professional!!.jobOffers.add(oldJobOffer)
 
                     professionalRepository.save(professional!!)
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     throw ProfessionalNotFoundException("Professional not found")
                 }
 
                 if (professional!!.employmentState == EmploymentStateEnum.EMPLOYED || professional!!.employmentState == EmploymentStateEnum.NOT_AVAILABLE) {
                     throw NotAvailableProfessionalException("This professional cannot start a job now")
                 }
-                if (oldJobOffer.candidateProfessionals.find { it.id == professional!!.id } == null){
+                if (oldJobOffer.candidateProfessionals.find { it.id == professional!!.id } == null) {
                     throw InconsistentProfessionalStatusTransitionException("This professional was not in the list of candidates")
                 }
 
@@ -252,22 +290,22 @@ class JobOfferServiceImpl(
             JobStatusEnum.CONSOLIDATED -> {
                 oldJobOffer.status = nextStatus
 
-                if (professionalsId!!.size > 1){
+                if (professionalsId!!.size > 1) {
                     throw InconsistentProfessionalStatusTransitionException("Only one professional can be consolidated")
                 }
                 var professional: Professional? = null
 
                 val professionalOptional: Optional<Professional> = professionalRepository.findById(professionalsId[0])
-                try{
+                try {
                     professional = professionalOptional.get()
-                    if (professional!!.deleted){
+                    if (professional!!.deleted) {
                         throw ProfessionalNotFoundException("Professional not found")
                     }
 
                     professional!!.jobOffers.add(oldJobOffer)
 
                     professionalRepository.save(professional!!)
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     throw ProfessionalNotFoundException("Professional not found")
                 }
 
@@ -287,22 +325,22 @@ class JobOfferServiceImpl(
             JobStatusEnum.DONE -> {
                 oldJobOffer.status = nextStatus
 
-                if (professionalsId!!.size > 1){
+                if (professionalsId!!.size > 1) {
                     throw InconsistentProfessionalStatusTransitionException("Only one professional can be consolidated")
                 }
                 var professional: Professional? = null
 
                 val professionalOptional: Optional<Professional> = professionalRepository.findById(professionalsId[0])
-                try{
+                try {
                     professional = professionalOptional.get()
-                    if (professional!!.deleted){
+                    if (professional!!.deleted) {
                         throw ProfessionalNotFoundException("Professional not found")
                     }
 
                     professional!!.jobOffers.add(oldJobOffer)
 
                     professionalRepository.save(professional!!)
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     throw ProfessionalNotFoundException("Professional not found")
                 }
 
@@ -317,8 +355,8 @@ class JobOfferServiceImpl(
                 oldJobOffer.professional!!.employmentState = EmploymentStateEnum.UNEMPLOYED
                 oldJobOffer.professional?.jobOffers?.remove(oldJobOffer)
                 oldJobOffer.professional?.let { professionalRepository.save(it) }
-                oldJobOffer.professional = null
-                oldJobOffer.value = 0.0
+                //oldJobOffer.professional = null
+                //oldJobOffer.value = 0.0
                 if (note != null) oldJobOffer.note = note
                 oldJobOffer.oldStatus = JobStatusEnum.CONSOLIDATED
             }
@@ -335,7 +373,7 @@ class JobOfferServiceImpl(
         }
 
         oldJobOffer.professional?.let { professionalRepository.save(it) }
-        oldJobOffer.candidateProfessionals.forEach{professionalRepository.save(it)}
+        oldJobOffer.candidateProfessionals.forEach { professionalRepository.save(it) }
         val newJobOffer = jobOfferRepository.save(oldJobOffer)
 
         return newJobOffer.toDTO()

@@ -68,9 +68,31 @@ export const updateJobOffer = async (jobOffer: JobOffer, xsrfToken: string) => {
   }
 };
 
-export const fetchJobOffers = async (page: number, limit: number) => {
+export const fetchJobOffers = async (
+  page: number,
+  limit: number,
+  sortBy: string,
+  sortDirection: string,
+  contractType: string,
+  location: string,
+  status: string,
+  workMode: string
+) => {
   try {
-    const response = await fetch(`/crmService/v1/API/joboffers?page=${page}&limit=${limit}`);
+    const params: Record<string, string> = {
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(sortBy && { sortBy }),
+      ...(sortDirection && { sortDirection }),
+      ...(contractType && { contractType }),
+      ...(location && { location }),
+      ...(status && { status }),
+      ...(workMode && { workMode }),
+    };
+
+    const queryString = new URLSearchParams(params).toString();
+
+    const response = await fetch(`/crmService/v1/API/joboffers?${queryString}`);
     if (!response.ok) {
       throw new Error("GET /API/joboffers : Network response was not ok");
     }
