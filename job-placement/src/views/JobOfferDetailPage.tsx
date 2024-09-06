@@ -614,6 +614,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     placeholder="Enter a name"
                     value={formDataJobOffer?.name || ""}
                     onChange={handleInputChange}
+                    maxLength={255}
                     required
                   />
                 </Col>
@@ -642,6 +643,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       placeholder="Enter a description"
                       value={formDataJobOffer?.description || ""}
                       onChange={handleInputChange}
+                      maxLength={255}
                       required
                     />
                   </Col>
@@ -693,6 +695,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       placeholder="Enter a location"
                       value={formDataJobOffer?.location || ""}
                       onChange={handleInputChange}
+                      maxLength={255}
                       required
                     />
                   </Col>
@@ -889,6 +892,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       placeholder="Enter a note"
                       value={formDataJobOffer?.note || ""}
                       onChange={handleInputChange}
+                      maxLength={255}
                     />
                   </Col>
                 </Form.Group>

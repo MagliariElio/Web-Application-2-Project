@@ -166,7 +166,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
         <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control placeholder="Job Offer Name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <Form.Control placeholder="Job Offer Name" value={name} onChange={(e) => setName(e.target.value)} maxLength={255} required />
           </Col>
         </Row>
         <Row className="justify-content-center">
@@ -177,6 +177,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
               rows={5}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              maxLength={255}
               required
             />
           </Col>
@@ -257,7 +258,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
         <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control as="textarea" placeholder="Note" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
+            <Form.Control as="textarea" placeholder="Note" rows={3} value={note} onChange={(e) => setNote(e.target.value)} maxLength={255} />
           </Col>
         </Row>
 

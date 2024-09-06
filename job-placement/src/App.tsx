@@ -30,22 +30,19 @@ function App() {
 
   const [sidebarOpened, setSidebarOpened] = useState(true);
 
-
   // Run dei dati di testing
-  const [testsExecuted, setTestsExecuted] = useState(true); // impostare questa a false per non runnare più
+  const [testsExecuted, setTestsExecuted] = useState(true); // impostare questa a true per non runnare più
   const runTests = async () => {
     if (!testsExecuted && me) {
       await runCustomerTests(me);
       await runProfessionalTests(me);
       await runJobOfferTests(me);
-      setTestsExecuted(true); 
+      setTestsExecuted(true);
     }
   };
   useEffect(() => {
     runTests();
   }, []);
-
-
 
   useEffect(() => {
     const fetchUserRoles = async () => {
@@ -67,14 +64,22 @@ function App() {
                 console.log(JSON.stringify(json.principal.claims.realm_access.roles[i]));
                 i = i + 1;
               }
-              if (json.principal.claims.realm_access.roles[i]) {
-                console.log("New role: " + json.principal.claims.realm_access.roles[i]);
-                setRole(json.principal.claims.realm_access.roles[i]);
+
+              const roleUser = json.principal.claims.realm_access.roles[i];
+
+              if (roleUser) {
+                setRole(roleUser);
               } else {
                 setRole(RoleState.OPERATOR);
               }
             } else {
               setRole(RoleState.OPERATOR);
+            }
+
+            if (me) {
+              var meRole = me;
+              meRole.role = role;
+              setMe(meRole);
             }
           }
         })
