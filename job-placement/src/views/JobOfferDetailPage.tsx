@@ -15,8 +15,6 @@ import {
   FaTimesCircle,
   FaTrash,
   FaUser,
-  FaUserAlt,
-  FaUserCircle,
   FaUsers,
   FaUserTie,
 } from "react-icons/fa";
@@ -45,9 +43,8 @@ import {
   updateJobOffer,
 } from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
-import { AiOutlineInfoCircle, AiOutlineUser } from "react-icons/ai";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
-import { BsPerson } from "react-icons/bs";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -55,6 +52,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [professional, setProfessional] = useState<Professional | null>(null);
   const [candidateProfessionalList, setCandidateProfessionalList] = useState<Professional[]>([]);
+  const [filteredCandidateProfessionalList, setFilteredCandidateProfessionalList] = useState<Professional[]>([]);
   const [loadingCandidateProfessional, setLoadingCandidateProfessional] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -86,8 +84,23 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [showProfessionalCandidateModal, setProfessionalCandidateModal] = useState(false);
   const handleOpenProfessionalCandidateModal = () => setProfessionalCandidateModal(true);
   const handleCloseProfessionalCandidateModal = () => setProfessionalCandidateModal(false);
+  const [searchSkill, setSearchSkill] = useState("");
+  const [searchLocation, setSearchLocation] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [searchSurname, setSearchSurname] = useState("");
+  const [searchSsnCode, setSearchSsnCode] = useState("");
+  const [filterByRefused, setFilterByRefused] = useState(false);
+  const resetFilteredCandidateProfessionalList = (candidates: Professional[]) => {
+    setFilteredCandidateProfessionalList(candidates);
+    setSearchSkill("");
+    setSearchLocation("");
+    setSearchName("");
+    setSearchSurname("");
+    setSearchSsnCode("");
+  };
   const handleAddCandidate = (professional: Professional) => {
     setCandidateProfessionalList((prevList) => [...prevList, professional]);
+    resetFilteredCandidateProfessionalList(candidateProfessionalList);
   };
   var isModifyCandidatesList =
     candidateProfessionalList.filter((p: Professional) => !jobOffer?.candidateProfessionalIds.includes(p.id)).length !== 0 ||
@@ -104,6 +117,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     try {
       setLoadingCandidateProfessional(true);
       setCandidateProfessionalList([]);
+      resetFilteredCandidateProfessionalList([]);
 
       const resultList: ProfessionalWithAssociatedData[] = await Promise.all(
         candidateList.map(async (id) => {
@@ -113,6 +127,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       );
 
       setCandidateProfessionalList(resultList.map((p) => p.professionalDTO));
+      resetFilteredCandidateProfessionalList(resultList.map((p) => p.professionalDTO));
       setLoadingCandidateProfessional(false);
     } catch (error) {
       if (error instanceof Error) {
@@ -128,6 +143,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
       setLoadingCandidateProfessional(false);
       setCandidateProfessionalList([]);
+      resetFilteredCandidateProfessionalList([]);
     }
   };
 
@@ -515,8 +531,27 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
    * @param {number} indexToRemove - The index of the candidate to be removed from the candidateProfessionalList.
    */
   const handleDeleteCandidateProfessional = (indexToRemove: number) => {
-    const updatedList = candidateProfessionalList.filter((professional, index) => index !== indexToRemove);
+    const updatedList = candidateProfessionalList.filter((_, index) => index !== indexToRemove);
     setCandidateProfessionalList(updatedList);
+    if (searchName !== "") {
+      const list = updatedList.filter((c) => c.information.name.toLowerCase().includes(searchName.toLowerCase()));
+      setFilteredCandidateProfessionalList(list);
+    } else if (searchSurname !== "") {
+      const list = updatedList.filter((c) => c.information.surname.toLowerCase().includes(searchSurname.toLowerCase()));
+      setFilteredCandidateProfessionalList(list);
+    } else if (searchSkill !== "") {
+      const list = updatedList.filter((c) => c.skills.some((skill) => skill.toLowerCase().includes(searchSkill.toLowerCase())));
+      setFilteredCandidateProfessionalList(list);
+    } else if (searchLocation !== "") {
+      const list = updatedList.filter((c) => c.geographicalLocation.toLowerCase().includes(searchLocation.toLowerCase()));
+      setFilteredCandidateProfessionalList(list);
+    } else if (searchSsnCode !== "") {
+      const list = updatedList.filter((c) => c.information.ssnCode.toLowerCase().includes(searchSsnCode.toLowerCase()));
+      setFilteredCandidateProfessionalList(list);
+    } else if (filterByRefused === true) {
+      const list = updatedList.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id));
+      setFilteredCandidateProfessionalList(list);
+    }
   };
 
   if (loading) {
@@ -1086,12 +1121,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   <div className="d-flex align-items-center">
                     <FaUsers className="me-2 text-primary" />
                     <span>Potential candidates:</span>
-                    <strong className="ms-2">{candidateProfessionalList.length}</strong>
+                    <strong className="ms-2">{filteredCandidateProfessionalList.length}</strong>
                   </div>
                   <div className="d-flex align-items-center">
                     <FaTimesCircle className="me-2 text-danger" />
                     <span>Candidates who have rejected:</span>
-                    <strong className="ms-2">{jobOffer?.candidatesProfessionalRefused.length}</strong>
+                    <strong className="ms-2">
+                      {filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRefused.includes(candidate.id)).length}
+                    </strong>
                   </div>
                 </div>
               </Col>
@@ -1107,88 +1144,143 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   />
                 )}
                 {candidateProfessionalList?.length > 0 && !loadingCandidateProfessional && (
-                  <Table striped bordered hover className="align-middle">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>SSN Code</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {candidateProfessionalList.map((candidate, index) => {
-                        const hasRefused = jobOffer?.candidatesProfessionalRefused.includes(candidate.id);
-                        const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
+                  <>
+                    <SearchCandidate
+                      resetList={() => resetFilteredCandidateProfessionalList(candidateProfessionalList)}
+                      searchSkill={searchSkill}
+                      searchLocation={searchLocation}
+                      handleSearchChangeBySkill={(e: string) => {
+                        setSearchSkill(e);
+                        var list = candidateProfessionalList.filter((c) => c.skills.some((skill) => skill.toLowerCase().includes(e.toLowerCase())));
+                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list
+                        setFilteredCandidateProfessionalList(list);
+                      }}
+                      handleSearchChangeByLocation={(e: string) => {
+                        setSearchLocation(e);
+                        var list = candidateProfessionalList.filter((c) => c.geographicalLocation.toLowerCase().includes(e.toLowerCase()));
+                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list
+                        setFilteredCandidateProfessionalList(list);
+                      }}
+                      searchName={searchName}
+                      handleSearchChangeByName={(e: string) => {
+                        setSearchName(e);
+                        var list = candidateProfessionalList.filter((c) => c.information.name.toLowerCase().includes(e.toLowerCase()));
+                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list
+                        setFilteredCandidateProfessionalList(list);
+                      }}
+                      searchSurname={searchSurname}
+                      handleSearchChangeBySurname={(e: string) => {
+                        setSearchSurname(e);
+                        var list = candidateProfessionalList.filter((c) => c.information.surname.toLowerCase().includes(e.toLowerCase()));
+                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list
+                        setFilteredCandidateProfessionalList(list);
+                      }}
+                      searchSsnCode={searchSsnCode}
+                      handleSearchChangeBySsnCode={(e: string) => {
+                        setSearchSsnCode(e);
+                        var list = candidateProfessionalList.filter((c) => c.information.ssnCode.toLowerCase().includes(e.toLowerCase()));
+                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list
+                        setFilteredCandidateProfessionalList(list);
+                      }}
+                      filterByRefused={filterByRefused}
+                      handleFilterByRefused={(e: boolean) => {
+                        setFilterByRefused(e);
+                        const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id));
+                        setFilteredCandidateProfessionalList(list);
+                      }}
+                    />
 
-                        return (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{candidate.information.name}</td>
-                            <td>{candidate.information.surname}</td>
-                            <td>{candidate.information.ssnCode}</td>
-                            <td className="d-flex align-items-center justify-content-center text-center">
-                              {hasRefused && (
-                                <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
-                                  <FaTimes className="me-1" />
-                                  Refused
-                                </Badge>
-                              )}
+                    <Table striped bordered hover className="align-middle">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Name</th>
+                          <th>Surname</th>
+                          <th>SSN Code</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredCandidateProfessionalList.length === 0 && (
+                          <tr key={0}>
+                            <td>-1</td>
+                            <td>No professional candidates found with this filter.</td>
+                          </tr>
+                        )}
+                        {filteredCandidateProfessionalList.map((candidate, index) => {
+                          const hasRefused = jobOffer?.candidatesProfessionalRefused.includes(candidate.id);
+                          const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
 
-                              {hasAccepted && (
-                                <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
-                                  <FaThumbsUp className="me-1" />
-                                  Accepted
-                                </Badge>
-                              )}
+                          return (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td>{candidate.information.name}</td>
+                              <td>{candidate.information.surname}</td>
+                              <td>{candidate.information.ssnCode}</td>
+                              <td className="d-flex align-items-center justify-content-center text-center">
+                                {hasRefused && (
+                                  <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
+                                    <FaTimes className="me-1" />
+                                    Refused
+                                  </Badge>
+                                )}
 
-                              {!hasRefused && !hasAccepted && (
-                                <ButtonGroup>
-                                  {jobOffer?.status !== JobOfferState.CREATED && (
-                                    <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
+                                {hasAccepted && (
+                                  <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
+                                    <FaThumbsUp className="me-1" />
+                                    Accepted
+                                  </Badge>
+                                )}
+
+                                {!hasRefused && !hasAccepted && (
+                                  <ButtonGroup>
+                                    {jobOffer?.status !== JobOfferState.CREATED && (
+                                      <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
+                                        <Button
+                                          variant="success"
+                                          className="me-2"
+                                          onClick={() => handleSelectCandidateProfessional(index)}
+                                          disabled={
+                                            jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                            isModifyCandidatesList ||
+                                            loadingCandidateProfessional
+                                          }
+                                        >
+                                          <FaCheck />
+                                        </Button>
+                                      </OverlayTrigger>
+                                    )}
+
+                                    <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
                                       <Button
-                                        variant="success"
+                                        variant="danger"
                                         className="me-2"
-                                        onClick={() => handleSelectCandidateProfessional(index)}
+                                        onClick={() => handleDeleteCandidateProfessional(index)}
                                         disabled={
-                                          jobOffer?.status !== JobOfferState.SELECTION_PHASE || isModifyCandidatesList || loadingCandidateProfessional
+                                          jobOffer?.status === JobOfferState.ABORT ||
+                                          jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
+                                          jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                          jobOffer?.status === JobOfferState.DONE
                                         }
                                       >
-                                        <FaCheck />
+                                        <FaTrash />
                                       </Button>
                                     </OverlayTrigger>
-                                  )}
 
-                                  <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
-                                    <Button
-                                      variant="danger"
-                                      className="me-2"
-                                      onClick={() => handleDeleteCandidateProfessional(index)}
-                                      disabled={
-                                        jobOffer?.status === JobOfferState.ABORT ||
-                                        jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
-                                        jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                                        jobOffer?.status === JobOfferState.DONE
-                                      }
-                                    >
-                                      <FaTrash />
-                                    </Button>
-                                  </OverlayTrigger>
-
-                                  <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
-                                    <Button variant="warning" onClick={() => navigate(`/ui/customers/${candidate?.id}`)}>
-                                      <FaUser />
-                                    </Button>
-                                  </OverlayTrigger>
-                                </ButtonGroup>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
+                                    <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                      <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                        <FaUser />
+                                      </Button>
+                                    </OverlayTrigger>
+                                  </ButtonGroup>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </Table>
+                  </>
                 )}
 
                 {candidateProfessionalList?.length === 0 && !loadingCandidateProfessional && <p>No candidate professionals.</p>}
@@ -1473,6 +1565,142 @@ const ModalConfirmation: React.FC<{
         </Button>
       </Modal.Footer>
     </Modal>
+  );
+};
+
+const SearchCandidate: React.FC<{
+  resetList: () => void;
+  searchSkill: string;
+  handleSearchChangeBySkill: (e: string) => void;
+  searchLocation: string;
+  handleSearchChangeByLocation: (e: string) => void;
+  searchName: string;
+  handleSearchChangeByName: (e: string) => void;
+  searchSurname: string;
+  handleSearchChangeBySurname: (e: string) => void;
+  searchSsnCode: string;
+  handleSearchChangeBySsnCode: (e: string) => void;
+  filterByRefused: boolean;
+  handleFilterByRefused: (e: boolean) => void;
+}> = ({
+  resetList,
+  searchSkill,
+  handleSearchChangeBySkill,
+  searchLocation,
+  handleSearchChangeByLocation,
+  searchName,
+  handleSearchChangeByName,
+  searchSurname,
+  handleSearchChangeBySurname,
+  searchSsnCode,
+  handleSearchChangeBySsnCode,
+  filterByRefused,
+  handleFilterByRefused,
+}) => {
+  const [type, setType] = useState<"" | "skill" | "location" | "name" | "surname" | "ssnCode">("");
+  const [filter, setFilter] = useState<"" | "filterByRejection">("");
+
+  return (
+    <Form className="mb-2">
+      <Form.Group controlId="search">
+        <Row>
+          <Col xs={12} sm={3}>
+            <Form.Select
+              name="selectType"
+              style={{ cursor: "pointer" }}
+              value={type}
+              onChange={(e) => {
+                setType(e.target.value as "skill" | "location" | "name" | "surname" | "ssnCode" | "");
+                resetList();
+              }}
+            >
+              <option value={""}>Search by</option>
+              <option value={"name"}>Name</option>
+              <option value={"surname"}>Surname</option>
+              <option value={"skill"}>Skill</option>
+              <option value={"location"}>Location</option>
+              <option value={"ssnCode"}>SSN Code</option>
+            </Form.Select>
+          </Col>
+
+          {type === "name" && (
+            <Col xs={12} sm={7}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by name"
+                value={searchName}
+                onChange={(event) => handleSearchChangeByName(event.target.value)}
+              />
+            </Col>
+          )}
+
+          {type === "surname" && (
+            <Col xs={12} sm={7}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by surname"
+                value={searchSurname}
+                onChange={(event) => handleSearchChangeBySurname(event.target.value)}
+              />
+            </Col>
+          )}
+
+          {type === "skill" && (
+            <Col xs={12} sm={7}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by skill"
+                value={searchSkill}
+                onChange={(event) => handleSearchChangeBySkill(event.target.value)}
+              />
+            </Col>
+          )}
+          {type === "location" && (
+            <Col xs={12} sm={7}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by location"
+                value={searchLocation}
+                onChange={(event) => handleSearchChangeByLocation(event.target.value)}
+              />
+            </Col>
+          )}
+          {type === "ssnCode" && (
+            <Col xs={12} sm={7}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by ssn code"
+                value={searchSsnCode}
+                onChange={(event) => handleSearchChangeBySsnCode(event.target.value)}
+              />
+            </Col>
+          )}
+          <Col xs={12} sm={2} className="text-end">
+            <Form.Select
+              name="filterType"
+              style={{ cursor: "pointer" }}
+              value={filter}
+              onChange={(e) => {
+                setFilter(e.target.value as "filterByRejection" | "");
+                if (e.target.value === "filterByRejection") {
+                  handleFilterByRefused(true);
+                } else {
+                  resetList();
+                }
+              }}
+            >
+              <option value={""}>Filter By</option>
+              <option value={"filterByRejection"}>Filter By Rejection</option>
+            </Form.Select>
+          </Col>
+        </Row>
+      </Form.Group>
+    </Form>
   );
 };
 
