@@ -2,7 +2,7 @@ import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert, Pagina
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useRef, useState } from "react";
 import { BsPlus } from "react-icons/bs";
-import { PagedResponse } from "../interfaces/PagedResponse";
+import { PagedResponse } from "../interfaces/PagedResponse.ts";
 import { useLocation, useNavigate } from "react-router-dom";
 import { JobOffer } from "../interfaces/JobOffer.ts";
 import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants.ts";
@@ -10,7 +10,7 @@ import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
 import { LoadingSection } from "../App.tsx";
 import { Filters } from "../interfaces/Filters.ts";
 
-const HomePage = () => {
+const JobOffersPage = () => {
   const navigate = useNavigate();
 
   const [jobOffers, setJobOffers] = useState<PagedResponse<JobOffer> | null>(null);
@@ -134,10 +134,11 @@ const HomePage = () => {
               name="sortBy"
               value={filters.sortBy}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                const value = e.target.value as "duration" | "value";
+                const value = e.target.value as "duration" | "value" | "";
                 setFilters((prevFilters) => ({
                   ...prevFilters,
                   sortBy: value,
+                  sortDirection: value === "" ? "" : filters.sortDirection,
                 }));
               }}
             >
@@ -160,8 +161,9 @@ const HomePage = () => {
                   sortDirection: value,
                 }));
               }}
+              disabled={filters.sortBy === ""}
             >
-              <option value="">Sort Direction</option>
+              {filters.sortBy === "" && <option value="">Sort Direction</option>}
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
             </Form.Select>
@@ -174,6 +176,7 @@ const HomePage = () => {
               name="elementsPerPage"
               value={filters.elementsPerPage}
               onChange={(e) => {
+                setCurrentPage(0);
                 const value = parseInt(e.target.value, 10);
                 setFilters((prevFilters) => ({
                   ...prevFilters,
@@ -252,7 +255,7 @@ const HomePage = () => {
                       </Col>
                       <Col md={6} xs={12}>
                         <p className="mb-1">
-                          <strong>Duration:</strong> {joboffer.duration} hours
+                          <strong>Duration:</strong> {joboffer.duration} days
                         </p>
                       </Col>
                       <Col md={6} xs={12}>
@@ -368,4 +371,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default JobOffersPage;

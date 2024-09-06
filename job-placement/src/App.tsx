@@ -6,7 +6,7 @@ import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
-import HomePage from "./views/HomePage.tsx";
+import JobOffersPage from "./views/JobOffersPage.tsx";
 import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsGearFill } from "react-icons/bs";
 import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
@@ -132,7 +132,7 @@ function App() {
 
             {!loading && me?.principal && (
               <Routes>
-                <Route path="/ui" element={<HomePage />} />
+                <Route path="/ui" element={<JobOffersPage />} />
                 <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
                 <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage me={me} /> : <Navigate to="/not-found" />} />

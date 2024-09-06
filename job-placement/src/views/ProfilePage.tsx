@@ -11,7 +11,7 @@ function ProfilePage(JPHomePageProps: JPProfilePageProps) {
   return (
     <>
       <Row className="d-flex flex-column p-0 mb-3">
-        <h3>My account</h3>
+        <h3 className="title">My account</h3>
       </Row>
       <Row>
         <FormLabel htmlFor="inputPassword5">Name</FormLabel>
@@ -31,7 +31,14 @@ function ProfilePage(JPHomePageProps: JPProfilePageProps) {
       {JPHomePageProps.me?.role && (
         <Row className="mt-2">
           <FormLabel htmlFor="inputPassword5">Role</FormLabel>
-          <FormControl className="ms-2 w-25" type="text" id="inputRole" aria-describedby="roleField" value={toTitleCase(JPHomePageProps.me?.role)} disabled />
+          <FormControl
+            className="ms-2 w-25"
+            type="text"
+            id="inputRole"
+            aria-describedby="roleField"
+            value={toTitleCase(JPHomePageProps.me?.role)}
+            disabled
+          />
         </Row>
       )}
     </>

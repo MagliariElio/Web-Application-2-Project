@@ -299,7 +299,7 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                 </Col>
                 <Col md={6} xs={12}>
                   <p className="mb-1">
-                    <strong>Duration:</strong> {joboffer.duration} hours
+                    <strong>Duration:</strong> {joboffer.duration} days
                   </p>
                 </Col>
                 <Col md={6} xs={12}>

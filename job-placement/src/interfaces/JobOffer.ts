@@ -13,5 +13,6 @@ export interface JobOffer{
     note: string,
     customerId: number
     professionalId: number
-    candidateProfessionalIds: number[]
+    candidateProfessionalIds: number[],
+    candidatesProfessionalRefused: number[]
 }

@@ -237,7 +237,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Control
               type="number"
-              placeholder="Duration in hours"
+              placeholder="Duration in days"
               value={duration}
               onChange={(e) => {
                 const value = e.target.value;
@@ -279,7 +279,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
             {requiredSkills.length === 0 && (
               <Row className="justify-content-center mt-3">
                 <Col xs={12} className="text-center">
-                  <p className="text-muted">No required skill added yet</p>
+                  <p className="text-muted">No required skill added yet.</p>
                 </Col>
               </Row>
             )}

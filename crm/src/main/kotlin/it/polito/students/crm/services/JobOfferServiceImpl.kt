@@ -246,6 +246,15 @@ class JobOfferServiceImpl(
                     oldJobOffer.professional?.jobOffers?.remove(oldJobOffer)
                 }
 
+                if (oldStatus == JobStatusEnum.CANDIDATE_PROPOSAL) {
+                    oldJobOffer.professional?.let { professional ->
+                        val professionalId = professional.id
+                        if (!oldJobOffer.candidatesProfessionalRefused.contains(professionalId)) {
+                            oldJobOffer.candidatesProfessionalRefused.add(professionalId)
+                        }
+                    }
+                }
+
                 oldJobOffer.professional = null
                 oldJobOffer.value = 0.0
                 oldJobOffer.oldStatus = JobStatusEnum.CREATED

@@ -1,8 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination, ButtonGroup } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination, ButtonGroup, Badge } from "react-bootstrap";
 import { JobOffer } from "../interfaces/JobOffer";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaCheck, FaCheckCircle, FaCircle, FaClock, FaMapMarkerAlt, FaMoneyBillWave, FaPen, FaTimesCircle, FaTrash, FaUserTie } from "react-icons/fa";
+import {
+  FaCheck,
+  FaCheckCircle,
+  FaCircle,
+  FaClock,
+  FaMapMarkerAlt,
+  FaMoneyBillWave,
+  FaPen,
+  FaThumbsUp,
+  FaTimes,
+  FaTimesCircle,
+  FaTrash,
+  FaUser,
+  FaUsers,
+  FaUserTie,
+} from "react-icons/fa";
 import {
   contractTypeList,
   EmploymentStateEnum,
@@ -710,18 +725,18 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               {!isEditing ? (
                 <div>
                   <FaClock className="mr-2" /> <strong>Duration: </strong>
-                  {jobOffer?.duration} hours
+                  {jobOffer?.duration} days
                 </div>
               ) : (
                 <Form.Group as={Row} controlId="duration" className="d-flex align-items-center">
                   <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
-                    Duration (hours)
+                    Duration (days)
                   </Form.Label>
                   <Col xs={12} sm={8}>
                     <Form.Control
                       type="number"
                       name="duration"
-                      placeholder="Duration in hours"
+                      placeholder="Duration in days"
                       value={formDataJobOffer?.duration}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -1031,6 +1046,21 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 </Col>
               )}
 
+              <Col md={12} className="mt-2">
+                <div className="d-flex justify-content-between align-items-center px-4">
+                  <div className="d-flex align-items-center">
+                    <FaUsers className="me-2 text-primary" />
+                    <span>Potential candidates:</span>
+                    <strong className="ms-2">{candidateProfessionalList.length}</strong>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <FaTimesCircle className="me-2 text-danger" />
+                    <span>Candidates who have rejected:</span>
+                    <strong className="ms-2">{jobOffer?.candidatesProfessionalRefused.length}</strong>
+                  </div>
+                </div>
+              </Col>
+
               <Col md={12} className="mt-3">
                 {loadingCandidateProfessional && <LoadingSection h={100} />}
                 {showProfessionalCandidateModal && !loadingCandidateProfessional && (
@@ -1053,45 +1083,67 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {candidateProfessionalList.map((professional, index) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{professional.information.name}</td>
-                          <td>{professional.information.surname}</td>
-                          <td>{professional.information.ssnCode}</td>
-                          <td className="text-center">
-                            <ButtonGroup>
-                              {jobOffer?.status !== JobOfferState.CREATED && (
-                                <Button
-                                  variant="success"
-                                  className="me-2"
-                                  onClick={() => handleSelectCandidateProfessional(index)}
-                                  disabled={
-                                    jobOffer?.status !== JobOfferState.SELECTION_PHASE || isModifyCandidatesList || loadingCandidateProfessional
-                                  }
-                                >
-                                  <FaCheck />
-                                </Button>
+                      {candidateProfessionalList.map((candidate, index) => {
+                        const hasRefused = jobOffer?.candidatesProfessionalRefused.includes(candidate.id);
+                        const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
+
+                        return (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{candidate.information.name}</td>
+                            <td>{candidate.information.surname}</td>
+                            <td>{candidate.information.ssnCode}</td>
+                            <td className="d-flex align-items-center justify-content-center text-center">
+                              {hasRefused && (
+                                <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
+                                  <FaTimes className="me-1" />
+                                  Refused
+                                </Badge>
                               )}
-                              <Button
-                                variant="danger"
-                                onClick={() => handleDeleteCandidateProfessional(index)}
-                                disabled={
-                                  jobOffer?.status === JobOfferState.ABORT ||
-                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
-                                  jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                                  jobOffer?.status === JobOfferState.DONE
-                                }
-                              >
-                                <FaTrash />
-                              </Button>
-                            </ButtonGroup>
-                          </td>
-                        </tr>
-                      ))}
+
+                              {hasAccepted && (
+                                <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
+                                  <FaThumbsUp className="me-1" />
+                                  Accepted
+                                </Badge>
+                              )}
+
+                              {!hasRefused && !hasAccepted && (
+                                <ButtonGroup>
+                                  {jobOffer?.status !== JobOfferState.CREATED && (
+                                    <Button
+                                      variant="success"
+                                      className="me-2"
+                                      onClick={() => handleSelectCandidateProfessional(index)}
+                                      disabled={
+                                        jobOffer?.status !== JobOfferState.SELECTION_PHASE || isModifyCandidatesList || loadingCandidateProfessional
+                                      }
+                                    >
+                                      <FaCheck />
+                                    </Button>
+                                  )}
+                                  <Button
+                                    variant="danger"
+                                    onClick={() => handleDeleteCandidateProfessional(index)}
+                                    disabled={
+                                      jobOffer?.status === JobOfferState.ABORT ||
+                                      jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
+                                      jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                      jobOffer?.status === JobOfferState.DONE
+                                    }
+                                  >
+                                    <FaTrash />
+                                  </Button>
+                                </ButtonGroup>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </Table>
                 )}
+
                 {candidateProfessionalList?.length === 0 && !loadingCandidateProfessional && <p>No candidate professionals.</p>}
               </Col>
             </Row>
