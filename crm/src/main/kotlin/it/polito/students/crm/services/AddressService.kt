@@ -38,4 +38,12 @@ interface AddressService {
      * @return -
      */
     fun deleteContactAddress(contactId: Long, addressId: Long)
+
+
+    /**
+     * get all addresses in db
+     *
+     * @return - all addresses
+     */
+    fun getAllAddresses(): List<AddressDTO>
 }

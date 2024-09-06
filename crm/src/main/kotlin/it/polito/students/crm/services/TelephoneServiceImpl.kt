@@ -154,4 +154,8 @@ class TelephoneServiceImpl(
         contactRepository.save(contact)
         telephoneRepository.save(telephone)
     }
+
+    override fun getAllTelephones(): List<TelephoneDTO> {
+        return telephoneRepository.findAll().map { it.toDTO() }
+    }
 }

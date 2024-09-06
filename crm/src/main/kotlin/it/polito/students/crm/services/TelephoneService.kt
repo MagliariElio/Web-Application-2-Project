@@ -2,6 +2,7 @@ package it.polito.students.crm.services
 
 import it.polito.students.crm.dtos.CreateTelephoneDTO
 import it.polito.students.crm.dtos.TelephoneDTO
+import org.springframework.http.ResponseEntity
 
 interface TelephoneService {
     /**
@@ -46,4 +47,11 @@ interface TelephoneService {
      * @return -
      */
     fun deleteContactTelephone(contactId: Long, telephoneId: Long)
+
+    /**
+     * get all telephones
+     *
+     * @return - all telepones
+     */
+    fun getAllTelephones(): List<TelephoneDTO>
 }

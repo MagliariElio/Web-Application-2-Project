@@ -459,4 +459,38 @@ class CrmContactsController(
         }
     }
 
+
+    @GetMapping("/{whatContact}", "/{whatContact}/")
+    fun getAllWhatContacts(
+        @PathVariable whatContact: String
+    ): ResponseEntity<Any> {
+        try {
+            val contactType = WhatContactOptions.valueOf(whatContact.uppercase())
+
+            val result = when (contactType) {
+                WhatContactOptions.EMAIL -> emailService.getAllEmails()
+                WhatContactOptions.ADDRESS -> addressService.getAllAddresses()
+                WhatContactOptions.TELEPHONE -> telephoneService.getAllTelephones()
+            }
+
+            return ResponseEntity(result, HttpStatus.OK)
+        }
+        catch (e: Exception) {
+            logger.info("Server internal error: ${e.message}")
+            return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @DeleteMapping("/emails/{emailId}", "/emails/{emailId}/")
+    fun deleteEmail(
+        @PathVariable emailId: Long
+    ): ResponseEntity<Any> {
+        try {
+
+
+
+            emailService.deleteEmail(emailId)
+        }
+    }
+
 }

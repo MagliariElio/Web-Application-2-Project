@@ -1,11 +1,16 @@
-import { useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Col, Modal, Row } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
-import { BsX, BsXLg } from "react-icons/bs";
+import { BsPencilSquare, BsTrash, BsX, BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import { createProfessional } from "../apis/ProfessionalRequests";
+import { Professional } from "../interfaces/Professional";
+import { deleteEmail, fetchAllContactWhatContact } from "../apis/ContactRequests";
+import { Email } from "../interfaces/Email";
+import { Telephone } from "../interfaces/Telephone";
+import { Address } from "../interfaces/Address";
 
 function AddProfessionalPage({ me }: { me: MeInterface }) {
 
@@ -16,9 +21,12 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
     const [ssnCode, setSsnCode] = useState('');
     const [comment, setComment] = useState('');
 
+    const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
+
     const [emails, setEmails] = useState<any[]>([]);
     const [singleEmailAddress, setSingleEmailAddress] = useState('');
     const [singleEmailAddressComment, setSingleEmailAddressComment] = useState('');
+    const [removedEmails, setRemovedEmails] = useState<number[]>([]);
     const [emailError, setEmailError] = useState(false);
 
     const [telephones, setTelephones] = useState<any[]>([]);
@@ -40,7 +48,6 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
     const [singleSkill, setSingleSkill] = useState('');
     const [geographicalLocation, setGeographicalLocation] = useState('');
     const [dailyRate, setDailyRate] = useState(0);
-
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -82,6 +89,9 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
   return (
     <div>
+
+      {contactModalOpen != null && <ContactModal open={contactModalOpen} setOpen={setContactModalOpen} />}
+
         <Row className="d-flex flex-row p-0 mb-5 align-items-center">
             <Col>
                 <h3>Add new professional</h3> 
@@ -199,6 +209,9 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                         <Col xs={4} md={6} lg={1}>
                             <Col className="mb-0">
                                 <Button className="secondaryDangerButton w-100" onClick={() => {
+                                    if(email.id !== undefined) {
+                                        setRemovedEmails([...removedEmails, email.id]);
+                                    }
                                     setEmails(emails.filter((e, i) => i !== index));
                                 }}>
                                     Remove
@@ -209,31 +222,10 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 })
             }
             <Row>
-                <Col xs={12} md={12} lg={2} className="mb-2">
-                    <Form.Control
-                        placeholder="Email address"
-                        value={singleEmailAddress}
-                        onChange={(e) => {setSingleEmailAddress(e.target.value); setEmailError(false);}}
-                    />
-                </Col>
-                <Col xs={12} md={12} lg={3} className="mb-2">
-                    <Form.Control
-                        placeholder="Email address comment"
-                        value={singleEmailAddressComment}
-                        onChange={(e) => setSingleEmailAddressComment(e.target.value)}
-                    />
-                </Col>
-                <Col xs={12} md={12} lg={1} className="mb-2">
+                
+                <Col xs={12} md={12} lg={6} className="mb-2">
                     <Button className="secondaryButton w-100" onClick={() => {
-                        if(checkValidEmail(singleEmailAddress)) {
-                            setEmails([...emails, {email: singleEmailAddress, comment: singleEmailAddressComment}]);
-                            setSingleEmailAddress('');
-                            setSingleEmailAddressComment('');
-                            setEmailError(false);
-                        }
-                        else {
-                            setEmailError(true);
-                        }
+                        setContactModalOpen('email');
                     }}>
                         Add email
                     </Button>
@@ -560,3 +552,162 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 }
 
 export default AddProfessionalPage;
+
+
+const loadContactContacts = async (whatContact: string): Promise<Email[] | Telephone[] | Address[]> => {
+  if (whatContact === 'email') {
+    try {
+      const allEmails = await fetchAllContactWhatContact("emails");
+      console.log("All emails: ", allEmails);
+      return allEmails;
+    } catch (err) {
+      console.log("Error fetching emails: ", err);
+      return [] as Email[] | Telephone[] | Address[];
+    }
+  }
+
+  return [] as Email[] | Telephone[] | Address[];
+}
+
+const ContactModal = ({open, setOpen}: {open: string | null, setOpen: any}) => {
+
+  const [contacts, setContacts] = useState<Email[] | Telephone[] | Address[]>([]);
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (open !== null) {
+        const cont = await loadContactContacts(open);
+        console.log("Contactssssssssssssssssssssss: ", cont);
+        setContacts(cont);
+      }
+    };
+
+    fetchContacts();
+  }, [open]);
+
+
+  console.log("Contacts: ", contacts);
+
+    return (
+        <Modal size="lg" show={open != null} onHide={() => setOpen(null)}>
+                <Modal.Header closeButton>
+                  <Modal.Title >
+                    Add a new {open}
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <small>Click on a {open} to select it or use side buttons to edit and delete them from the {open} book</small>
+
+                  {
+                    contacts.length === 0 &&
+                    <Row className="mt-2">
+                      <Col xs={12} md={12} lg={6} className="mb-0">
+                        <p>No {open}s added yet</p>
+                      </Col>
+                    </Row>
+                  }
+
+                  {
+                    contacts.length > 0 && contacts.map((contact, index) => {
+                      return (
+                        <Row key={index} className="mb-1 mt-2 d-flex align-items-center">
+                          <Col xs={12} md={8} lg={10}>
+                            <Row>
+                              <Col xs={12} md={12} lg={6} className="mb-0">
+                                <p className="text-truncate">{open === 'email' ? (contact as Email).email : (contact as Telephone).telephone}</p>
+                              </Col>
+                              <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
+                                <p className="text-truncate">{open === 'email' ? (contact as Email).comment : (contact as Telephone).comment}</p>
+                              </Col>
+                            </Row>
+                          </Col>
+                          <Col xs={6} md={2} lg={1}>
+                            <Col className="mb-0">
+                              <Button className="secondaryButton w-100 d-flex justify-content-center align-items-center" onClick={() => {
+                                // setContacts(contacts.filter((e, i) => i !== index));
+                              }}>
+                                <BsPencilSquare size={20} />
+                              </Button>
+                            </Col>
+                          </Col>
+                          <Col xs={6} md={2} lg={1}>
+                            <Col className="mb-0">
+                              <Button className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center" onClick={() => {
+                                // setContacts(contacts.filter((e, i) => i !== index));
+                              }}>
+                                <BsTrash size={20} />
+                              </Button>
+                            </Col>
+                          </Col>
+                        </Row>
+                      )
+                    })
+                  }
+
+                <Form>
+                    <Row>
+                        <Col xs={12} md={12} lg={6} className="mb-2">
+                            <Form.Control
+                                placeholder={open === 'email' ? "Email address" : "Telephone number"}
+                            />
+                        </Col>
+                        <Col xs={12} md={12} lg={3} className="mb-2">
+                            <Form.Control
+                                placeholder={open === 'email' ? "Email address comment" : "Telephone number comment"}
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
+                            <Button className="primaryButton">
+                                Save {open}
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+                </Modal.Body>
+
+        </Modal>
+            
+    );
+}
+
+
+
+/*
+
+<Col xs={12} md={12} lg={2} className="mb-2">
+                    <Form.Control
+                        placeholder="Email address"
+                        value={singleEmailAddress}
+                        onChange={(e) => {setSingleEmailAddress(e.target.value); setEmailError(false);}}
+                    />
+                </Col>
+                <Col xs={12} md={12} lg={3} className="mb-2">
+                    <Form.Control
+                        placeholder="Email address comment"
+                        value={singleEmailAddressComment}
+                        onChange={(e) => setSingleEmailAddressComment(e.target.value)}
+                    />
+                </Col>
+
+
+
+
+
+
+
+                if(checkValidEmail(singleEmailAddress)) {
+                            setEmails([...emails, {email: singleEmailAddress, comment: singleEmailAddressComment}]);
+                            setSingleEmailAddress('');
+                            setSingleEmailAddressComment('');
+                            setEmailError(false);
+                        }
+                        else {
+                            setEmailError(true);
+                        }
+
+
+
+
+                */

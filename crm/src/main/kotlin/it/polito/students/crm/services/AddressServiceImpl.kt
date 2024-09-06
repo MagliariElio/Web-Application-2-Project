@@ -140,4 +140,8 @@ class AddressServiceImpl(
         contactRepository.save(contact)
         addressRepository.save(address)
     }
+
+    override fun getAllAddresses(): List<AddressDTO> {
+        return addressRepository.findAll().map { it.toDTO() }
+    }
 }

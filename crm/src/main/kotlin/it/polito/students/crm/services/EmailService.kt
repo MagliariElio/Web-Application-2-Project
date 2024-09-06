@@ -47,4 +47,21 @@ interface EmailService {
      * @return -
      */
     fun deleteContactEmail(contactId: Long, emailId: Long)
+
+
+    /**
+     * Retrieve all emails in DB
+     *
+     *
+     * @return list of all emailsDTOs
+     */
+    fun getAllEmails(): List<EmailDTO>
+
+    /**
+     * Retrieve all emails in DB
+     *
+     * @param delete email from email book
+     * @return list of all emailsDTOs
+     */
+    fun deleteEmail(emailId: Long)
 }
