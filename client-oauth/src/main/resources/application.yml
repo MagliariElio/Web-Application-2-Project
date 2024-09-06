@@ -32,6 +32,14 @@ spring:
               - StripPrefix=2
               - TokenRelay
 
+          - id: analyticsService
+            uri: http://localhost:8084
+            predicates:
+              - Path=/analyticsService/v1/**
+            filters:
+              - StripPrefix=2
+              - TokenRelay
+
           - id: ui
             uri: http://localhost:5173
             predicates:

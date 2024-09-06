@@ -5,12 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39cbdab1-e826-4e81-87d9-2d228c36d114" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comunication_manager/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/comunication_manager/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analytics/src/main/kotlin/com/example/analytics/utils/KafkaTopics.kt" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/src/main/kotlin/com/example/analytics/utils/KafkaTopics.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crm/compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/crm/compose.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crm/src/main/kotlin/it/polito/students/crm/controllers/CrmMessagesController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/crm/src/main/kotlin/it/polito/students/crm/controllers/CrmMessagesController.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +19,9 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/analytics">
+      <ProjectState />
+    </projectState>
     <projectState path="$PROJECT_DIR$/client-oauth">
       <ProjectState />
     </projectState>
@@ -78,60 +82,63 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.client-oauth/compose.yaml: Compose Deployment.executor": "Run",
-    "Docker.compose.yaml.keycloak: Compose Deployment.executor": "Run",
-    "Gradle.Build client-oauth.executor": "Run",
-    "Gradle.Build comunication_manager.executor": "Run",
-    "Gradle.Build crm.executor": "Run",
-    "Gradle.Build document_store.executor": "Run",
-    "Gradle.ComunicationManagerApplicationUnitTest.executor": "Run",
-    "Gradle.ComunicationManagerApplicationUnitTests.executor": "Run",
-    "Gradle.ComunitationManagerApplicationUnitTest.testSendEmail.executor": "Run",
-    "Gradle.comunication_manager [assemble].executor": "Run",
-    "HTTP Request.All in HTTP requests.executor": "Run",
-    "HTTP Request.HTTP requests | #1.executor": "Run",
-    "HTTP Request.HTTP requests | #2.executor": "Run",
-    "HTTP Request.HTTP requests | #3.executor": "Run",
-    "HTTP Request.HTTP requests | #4.executor": "Run",
-    "HTTP Request.HTTP requests | #5.executor": "Run",
-    "HTTP Request.Query-Testing-LAB-2 | #11.executor": "Run",
-    "HTTP Request.Query-Testing-LAB-2 | #25.executor": "Run",
-    "HTTP Request.Query-Testing-LAB-2 | #26.executor": "Run",
-    "HTTP Request.Query-Testing-LAB-2 | #28.executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.ClientOAuthApplication.executor": "Run",
-    "Spring Boot.ComunicationManagerApplication.executor": "Run",
-    "Spring Boot.CrmApplication.executor": "Run",
-    "Spring Boot.DocumentStoreApplication.executor": "Run",
-    "git-widget-placeholder": "main",
-    "jdk.selected.JAVA_MODULE": "corretto-21",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/39328/Desktop/Universita/polito/Web App 2/Web-Application-2-Project",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "build.tools",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.3.6\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.client-oauth/compose.yaml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.compose.yaml.keycloak: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build client-oauth.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build comunication_manager.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build crm.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build document_store.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ComunicationManagerApplicationUnitTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ComunicationManagerApplicationUnitTests.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ComunitationManagerApplicationUnitTest.testSendEmail.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.comunication_manager [assemble].executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.All in HTTP requests.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.HTTP requests | #1.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.HTTP requests | #2.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.HTTP requests | #3.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.HTTP requests | #4.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.HTTP requests | #5.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.Query-Testing-LAB-2 | #11.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.Query-Testing-LAB-2 | #25.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.Query-Testing-LAB-2 | #26.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.Query-Testing-LAB-2 | #28.executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ClientOAuthApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.ComunicationManagerApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.CrmApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.DocumentStoreApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;corretto-21&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/39328/Desktop/Universita/polito/Web App 2/Web-Application-2-Project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;build.tools&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.3.6\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ferra\Desktop\Politecnico\Web applications II\Project\Web-Application-2-Project" />
+    </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.example.analytics.utils" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -172,6 +179,13 @@
     </configuration>
     <configuration name="Query-Testing-LAB-2 | #25" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/crm/src/test/kotlin/Query-Testing-LAB-2.http" index="25" requestIdentifier="#25" runType="Run single request">
       <method v="2" />
+    </configuration>
+    <configuration name="AnalyticsApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="analytics.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.analytics.AnalyticsApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="ClientOAuthApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="client-oauth.main" />
@@ -286,6 +300,7 @@
       <workItem from="1722937615354" duration="23000" />
       <workItem from="1722947608627" duration="341000" />
       <workItem from="1723043084243" duration="1025000" />
+      <workItem from="1724606184690" duration="2711000" />
     </task>
     <servers />
   </component>

@@ -7,6 +7,7 @@ import it.polito.students.crm.dtos.UpdateMessageDTO
 import it.polito.students.crm.exception_handlers.BadQueryParametersException
 import it.polito.students.crm.exception_handlers.InvalidStateTransitionException
 import it.polito.students.crm.exception_handlers.MessageNotFoundException
+import it.polito.students.crm.services.KafkaProducerService
 import it.polito.students.crm.services.MessageService
 import it.polito.students.crm.utils.*
 import it.polito.students.crm.utils.ErrorsPage.Companion.BODY_MISSING_ERROR
@@ -45,6 +46,7 @@ import java.util.regex.Pattern
 @RequestMapping("/API/messages")
 class CrmMessagesController(
     private val messageService: MessageService,
+    private val kafkaProducer: KafkaProducerService
 ) {
     private val logger = LoggerFactory.getLogger(CrmMessagesController::class.java)
 
@@ -67,7 +69,6 @@ class CrmMessagesController(
         @RequestParam sortBy: String? = null,
         @RequestParam state: String? = null
     ): ResponseEntity<Any> {
-
         if (page < 0 || limit < 0) {
             return ResponseEntity.badRequest().body(mapOf("error" to PAGE_AND_LIMIT_ERROR))
         }
@@ -126,7 +127,6 @@ class CrmMessagesController(
 
     @PostMapping("", "/")
     fun storeNewMessage(@RequestBody message: CreateMessageDTO): ResponseEntity<out Any> {
-
         //Check if there are black field in request body
         if (message.sender.isEmpty() || message.sender.isBlank()) {
             return ResponseEntity.badRequest().body(mapOf("error" to SENDER_MISSING_ERROR))
@@ -152,6 +152,7 @@ class CrmMessagesController(
             checkPriorityIsValid(message.priority)
             //Save the message
             val messageSaved = messageService.storeMessage(message, senderType)
+            kafkaProducer.sendMessage(KafkaTopics.TOPIC_MESSAGE, messageSaved)
             return ResponseEntity(messageSaved, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
             logger.info("Error: ${e.javaClass} - ${ERROR_MESSAGE_PRIORITY_NOT_FOUND}: ${e.message}")
@@ -231,6 +232,9 @@ class CrmMessagesController(
             }
 
             val result = messageService.updateMessage(messageID, state, updateMessageDTO.comment, priority)
+            if(result.actualState == StateOptions.DONE){
+                kafkaProducer.sendCompletedMessage(KafkaTopics.TOPIC_COMPLETED_MESSAGE, result)
+            }
             return ResponseEntity(result, HttpStatus.OK)
         } catch (e: MessageNotFoundException) {
             logger.info("Message not found: ${e.message}")
