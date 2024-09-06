@@ -3,3 +3,8 @@ export interface Email{
     email: string,
     comment: string
 }
+
+export interface CreateEmail{
+    email: string,
+    comment: string
+}

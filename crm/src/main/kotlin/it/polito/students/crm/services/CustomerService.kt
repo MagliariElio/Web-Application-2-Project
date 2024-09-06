@@ -48,6 +48,15 @@ interface CustomerService {
     fun updateCustomer(customerID: Long, contactID: Long): CustomerDTO
 
     /**
+     * Updates the contact details associated with a customer.
+     *
+     * @param customerID The ID of the customer to update.
+     * @param newContactDetails The new data to be ssociated to the new contact.
+     * @throws CustomerNotFoundException if the customer is not found.
+     */
+    fun updateCustomerDetails(customerID: Long, newContactDetails: CreateContactDTO): CustomerDTO
+
+    /**
      * Deletes a customer by their ID.
      *
      * @param customerID The ID of the customer to delete.

@@ -5,7 +5,7 @@ import { Telephone } from "./Telephone";
 
 export interface ContactWithAssociatedData{
     contactDTO: Contact
-    emails: Email[]
-    telephones: Telephone[]
-    addresses: Address[]
+    emailDTOs: Email[]
+    telephoneDTOs: Telephone[]
+    addressDTOs: Address[]
 }

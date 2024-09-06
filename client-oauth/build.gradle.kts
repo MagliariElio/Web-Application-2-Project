@@ -21,10 +21,12 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.3.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-mvc:4.1.4")
+
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.2")
 
     //implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
 

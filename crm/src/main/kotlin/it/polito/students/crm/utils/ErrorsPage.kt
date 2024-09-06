@@ -118,6 +118,14 @@ class ErrorsPage {
         const val CUSTOMERID_PROFESSIONALID_INVALID =
             "Customer id and/or professional id not valid. Please, provide some positive integers!"
 
+        const val SORT_BY_JOB_OFFER_INVALID =
+            "Invalid sortBy value. Allowed values are 'duration' or 'value'."
+
+        const val SORT_DIRECTION_JOB_OFFER_INVALID =
+            "Invalid sortDirection value. Allowed values are 'asc' or 'desc'."
+
+        const val STATUS_INVALID = "Invalid status value. Accepted values are CREATED, SELECTION_PHASE, CANDIDATE_PROPOSAL, CONSOLIDATED, DONE, or ABORT."
+
         const val JOBSTATUSGROUP_INVALID =
             "The value provided for the jobStatusGroup field is invalid. Possible values: [OPEN, ACCEPTED, ABORTED]."
 
@@ -157,6 +165,17 @@ class ErrorsPage {
 
         const val NEGATIVE_DURATION_ERROR =
             "The 'duration' field cannot be negative. Please ensure the duration is a positive value."
+
+        const val EMPTY_NAME_ERROR = "The 'name' field cannot be empty."
+
+        const val EMPTY_DESCRIPTION_ERROR = "The 'description' field cannot be empty."
+
+        const val EMPTY_LOCATION_ERROR = "The 'location' field cannot be empty."
+
+        const val EMPTY_WORK_MODE_ERROR = "The 'work mode' field cannot be empty."
+
+        const val EMPTY_CONTRACT_TYPE_ERROR = "The 'contract type' field cannot be empty."
+
 
         /**
          * SERVICE

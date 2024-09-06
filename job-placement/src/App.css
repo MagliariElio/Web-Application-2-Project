@@ -55,6 +55,15 @@
   max-height: 100vh;
   border-radius: 0 5px 5px 0;
   box-shadow: #162250 0px 0px 10px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.main-content {
+  padding-left: 15px;
 }
 
 .custom-hr {
@@ -75,6 +84,177 @@
   border-bottom: 1px solid #ddd;
 }
 
+/* HomePage */
+.job-offer-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.job-offer-item {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.job-offer-item:hover {
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Stile del Titolo dell'Offerta */
+.job-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Stile dei Testi nell'Offerta */
+.job-offer-item p {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+/* Stile dello Stato */
+.status {
+  font-weight: bold;
+}
+
+.status.created {
+  color: #1d4ed8;
+}
+
+.status.selection_phase {
+  color: #0ea5e9;
+}
+
+.status.candidate_proposal {
+  color: #f59e0b;
+}
+
+.status.consolidated {
+  color: #64748b;
+}
+
+.status.abort {
+  color: #dc2626;
+}
+
+.status.done {
+  color: #16a34a;
+}
+
+.sidebar-search {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-search h5 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #343a40;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-search .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-search .form-control {
+  border-radius: 5px;
+}
+
+.sidebar-search .btn-primary {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+/* End HomePage */
+
+/* JobOfferDetailPage */
+.skill-item {
+  background-color: #f0f0f0;
+  border: 1px solid #dcdcdc;
+  border-radius: 20px;
+  padding: 5px 15px;
+  font-size: 0.9em;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; 
+}
+
+.skill-text {
+  flex-grow: 1;
+  padding-right: 10px;
+}
+
+.skill-item button {
+  margin-left: auto;
+  text-align: center;
+  justify-content: center;
+}
+
+.progress-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.progress-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.progress-step:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  top: 28%;
+  left: -50%;
+  width: 100%;
+  height: 5px;
+  background-color: lightgray;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.progress-step.completed:not(:first-child)::before {
+  background-color: green;
+}
+
+.progress-step.abort:not(:first-child)::before {
+  background-color: red;
+}
+
+.circle {
+  z-index: 2;
+  background-color: white;
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+/* End JobOfferDetailPage */
 
 .no-gutters {
   margin-right: 0;
@@ -91,7 +271,7 @@
 }
 
 .smallBorders {
-  border: 2px solid #16225041 ;
+  border: 2px solid #16225041;
   border-radius: 5px;
 }
 
@@ -103,7 +283,6 @@
   box-shadow: 0 0 10px #16225041;
 }
 
-
 .primaryButton {
   background-color: #162250 !important;
   color: white !important;
@@ -111,12 +290,30 @@
   border-radius: 5px !important;
   cursor: pointer !important;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
+  font-size: 18px !important;
 }
 
 .primaryButton:hover {
   transform: translateY(-5px) scale(1.05);
   box-shadow: 0 10px 20px #1622507a;
   background-color: #162250c2 !important;
+}
+
+.primarySuccessButton {
+  background-color: #eaf7ea !important; 
+  color: #218838 !important;
+  border: 2px solid #218838 !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease !important;
+  font-size: 18px !important;
+}
+
+.primarySuccessButton:hover {
+  box-shadow: 0 5px 10px rgba(22, 34, 80, 0.2);
+  transform: translateY(-5px) scale(1.05);
+  background-color: #1e7e34 !important;
+  color: white !important;
 }
 
 .secondaryButton {
@@ -126,12 +323,28 @@
   border-radius: 5px !important;
   cursor: pointer !important;
   transition: box-shadow 0.3s ease, background-color 0.3s ease !important;
+  font-size: 18px !important;
 }
 
 .secondaryButton:hover {
   box-shadow: 0 5px 10px #1622507a;
   background-color: #162250 !important;
   color: #f8f9fa !important;
+}
+
+.primaryDangerButton {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
+}
+
+.primaryDangerButton:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 20px #dc35457a;
+  background-color: #dc3545c2 !important;
 }
 
 .secondaryDangerButton {
@@ -141,10 +354,59 @@
   border-radius: 5px !important;
   cursor: pointer !important;
   transition: box-shadow 0.3s ease, background-color 0.3s ease !important;
+  font-size: 18px !important;
 }
 
 .secondaryDangerButton:hover {
   box-shadow: 0 5px 10px #dc35457a;
   background-color: #dc3545 !important;
   color: #f8f9fa !important;
+}
+
+
+.tag{
+  background-color: #566bc0;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+@media (max-width: 576px) {
+  .text-center-sm {
+    text-align: center !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+  .text-right-md {
+    text-align: right !important;
+  }
+}
+
+.borderedSection {
+  border: 2px solid #16225041;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+
+.custom-pagination .page-item.active .page-link {
+  background-color: #162250; /* Colore di sfondo per l'elemento attivo */
+  border-color: #162250; /* Colore del bordo per l'elemento attivo */
+  color: white; /* Colore del testo per l'elemento attivo */
+}
+
+.custom-pagination .page-item .page-link {
+  color: #162250; /* Colore del testo per gli elementi non attivi */
+}
+
+.custom-pagination .page-item .page-link:hover {
+  background-color: #162250c2; /* Colore di sfondo al passaggio del mouse */
+  border-color: #162250c2 !important; /* Colore del bordo al passaggio del mouse */
+  color: white; /* Colore del testo al passaggio del mouse */
+}
+
+.custom-pagination .page-item.disabled .page-link {
+  color: #6c757d; /* Colore del testo per gli elementi disabilitati */
 }

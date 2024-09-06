@@ -38,13 +38,14 @@ class ProfessionalServiceImpl(
 
         filterMap.entries.forEach { filter ->
             list = when (filter.key) {
-                ProfessionalEnumFields.SKILL -> list.filter { it.skills.contains(filter.value) }
-                ProfessionalEnumFields.LOCATION -> list.filter { it.geographicalLocation == filter.value }
-                ProfessionalEnumFields.EMPLOYMENT_STATE -> list.filter { it.employmentState.name == filter.value }
+                ProfessionalEnumFields.SKILL -> list.filter { it.skills.any { skill -> skill.contains(filter.value, ignoreCase = true) } }
+                ProfessionalEnumFields.LOCATION -> list.filter { it.geographicalLocation.contains(filter.value, ignoreCase = true) }
+                ProfessionalEnumFields.EMPLOYMENT_STATE -> list.filter { it.employmentState.name.contains(filter.value, ignoreCase = true) }
             }
         }
 
-        val pageImpl = PageImpl(list, pageable, page.totalElements)
+
+        val pageImpl = PageImpl(list, pageable, list.size.toLong())
         return pageImpl
     }
 

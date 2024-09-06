@@ -164,4 +164,12 @@ class EmailServiceImpl(
         emailRepository.save(email)
     }
 
+    override fun getAllEmails(): List<EmailDTO> {
+        return emailRepository.findAll().map { it.toDTO() }
+    }
+
+    override fun deleteEmail(emailId: Long) {
+        emailRepository.deleteById(emailId)
+    }
+
 }
