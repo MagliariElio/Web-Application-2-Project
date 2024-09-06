@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination, ButtonGroup, Badge } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination, ButtonGroup, Badge, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { JobOffer } from "../interfaces/JobOffer";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -15,6 +15,8 @@ import {
   FaTimesCircle,
   FaTrash,
   FaUser,
+  FaUserAlt,
+  FaUserCircle,
   FaUsers,
   FaUserTie,
 } from "react-icons/fa";
@@ -43,8 +45,9 @@ import {
   updateJobOffer,
 } from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
-import { AiOutlineInfoCircle } from "react-icons/ai";
+import { AiOutlineInfoCircle, AiOutlineUser } from "react-icons/ai";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
+import { BsPerson } from "react-icons/bs";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -604,14 +607,18 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
                   <>
                     <Col md={2} className="d-flex justify-content-end">
-                      <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
-                        <FaTrash /> Delete
-                      </Button>
+                      <OverlayTrigger overlay={<Tooltip id="deleteButton">Delete</Tooltip>}>
+                        <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
+                          <FaTrash /> Delete
+                        </Button>
+                      </OverlayTrigger>
                     </Col>
                     <Col md={1} className="d-flex justify-content-end">
-                      <Button variant="primary" onClick={() => setIsEditing(true)}>
-                        <FaPen /> Edit
-                      </Button>
+                      <OverlayTrigger overlay={<Tooltip id="editButton">Edit</Tooltip>}>
+                        <Button variant="primary" onClick={() => setIsEditing(true)}>
+                          <FaPen /> Edit
+                        </Button>
+                      </OverlayTrigger>
                     </Col>
                   </>
                 )}
@@ -681,7 +688,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     Contract Type
                   </Form.Label>
                   <Col xs={12} sm={8}>
-                    <Form.Select name="contractType" value={formDataJobOffer?.contractType || ""} onChange={handleInputSelectChange} required>
+                    <Form.Select
+                      name="contractType"
+                      style={{ cursor: "pointer" }}
+                      value={formDataJobOffer?.contractType || ""}
+                      onChange={handleInputSelectChange}
+                      required
+                    >
                       {contractTypeList.map((contract, index) => (
                         <option key={index} value={contract}>
                           {toTitleCase(contract)}
@@ -791,7 +804,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     Work Mode
                   </Form.Label>
                   <Col xs={12} sm={8}>
-                    <Form.Select name="workMode" value={formDataJobOffer?.workMode || ""} onChange={handleInputSelectChange} required>
+                    <Form.Select
+                      name="workMode"
+                      style={{ cursor: "pointer" }}
+                      value={formDataJobOffer?.workMode || ""}
+                      onChange={handleInputSelectChange}
+                      required
+                    >
                       {workModeList.map((workMode, index) => (
                         <option key={index} value={workMode}>
                           {toTitleCase(workMode)}
@@ -840,21 +859,23 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                         <li key={index} className="skill-item mb-3 d-flex justify-content-between align-items-center">
                           <span className="skill-text">{skill}</span>
                           {isEditing && (
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              onClick={() => {
-                                setFormDataJobOffer(
-                                  (prevData) =>
-                                    ({
-                                      ...prevData,
-                                      requiredSkills: prevData?.requiredSkills.filter((_, i) => i !== index),
-                                    } as JobOffer)
-                                );
-                              }}
-                            >
-                              <FaTrash />
-                            </Button>
+                            <OverlayTrigger overlay={<Tooltip id="deleteRequiredSkillButton">Delete</Tooltip>}>
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                onClick={() => {
+                                  setFormDataJobOffer(
+                                    (prevData) =>
+                                      ({
+                                        ...prevData,
+                                        requiredSkills: prevData?.requiredSkills.filter((_, i) => i !== index),
+                                      } as JobOffer)
+                                  );
+                                }}
+                              >
+                                <FaTrash />
+                              </Button>
+                            </OverlayTrigger>
                           )}
                         </li>
                       ))}
@@ -879,9 +900,11 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 />
               </Col>
               <Col xs={12} md={4} lg={3}>
-                <Button variant="primary" onClick={handleAddSkill}>
-                  Add Skill
-                </Button>
+                <OverlayTrigger overlay={<Tooltip id="addSkillButton">Add Skill</Tooltip>}>
+                  <Button variant="primary" onClick={handleAddSkill}>
+                    Add Skill
+                  </Button>
+                </OverlayTrigger>
               </Col>
             </Row>
           )}
@@ -925,9 +948,12 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
                 {/* Buttons Section */}
                 <Col xs={6} className="text-end">
-                  <Button variant="primary" className="me-2" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
-                    Profile
-                  </Button>
+                  <OverlayTrigger overlay={<Tooltip id="profileCustomerButton">Profile</Tooltip>}>
+                    <Button variant="primary" className="me-2 text-center" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
+                      <FaUser className="me-1" />
+                      Profile
+                    </Button>
+                  </OverlayTrigger>
                 </Col>
 
                 <Col xs={12} md={6} className="mb-3">
@@ -957,17 +983,26 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
                   {/* Buttons Section */}
                   <Col xs={6} className="text-end">
-                    <Button variant="primary" className="me-2" onClick={() => navigate(`/ui/professionals/${professional.id}`)}>
-                      Profile
-                    </Button>
+                    <OverlayTrigger overlay={<Tooltip id="profileCandidationButton">Profile</Tooltip>}>
+                      <Button variant="primary" className="me-2 text-center" onClick={() => navigate(`/ui/professionals/${professional.id}`)}>
+                        <FaUser className="me-1" />
+                        Profile
+                      </Button>
+                    </OverlayTrigger>
                     {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && (
                       <>
-                        <Button variant="success" className="me-2" onClick={handleGoToConsolidated}>
-                          Confirm Candidation
-                        </Button>
-                        <Button variant="danger" onClick={handleCancelCadidation}>
-                          Cancel Candidation
-                        </Button>
+                        <OverlayTrigger overlay={<Tooltip id="confirmCandidationButton">Confirm Candidation</Tooltip>}>
+                          <Button variant="success" className="me-2" onClick={handleGoToConsolidated}>
+                            <FaCheck className="me-1" />
+                            Confirm
+                          </Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger overlay={<Tooltip id="cancelCandidationButton">Cancel Candidation</Tooltip>}>
+                          <Button variant="danger" onClick={handleCancelCadidation}>
+                            <FaTrash className="me-1" />
+                            Cancel
+                          </Button>
+                        </OverlayTrigger>
                       </>
                     )}
                     {jobOffer?.status === JobOfferState.CONSOLIDATED && (
@@ -1111,29 +1146,41 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                               {!hasRefused && !hasAccepted && (
                                 <ButtonGroup>
                                   {jobOffer?.status !== JobOfferState.CREATED && (
+                                    <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
+                                      <Button
+                                        variant="success"
+                                        className="me-2"
+                                        onClick={() => handleSelectCandidateProfessional(index)}
+                                        disabled={
+                                          jobOffer?.status !== JobOfferState.SELECTION_PHASE || isModifyCandidatesList || loadingCandidateProfessional
+                                        }
+                                      >
+                                        <FaCheck />
+                                      </Button>
+                                    </OverlayTrigger>
+                                  )}
+
+                                  <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
                                     <Button
-                                      variant="success"
+                                      variant="danger"
                                       className="me-2"
-                                      onClick={() => handleSelectCandidateProfessional(index)}
+                                      onClick={() => handleDeleteCandidateProfessional(index)}
                                       disabled={
-                                        jobOffer?.status !== JobOfferState.SELECTION_PHASE || isModifyCandidatesList || loadingCandidateProfessional
+                                        jobOffer?.status === JobOfferState.ABORT ||
+                                        jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
+                                        jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                        jobOffer?.status === JobOfferState.DONE
                                       }
                                     >
-                                      <FaCheck />
+                                      <FaTrash />
                                     </Button>
-                                  )}
-                                  <Button
-                                    variant="danger"
-                                    onClick={() => handleDeleteCandidateProfessional(index)}
-                                    disabled={
-                                      jobOffer?.status === JobOfferState.ABORT ||
-                                      jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
-                                      jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                                      jobOffer?.status === JobOfferState.DONE
-                                    }
-                                  >
-                                    <FaTrash />
-                                  </Button>
+                                  </OverlayTrigger>
+
+                                  <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                    <Button variant="warning" onClick={() => navigate(`/ui/customers/${candidate?.id}`)}>
+                                      <FaUser />
+                                    </Button>
+                                  </OverlayTrigger>
                                 </ButtonGroup>
                               )}
                             </td>

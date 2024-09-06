@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Col, Container, Modal, Pagination, Row, Table } from "react-bootstrap";
+import { Alert, Button, Col, Container, Modal, OverlayTrigger, Pagination, Row, Table, Tooltip } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -184,24 +184,28 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
         </Row>
         <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Select value={contractType} onChange={(e) => setContractType(e.target.value)} required>
-              <option value="">Select Contract Type</option>
-              {contractTypeList.map((contract, index) => (
-                <option key={index} value={contract}>
-                  {toTitleCase(contract)}
-                </option>
-              ))}
-            </Form.Select>
+            <OverlayTrigger overlay={<Tooltip id="contractTypeButton">Select Contract Type</Tooltip>}>
+              <Form.Select style={{ cursor: "pointer" }} value={contractType} onChange={(e) => setContractType(e.target.value)} required>
+                <option value="">Select Contract Type</option>
+                {contractTypeList.map((contract, index) => (
+                  <option key={index} value={contract}>
+                    {toTitleCase(contract)}
+                  </option>
+                ))}
+              </Form.Select>
+            </OverlayTrigger>
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Select value={workMode} onChange={(e) => setWorkMode(e.target.value)} required>
-              <option value="">Select Work Mode</option>
-              {workModeList.map((workMode, index) => (
-                <option key={index} value={workMode}>
-                  {toTitleCase(workMode)}
-                </option>
-              ))}
-            </Form.Select>
+            <OverlayTrigger overlay={<Tooltip id="workModeButton">Select Work Mode</Tooltip>}>
+              <Form.Select style={{ cursor: "pointer" }} value={workMode} onChange={(e) => setWorkMode(e.target.value)} required>
+                <option value="">Select Work Mode</option>
+                {workModeList.map((workMode, index) => (
+                  <option key={index} value={workMode}>
+                    {toTitleCase(workMode)}
+                  </option>
+                ))}
+              </Form.Select>
+            </OverlayTrigger>
           </Col>
         </Row>
         <Row className="justify-content-center">
@@ -219,18 +223,20 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
               />
             )}
             <Form.Group controlId="customer">
-              <Form.Control
-                style={{ cursor: "pointer" }}
-                type="text"
-                placeholder="Select a customer"
-                value={
-                  customer
-                    ? `${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname} (${customer?.information.contactDTO.ssnCode})`
-                    : "Select a customer"
-                }
-                readOnly
-                onClick={handleOpenSelectCustomerModal}
-              />
+              <OverlayTrigger overlay={<Tooltip id="customerButton">Select a Customer</Tooltip>}>
+                <Form.Control
+                  style={{ cursor: "pointer" }}
+                  type="text"
+                  placeholder="Select a customer"
+                  value={
+                    customer
+                      ? `${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname} (${customer?.information.contactDTO.ssnCode})`
+                      : "Select a customer"
+                  }
+                  readOnly
+                  onClick={handleOpenSelectCustomerModal}
+                />
+              </OverlayTrigger>
             </Form.Group>
           </Col>
 
@@ -314,9 +320,11 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                 />
               </Col>
               <Col xs={12} md={4} lg={3} className="text-end">
-                <Button variant="primary" onClick={handleAddSkill}>
-                  Add Skill
-                </Button>
+                <OverlayTrigger overlay={<Tooltip id="addSkillButton">Add Skill</Tooltip>}>
+                  <Button variant="primary" onClick={handleAddSkill}>
+                    Add Skill
+                  </Button>
+                </OverlayTrigger>
               </Col>
             </Row>
           </Col>
