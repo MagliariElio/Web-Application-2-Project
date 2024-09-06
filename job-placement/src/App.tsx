@@ -21,6 +21,7 @@ import ProfessionalPage from "./views/ProfessionalPage.tsx";
 import EditCustomerPage from "./views/EditCustomerPage.tsx";
 import { RoleState } from "./utils/costants.ts";
 import EditProfessionalPage from "./views/EditProfessionalPage.tsx";
+import { runCustomerTests, runJobOfferTests, runProfessionalTests } from "./testing/TestRunner.ts";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -29,39 +30,57 @@ function App() {
 
   const [sidebarOpened, setSidebarOpened] = useState(true);
 
+
+  // Run dei dati di testing
+  const [testsExecuted, setTestsExecuted] = useState(true); // impostare questa a false per non runnare più
+  const runTests = async () => {
+    if (!testsExecuted && me) {
+      await runCustomerTests(me);
+      await runProfessionalTests(me);
+      await runJobOfferTests(me);
+      setTestsExecuted(true); 
+    }
+  };
+  useEffect(() => {
+    runTests();
+  }, []);
+
+
+
   useEffect(() => {
     const fetchUserRoles = async () => {
       setLoading(true);
 
-      await JPAPIAuth.fetchMe(setMe).then(async () => {
-        if (me?.principal !== null) {
-          const res = await fetch("/documentStoreService/v1/API/documents/auth");
-          const json = await res.json();
+      await JPAPIAuth.fetchMe(setMe)
+        .then(async () => {
+          if (me?.principal !== null) {
+            const res = await fetch("/documentStoreService/v1/API/documents/auth");
+            const json = await res.json();
 
-          if (JSON.stringify(json.principal.claims.realm_access.roles[0])) {
-            var i = 0;
-            while (
-              json.principal.claims.realm_access.roles[i] !== RoleState.GUEST &&
-              json.principal.claims.realm_access.roles[i] !== RoleState.OPERATOR &&
-              json.principal.claims.realm_access.roles[i] !== RoleState.MANAGER
-            ) {
-              console.log(JSON.stringify(json.principal.claims.realm_access.roles[i]));
-              i = i + 1;
-            }
-            if (json.principal.claims.realm_access.roles[i]) {
-              console.log("New role: " + json.principal.claims.realm_access.roles[i]);
-              setRole(json.principal.claims.realm_access.roles[i]);
+            if (JSON.stringify(json.principal.claims.realm_access.roles[0])) {
+              var i = 0;
+              while (
+                json.principal.claims.realm_access.roles[i] !== RoleState.GUEST &&
+                json.principal.claims.realm_access.roles[i] !== RoleState.OPERATOR &&
+                json.principal.claims.realm_access.roles[i] !== RoleState.MANAGER
+              ) {
+                console.log(JSON.stringify(json.principal.claims.realm_access.roles[i]));
+                i = i + 1;
+              }
+              if (json.principal.claims.realm_access.roles[i]) {
+                console.log("New role: " + json.principal.claims.realm_access.roles[i]);
+                setRole(json.principal.claims.realm_access.roles[i]);
+              } else {
+                setRole(RoleState.OPERATOR);
+              }
             } else {
               setRole(RoleState.OPERATOR);
             }
-          } else {
-            setRole(RoleState.OPERATOR);
           }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
       setLoading(false);
     };
@@ -116,9 +135,15 @@ function App() {
                   path="/ui/customers/:id/edit"
                   element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />}
                 />
-                <Route path="/ui/professionals/:id/edit" element={me && me.principal !== null ? <EditProfessionalPage me={me} /> : <Navigate to="/not-found" />} />
+                <Route
+                  path="/ui/professionals/:id/edit"
+                  element={me && me.principal !== null ? <EditProfessionalPage me={me} /> : <Navigate to="/not-found" />}
+                />
                 <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
-                <Route path="/ui/professionals/:id" element={me && me.principal !== null ? <ProfessionalPage me={me} /> : <Navigate to="/not-found" />} />
+                <Route
+                  path="/ui/professionals/:id"
+                  element={me && me.principal !== null ? <ProfessionalPage me={me} /> : <Navigate to="/not-found" />}
+                />
                 <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route
                   path="/ui/professionals/add"
@@ -170,19 +195,19 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
           </div>
           <hr className="border-top border-light" />
         </div>
-        <Nav.Link
-          href="#"
-          className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
-          onClick={() => {
-            if (location.pathname !== "/ui") navigate("/ui");
-          }}
-        >
-          <BsBriefcaseFill className={opened ? "me-2" : ""} />
-          {opened && "Job Offers"}
-        </Nav.Link>
         {me &&
           me.principal !== null && ( // Only logged user links here
             <>
+              <Nav.Link
+                href="#"
+                className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
+                onClick={() => {
+                  if (location.pathname !== "/ui") navigate("/ui");
+                }}
+              >
+                <BsBriefcaseFill className={opened ? "me-2" : ""} />
+                {opened && "Job Offers"}
+              </Nav.Link>
               <Nav.Link
                 href="#"
                 className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}

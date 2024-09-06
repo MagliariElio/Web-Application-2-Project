@@ -481,16 +481,4 @@ class CrmContactsController(
         }
     }
 
-    @DeleteMapping("/emails/{emailId}", "/emails/{emailId}/")
-    fun deleteEmail(
-        @PathVariable emailId: Long
-    ): ResponseEntity<Any> {
-        try {
-
-
-
-            emailService.deleteEmail(emailId)
-        }
-    }
-
 }

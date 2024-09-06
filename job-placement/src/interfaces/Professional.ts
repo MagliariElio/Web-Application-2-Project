@@ -1,6 +1,4 @@
 import { Contact } from "./Contact";
-import { ContactWithAssociatedData } from "./ContactWithAssociatedData";
-import { JobOffer } from "./JobOffer";
 
 export interface Professional{
     id: number,
