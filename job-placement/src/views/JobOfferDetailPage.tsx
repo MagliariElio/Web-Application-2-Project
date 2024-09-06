@@ -562,7 +562,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         </div>
       </Row>
 
-      <div className="border rounded p-3 shadow-sm bg-white mt-4">
+      <div className="border rounded p-3 shadow-sm mt-4">
         <Form>
           {errorMessage && (
             <Row className="justify-content-center" ref={errorRef}>

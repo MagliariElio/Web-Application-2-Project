@@ -126,7 +126,7 @@ const HomePage = () => {
 
       <Row className="d-flex flex-row p-0 mb-3 align-items-center">
         <Col md={4}>
-          <h3>Job Offers</h3>
+          <h3 className="title">Job Offers</h3>
         </Col>
         <Col md={2} className="d-flex justify-content-end">
           <Form.Group controlId="sortBy">
@@ -326,7 +326,7 @@ const HomePage = () => {
                         location: "",
                         workMode: "",
                         status: "",
-                        elementsPerPage: 10,
+                        elementsPerPage: filters.elementsPerPage,
                         sortBy: "duration",
                         sortDirection: "asc",
                       })

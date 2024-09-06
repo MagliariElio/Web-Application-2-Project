@@ -101,7 +101,7 @@ function CustomersPage() {
 
       <Row className="d-flex flex-row p-0 mb-1 align-items-center">
         <Col>
-          <h3>Customers</h3>
+          <h3 className="title">Customers</h3>
         </Col>
         <Col className="d-flex justify-content-end">
           <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate("/ui/customers/add")}>

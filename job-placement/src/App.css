@@ -84,131 +84,253 @@
   border-bottom: 1px solid #ddd;
 }
 
-/* HomePage */
-.job-offer-list {
-  display: flex;
-  flex-direction: column;
+.title {
+  color: #004085;
+  font-size: 1.8rem;
+  font-weight: 600;
 }
 
+/* HomePage */
 .job-offer-item {
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  background-color: #f3f4f6;
+  border: 1px solid #c0c4cc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
   cursor: pointer;
 }
 
 .job-offer-item:hover {
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
 }
 
-/* Stile del Titolo dell'Offerta */
 .job-title {
   font-size: 1.5rem;
   font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.job-offer-item p {
+  font-size: 1rem;
+  color: #5a6473;
+}
+
+.status {
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  display: inline-block;
+  background-color: #dee2e6;
   color: #495057;
 }
 
-/* Stile dei Testi nell'Offerta */
-.job-offer-item p {
-  font-size: 1rem;
-  color: #6c757d;
-}
-
-/* Stile dello Stato */
-.status {
-  font-weight: bold;
-}
-
 .status.created {
-  color: #1d4ed8;
+  background-color: #aac6f2;
 }
 
 .status.selection_phase {
-  color: #0ea5e9;
+  background-color: #c3e0e5;
 }
 
 .status.candidate_proposal {
-  color: #f59e0b;
+  background-color: #ffdd8a;
 }
 
 .status.consolidated {
-  color: #64748b;
+  background-color: #c9ccd1;
 }
 
 .status.abort {
-  color: #dc2626;
+  background-color: #f5b7b1;
 }
 
 .status.done {
-  color: #16a34a;
+  background-color: #c8e6c9;
+}
+
+/* Pulsante "Add Job Offer" */
+.primaryButton {
+  background-color: #2c3e50;
+  border: none;
+  color: white;
+}
+
+.primaryButton:hover {
+  background-color: #34495e;
 }
 
 .sidebar-search {
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
+  background-color: #f0f0f3;
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-search h5 {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: bold;
-  color: #343a40;
-  margin-bottom: 1.5rem;
-}
-
-.sidebar-search .form-group {
-  margin-bottom: 1.5rem;
+  color: #2c3e50;
 }
 
 .sidebar-search .form-control {
-  border-radius: 5px;
+  background-color: #ffffff;
+  border: 1px solid #aab2bc;
+  border-radius: 8px;
 }
 
 .sidebar-search .btn-primary {
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
+  background-color: #f6a500;
+  border: none;
+}
+
+.sidebar-search .btn-primary:hover {
+  background-color: #f39c12;
 }
 /* End HomePage */
 
+/* AddJobOfferPage */
+.add-job-offer-container {
+  background-color: #e1e8f0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.add-job-offer-container h1 {
+  color: #004085;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.add-job-offer-container h3 {
+  color: #004085;
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.add-job-offer-container .form-control {
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  background-color: #ffffff;
+  box-shadow: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.add-job-offer-container .form-control:focus {
+  border-color: #004085;
+  box-shadow: 0 0 5px rgba(0, 64, 133, 0.2);
+}
+
+.add-job-offer-container .primaryButton {
+  background-color: #004085;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+.add-job-offer-container .primaryButton:hover {
+  background-color: #002d5c;
+  color: white;
+}
+
+.add-job-offer-container .close-button {
+  background-color: transparent;
+  border: 2px solid #004085;
+  color: #004085;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  padding: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.add-job-offer-container .close-button:hover {
+  background-color: #004085;
+  color: white;
+}
+
+.add-job-offer-container .skills-section {
+  background-color: #f0f4f8;
+  border: 1px solid #cbd2d9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.add-job-offer-container .form-select {
+  background-color: #ffffff;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  padding: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.add-job-offer-container .form-select:focus {
+  border-color: #004085;
+  outline: none;
+}
+
+.add-job-offer-container .form-textarea {
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  padding: 10px;
+  background-color: #ffffff;
+  transition: border-color 0.3s ease;
+}
+
+.add-job-offer-container .form-textarea:focus {
+  border-color: #004085;
+  outline: none;
+}
+/* End AddJobOfferPage */
+
 /* JobOfferDetailPage */
 .skill-item {
-  background-color: #f0f0f0;
-  border: 1px solid #dcdcdc;
-  border-radius: 20px;
-  padding: 5px 15px;
+  background-color: #f3f4f6;
+  border: 1px solid #c0c4cc;
+  border-radius: 12px;
+  padding: 10px 20px;
   font-size: 0.9em;
-  color: #333;
+  color: #2c3e50;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; 
+  width: 100%;
 }
 
 .skill-text {
   flex-grow: 1;
-  padding-right: 10px;
+  padding-right: 15px;
 }
 
 .skill-item button {
   margin-left: auto;
   text-align: center;
   justify-content: center;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
 
+.skill-item button:hover {
+  background-color: #f39c12;
+}
+
+/* Progress Bar */
 .progress-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   position: relative;
+  padding: 10px 0;
 }
 
 .progress-step {
@@ -217,6 +339,7 @@
   flex-direction: column;
   align-items: center;
   flex: 1;
+  color: #2c3e50;
 }
 
 .progress-step:not(:first-child)::before {
@@ -226,22 +349,23 @@
   left: -50%;
   width: 100%;
   height: 5px;
-  background-color: lightgray;
+  background-color: #dee2e6;
   z-index: 1;
   transform: translateY(-50%);
 }
 
 .progress-step.completed:not(:first-child)::before {
-  background-color: green;
+  background-color: #004085;
 }
 
 .progress-step.abort:not(:first-child)::before {
-  background-color: red;
+  background-color: #f5b7b1;
 }
 
 .circle {
   z-index: 2;
   background-color: white;
+  border: 2px solid #cbd2d9;
   border-radius: 50%;
   padding: 5px;
   display: flex;
@@ -249,10 +373,72 @@
   justify-content: center;
 }
 
+.circle .text-success {
+  color: #2c3e50;
+}
+
+.circle .text-danger {
+  color: #f5b7b1;
+}
+
 .label {
   margin-top: 10px;
   text-align: center;
   font-size: 0.9rem;
+  color: #2c3e50;
+}
+
+.modal-confirm-button {
+  background-color: #004085;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.modal-confirm-button:hover {
+  background-color: #002d5c;
+}
+
+.modal-cancel-button {
+  background-color: transparent;
+  border: 2px solid #004085;
+  color: #004085;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.modal-cancel-button:hover {
+  background-color: #004085;
+  color: white;
+}
+
+/* Form and Button Styling */
+.form-control {
+  background-color: #ffffff;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.form-control:focus {
+  border-color: #004085;
+  box-shadow: 0 0 5px rgba(0, 64, 133, 0.2);
+}
+
+button.primaryButton {
+  background-color: #004085;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+button.primaryButton:hover {
+  background-color: #002d5c;
 }
 /* End JobOfferDetailPage */
 
@@ -300,7 +486,7 @@
 }
 
 .primarySuccessButton {
-  background-color: #eaf7ea !important; 
+  background-color: #eaf7ea !important;
   color: #218838 !important;
   border: 2px solid #218838 !important;
   border-radius: 5px !important;
@@ -363,8 +549,7 @@
   color: #f8f9fa !important;
 }
 
-
-.tag{
+.tag {
   background-color: #566bc0;
   color: white;
   padding: 5px 10px;
@@ -389,7 +574,6 @@
   border-radius: 5px;
   padding: 20px;
 }
-
 
 .custom-pagination .page-item.active .page-link {
   background-color: #162250; /* Colore di sfondo per l'elemento attivo */

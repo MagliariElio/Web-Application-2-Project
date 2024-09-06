@@ -136,7 +136,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
   };
 
   return (
-    <div>
+    <div className="add-job-offer-container">
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
         <Col>
           <h3>Add New Job Offer</h3>
