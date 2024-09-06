@@ -4,9 +4,11 @@ import it.polito.students.crm.dtos.ChangeJobStatusDTO
 import it.polito.students.crm.dtos.CreateJobOfferDTO
 import it.polito.students.crm.exception_handlers.*
 import it.polito.students.crm.services.JobOfferService
+import it.polito.students.crm.services.KafkaProducerService
 import it.polito.students.crm.utils.ErrorsPage
 import it.polito.students.crm.utils.JobStatusEnum
 import it.polito.students.crm.utils.JobStatusGroupEnum
+import it.polito.students.crm.utils.KafkaTopics
 import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -16,7 +18,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/API/joboffers")
 class CrmJobOffersController(
-    private val jobOfferService: JobOfferService
+    private val jobOfferService: JobOfferService,
+    private val kafkaProducer: KafkaProducerService
 ) {
     private val logger = LoggerFactory.getLogger(CrmContactsController::class.java)
 
@@ -85,6 +88,7 @@ class CrmJobOffersController(
             }
 
             val saved = jobOfferService.storeJobOffer(jobOffer)
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, saved)
             return ResponseEntity(saved, HttpStatus.CREATED)
         } catch (e: CustomerNotFoundException) {
             logger.info("CustomerControl: Error with customer id equal to ${jobOffer.customerId}: ${e.message}")
@@ -157,7 +161,9 @@ class CrmJobOffersController(
 
             val editedJobOffer =
                 jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
-
+            if(editedJobOffer.status == JobStatusEnum.DONE){
+                kafkaProducer.sendCompletedJobOffer(KafkaTopics.TOPIC_COMPLETED_JOB_OFFER, editedJobOffer)
+            }
             return ResponseEntity(editedJobOffer, HttpStatus.OK)
 
         } catch (e: IllegalJobStatusTransition) {
