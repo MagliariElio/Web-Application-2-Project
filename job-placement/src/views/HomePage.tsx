@@ -1,6 +1,6 @@
 import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert, Pagination } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BsPlus } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,23 +8,15 @@ import { JobOffer } from "../interfaces/JobOffer.ts";
 import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants.ts";
 import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
 import { LoadingSection } from "../App.tsx";
-
-interface Filters {
-  contractType: string;
-  location: string;
-  workMode: string;
-  status: string;
-  elementsPerPage: number;
-  sortBy: "duration" | "value" | "";
-  sortDirection: "asc" | "desc" | "";
-}
+import { Filters } from "../interfaces/Filters.ts";
 
 const HomePage = () => {
   const navigate = useNavigate();
 
   const [jobOffers, setJobOffers] = useState<PagedResponse<JobOffer> | null>(null);
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const errorRef = useRef<HTMLDivElement | null>(null);
 
   const location = useLocation();
   var { success } = location.state || {};
@@ -67,8 +59,16 @@ const HomePage = () => {
         setTotalPages(result.totalPages);
         setLoading(false);
       } catch (error) {
-        setError(true);
-        setLoading(false);
+        if (error instanceof Error) {
+          setErrorMessage(error.message);
+        } else {
+          setErrorMessage("An unexpected error occurred");
+        }
+
+        // Scroll to error message when it appears
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
       }
     };
 
@@ -94,6 +94,8 @@ const HomePage = () => {
   };
 
   const changePage = (pageNumber: number) => {
+    if (pageNumber >= totalPages) pageNumber = totalPages - 1;
+    if (pageNumber < 0) pageNumber = 0;
     setCurrentPage(pageNumber);
   };
 
@@ -104,16 +106,6 @@ const HomePage = () => {
           <span className="sr-only"></span>
         </div>
       </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-        <Alert variant="danger" className="text-center w-50">
-          <h5>An error occurred. Please, reload the page!</h5>
-        </Alert>
-      </Container>
     );
   }
 
@@ -207,24 +199,29 @@ const HomePage = () => {
         </Col>
       </Row>
 
-      {error && (
-        <Row className="w-100">
-          <Col className="w-100 d-flex justify-content-center align-items-center mt-5 text-danger">
-            <h5>An error occurred. Please, reload the page!</h5>
+      {errorMessage && (
+        <Row className="justify-content-center" ref={errorRef}>
+          <Col xs={12} md={10} lg={6}>
+            <Alert variant="danger" onClose={() => setErrorMessage("")} className="d-flex mt-3 justify-content-center align-items-center" dismissible>
+              {errorMessage}
+            </Alert>
           </Col>
         </Row>
       )}
 
       {loading && <LoadingSection h={null} />}
 
-      {!error && !loading && jobOffers !== null && (
+      {!loading && jobOffers !== null && (
         <>
           <Row>
             <Col md={8}>
               {jobOffers?.content.length === 0 ? (
                 <Row className="w-100">
                   <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-                    <h5>No job offers found with the selected filters!</h5>
+                    <h5 className="p-5">
+                      No job offers found with the selected criteria. Try adjusting the filters, or it could be that no job offers have been added
+                      yet.
+                    </h5>
                   </Col>
                 </Row>
               ) : (

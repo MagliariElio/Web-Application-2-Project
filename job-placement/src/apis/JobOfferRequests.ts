@@ -91,15 +91,32 @@ export const fetchJobOffers = async (
     };
 
     const queryString = new URLSearchParams(params).toString();
-
     const response = await fetch(`/crmService/v1/API/joboffers?${queryString}`);
+
     if (!response.ok) {
-      throw new Error("GET /API/joboffers : Network response was not ok");
+      let errorMessage = "An error occurred while fetching the job offer.";
+
+      try {
+        const message = await response.json();
+
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
+        } else if (message) {
+          errorMessage = message;
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
     }
+
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching job offers:", error);
+    console.error("Error in fetchJobOffers:", error);
     throw error;
   }
 };
@@ -107,13 +124,31 @@ export const fetchJobOffers = async (
 export const fetchJobOfferById = async (id: number) => {
   try {
     const response = await fetch(`/crmService/v1/API/joboffers/${id}/value`);
+    
     if (!response.ok) {
-      throw new Error("GET /API/joboffers/" + id + "/value : Network response was not ok");
+      let errorMessage = "An error occurred while fetching the job offer.";
+
+      try {
+        const message = await response.json();
+
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
+        } else if (message) {
+          errorMessage = message;
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
     }
+
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching job offer:", error);
+    console.error("Error in fetchJobOfferById:", error);
     throw error;
   }
 };

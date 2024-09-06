@@ -5,6 +5,7 @@ import { PagedResponse } from "../interfaces/PagedResponse";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Professional } from "../interfaces/Professional";
 import { fetchProfessionals } from "../apis/ProfessionalRequests";
+import { LoadingSection } from "../App";
 
 function ProfessionalsPage() {
   const navigate = useNavigate();
@@ -66,6 +67,9 @@ function ProfessionalsPage() {
   const [pageSize, setPageSize] = useState(10);
 
   const changePage = (page: number) => {
+    if (professionals?.totalPages && page >= professionals?.totalPages) page = professionals?.totalPages - 1;
+    if (page < 0) page = 0;
+
     setLoading(true);
     fetchProfessionals(page, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
       .then((result) => {
@@ -117,27 +121,7 @@ function ProfessionalsPage() {
         </Row>
       )}
 
-      {loading && (
-        <Row className="w-100">
-          <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-            <h5>Loading...</h5>
-          </Col>
-        </Row>
-      )}
-
-      {!error &&
-        !loading &&
-        professionals !== null &&
-        presentedProfessionals.length === 0 &&
-        filters.employmentState === "" &&
-        filters.geographicalLocation === "" &&
-        filters.skill === "" && (
-          <Row className="w-100">
-            <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-              <h5>No professional found yet! Start adding one!</h5>
-            </Col>
-          </Row>
-        )}
+      {loading && <LoadingSection h={null} />}
 
       {!error && !loading && professionals !== null && (
         <>
@@ -339,7 +323,10 @@ function ProfessionalsPage() {
                   {presentedProfessionals.length === 0 && (
                     <Row className="w-100">
                       <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-                        <h5>No professionals found with the selected filters!</h5>
+                        <h5 className="p-5">
+                          No professionals found with the selected criteria. Try adjusting the filters, or it could be that no professionals have been
+                          added yet.
+                        </h5>
                       </Col>
                     </Row>
                   )}
