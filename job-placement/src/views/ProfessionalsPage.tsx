@@ -52,7 +52,7 @@ function ProfessionalsPage() {
     employmentState: "",
   });
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -143,13 +143,13 @@ function ProfessionalsPage() {
                   <Form.Group controlId="employmentState" className="mb-3">
                     <Form.Label>Employment state</Form.Label>
 
-                    <Form.Control as="select" name="employmentState" value={filters.employmentState} onChange={handleFilterChange}>
+                    <Form.Select name="employmentState" value={filters.employmentState} onChange={handleFilterChange}>
                       <option value="">All</option>
                       <option value="EMPLOYED">Employed</option>
                       <option value="UNEMPLOYED">Unemployed</option>
                       <option value="AVAILABLE_FOR_WORK">Available for work</option>
                       <option value="NOT_AVAILABLE">Not available</option>
-                    </Form.Control>
+                    </Form.Select>
                   </Form.Group>
 
                   <Button
@@ -217,7 +217,7 @@ function ProfessionalsPage() {
                 <h5 className="mt-5">Sort Professionals</h5>
                 <Form>
                   <Form.Group controlId="sort" className="mb-3">
-                    <Form.Control as="select" name="sort" value={sortCriteria} onChange={(e) => setSortCriteria(e.target.value)}>
+                    <Form.Select name="sort" value={sortCriteria} onChange={(e) => setSortCriteria(e.target.value)}>
                       <option value="asc_name">Alphabetically ascending name</option>
                       <option value="asc_surname">Alphabetically ascending surname</option>
                       <option value="asc_num_skills">Ascending number of skills</option>
@@ -228,7 +228,7 @@ function ProfessionalsPage() {
                       <option value="desc_geographicalLocation">Alphabetically descending location</option>
                       <option value="employed_before">Occupied before</option>
                       <option value="unemployed_before">Non-occupied before</option>
-                    </Form.Control>
+                    </Form.Select>
                   </Form.Group>
                 </Form>
               </div>
@@ -360,9 +360,8 @@ function ProfessionalsPage() {
               </Col>
 
               <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
-                <Form.Control
+                <Form.Select
                   style={{ width: "auto" }}
-                  as="select"
                   name="pageSize"
                   value={pageSize}
                   onChange={(e) => {
@@ -387,7 +386,7 @@ function ProfessionalsPage() {
                   <option value="20">20 professionals</option>
                   <option value="50">50 professionals</option>
                   <option value="100">100 professionals</option>
-                </Form.Control>
+                </Form.Select>
               </Row>
             </Col>
           </Row>

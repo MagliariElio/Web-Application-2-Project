@@ -225,7 +225,7 @@ function CustomersPage() {
               <h5 className="mt-5">Sort Customers</h5>
               <Form>
                 <Form.Group controlId="sort" className="mb-3">
-                  <Form.Control as="select" name="sort" value={sortCriteria} onChange={(e) => setSortCriteria(e.target.value)}>
+                  <Form.Select name="sort" value={sortCriteria} onChange={(e) => setSortCriteria(e.target.value)}>
                     <option value="asc_name">Alphabetically ascending name</option>
                     <option value="asc_surname">Alphabetically ascending surname</option>
                     <option value="asc_ssnCode">Alphabetically ascending ssnCode</option>
@@ -234,7 +234,7 @@ function CustomersPage() {
                     <option value="desc_surname">Alphabetically descending surname</option>
                     <option value="desc_ssnCode">Alphabetically descending ssnCode</option>
                     <option value="desc_jobOffersNumber">Number of job offers descending</option>
-                  </Form.Control>
+                  </Form.Select>
                 </Form.Group>
               </Form>
             </div>
@@ -329,9 +329,8 @@ function CustomersPage() {
             </Row>
 
             <Row className="w-100 d-flex justify-content-center align-items-center mt-3 justify-self-center">
-              <Form.Control
+              <Form.Select
                 style={{ width: "auto" }}
-                as="select"
                 name="pageSize"
                 value={pageSize}
                 onChange={(e) => {
@@ -356,7 +355,7 @@ function CustomersPage() {
                 <option value="20">20 customers</option>
                 <option value="50">50 customers</option>
                 <option value="100">100 customers</option>
-              </Form.Control>
+              </Form.Select>
             </Row>
           </Col>
         </Row>
