@@ -45,6 +45,7 @@ const JobOffersPage = () => {
 
     const loadJobOffers = async (page: number) => {
       try {
+        setLoading(true);
         const result = await fetchJobOffers(
           page,
           filters.elementsPerPage,

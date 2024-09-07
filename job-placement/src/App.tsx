@@ -204,7 +204,6 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
           me.principal !== null && ( // Only logged user links here
             <>
               <Nav.Link
-                href="#"
                 className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
                 onClick={() => {
                   if (location.pathname !== "/ui") navigate("/ui");
@@ -214,7 +213,6 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
                 {opened && "Job Offers"}
               </Nav.Link>
               <Nav.Link
-                href="#"
                 className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
                 onClick={() => {
                   if (location.pathname !== "/ui/customers") navigate("/ui/customers");
@@ -224,7 +222,6 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
                 {opened && "Customers"}
               </Nav.Link>
               <Nav.Link
-                href="#"
                 className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
                 onClick={() => {
                   if (location.pathname !== "/ui/professionals") navigate("/ui/professionals");

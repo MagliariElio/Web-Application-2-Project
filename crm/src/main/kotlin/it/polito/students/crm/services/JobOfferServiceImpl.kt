@@ -253,6 +253,13 @@ class JobOfferServiceImpl(
                             oldJobOffer.candidatesProfessionalRefused.add(professionalId)
                         }
                     }
+                } else if (oldStatus == JobStatusEnum.CONSOLIDATED) {
+                    oldJobOffer.professional?.let { professional ->
+                        val professionalId = professional.id
+                        if (!oldJobOffer.candidatesProfessionalRefused.contains(professionalId)) {
+                            oldJobOffer.candidatesProfessionalRevoked.add(professionalId)
+                        }
+                    }
                 }
 
                 oldJobOffer.professional = null

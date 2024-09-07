@@ -328,7 +328,7 @@ export const goToCondolidated = async (jobOfferId: number, xsrfToken: string, ca
   }
 };
 
-export const cancelCandidation = async (jobOfferId: number, xsrfToken: string, candidatesList: Professional[]) => {
+export const cancelApplication = async (jobOfferId: number, xsrfToken: string, candidatesList: Professional[]) => {
   try {
     const jobOffer = {
       nextStatus: JobOfferState.SELECTION_PHASE,
