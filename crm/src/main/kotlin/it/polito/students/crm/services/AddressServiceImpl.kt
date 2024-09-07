@@ -163,4 +163,8 @@ class AddressServiceImpl(
 
         return addressSaved.toDTO()
     }
+
+    override fun deleteAddress(addressId: Long) {
+        addressRepository.deleteById(addressId)
+    }
 }

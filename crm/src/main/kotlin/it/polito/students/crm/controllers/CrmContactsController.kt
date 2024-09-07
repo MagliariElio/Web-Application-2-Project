@@ -536,4 +536,36 @@ class CrmContactsController(
         }
     }
 
+    @DeleteMapping("/whatContact/{whatContact}/{id}")
+    fun deleteWhatContact(
+        @PathVariable whatContact: String,
+        @PathVariable id: Long
+    ) : ResponseEntity<Any> {
+        try {
+            val contactType = WhatContactOptions.valueOf(whatContact.uppercase())
+
+            val wc = checkWhatContactIsValid(whatContact)
+
+            if (id < 0) {
+                return ResponseEntity.badRequest().body(mapOf("error" to CONTACT_ID_AND_DETAIL_ID_ERROR))
+            }
+
+            val result = when (contactType) {
+                WhatContactOptions.EMAIL -> emailService.deleteEmail(id)
+                WhatContactOptions.ADDRESS -> addressService.deleteAddress(id)
+                WhatContactOptions.TELEPHONE -> telephoneService.deleteTelephone(id)
+            }
+
+            return ResponseEntity(mapOf("result" to "Delete operation succesfully completed" ), HttpStatus.OK)
+        }
+        catch (e: IllegalArgumentException) {
+            logger.info("Illegal argument exception: ${e.message}")
+            return ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+        catch (e: Exception) {
+            logger.info("Server internal error: ${e.message}")
+            return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
 }

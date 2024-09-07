@@ -51,19 +51,29 @@ export const postNewWhatContact = async (whatContact: string, newWhatContact: an
 
 }
 
-export const deleteEmail = async (emailId: number): Promise<void> => {
-    try {
-        const response = await fetch(`/crmService/v1/API/contacts/emails/${emailId}`, {
-        method: 'DELETE'
-        });
-    
-        if (!response.ok) {
-        const errorMessage = `/crmService/v1/API/contacts/emails/${emailId} : ${response.status} ${response.statusText}`;
-        console.error(errorMessage);
-        throw new Error(errorMessage);
-        }
-    } catch (error) {
-        console.error("Error deleting email:", error);
-        throw error;
+export const deleteContactWhatContact = async (whatContact: string, id: string, me: MeInterface): Promise<any> => {
+  try {
+    const response = await fetch(`/crmService/v1/API/contacts/whatContact/${whatContact}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-XSRF-Token': me.xsrfToken
+      }
+    });
+
+    if (!response.ok) {
+      const errorMessage = `DELETE /API/contacts/whatContact/${whatContact}/${id} : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
     }
-    };
+
+    const data = await response.json();
+
+    return data;
+
+  } catch (error) {
+
+    console.error("Error deleting contact:", error);
+    throw error;
+  }
+}

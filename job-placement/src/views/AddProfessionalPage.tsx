@@ -8,7 +8,7 @@ import { MeInterface } from "../interfaces/MeInterface";
 import { createProfessional } from "../apis/ProfessionalRequests";
 import { Professional } from "../interfaces/Professional";
 import {
-  deleteEmail,
+  deleteContactWhatContact,
   fetchAllContactWhatContact,
   postNewWhatContact,
 } from "../apis/ContactRequests";
@@ -561,6 +561,8 @@ const ContactModal = ({
   const [singleRegion, setSingleRegion] = useState("");
   const [singleState, setSingleState] = useState("");
 
+  const [deleteSelected, setDeleteSelected] = useState<number | null>(null);
+
   useEffect(() => {
     const fetchContacts = async () => {
       if (open !== null) {
@@ -572,6 +574,9 @@ const ContactModal = ({
 
     fetchContacts();
   }, [open]);
+
+  console.log("Contactssssssss: ", contacts);
+  console.log("Delete selecteddddddddddddddd: ", deleteSelected);
 
   return (
     <Modal size="lg" show={open != null} onHide={() => setOpen(null)}>
@@ -625,7 +630,7 @@ const ContactModal = ({
               }
             })
             .map((contact, index) => {
-              return (
+              return ( <>
                 <Row
                   key={index}
                   className="mb-1 mt-2 ms-1 d-flex align-items-center"
@@ -634,7 +639,7 @@ const ContactModal = ({
                     xs={12}
                     md={8}
                     lg={10}
-                    className="secondaryButton d-flex align-items-center justify-content-between"
+                    className={"d-flex align-items-center justify-content-between " + (deleteSelected === contact.id ? "secondaryDangerButton" : "secondaryButton") }
                     onClick={() => {
                       setContactContainer([...contactContainer, contact]);
                       setOpen(null);
@@ -688,7 +693,9 @@ const ContactModal = ({
                       <Button
                         className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
                         onClick={() => {
-                          // setContacts(contacts.filter((e, i) => i !== index));
+                          if (contact.id !== undefined) {
+                            setDeleteSelected(contact.id);
+                          }
                         }}
                       >
                         <BsTrash size={20} />
@@ -696,7 +703,45 @@ const ContactModal = ({
                     </Col>
                   </Col>
                 </Row>
-              );
+                {
+                  deleteSelected === contact.id &&
+                  <Row className="mt-2 ms-2 d-flex align-items-center">
+                    <Col xs={12} md={12} lg={6} className="mb-0">
+                      <p className="text-danger my-auto">Are you sure you want to delete this {open}?</p>
+                    </Col>
+                    <Col xs={6} md={2} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
+                          onClick={() => {
+                            if (contact.id !== undefined) {
+                              deleteContactWhatContact(open!!, contact.id.toString(), me).then(() => {
+                                setContacts((prevContacts) => prevContacts.filter((e) => e.id !== contact.id) as Email[] | Telephone[] | Address[]);
+                  
+                                setDeleteSelected(null);
+                              });
+                            }
+                          }}
+                        >
+                          Yes
+                        </Button>
+                      </Col>
+                    </Col>
+                    <Col xs={6} md={2} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryButton w-100 d-flex justify-content-center align-items-center "
+                          onClick={() => {
+                            setDeleteSelected(null);
+                          }}
+                        >
+                          No
+                        </Button>
+                      </Col>
+                    </Col>
+                  </Row>
+                }
+              </>);
             })}
 
         <Form className="mt-4">

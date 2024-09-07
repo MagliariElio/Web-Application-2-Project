@@ -58,4 +58,13 @@ interface AddressService {
      * @return - the new address
      */
     fun storeNewAddress(address: String?, city: String?, region: String?, state: String?, comment: String?): AddressDTO
+
+
+    /**
+     * Delete an Address in database
+     *
+     * @param addressId
+     * @return -
+     */
+    fun deleteAddress(addressId: Long)
 }

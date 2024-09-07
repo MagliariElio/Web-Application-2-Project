@@ -168,4 +168,8 @@ class TelephoneServiceImpl(
 
         return telephoneRepository.save(newTelephone).toDTO()
     }
+
+    override fun deleteTelephone(telephoneId: Long) {
+        telephoneRepository.deleteById(telephoneId)
+    }
 }

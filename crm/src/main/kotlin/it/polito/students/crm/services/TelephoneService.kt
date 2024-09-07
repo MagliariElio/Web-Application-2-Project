@@ -65,4 +65,12 @@ interface TelephoneService {
      */
     fun storeNewTelephone(telephone: String, comment: String?): TelephoneDTO
 
+    /**
+     * Delete a Telephone in database
+     *
+     * @param telephoneId
+     * @return -
+     */
+    fun deleteTelephone(telephoneId: Long)
+
 }
