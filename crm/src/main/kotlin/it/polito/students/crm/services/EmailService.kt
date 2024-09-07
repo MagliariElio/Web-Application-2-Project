@@ -2,6 +2,7 @@ package it.polito.students.crm.services
 
 import it.polito.students.crm.dtos.CreateEmailDTO
 import it.polito.students.crm.dtos.EmailDTO
+import org.hibernate.annotations.Comment
 
 interface EmailService {
     /**
@@ -64,4 +65,16 @@ interface EmailService {
      * @return list of all emailsDTOs
      */
     fun deleteEmail(emailId: Long)
+
+
+    /**
+     * Add a new email to emails book
+     *
+     * @param email
+     * @param comment
+     * @return list of all emailsDTOs
+     */
+    fun storeNewEmail(email:String, comment: String?): EmailDTO
+
+
 }

@@ -172,4 +172,14 @@ class EmailServiceImpl(
         emailRepository.deleteById(emailId)
     }
 
+    override fun storeNewEmail(email: String, comment: String?): EmailDTO {
+
+        val newEmail = Email().apply {
+            this.email = email.lowercase()
+            this.comment = comment ?: ""
+        }
+
+        return emailRepository.save(newEmail).toDTO()
+    }
+
 }
