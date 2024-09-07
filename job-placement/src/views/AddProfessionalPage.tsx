@@ -328,55 +328,19 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
+
         <Row>
-          <Col xs={12} md={12} lg={2} className="mb-2">
-            <Form.Control
-              placeholder="Telephone number"
-              value={singleTelephoneNumber}
-              onChange={(e) => {
-                setSingleTelephoneNumber(e.target.value);
-                setTelephoneError(false);
-              }}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Telephone number comment"
-              value={singleTelephoneNumberComment}
-              onChange={(e) => setSingleTelephoneNumberComment(e.target.value)}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={1} className="mb-2">
+          <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
-              className="secondaryButton w-100 px-0"
+              className="secondaryButton w-100"
               onClick={() => {
-                if (checkValidTelephone(singleTelephoneNumber)) {
-                  setTelephones([
-                    ...telephones,
-                    {
-                      telephone: singleTelephoneNumber,
-                      comment: singleTelephoneNumberComment,
-                    },
-                  ]);
-                  setSingleTelephoneNumber("");
-                  setSingleTelephoneNumberComment("");
-                  setTelephoneError(false);
-                } else {
-                  setTelephoneError(true);
-                }
+                setContactModalOpen("telephone");
               }}
             >
-              Add number
+              Add telephone
             </Button>
           </Col>
         </Row>
-        {telephoneError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">Invalid telephone number</p>
-            </Col>
-          </Row>
-        )}
 
         <Row className="mt-5">
           <Col xs={12} md={12} lg={6} className="mb-2">
@@ -431,95 +395,13 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Address"
-              value={singleAddress.address}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, address: e.target.value })
-              }
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="City"
-              value={singleAddress.city}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, city: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Region"
-              value={singleAddress.region}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, region: e.target.value })
-              }
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="State"
-              value={singleAddress.state}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, state: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
+
         <Row>
           <Col xs={12} md={12} lg={6} className="mb-2">
-            <Form.Control
-              as="textarea"
-              placeholder="Address comment"
-              value={singleAddress.comment}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, comment: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
-        {addressError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">
-                Address, city, region and state are required
-              </p>
-            </Col>
-          </Row>
-        )}
-        <Row>
-          <Col
-            xs={12}
-            md={12}
-            lg={6}
-            className="mb-2 d-flex justify-content-center"
-          >
             <Button
-              className="secondaryButton"
+              className="secondaryButton w-100"
               onClick={() => {
-                if (
-                  singleAddress.address === "" ||
-                  singleAddress.city === "" ||
-                  singleAddress.region === "" ||
-                  singleAddress.state === ""
-                ) {
-                  setAddressError(true);
-                  return;
-                }
-                setAddresses([...addresses, singleAddress]);
-                setSingleAddress({
-                  address: "",
-                  city: "",
-                  region: "",
-                  state: "",
-                  comment: "",
-                });
-                setAddressError(false);
+                setContactModalOpen("address");
               }}
             >
               Add address
@@ -631,6 +513,26 @@ const loadContactContacts = async (
       return [] as Email[] | Telephone[] | Address[];
     }
   }
+  if (whatContact === "telephone") {
+    try {
+      const allTelephones = await fetchAllContactWhatContact("telephone");
+      console.log("All telephones: ", allTelephones);
+      return allTelephones;
+    } catch (err) {
+      console.log("Error fetching telephones: ", err);
+      return [] as Email[] | Telephone[] | Address[];
+    }
+  }
+  if (whatContact === "address") {
+    try {
+      const allAddresses = await fetchAllContactWhatContact("address");
+      console.log("All addresses: ", allAddresses);
+      return allAddresses;
+    } catch (err) {
+      console.log("Error fetching addresses: ", err);
+      return [] as Email[] | Telephone[] | Address[];
+    }
+  }
 
   return [] as Email[] | Telephone[] | Address[];
 };
@@ -664,6 +566,7 @@ const ContactModal = ({
       if (open !== null) {
         const cont = await loadContactContacts(open);
         setContacts(cont);
+        console.log("Fetched whatcontacts: ", cont);
       }
     };
 
@@ -749,7 +652,7 @@ const ContactModal = ({
                             ? (contact as Email).email
                             : open === "telephone"
                             ? (contact as Telephone).telephone
-                            : (contact as Address).address}
+                            : `${(contact as Address).address}, ${(contact as Address).city}, ${(contact as Address).region}, ${(contact as Address).state}`}
                         </p>
                       </Col>
                       <Col
@@ -816,40 +719,38 @@ const ContactModal = ({
                 }
               />
             </Col>
-            {
-              open === "address" && (
-                <>
-                  <Col xs={12} md={12} lg={6} className="">
-                    <Form.Control
-                      value={singleCity}
-                      onChange={(e) => {
-                        setSingleCity(e.target.value);
-                      }}
-                      placeholder="City"
-                    />
-                  </Col>
-                  <Col xs={12} md={12} lg={6} className="">
-                    <Form.Control
-                      value={singleRegion}
-                      onChange={(e) => {
-                        setSingleRegion(e.target.value);
-                      }}
-                      placeholder="Region"
-                    />
-                  </Col>
-                  <Col xs={12} md={12} lg={6} className="">
-                    <Form.Control
-                      value={singleState}
-                      onChange={(e) => {
-                        setSingleState(e.target.value);
-                      }}
-                      placeholder="State"
-                    />
-                  </Col>
-                </>
-              )
-            }
-            <Col xs={12} md={12} lg={3} className="">
+            {open === "address" && (
+              <>
+                <Col xs={12} md={12} lg={6} className="">
+                  <Form.Control
+                    value={singleCity}
+                    onChange={(e) => {
+                      setSingleCity(e.target.value);
+                    }}
+                    placeholder="City"
+                  />
+                </Col>
+                <Col xs={12} md={12} lg={6} className="my-2">
+                  <Form.Control
+                    value={singleRegion}
+                    onChange={(e) => {
+                      setSingleRegion(e.target.value);
+                    }}
+                    placeholder="Region"
+                  />
+                </Col>
+                <Col xs={12} md={12} lg={6} className="">
+                  <Form.Control
+                    value={singleState}
+                    onChange={(e) => {
+                      setSingleState(e.target.value);
+                    }}
+                    placeholder="State"
+                  />
+                </Col>
+              </>
+            )}
+            <Col xs={12} md={12} lg={open === "address" ? 9 : 3 } className="">
               <Form.Control
                 value={singleContactComment}
                 onChange={(e) => {
@@ -896,24 +797,34 @@ const ContactModal = ({
                   postNewWhatContact(
                     open!!,
                     open === "email"
-                      ? {createEmailDTO: { email: singleContact, comment: singleContactComment }}
+                      ? {
+                          createEmailDTO: {
+                            email: singleContact,
+                            comment: singleContactComment,
+                          },
+                        }
                       : open === "telephone"
-                      ? {createTelephoneDTO: { telephone: singleContact, comment: singleContactComment }}
-                          
-                      : {createAddressDTO: { address: singleContact, city: singleCity, region: singleRegion, state: singleState, comment: singleContactComment }},
+                      ? {
+                          createTelephoneDTO: {
+                            telephone: singleContact,
+                            comment: singleContactComment,
+                          },
+                        }
+                      : {
+                          createAddressDTO: {
+                            address: singleContact,
+                            city: singleCity,
+                            region: singleRegion,
+                            state: singleState,
+                            comment: singleContactComment,
+                          },
+                        },
                     me
-                  )
-                  .then((res) => {
-
-
-                  setContactContainer([...contactContainer, res]);
-                  setOpen(null);
-
-                  })
-
-                }
-
-                }
+                  ).then((res) => {
+                    setContactContainer([...contactContainer, res]);
+                    setOpen(null);
+                  });
+                }}
               >
                 Create {open}
               </Button>

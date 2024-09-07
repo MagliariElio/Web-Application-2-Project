@@ -144,4 +144,23 @@ class AddressServiceImpl(
     override fun getAllAddresses(): List<AddressDTO> {
         return addressRepository.findAll().map { it.toDTO() }
     }
+
+    override fun storeNewAddress(
+        address: String?,
+        city: String?,
+        region: String?,
+        state: String?,
+        comment: String?
+    ): AddressDTO {
+        val newAddress = Address().apply {
+            this.state = state ?: ""
+            this.region = region ?: ""
+            this.city = city ?: ""
+            this.address = address ?: ""
+            this.comment = comment ?: ""
+        }
+        val addressSaved = addressRepository.save(newAddress)
+
+        return addressSaved.toDTO()
+    }
 }

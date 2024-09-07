@@ -506,28 +506,22 @@ class CrmContactsController(
                         throw BadRequestException(ADDRESSES_NOT_VALID)
 
 
-                    } else {
-                        throw BadRequestException(ADDRESSES_BAD_FORMATTED)
                     }
                 }
 
 
                 WhatContactOptions.TELEPHONE -> {
 
-                    if (createWhatContactDTO.createAddressDTO == null || !isValidPhone(createWhatContactDTO.createTelephoneDTO!!.telephone)) {
+                    if (createWhatContactDTO.createTelephoneDTO == null || !isValidPhone(createWhatContactDTO.createTelephoneDTO!!.telephone)) {
                         throw BadRequestException(TELEPHONES_NOT_VALID)
-                    } else {
-                        throw BadRequestException(TELEPHONES_BAD_FORMATTED)
                     }
                 }
-                // Se il body non è ben formattato qui non ci arriva mai
-                else -> throw BadRequestException(REQUESTED_BAD_FORMATTED)
             }
 
             val result = when (contactType) {
                 WhatContactOptions.EMAIL -> emailService.storeNewEmail(createWhatContactDTO.createEmailDTO!!.email, createWhatContactDTO.createEmailDTO!!.comment)
-                WhatContactOptions.ADDRESS -> addressService
-                WhatContactOptions.TELEPHONE -> telephoneService
+                WhatContactOptions.ADDRESS -> addressService.storeNewAddress(createWhatContactDTO.createAddressDTO!!.address, createWhatContactDTO.createAddressDTO!!.city, createWhatContactDTO.createAddressDTO!!.region, createWhatContactDTO.createAddressDTO!!.state, createWhatContactDTO.createAddressDTO!!.comment)
+                WhatContactOptions.TELEPHONE -> telephoneService.storeNewTelephone(createWhatContactDTO.createTelephoneDTO!!.telephone, createWhatContactDTO.createTelephoneDTO!!.comment)
             }
 
             return ResponseEntity(result, HttpStatus.OK)

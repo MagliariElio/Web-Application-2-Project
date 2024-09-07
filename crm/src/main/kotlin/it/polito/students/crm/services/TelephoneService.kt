@@ -54,4 +54,15 @@ interface TelephoneService {
      * @return - all telepones
      */
     fun getAllTelephones(): List<TelephoneDTO>
+
+
+    /**
+     * add a new telephone to book
+     *
+     * @param telephone
+     * @param comment
+     * @return - new telephone
+     */
+    fun storeNewTelephone(telephone: String, comment: String?): TelephoneDTO
+
 }

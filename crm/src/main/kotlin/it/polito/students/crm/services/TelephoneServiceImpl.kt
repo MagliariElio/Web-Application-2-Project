@@ -4,6 +4,7 @@ import it.polito.students.crm.dtos.CreateTelephoneDTO
 import it.polito.students.crm.dtos.TelephoneDTO
 import it.polito.students.crm.dtos.toDTO
 import it.polito.students.crm.entities.Contact
+import it.polito.students.crm.entities.Email
 import it.polito.students.crm.entities.Telephone
 import it.polito.students.crm.exception_handlers.ContactNotFoundException
 import it.polito.students.crm.exception_handlers.DetailContactNotLinkedException
@@ -157,5 +158,14 @@ class TelephoneServiceImpl(
 
     override fun getAllTelephones(): List<TelephoneDTO> {
         return telephoneRepository.findAll().map { it.toDTO() }
+    }
+
+    override fun storeNewTelephone(telephone: String, comment: String?): TelephoneDTO {
+        val newTelephone = Telephone().apply {
+            this.telephone = telephone.lowercase()
+            this.comment = comment ?: ""
+        }
+
+        return telephoneRepository.save(newTelephone).toDTO()
     }
 }
