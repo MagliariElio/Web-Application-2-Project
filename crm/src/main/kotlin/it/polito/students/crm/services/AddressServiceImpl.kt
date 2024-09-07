@@ -12,6 +12,7 @@ import it.polito.students.crm.exception_handlers.InvalidContactDetailsException
 import it.polito.students.crm.repositories.AddressRepository
 import it.polito.students.crm.repositories.ContactRepository
 import it.polito.students.crm.utils.ErrorsPage.Companion.ADDRESS_REQUIRED_ERROR
+import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
@@ -165,6 +166,20 @@ class AddressServiceImpl(
     }
 
     override fun deleteAddress(addressId: Long) {
-        addressRepository.deleteById(addressId)
+        val optionalAddress = addressRepository.findById(addressId)
+
+        if (optionalAddress.isPresent) {
+            val address = optionalAddress.get()
+
+            address.contacts.forEach { contact ->
+                contact.addresses.removeIf { addr -> addr.id == addressId }
+            }
+
+            address.contacts.clear()
+
+            addressRepository.delete(address)
+        } else {
+            throw EntityNotFoundException("Indirizzo con ID $addressId non trovato.")
+        }
     }
 }

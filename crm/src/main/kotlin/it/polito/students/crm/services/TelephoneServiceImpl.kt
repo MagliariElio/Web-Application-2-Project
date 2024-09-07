@@ -14,6 +14,7 @@ import it.polito.students.crm.repositories.ContactRepository
 import it.polito.students.crm.repositories.TelephoneRepository
 import it.polito.students.crm.utils.CategoryOptions
 import it.polito.students.crm.utils.ErrorsPage.Companion.TELEPHONE_REQUIRED_ERROR
+import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
@@ -170,6 +171,20 @@ class TelephoneServiceImpl(
     }
 
     override fun deleteTelephone(telephoneId: Long) {
-        telephoneRepository.deleteById(telephoneId)
+        val optionalTelephone = telephoneRepository.findById(telephoneId)
+
+        if (optionalTelephone.isPresent) {
+            val telephone = optionalTelephone.get()
+
+            telephone.contacts.forEach { contact ->
+                contact.telephones.removeIf { tel -> tel.id == telephoneId }
+            }
+
+            telephone.contacts.clear()
+
+            telephoneRepository.delete(telephone)
+        } else {
+            throw EntityNotFoundException("Telefono con ID $telephoneId non trovato.")
+        }
     }
 }

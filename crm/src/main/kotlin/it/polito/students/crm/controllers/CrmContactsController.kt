@@ -27,6 +27,7 @@ import it.polito.students.crm.utils.ErrorsPage.Companion.REQUESTED_BAD_FORMATTED
 import it.polito.students.crm.utils.ErrorsPage.Companion.TELEPHONES_BAD_FORMATTED
 import it.polito.students.crm.utils.ErrorsPage.Companion.TELEPHONES_NOT_VALID
 import it.polito.students.crm.utils.ErrorsPage.Companion.TELEPHONE_BAD_FORMATTED
+import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.apache.coyote.BadRequestException
 import org.slf4j.LoggerFactory
@@ -560,6 +561,10 @@ class CrmContactsController(
         }
         catch (e: IllegalArgumentException) {
             logger.info("Illegal argument exception: ${e.message}")
+            return ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+        catch (e: EntityNotFoundException) {
+            logger.info("Entity not found: ${e.message}")
             return ResponseEntity.badRequest().body(mapOf("error" to e.message))
         }
         catch (e: Exception) {

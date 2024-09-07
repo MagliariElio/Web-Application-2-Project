@@ -708,6 +708,7 @@ const ContactModal = ({
                   <Row className="mt-2 ms-2 d-flex align-items-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-danger my-auto">Are you sure you want to delete this {open}?</p>
+                      <p className="text-danger my-auto">It will be also removed from all contacts using it</p>
                     </Col>
                     <Col xs={6} md={2} lg={1}>
                       <Col className="mb-0">
