@@ -594,3 +594,30 @@ button.primaryButton:hover {
 .custom-pagination .page-item.disabled .page-link {
   color: #6c757d; /* Colore del testo per gli elementi disabilitati */
 }
+
+.loading-card {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  height: 100px; 
+  margin-bottom: 1rem;
+}
+
+.loading-detail-page {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  height: 100vh; 
+  margin-bottom: 1rem;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

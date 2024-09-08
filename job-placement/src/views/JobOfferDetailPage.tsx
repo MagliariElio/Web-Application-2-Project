@@ -580,10 +580,6 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
   };
 
-  if (loading) {
-    return <LoadingSection h={null} />;
-  }
-
   if (error) {
     return (
       <Container className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
@@ -677,147 +673,63 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       </Row>
 
       <div className="border rounded p-3 shadow-sm mt-4">
-        <Form>
-          {errorMessage && (
-            <Row className="justify-content-center" ref={errorRef}>
-              <Col xs={12} md={10} lg={6}>
-                <Alert
-                  variant="danger"
-                  onClose={() => setErrorMessage("")}
-                  className="d-flex mt-3 justify-content-center align-items-center"
-                  dismissible
-                >
-                  {errorMessage}
-                </Alert>
-              </Col>
-            </Row>
-          )}
-
-          {/* Job Offer Name */}
-          <Row className="pt-3 mb-3">
-            {!isEditing && (
-              <>
-                <Col md={9}>
-                  <h3 className="font-weight-bold">{jobOffer?.name}</h3>
+        {loading ? (
+          <div className="loading-detail-page"></div>
+        ) : (
+          <Form>
+            {errorMessage && (
+              <Row className="justify-content-center" ref={errorRef}>
+                <Col xs={12} md={10} lg={6}>
+                  <Alert
+                    variant="danger"
+                    onClose={() => setErrorMessage("")}
+                    className="d-flex mt-3 justify-content-center align-items-center"
+                    dismissible
+                  >
+                    {errorMessage}
+                  </Alert>
                 </Col>
-                {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
-                  <>
-                    <Col md={2} className="d-flex justify-content-end">
-                      <OverlayTrigger overlay={<Tooltip id="deleteButton">Delete</Tooltip>}>
-                        <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
-                          <FaTrash /> Delete
-                        </Button>
-                      </OverlayTrigger>
-                    </Col>
-                    <Col md={1} className="d-flex justify-content-end">
-                      <OverlayTrigger overlay={<Tooltip id="editButton">Edit</Tooltip>}>
-                        <Button variant="primary" onClick={() => setIsEditing(true)}>
-                          <FaPen /> Edit
-                        </Button>
-                      </OverlayTrigger>
-                    </Col>
-                  </>
-                )}
-              </>
+              </Row>
             )}
-            {isEditing && (
-              <Form.Group as={Row} controlId="jobName" className="d-flex align-items-center">
-                <Form.Label column xs={12} sm={2} className="mb-0 fw-bold">
-                  Job Offer Name
-                </Form.Label>
-                <Col xs={12} sm={10}>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    placeholder="Enter a name"
-                    value={formDataJobOffer?.name || ""}
-                    onChange={handleInputChange}
-                    maxLength={255}
-                    required
-                  />
-                </Col>
-              </Form.Group>
-            )}
-          </Row>
 
-          {/* Description */}
-          <Row className="border-top pt-3 mb-3">
-            <Col md={12}>
-              {!isEditing ? (
-                <div>
-                  <strong>Description: </strong>
-                  {jobOffer?.description}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="jobDescription" className="d-flex align-items-center">
+            {/* Job Offer Name */}
+            <Row className="pt-3 mb-3">
+              {!isEditing && (
+                <>
+                  <Col md={9}>
+                    <h3 className="font-weight-bold">{jobOffer?.name}</h3>
+                  </Col>
+                  {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
+                    <>
+                      <Col md={2} className="d-flex justify-content-end">
+                        <OverlayTrigger overlay={<Tooltip id="deleteButton">Delete</Tooltip>}>
+                          <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
+                            <FaTrash /> Delete
+                          </Button>
+                        </OverlayTrigger>
+                      </Col>
+                      <Col md={1} className="d-flex justify-content-end">
+                        <OverlayTrigger overlay={<Tooltip id="editButton">Edit</Tooltip>}>
+                          <Button variant="primary" onClick={() => setIsEditing(true)}>
+                            <FaPen /> Edit
+                          </Button>
+                        </OverlayTrigger>
+                      </Col>
+                    </>
+                  )}
+                </>
+              )}
+              {isEditing && (
+                <Form.Group as={Row} controlId="jobName" className="d-flex align-items-center">
                   <Form.Label column xs={12} sm={2} className="mb-0 fw-bold">
-                    Description
+                    Job Offer Name
                   </Form.Label>
                   <Col xs={12} sm={10}>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      name="description"
-                      placeholder="Enter a description"
-                      value={formDataJobOffer?.description || ""}
-                      onChange={handleInputChange}
-                      maxLength={255}
-                      required
-                    />
-                  </Col>
-                </Form.Group>
-              )}
-            </Col>
-          </Row>
-
-          {/* Contract Type and Location */}
-          <Row className="border-top pt-3 mb-3">
-            <Col md={6}>
-              {!isEditing ? (
-                <div>
-                  <FaUserTie className="mr-2" /> <strong>Contract Type: </strong>
-                  {jobOffer?.contractType}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="contractType" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
-                    Contract Type
-                  </Form.Label>
-                  <Col xs={12} sm={8}>
-                    <Form.Select
-                      name="contractType"
-                      style={{ cursor: "pointer" }}
-                      value={formDataJobOffer?.contractType || ""}
-                      onChange={handleInputSelectChange}
-                      required
-                    >
-                      {contractTypeList.map((contract, index) => (
-                        <option key={index} value={contract}>
-                          {toTitleCase(contract)}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Col>
-                </Form.Group>
-              )}
-            </Col>
-            <Col md={6}>
-              {!isEditing ? (
-                <div>
-                  <FaMapMarkerAlt className="mr-2" /> <strong>Location: </strong>
-                  {jobOffer?.location}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="location" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
-                    Location
-                  </Form.Label>
-                  <Col xs={12} sm={9}>
                     <Form.Control
                       type="text"
-                      name="location"
-                      placeholder="Enter a location"
-                      value={formDataJobOffer?.location || ""}
+                      name="name"
+                      placeholder="Enter a name"
+                      value={formDataJobOffer?.name || ""}
                       onChange={handleInputChange}
                       maxLength={255}
                       required
@@ -825,625 +737,716 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   </Col>
                 </Form.Group>
               )}
-            </Col>
-          </Row>
+            </Row>
 
-          {/* Duration and Value */}
-          <Row className="border-top pt-3 mb-3">
-            <Col md={6}>
-              {!isEditing ? (
-                <div>
-                  <FaClock className="mr-2" /> <strong>Duration: </strong>
-                  {jobOffer?.duration} {jobOffer?.duration === 1 ? "day" : "days"}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="duration" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
-                    Duration (days)
-                  </Form.Label>
-                  <Col xs={12} sm={8}>
-                    <Form.Control
-                      type="number"
-                      name="duration"
-                      placeholder="Duration in days"
-                      value={formDataJobOffer?.duration}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (/^\d*$/.test(value)) {
-                          setFormDataJobOffer({
-                            ...formDataJobOffer,
-                            [e.target.name]: value,
-                          } as JobOffer);
-                        }
-                      }}
-                      onKeyPress={(e) => {
-                        if (!/^\d*$/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      min="0"
-                      required
-                    />
-                  </Col>
-                </Form.Group>
-              )}
-            </Col>
-            <Col md={6}>
-              {!isEditing ? (
-                <div>
-                  <FaMoneyBillWave className="mr-2" /> <strong>Value: </strong>${jobOffer?.value}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="value" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
-                    Value ($)
-                  </Form.Label>
-                  <Col xs={12} sm={9}>
-                    <Form.Control type="text" name="value" value={formDataJobOffer?.value || "0"} disabled />
-                  </Col>
-                </Form.Group>
-              )}
-            </Col>
-          </Row>
-
-          {/* Work Mode and Status */}
-          <Row className="border-top pt-3 mb-3">
-            <Col md={6}>
-              {!isEditing ? (
-                <div>
-                  <strong>Work Mode: </strong>
-                  {jobOffer?.workMode}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="workMode" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
-                    Work Mode
-                  </Form.Label>
-                  <Col xs={12} sm={8}>
-                    <Form.Select
-                      name="workMode"
-                      style={{ cursor: "pointer" }}
-                      value={formDataJobOffer?.workMode || ""}
-                      onChange={handleInputSelectChange}
-                      required
-                    >
-                      {workModeList.map((workMode, index) => (
-                        <option key={index} value={workMode}>
-                          {toTitleCase(workMode)}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Col>
-                </Form.Group>
-              )}
-            </Col>
-            <Col md={6}>
-              {!isEditing ? (
-                <div>
-                  <strong>Status: </strong>
-                  {toTitleCase(jobOffer?.status || JobOfferState.CREATED)}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="status" className="d-flex align-items-center">
-                  <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
-                    Status
-                  </Form.Label>
-                  <Col xs={12} sm={9}>
-                    <Form.Control type="text" name="status" value={toTitleCase(formDataJobOffer?.status || JobOfferState.CREATED)} disabled />
-                  </Col>
-                </Form.Group>
-              )}
-            </Col>
-          </Row>
-
-          {/* Required Skills */}
-          <Row className="border-top pt-4">
-            <Col>
-              <Form.Group as={Row} controlId="status" className="d-flex align-items-center">
-                <Form.Label column xs={12} sm={2} className="mb-0 fw-bold">
-                  Required Skills
-                </Form.Label>
-
-                {formDataJobOffer?.requiredSkills.length === 0 ? (
-                  <Col xs={12} className="text-center">
-                    <p className="text-muted">No required skill added yet</p>
-                  </Col>
+            {/* Description */}
+            <Row className="border-top pt-3 mb-3">
+              <Col md={12}>
+                {!isEditing ? (
+                  <div>
+                    <strong>Description: </strong>
+                    {jobOffer?.description}
+                  </div>
                 ) : (
-                  <Col xs={12} sm={10}>
-                    <ul className="list-unstyled d-flex flex-wrap">
-                      {formDataJobOffer?.requiredSkills.map((skill, index) => (
-                        <li key={index} className="skill-item mb-3 d-flex justify-content-between align-items-center">
-                          <span className="skill-text">{skill}</span>
-                          {isEditing && (
-                            <OverlayTrigger overlay={<Tooltip id="deleteRequiredSkillButton">Delete</Tooltip>}>
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                onClick={() => {
-                                  setFormDataJobOffer(
-                                    (prevData) =>
-                                      ({
-                                        ...prevData,
-                                        requiredSkills: prevData?.requiredSkills.filter((_, i) => i !== index),
-                                      } as JobOffer)
-                                  );
-                                }}
-                              >
-                                <FaTrash />
-                              </Button>
-                            </OverlayTrigger>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </Col>
+                  <Form.Group as={Row} controlId="jobDescription" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={2} className="mb-0 fw-bold">
+                      Description
+                    </Form.Label>
+                    <Col xs={12} sm={10}>
+                      <Form.Control
+                        as="textarea"
+                        rows={3}
+                        name="description"
+                        placeholder="Enter a description"
+                        value={formDataJobOffer?.description || ""}
+                        onChange={handleInputChange}
+                        maxLength={255}
+                        required
+                      />
+                    </Col>
+                  </Form.Group>
                 )}
-              </Form.Group>
-            </Col>
-          </Row>
-
-          {/* Add Skill */}
-          {isEditing && (
-            <Row className="mb-3 justify-content-end">
-              <Col xs={12} md={8} lg={6}>
-                <Form.Control
-                  placeholder="Add a skill"
-                  value={singleRequiredSkill}
-                  onChange={(e) => {
-                    setSingleRequiredSkill(e.target.value);
-                  }}
-                  className="mb-2"
-                />
-              </Col>
-              <Col xs={12} md={4} lg={3}>
-                <OverlayTrigger overlay={<Tooltip id="addSkillButton">Add Skill</Tooltip>}>
-                  <Button variant="primary" onClick={handleAddSkill}>
-                    Add Skill
-                  </Button>
-                </OverlayTrigger>
               </Col>
             </Row>
-          )}
 
-          {/* Note */}
-          <Row className="border-top pt-3 mb-3">
-            <Col md={12}>
-              {!isEditing ? (
-                <div>
-                  <strong>Note: </strong>
-                  {jobOffer?.note || "Any note found!"}
-                </div>
-              ) : (
-                <Form.Group as={Row} controlId="note" className="d-flex align-items-center">
+            {/* Contract Type and Location */}
+            <Row className="border-top pt-3 mb-3">
+              <Col md={6}>
+                {!isEditing ? (
+                  <div>
+                    <FaUserTie className="mr-2" /> <strong>Contract Type: </strong>
+                    {jobOffer?.contractType}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="contractType" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
+                      Contract Type
+                    </Form.Label>
+                    <Col xs={12} sm={8}>
+                      <Form.Select
+                        name="contractType"
+                        style={{ cursor: "pointer" }}
+                        value={formDataJobOffer?.contractType || ""}
+                        onChange={handleInputSelectChange}
+                        required
+                      >
+                        {contractTypeList.map((contract, index) => (
+                          <option key={index} value={contract}>
+                            {toTitleCase(contract)}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+              <Col md={6}>
+                {!isEditing ? (
+                  <div>
+                    <FaMapMarkerAlt className="mr-2" /> <strong>Location: </strong>
+                    {jobOffer?.location}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="location" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
+                      Location
+                    </Form.Label>
+                    <Col xs={12} sm={9}>
+                      <Form.Control
+                        type="text"
+                        name="location"
+                        placeholder="Enter a location"
+                        value={formDataJobOffer?.location || ""}
+                        onChange={handleInputChange}
+                        maxLength={255}
+                        required
+                      />
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+            </Row>
+
+            {/* Duration and Value */}
+            <Row className="border-top pt-3 mb-3">
+              <Col md={6}>
+                {!isEditing ? (
+                  <div>
+                    <FaClock className="mr-2" /> <strong>Duration: </strong>
+                    {jobOffer?.duration} {jobOffer?.duration === 1 ? "day" : "days"}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="duration" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
+                      Duration (days)
+                    </Form.Label>
+                    <Col xs={12} sm={8}>
+                      <Form.Control
+                        type="number"
+                        name="duration"
+                        placeholder="Duration in days"
+                        value={formDataJobOffer?.duration}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^\d*$/.test(value)) {
+                            setFormDataJobOffer({
+                              ...formDataJobOffer,
+                              [e.target.name]: value,
+                            } as JobOffer);
+                          }
+                        }}
+                        onKeyPress={(e) => {
+                          if (!/^\d*$/.test(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        min="0"
+                        required
+                      />
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+              <Col md={6}>
+                {!isEditing ? (
+                  <div>
+                    <FaMoneyBillWave className="mr-2" /> <strong>Value: </strong>${jobOffer?.value}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="value" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
+                      Value ($)
+                    </Form.Label>
+                    <Col xs={12} sm={9}>
+                      <Form.Control type="text" name="value" value={formDataJobOffer?.value || "0"} disabled />
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+            </Row>
+
+            {/* Work Mode and Status */}
+            <Row className="border-top pt-3 mb-3">
+              <Col md={6}>
+                {!isEditing ? (
+                  <div>
+                    <strong>Work Mode: </strong>
+                    {jobOffer?.workMode}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="workMode" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={4} className="mb-0 fw-bold">
+                      Work Mode
+                    </Form.Label>
+                    <Col xs={12} sm={8}>
+                      <Form.Select
+                        name="workMode"
+                        style={{ cursor: "pointer" }}
+                        value={formDataJobOffer?.workMode || ""}
+                        onChange={handleInputSelectChange}
+                        required
+                      >
+                        {workModeList.map((workMode, index) => (
+                          <option key={index} value={workMode}>
+                            {toTitleCase(workMode)}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+              <Col md={6}>
+                {!isEditing ? (
+                  <div>
+                    <strong>Status: </strong>
+                    {toTitleCase(jobOffer?.status || JobOfferState.CREATED)}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="status" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={3} className="mb-0 fw-bold">
+                      Status
+                    </Form.Label>
+                    <Col xs={12} sm={9}>
+                      <Form.Control type="text" name="status" value={toTitleCase(formDataJobOffer?.status || JobOfferState.CREATED)} disabled />
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+            </Row>
+
+            {/* Required Skills */}
+            <Row className="border-top pt-4">
+              <Col>
+                <Form.Group as={Row} controlId="status" className="d-flex align-items-center">
                   <Form.Label column xs={12} sm={2} className="mb-0 fw-bold">
-                    Note
+                    Required Skills
                   </Form.Label>
-                  <Col xs={12} sm={10}>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      name="note"
-                      placeholder="Enter a note"
-                      value={formDataJobOffer?.note || ""}
-                      onChange={handleInputChange}
-                      maxLength={255}
-                    />
-                  </Col>
+
+                  {formDataJobOffer?.requiredSkills.length === 0 ? (
+                    <Col xs={12} className="text-center">
+                      <p className="text-muted">No required skill added yet</p>
+                    </Col>
+                  ) : (
+                    <Col xs={12} sm={10}>
+                      <ul className="list-unstyled d-flex flex-wrap">
+                        {formDataJobOffer?.requiredSkills.map((skill, index) => (
+                          <li key={index} className="skill-item mb-3 d-flex justify-content-between align-items-center">
+                            <span className="skill-text">{skill}</span>
+                            {isEditing && (
+                              <OverlayTrigger overlay={<Tooltip id="deleteRequiredSkillButton">Delete</Tooltip>}>
+                                <Button
+                                  variant="danger"
+                                  size="sm"
+                                  onClick={() => {
+                                    setFormDataJobOffer(
+                                      (prevData) =>
+                                        ({
+                                          ...prevData,
+                                          requiredSkills: prevData?.requiredSkills.filter((_, i) => i !== index),
+                                        } as JobOffer)
+                                    );
+                                  }}
+                                >
+                                  <FaTrash />
+                                </Button>
+                              </OverlayTrigger>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </Col>
+                  )}
                 </Form.Group>
-              )}
-            </Col>
-          </Row>
+              </Col>
+            </Row>
 
-          {/* Customer Section */}
-          <Row className="border-top pt-3 mb-3">
-            <Col xs={12}>
-              <Form.Group as={Row} controlId="customerId">
-                <Form.Label column xs={6} className="fw-bold">
-                  Customer Information
-                </Form.Label>
-
-                {/* Buttons Section */}
-                <Col xs={6} className="text-end">
-                  <OverlayTrigger overlay={<Tooltip id="profileCustomerButton">Profile</Tooltip>}>
-                    <Button variant="primary" className="me-2 text-center" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
-                      <FaUser className="me-1" />
-                      Profile
+            {/* Add Skill */}
+            {isEditing && (
+              <Row className="mb-3 justify-content-end">
+                <Col xs={12} md={8} lg={6}>
+                  <Form.Control
+                    placeholder="Add a skill"
+                    value={singleRequiredSkill}
+                    onChange={(e) => {
+                      setSingleRequiredSkill(e.target.value);
+                    }}
+                    className="mb-2"
+                  />
+                </Col>
+                <Col xs={12} md={4} lg={3}>
+                  <OverlayTrigger overlay={<Tooltip id="addSkillButton">Add Skill</Tooltip>}>
+                    <Button variant="primary" onClick={handleAddSkill}>
+                      Add Skill
                     </Button>
                   </OverlayTrigger>
                 </Col>
+              </Row>
+            )}
 
-                <Col xs={12} md={6} className="mb-3">
-                  <Form.Label>Surname</Form.Label>
-                  <Form.Control type="text" name="customerSurname" value={customer?.information.contactDTO.surname || ""} disabled />
-                </Col>
-                <Col xs={12} md={6} className="mb-3">
-                  <Form.Label>Name</Form.Label>
-                  <Form.Control type="text" name="customerName" value={customer?.information.contactDTO.name || ""} disabled />
-                </Col>
-                <Col xs={12} md={6} className="mb-3">
-                  <Form.Label>SSN Code</Form.Label>
-                  <Form.Control type="text" name="customerSSnCode" value={customer?.information.contactDTO.ssnCode || ""} disabled />
-                </Col>
-              </Form.Group>
-            </Col>
-          </Row>
+            {/* Note */}
+            <Row className="border-top pt-3 mb-3">
+              <Col md={12}>
+                {!isEditing ? (
+                  <div>
+                    <strong>Note: </strong>
+                    {jobOffer?.note || "Any note found!"}
+                  </div>
+                ) : (
+                  <Form.Group as={Row} controlId="note" className="d-flex align-items-center">
+                    <Form.Label column xs={12} sm={2} className="mb-0 fw-bold">
+                      Note
+                    </Form.Label>
+                    <Col xs={12} sm={10}>
+                      <Form.Control
+                        as="textarea"
+                        rows={3}
+                        name="note"
+                        placeholder="Enter a note"
+                        value={formDataJobOffer?.note || ""}
+                        onChange={handleInputChange}
+                        maxLength={255}
+                      />
+                    </Col>
+                  </Form.Group>
+                )}
+              </Col>
+            </Row>
 
-          {/* Professional Section */}
-          {professional && (
+            {/* Customer Section */}
             <Row className="border-top pt-3 mb-3">
               <Col xs={12}>
-                <Form.Group as={Row} controlId="professionalId">
+                <Form.Group as={Row} controlId="customerId">
                   <Form.Label column xs={6} className="fw-bold">
-                    Professional Information
+                    Customer Information
                   </Form.Label>
 
                   {/* Buttons Section */}
                   <Col xs={6} className="text-end">
-                    <OverlayTrigger overlay={<Tooltip id="profileApplicationButton">Profile</Tooltip>}>
-                      <Button variant="primary" className="me-2 text-center" onClick={() => navigate(`/ui/professionals/${professional.id}`)}>
+                    <OverlayTrigger overlay={<Tooltip id="profileCustomerButton">Profile</Tooltip>}>
+                      <Button variant="primary" className="me-2 text-center" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
                         <FaUser className="me-1" />
                         Profile
                       </Button>
                     </OverlayTrigger>
-                    {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && !isEditing && (
-                      <>
-                        <OverlayTrigger overlay={<Tooltip id="confirmApplicationButton">Confirm Application</Tooltip>}>
-                          <Button variant="success" className="me-2" onClick={() => setShowModalConfirmApplication(true)}>
-                            <FaCheck className="me-1" />
-                            Confirm
-                          </Button>
-                        </OverlayTrigger>
-                        <OverlayTrigger overlay={<Tooltip id="cancelApplicationButton">Cancel Application</Tooltip>}>
-                          <Button variant="danger" onClick={() => setShowModalCancelApplication(true)}>
-                            <FaTrash className="me-1" />
-                            Cancel
-                          </Button>
-                        </OverlayTrigger>
-                      </>
-                    )}
-                    {jobOffer?.status === JobOfferState.CONSOLIDATED && !isEditing && (
-                      <OverlayTrigger overlay={<Tooltip id="revokeApplicationButton">Revoke Acceptance</Tooltip>}>
-                        <Button variant="danger" onClick={() => setShowModalRevokeApplication(true)}>
-                          <FaTrash className="me-1" />
-                          Revoke
-                        </Button>
-                      </OverlayTrigger>
-                    )}
                   </Col>
-
-                  {jobOffer?.status === JobOfferState.CONSOLIDATED && (
-                    <Col xs={12} className="mt-2">
-                      <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
-                        <AiOutlineInfoCircle className="me-1" />
-                        To return to the
-                        <strong style={{ marginLeft: "0.25rem" }}>candidate selection phase</strong>, please click the
-                        <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Cancel</strong> button.
-                      </p>
-                    </Col>
-                  )}
 
                   <Col xs={12} md={6} className="mb-3">
                     <Form.Label>Surname</Form.Label>
-                    <Form.Control type="text" name="professionalSurname" value={professional?.information.surname || ""} disabled />
+                    <Form.Control type="text" name="customerSurname" value={customer?.information.contactDTO.surname || ""} disabled />
                   </Col>
                   <Col xs={12} md={6} className="mb-3">
                     <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" name="professionalName" value={professional?.information.name || ""} disabled />
+                    <Form.Control type="text" name="customerName" value={customer?.information.contactDTO.name || ""} disabled />
                   </Col>
                   <Col xs={12} md={6} className="mb-3">
                     <Form.Label>SSN Code</Form.Label>
-                    <Form.Control type="text" name="professionalSSnCode" value={professional?.information.ssnCode || ""} disabled />
-                  </Col>
-                  <Col xs={12} md={6} className="mb-3">
-                    <Form.Label>Daily Rate</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="professionalDailyRate"
-                      value={professional?.dailyRate ? `${professional.dailyRate} €` : ""}
-                      disabled
-                    />
+                    <Form.Control type="text" name="customerSSnCode" value={customer?.information.contactDTO.ssnCode || ""} disabled />
                   </Col>
                 </Form.Group>
               </Col>
             </Row>
-          )}
 
-          {/* Professional Candidates */}
-          {!isEditing && (
-            <Row className="border-top pt-3 mb-3">
-              <Col md={9} className="d-flex align-items-center">
-                <strong>Professional Candidates </strong>
-              </Col>
-              {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) && (
-                <>
-                  <Col md={2} className="text-end">
-                    <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
-                      Add Candidate
-                    </Button>
-                  </Col>
-                  {isModifyCandidatesList && !loadingCandidateProfessional && (
-                    <Col md={1} className="text-end">
-                      {/* Si attiva quando si aggiunge un nuovo professional candidato */}
-                      <Button variant="success" onClick={handleGoToSelectionPhase}>
-                        Confirm
+            {/* Professional Section */}
+            {professional && (
+              <Row className="border-top pt-3 mb-3">
+                <Col xs={12}>
+                  <Form.Group as={Row} controlId="professionalId">
+                    <Form.Label column xs={6} className="fw-bold">
+                      Professional Information
+                    </Form.Label>
+
+                    {/* Buttons Section */}
+                    <Col xs={6} className="text-end">
+                      <OverlayTrigger overlay={<Tooltip id="profileApplicationButton">Profile</Tooltip>}>
+                        <Button variant="primary" className="me-2 text-center" onClick={() => navigate(`/ui/professionals/${professional.id}`)}>
+                          <FaUser className="me-1" />
+                          Profile
+                        </Button>
+                      </OverlayTrigger>
+                      {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && !isEditing && (
+                        <>
+                          <OverlayTrigger overlay={<Tooltip id="confirmApplicationButton">Confirm Application</Tooltip>}>
+                            <Button variant="success" className="me-2" onClick={() => setShowModalConfirmApplication(true)}>
+                              <FaCheck className="me-1" />
+                              Confirm
+                            </Button>
+                          </OverlayTrigger>
+                          <OverlayTrigger overlay={<Tooltip id="cancelApplicationButton">Cancel Application</Tooltip>}>
+                            <Button variant="danger" onClick={() => setShowModalCancelApplication(true)}>
+                              <FaTrash className="me-1" />
+                              Cancel
+                            </Button>
+                          </OverlayTrigger>
+                        </>
+                      )}
+                      {jobOffer?.status === JobOfferState.CONSOLIDATED && !isEditing && (
+                        <OverlayTrigger overlay={<Tooltip id="revokeApplicationButton">Revoke Acceptance</Tooltip>}>
+                          <Button variant="danger" onClick={() => setShowModalRevokeApplication(true)}>
+                            <FaTrash className="me-1" />
+                            Revoke
+                          </Button>
+                        </OverlayTrigger>
+                      )}
+                    </Col>
+
+                    {jobOffer?.status === JobOfferState.CONSOLIDATED && (
+                      <Col xs={12} className="mt-2">
+                        <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
+                          <AiOutlineInfoCircle className="me-1" />
+                          To return to the
+                          <strong style={{ marginLeft: "0.25rem" }}>candidate selection phase</strong>, please click the
+                          <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Cancel</strong> button.
+                        </p>
+                      </Col>
+                    )}
+
+                    <Col xs={12} md={6} className="mb-3">
+                      <Form.Label>Surname</Form.Label>
+                      <Form.Control type="text" name="professionalSurname" value={professional?.information.surname || ""} disabled />
+                    </Col>
+                    <Col xs={12} md={6} className="mb-3">
+                      <Form.Label>Name</Form.Label>
+                      <Form.Control type="text" name="professionalName" value={professional?.information.name || ""} disabled />
+                    </Col>
+                    <Col xs={12} md={6} className="mb-3">
+                      <Form.Label>SSN Code</Form.Label>
+                      <Form.Control type="text" name="professionalSSnCode" value={professional?.information.ssnCode || ""} disabled />
+                    </Col>
+                    <Col xs={12} md={6} className="mb-3">
+                      <Form.Label>Daily Rate</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="professionalDailyRate"
+                        value={professional?.dailyRate ? `${professional.dailyRate} €` : ""}
+                        disabled
+                      />
+                    </Col>
+                  </Form.Group>
+                </Col>
+              </Row>
+            )}
+
+            {/* Professional Candidates */}
+            {!isEditing && (
+              <Row className="border-top pt-3 mb-3">
+                <Col md={9} className="d-flex align-items-center">
+                  <strong>Professional Candidates </strong>
+                </Col>
+                {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) && (
+                  <>
+                    <Col md={2} className="text-end">
+                      <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
+                        Add Candidate
                       </Button>
                     </Col>
-                  )}
-                </>
-              )}
-
-              {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
-                <Col md={12} className="mt-2">
-                  <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
-                    <AiOutlineInfoCircle className="me-1" /> Please select one of the candidates to propose them for this job offer.
-                  </p>
-                </Col>
-              )}
-
-              <Col md={12} className="mt-2">
-                <div className="d-flex justify-content-between align-items-center px-4">
-                  <div className="d-flex align-items-center">
-                    <FaUsers className="me-2 text-primary" />
-                    <span>Potential candidates:</span>
-                    <strong className="ms-2">{filteredCandidateProfessionalList.length}</strong>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    <FaTimes className="me-2 text-danger" />
-                    <span>Candidates who have rejected position:</span>
-                    <strong className="ms-2">
-                      {
-                        filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRejected.includes(candidate.id))
-                          .length
-                      }
-                    </strong>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    <FaUndoAlt className="me-2 text-danger" />
-                    <span>Candidates who revoked acceptance:</span>
-                    <strong className="ms-2">
-                      {filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)).length}
-                    </strong>
-                  </div>
-                </div>
-              </Col>
-
-              <Col md={12} className="mt-3">
-                {loadingCandidateProfessional && <LoadingSection h={100} />}
-                {showProfessionalCandidateModal && !loadingCandidateProfessional && (
-                  <CandidateProfessionalModal
-                    show={showProfessionalCandidateModal}
-                    alreadyExistentCandidates={candidateProfessionalList}
-                    handleClose={handleCloseProfessionalCandidateModal}
-                    onSelectProfessional={handleAddCandidate}
-                  />
-                )}
-                {candidateProfessionalList?.length > 0 && !loadingCandidateProfessional && (
-                  <>
-                    <SearchCandidate
-                      resetList={() => resetFilteredCandidateProfessionalList(candidateProfessionalList)}
-                      resetFilters={() => {
-                        setFilterByRejected(false);
-                        setFilterByRevoked(false);
-                        setFilteredCandidateProfessionalList(candidateProfessionalList);
-                      }}
-                      searchSkill={searchSkill}
-                      searchLocation={searchLocation}
-                      handleSearchChangeBySkill={(e: string) => {
-                        setSearchSkill(e);
-                        var list = candidateProfessionalList.filter((c) => c.skills.some((skill) => skill.toLowerCase().includes(e.toLowerCase())));
-                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                        list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                        setFilteredCandidateProfessionalList(list);
-                      }}
-                      handleSearchChangeByLocation={(e: string) => {
-                        setSearchLocation(e);
-                        var list = candidateProfessionalList.filter((c) => c.geographicalLocation.toLowerCase().includes(e.toLowerCase()));
-                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                        list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                        setFilteredCandidateProfessionalList(list);
-                      }}
-                      searchName={searchName}
-                      handleSearchChangeByName={(e: string) => {
-                        setSearchName(e);
-                        var list = candidateProfessionalList.filter((c) => c.information.name.toLowerCase().includes(e.toLowerCase()));
-                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                        list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                        setFilteredCandidateProfessionalList(list);
-                      }}
-                      searchSurname={searchSurname}
-                      handleSearchChangeBySurname={(e: string) => {
-                        setSearchSurname(e);
-                        var list = candidateProfessionalList.filter((c) => c.information.surname.toLowerCase().includes(e.toLowerCase()));
-                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                        list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                        setFilteredCandidateProfessionalList(list);
-                      }}
-                      searchSsnCode={searchSsnCode}
-                      handleSearchChangeBySsnCode={(e: string) => {
-                        setSearchSsnCode(e);
-                        var list = candidateProfessionalList.filter((c) => c.information.ssnCode.toLowerCase().includes(e.toLowerCase()));
-                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                        list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                        setFilteredCandidateProfessionalList(list);
-                      }}
-                      filterByRejected={filterByRejected}
-                      handleFilterByRejected={(e: boolean) => {
-                        setFilterByRejected(e);
-                        const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
-                        setFilteredCandidateProfessionalList(list);
-                      }}
-                      filterByRevoked={filterByRevoked}
-                      handleFilterByRevoked={(e: boolean) => {
-                        setFilterByRevoked(e);
-                        const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
-                        setFilteredCandidateProfessionalList(list);
-                      }}
-                    />
-
-                    <Table striped bordered hover className="align-middle">
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Name</th>
-                          <th>Surname</th>
-                          <th>SSN Code</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredCandidateProfessionalList.length === 0 && (
-                          <tr key={0}>
-                            <td>-1</td>
-                            <td>No professional candidates found with this filter.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
-                        )}
-                        {filteredCandidateProfessionalList.map((candidate, index) => {
-                          const hasRejected = jobOffer?.candidatesProfessionalRejected.includes(candidate.id);
-                          const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
-                          const isPendingApproval = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
-                          const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
-
-                          return (
-                            <tr key={index}>
-                              <td>{index + 1}</td>
-                              <td>{candidate.information.name}</td>
-                              <td>{candidate.information.surname}</td>
-                              <td>{candidate.information.ssnCode}</td>
-                              <td className="d-flex align-items-center justify-content-center text-center">
-                                {hasRejected && (
-                                  <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
-                                    <FaTimes className="me-1" />
-                                    Rejected
-                                  </Badge>
-                                )}
-
-                                {isRevoked && (
-                                  <Badge bg="secondary" className="p-2 d-flex align-items-center justify-content-center">
-                                    <FaUndoAlt className="me-1" />
-                                    Revoked
-                                  </Badge>
-                                )}
-
-                                {hasAccepted && (
-                                  <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
-                                    <FaThumbsUp className="me-1" />
-                                    Accepted
-                                  </Badge>
-                                )}
-
-                                {isPendingApproval && (
-                                  <Badge bg="warning" className="p-2 d-flex align-items-center justify-content-center">
-                                    <FaClock className="me-1" />
-                                    Pending Approval
-                                  </Badge>
-                                )}
-
-                                {!hasRejected && !hasAccepted && !isPendingApproval && !isRevoked && (
-                                  <ButtonGroup>
-                                    {jobOffer?.status !== JobOfferState.CREATED && (
-                                      <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
-                                        <Button
-                                          variant="success"
-                                          className="me-2"
-                                          onClick={() => setShowModalConfirmCandidate({ b: true, i: index })}
-                                          disabled={
-                                            jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
-                                            isModifyCandidatesList ||
-                                            loadingCandidateProfessional
-                                          }
-                                        >
-                                          <FaCheck />
-                                        </Button>
-                                      </OverlayTrigger>
-                                    )}
-
-                                    <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
-                                      <Button
-                                        variant="danger"
-                                        className="me-2"
-                                        onClick={() => handleDeleteCandidateProfessional(index)}
-                                        disabled={
-                                          jobOffer?.status === JobOfferState.ABORT ||
-                                          jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
-                                          jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                                          jobOffer?.status === JobOfferState.DONE
-                                        }
-                                      >
-                                        <FaTrash />
-                                      </Button>
-                                    </OverlayTrigger>
-
-                                    <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
-                                      <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
-                                        <FaUser />
-                                      </Button>
-                                    </OverlayTrigger>
-                                  </ButtonGroup>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </Table>
+                    {isModifyCandidatesList && !loadingCandidateProfessional && (
+                      <Col md={1} className="text-end">
+                        {/* Si attiva quando si aggiunge un nuovo professional candidato */}
+                        <Button variant="success" onClick={handleGoToSelectionPhase}>
+                          Confirm
+                        </Button>
+                      </Col>
+                    )}
                   </>
                 )}
 
-                {candidateProfessionalList?.length === 0 && !loadingCandidateProfessional && <p>No professional candidates.</p>}
-              </Col>
-            </Row>
-          )}
+                {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
+                  <Col md={12} className="mt-2">
+                    <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
+                      <AiOutlineInfoCircle className="me-1" /> Please select one of the candidates to propose them for this job offer.
+                    </p>
+                  </Col>
+                )}
 
-          {isEditing && (
-            <Row className="mt-5 mb-3">
-              <Col className="text-center">
-                <Button
-                  className="secondaryDangerButton mb-2"
-                  variant="danger"
-                  size="lg"
-                  onClick={() => {
-                    setFormDataJobOffer(jobOffer);
-                    setIsEditing(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-              </Col>
-              <Col className="text-center">
-                <Button className="primaryButton mb-2" variant="primary" size="lg" onClick={handleSave}>
-                  Save
-                </Button>
-              </Col>
-            </Row>
-          )}
+                <Col md={12} className="mt-2">
+                  <div className="d-flex justify-content-between align-items-center px-4">
+                    <div className="d-flex align-items-center">
+                      <FaUsers className="me-2 text-primary" />
+                      <span>Potential candidates:</span>
+                      <strong className="ms-2">{filteredCandidateProfessionalList.length}</strong>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <FaTimes className="me-2 text-danger" />
+                      <span>Candidates who have rejected position:</span>
+                      <strong className="ms-2">
+                        {
+                          filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRejected.includes(candidate.id))
+                            .length
+                        }
+                      </strong>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <FaUndoAlt className="me-2 text-danger" />
+                      <span>Candidates who revoked acceptance:</span>
+                      <strong className="ms-2">
+                        {
+                          filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRevoked.includes(candidate.id))
+                            .length
+                        }
+                      </strong>
+                    </div>
+                  </div>
+                </Col>
 
-          {!isEditing && (
-            <Row className="mt-5">
-              {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
+                <Col md={12} className="mt-3">
+                  {loadingCandidateProfessional && <LoadingSection h={100} />}
+                  {showProfessionalCandidateModal && !loadingCandidateProfessional && (
+                    <CandidateProfessionalModal
+                      show={showProfessionalCandidateModal}
+                      alreadyExistentCandidates={candidateProfessionalList}
+                      handleClose={handleCloseProfessionalCandidateModal}
+                      onSelectProfessional={handleAddCandidate}
+                    />
+                  )}
+                  {candidateProfessionalList?.length > 0 && !loadingCandidateProfessional && (
+                    <>
+                      <SearchCandidate
+                        resetList={() => resetFilteredCandidateProfessionalList(candidateProfessionalList)}
+                        resetFilters={() => {
+                          setFilterByRejected(false);
+                          setFilterByRevoked(false);
+                          setFilteredCandidateProfessionalList(candidateProfessionalList);
+                        }}
+                        searchSkill={searchSkill}
+                        searchLocation={searchLocation}
+                        handleSearchChangeBySkill={(e: string) => {
+                          setSearchSkill(e);
+                          var list = candidateProfessionalList.filter((c) => c.skills.some((skill) => skill.toLowerCase().includes(e.toLowerCase())));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        handleSearchChangeByLocation={(e: string) => {
+                          setSearchLocation(e);
+                          var list = candidateProfessionalList.filter((c) => c.geographicalLocation.toLowerCase().includes(e.toLowerCase()));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        searchName={searchName}
+                        handleSearchChangeByName={(e: string) => {
+                          setSearchName(e);
+                          var list = candidateProfessionalList.filter((c) => c.information.name.toLowerCase().includes(e.toLowerCase()));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        searchSurname={searchSurname}
+                        handleSearchChangeBySurname={(e: string) => {
+                          setSearchSurname(e);
+                          var list = candidateProfessionalList.filter((c) => c.information.surname.toLowerCase().includes(e.toLowerCase()));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        searchSsnCode={searchSsnCode}
+                        handleSearchChangeBySsnCode={(e: string) => {
+                          setSearchSsnCode(e);
+                          var list = candidateProfessionalList.filter((c) => c.information.ssnCode.toLowerCase().includes(e.toLowerCase()));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByRejected={filterByRejected}
+                        handleFilterByRejected={(e: boolean) => {
+                          setFilterByRejected(e);
+                          const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByRevoked={filterByRevoked}
+                        handleFilterByRevoked={(e: boolean) => {
+                          setFilterByRevoked(e);
+                          const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                      />
+
+                      <Table striped bordered hover className="align-middle">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>SSN Code</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredCandidateProfessionalList.length === 0 && (
+                            <tr key={0}>
+                              <td>-1</td>
+                              <td>No professional candidates found with this filter.</td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          )}
+                          {filteredCandidateProfessionalList.map((candidate, index) => {
+                            const hasRejected = jobOffer?.candidatesProfessionalRejected.includes(candidate.id);
+                            const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
+                            const isPendingApproval = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
+                            const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
+
+                            return (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{candidate.information.name}</td>
+                                <td>{candidate.information.surname}</td>
+                                <td>{candidate.information.ssnCode}</td>
+                                <td className="d-flex align-items-center justify-content-center text-center">
+                                  {hasRejected && (
+                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaTimes className="me-1" />
+                                      Rejected
+                                    </Badge>
+                                  )}
+
+                                  {isRevoked && (
+                                    <Badge bg="secondary" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaUndoAlt className="me-1" />
+                                      Revoked
+                                    </Badge>
+                                  )}
+
+                                  {hasAccepted && (
+                                    <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaThumbsUp className="me-1" />
+                                      Accepted
+                                    </Badge>
+                                  )}
+
+                                  {isPendingApproval && (
+                                    <Badge bg="warning" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaClock className="me-1" />
+                                      Pending Approval
+                                    </Badge>
+                                  )}
+
+                                  {!hasRejected && !hasAccepted && !isPendingApproval && !isRevoked && (
+                                    <ButtonGroup>
+                                      {jobOffer?.status !== JobOfferState.CREATED && (
+                                        <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
+                                          <Button
+                                            variant="success"
+                                            className="me-2"
+                                            onClick={() => setShowModalConfirmCandidate({ b: true, i: index })}
+                                            disabled={
+                                              jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                              isModifyCandidatesList ||
+                                              loadingCandidateProfessional
+                                            }
+                                          >
+                                            <FaCheck />
+                                          </Button>
+                                        </OverlayTrigger>
+                                      )}
+
+                                      <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
+                                        <Button
+                                          variant="danger"
+                                          className="me-2"
+                                          onClick={() => handleDeleteCandidateProfessional(index)}
+                                          disabled={
+                                            jobOffer?.status === JobOfferState.ABORT ||
+                                            jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
+                                            jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                            jobOffer?.status === JobOfferState.DONE
+                                          }
+                                        >
+                                          <FaTrash />
+                                        </Button>
+                                      </OverlayTrigger>
+
+                                      <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                        <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                          <FaUser />
+                                        </Button>
+                                      </OverlayTrigger>
+                                    </ButtonGroup>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </Table>
+                    </>
+                  )}
+
+                  {candidateProfessionalList?.length === 0 && !loadingCandidateProfessional && <p>No professional candidates.</p>}
+                </Col>
+              </Row>
+            )}
+
+            {isEditing && (
+              <Row className="mt-5 mb-3">
                 <Col className="text-center">
-                  <Button className="secondaryDangerButton mb-2" variant="danger" size="lg" onClick={() => setShowModalConfirmAbort(true)}>
-                    Abort
+                  <Button
+                    className="secondaryDangerButton mb-2"
+                    variant="danger"
+                    size="lg"
+                    onClick={() => {
+                      setFormDataJobOffer(jobOffer);
+                      setIsEditing(false);
+                    }}
+                  >
+                    Cancel
                   </Button>
                 </Col>
-              )}
-              <Col className="text-center">
-                <Button className="secondaryButton mb-2" variant="danger" size="lg" onClick={() => navigate("/ui")}>
-                  Go Back
-                </Button>
-              </Col>
-              {jobOffer?.status === JobOfferState.CONSOLIDATED && (
                 <Col className="text-center">
-                  <Button className="primarySuccessButton mb-2" variant="primary" size="lg" onClick={() => setShowModalConfirmDone(true)}>
-                    Done
+                  <Button className="primaryButton mb-2" variant="primary" size="lg" onClick={handleSave}>
+                    Save
                   </Button>
                 </Col>
-              )}
-            </Row>
-          )}
-        </Form>
+              </Row>
+            )}
+
+            {!isEditing && (
+              <Row className="mt-5">
+                {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
+                  <Col className="text-center">
+                    <Button className="secondaryDangerButton mb-2" variant="danger" size="lg" onClick={() => setShowModalConfirmAbort(true)}>
+                      Abort
+                    </Button>
+                  </Col>
+                )}
+                <Col className="text-center">
+                  <Button className="secondaryButton mb-2" variant="danger" size="lg" onClick={() => navigate("/ui")}>
+                    Go Back
+                  </Button>
+                </Col>
+                {jobOffer?.status === JobOfferState.CONSOLIDATED && (
+                  <Col className="text-center">
+                    <Button className="primarySuccessButton mb-2" variant="primary" size="lg" onClick={() => setShowModalConfirmDone(true)}>
+                      Done
+                    </Button>
+                  </Col>
+                )}
+              </Row>
+            )}
+          </Form>
+        )}
       </div>
     </Container>
   );

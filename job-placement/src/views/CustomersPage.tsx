@@ -152,7 +152,23 @@ function CustomersPage() {
         </Row>
       )}
 
-      {loading && <LoadingSection h={null} />}
+      {loading && (
+        <Row>
+          <Col md={8}>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+          </Col>
+          <Col md={4}>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+          </Col>
+        </Row>
+      )}
 
       {!error && !loading && customers !== null && (
         <Row className="w-100 d-flex justify-content-center">
@@ -366,7 +382,6 @@ function CustomersPage() {
                 </Pagination>
               </Col>
             </Row>
-
           </Col>
         </Row>
       )}

@@ -191,7 +191,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         </Row>
         {emailError && (
           <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6} className="mb-4">
+            <Col xs={12} md={12} lg={6}>
               <p className="text-danger">Invalid email address</p>
             </Col>
           </Row>
@@ -222,7 +222,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         {telephones.length > 0 &&
           telephones.map((telephone, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
@@ -292,7 +292,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         </Row>
         {telephoneError && (
           <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6} className="mb-4">
+            <Col xs={12} md={12} lg={6}>
               <p className="text-danger">Invalid telephone number</p>
             </Col>
           </Row>
@@ -323,7 +323,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         {addresses.length > 0 &&
           addresses.map((address, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
@@ -423,7 +423,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
 
-        <Row className="mt-5">
+        <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
             <Button type="submit" className="primaryButton">
               Save customer

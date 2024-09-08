@@ -95,16 +95,6 @@ const JobOffersPage = () => {
     setCurrentPage(pageNumber);
   };
 
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-        <div className="spinner-border" role="status">
-          <span className="sr-only"></span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <Container fluid>
       {showAlert && (
@@ -208,7 +198,23 @@ const JobOffersPage = () => {
         </Row>
       )}
 
-      {loading && <LoadingSection h={null} />}
+      {loading && (
+        <Row>
+          <Col md={8}>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+          </Col>
+          <Col md={4}>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            </Col>
+        </Row>
+      )}
 
       {!loading && jobOffers !== null && (
         <>
