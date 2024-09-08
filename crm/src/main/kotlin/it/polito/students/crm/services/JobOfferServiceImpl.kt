@@ -71,7 +71,7 @@ class JobOfferServiceImpl(
         }
 
         if (location != null) {
-            list = list.filter { it.location.equals(location, ignoreCase = true) }
+            list = list.filter { it.location.contains(location, ignoreCase = true) }
         }
 
         if (workMode != null) {

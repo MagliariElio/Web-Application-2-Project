@@ -1,7 +1,7 @@
-import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert, Pagination } from "react-bootstrap";
+import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert, Pagination, ButtonGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useRef, useState } from "react";
-import { BsPlus } from "react-icons/bs";
+import { BsPlus, BsSearch } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse.ts";
 import { useLocation, useNavigate } from "react-router-dom";
 import { JobOffer } from "../interfaces/JobOffer.ts";
@@ -35,6 +35,41 @@ const JobOffersPage = () => {
     sortDirection: "",
   });
 
+  const loadJobOffers = async (page: number) => {
+    try {
+      setLoading(true);
+      const result = await fetchJobOffers(
+        page,
+        filters.elementsPerPage,
+        filters.sortBy,
+        filters.sortDirection,
+        filters.contractType,
+        filters.location,
+        filters.status,
+        filters.workMode
+      );
+      setJobOffers(result);
+      setTotalPages(result.totalPages);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    setLoading(false);
+  };
+
+  const handleFilterClick = () => {
+    loadJobOffers(currentPage);
+  };
+
   useEffect(() => {
     if (success != null) {
       setShowAlert(true);
@@ -43,48 +78,8 @@ const JobOffersPage = () => {
       }, 3000);
     }
 
-    const loadJobOffers = async (page: number) => {
-      try {
-        setLoading(true);
-        const result = await fetchJobOffers(
-          page,
-          filters.elementsPerPage,
-          filters.sortBy,
-          filters.sortDirection,
-          filters.contractType,
-          filters.location,
-          filters.status,
-          filters.workMode
-        );
-        setJobOffers(result);
-        setTotalPages(result.totalPages);
-        setLoading(false);
-      } catch (error) {
-        if (error instanceof Error) {
-          setErrorMessage(error.message);
-        } else {
-          setErrorMessage("An unexpected error occurred");
-        }
-
-        // Scroll to error message when it appears
-        if (errorRef.current) {
-          errorRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-      }
-    };
-
     loadJobOffers(currentPage);
-  }, [
-    success,
-    currentPage,
-    filters.elementsPerPage,
-    filters.sortBy,
-    filters.sortDirection,
-    filters.contractType,
-    filters.location,
-    filters.status,
-    filters.workMode,
-  ]);
+  }, [success, currentPage, filters.elementsPerPage, filters.sortBy, filters.sortDirection]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -321,23 +316,33 @@ const JobOffersPage = () => {
                     </Form.Control>
                   </Form.Group>
 
-                  <Button
-                    className="secondaryButton"
-                    variant="primary"
-                    onClick={() =>
-                      setFilters({
-                        contractType: "",
-                        location: "",
-                        workMode: "",
-                        status: "",
-                        elementsPerPage: filters.elementsPerPage,
-                        sortBy: "duration",
-                        sortDirection: "asc",
-                      })
-                    }
-                  >
-                    Clear Filters
-                  </Button>
+                  <ButtonGroup className="d-flex justify-content-center mt-4">
+                    <Col className="text-center">
+                      <Button className="primaryButton" variant="primary" onClick={handleFilterClick}>
+                        <BsSearch className="me-1" />
+                        Filter
+                      </Button>
+                    </Col>
+                    <Col className="text-center">
+                      <Button
+                        className="secondaryButton"
+                        variant="primary"
+                        onClick={() =>
+                          setFilters({
+                            contractType: "",
+                            location: "",
+                            workMode: "",
+                            status: "",
+                            elementsPerPage: filters.elementsPerPage,
+                            sortBy: "",
+                            sortDirection: "",
+                          })
+                        }
+                      >
+                        Clear Filters
+                      </Button>
+                    </Col>
+                  </ButtonGroup>
                 </Form>
               </div>
             </Col>

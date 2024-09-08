@@ -1,48 +1,51 @@
-import { FormControl, FormLabel, Row } from "react-bootstrap";
+import { Container, Row, Col, Form, FormControl, FormLabel } from "react-bootstrap";
 import { MeInterface } from "../interfaces/MeInterface";
 import { toTitleCase } from "../utils/costants";
 
-interface JPProfilePageProps {
-  me: MeInterface | null;
-  role: string; // Use the type defined earlier for role
-}
-
-function ProfilePage(JPHomePageProps: JPProfilePageProps) {
+const ProfilePage: React.FC<{ me: MeInterface }> = ({ me }) => {
   return (
-    <>
-      <Row className="d-flex flex-column p-0 mb-3">
-        <h3 className="title">My account</h3>
+    <Container fluid className="profile-container mt-4">
+      <Row className="mb-4">
+        <Col>
+          <h3 className="title">My Account</h3>
+        </Col>
       </Row>
       <Row>
-        <FormLabel htmlFor="inputPassword5">Name</FormLabel>
-        <FormControl className="ms-2 w-25" type="text" id="inputName" aria-describedby="nameField" value={JPHomePageProps.me?.name} disabled />
+        <Col md={6}>
+          <Form>
+            <Form.Group as={Row} className="mb-3" controlId="inputName">
+              <FormLabel column sm={4}>
+                Name:
+              </FormLabel>
+              <Col sm={8}>
+                <FormControl type="text" value={me?.name || ""} disabled />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-3" controlId="inputSurname">
+              <FormLabel column sm={4}>
+                Surname:
+              </FormLabel>
+              <Col sm={8}>
+                <FormControl type="text" value={me?.surname || ""} disabled />
+              </Col>
+            </Form.Group>
+
+            {me?.role && (
+              <Form.Group as={Row} className="mb-3" controlId="inputRole">
+                <FormLabel column sm={4}>
+                  Role:
+                </FormLabel>
+                <Col sm={8}>
+                  <FormControl type="text" value={toTitleCase(me.role)} disabled />
+                </Col>
+              </Form.Group>
+            )}
+          </Form>
+        </Col>
       </Row>
-      <Row className="mt-2">
-        <FormLabel htmlFor="inputPassword5">Surname</FormLabel>
-        <FormControl
-          className="ms-2 w-25"
-          type="text"
-          id="inputSurname"
-          aria-describedby="surnameField"
-          value={JPHomePageProps.me?.surname}
-          disabled
-        />
-      </Row>
-      {JPHomePageProps.me?.role && (
-        <Row className="mt-2">
-          <FormLabel htmlFor="inputPassword5">Role</FormLabel>
-          <FormControl
-            className="ms-2 w-25"
-            type="text"
-            id="inputRole"
-            aria-describedby="roleField"
-            value={toTitleCase(JPHomePageProps.me?.role)}
-            disabled
-          />
-        </Row>
-      )}
-    </>
+    </Container>
   );
-}
+};
 
 export default ProfilePage;

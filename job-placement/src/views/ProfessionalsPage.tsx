@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Form, Pagination, Row, Toast, ToastContainer } from "react-bootstrap";
+import { Button, ButtonGroup, Col, Form, Pagination, Row, Toast, ToastContainer } from "react-bootstrap";
 import { BsPlus, BsSearch } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -101,12 +101,43 @@ function ProfessionalsPage() {
         </ToastContainer>
       )}
 
-      <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-        <Col>
+      <Row className="d-flex flex-row p-0 mb-1 align-items-center">
+        <Col md={8}>
           <h3 className="title">Professionals</h3>
         </Col>
-        <Col className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/professionals/add")}>
+        <Col md={2} className="d-flex justify-content-end">
+          <Form.Group controlId="elementsPerPage">
+            <Form.Select
+              style={{ width: "auto" }}
+              name="pageSize"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(parseInt(e.target.value));
+
+                fetchProfessionals(0, parseInt(e.target.value), filters.skill, filters.geographicalLocation, filters.employmentState)
+                  .then((result) => {
+                    console.log("Professionals fetched: ", result);
+                    setProfessionals(result);
+                    presentedProfessionals = result.content;
+                    setLoading(false);
+                  })
+                  .catch((error) => {
+                    setError(true);
+                    setLoading(false);
+                    console.log(error);
+                    throw new Error("GET /API/professionals : Network response was not ok");
+                  });
+              }}
+            >
+              <option value="10">10 professionals</option>
+              <option value="20">20 professionals</option>
+              <option value="50">50 professionals</option>
+              <option value="100">100 professionals</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+        <Col md={2} className="d-flex justify-content-end">
+          <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate("/ui/professionals/add")}>
             <BsPlus size={"1.5em"} className="me-1" />
             Add Professional
           </Button>
@@ -152,69 +183,75 @@ function ProfessionalsPage() {
                     </Form.Select>
                   </Form.Group>
 
-                  <Button
-                    className="primaryButton mb-2"
-                    variant="primary"
-                    onClick={() => {
-                      setLoading(true);
-                      fetchProfessionals(0, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
-                        .then((result) => {
-                          console.log("Professionals fetched: ", result);
-                          setProfessionals(result);
-                          setActiveFilters(filters);
-                          setLoading(false);
-                        })
-                        .catch((error) => {
-                          setError(true);
-                          setActiveFilters({
-                            skill: "",
-                            geographicalLocation: "",
-                            employmentState: "",
-                          });
-                          setLoading(false);
-                          console.log(error);
-                          throw new Error("GET /API/professionals : Network response was not ok");
-                        });
-                    }}
-                  >
-                    <BsSearch className="me-1" />
-                    Filter
-                  </Button>
+                  <ButtonGroup className="d-flex justify-content-center mt-4">
+                    <Col className="text-center">
+                      <Button
+                        className="primaryButton mb-2"
+                        variant="primary"
+                        onClick={() => {
+                          setLoading(true);
+                          fetchProfessionals(0, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
+                            .then((result) => {
+                              console.log("Professionals fetched: ", result);
+                              setProfessionals(result);
+                              setActiveFilters(filters);
+                              setLoading(false);
+                            })
+                            .catch((error) => {
+                              setError(true);
+                              setActiveFilters({
+                                skill: "",
+                                geographicalLocation: "",
+                                employmentState: "",
+                              });
+                              setLoading(false);
+                              console.log(error);
+                              throw new Error("GET /API/professionals : Network response was not ok");
+                            });
+                        }}
+                      >
+                        <BsSearch className="me-1" />
+                        Filter
+                      </Button>
+                    </Col>
 
-                  <Button
-                    className="secondaryButton"
-                    variant="primary"
-                    onClick={() => {
-                      setFilters({
-                        skill: "",
-                        geographicalLocation: "",
-                        employmentState: "",
-                      });
-                      fetchProfessionals(0, pageSize)
-                        .then((result) => {
-                          console.log("Professionals fetched: ", result);
-                          setProfessionals(result);
-                          presentedProfessionals = result.content;
-                          setActiveFilters({
+                    <Col className="text-center">
+                      <Button
+                        className="secondaryButton"
+                        variant="primary"
+                        onClick={() => {
+                          setFilters({
                             skill: "",
                             geographicalLocation: "",
                             employmentState: "",
                           });
-                          setLoading(false);
-                        })
-                        .catch((error) => {
-                          setError(true);
-                          setLoading(false);
-                          console.log(error);
-                          throw new Error("GET /API/professionals : Network response was not ok");
-                        });
-                    }}
-                  >
-                    Clear Filters
-                  </Button>
+                          fetchProfessionals(0, pageSize)
+                            .then((result) => {
+                              console.log("Professionals fetched: ", result);
+                              setProfessionals(result);
+                              presentedProfessionals = result.content;
+                              setActiveFilters({
+                                skill: "",
+                                geographicalLocation: "",
+                                employmentState: "",
+                              });
+                              setLoading(false);
+                            })
+                            .catch((error) => {
+                              setError(true);
+                              setLoading(false);
+                              console.log(error);
+                              throw new Error("GET /API/professionals : Network response was not ok");
+                            });
+                        }}
+                      >
+                        Clear Filters
+                      </Button>
+                    </Col>
+                  </ButtonGroup>
                 </Form>
 
-                <h5 className="mt-5">Sort Professionals</h5>
+                <h5 className="mt-3">Sort Professionals</h5>
                 <Form>
                   <Form.Group controlId="sort" className="mb-3">
                     <Form.Select name="sort" value={sortCriteria} onChange={(e) => setSortCriteria(e.target.value)}>
@@ -358,36 +395,6 @@ function ProfessionalsPage() {
                   />
                 </Pagination>
               </Col>
-
-              <Row className="w-100 d-flex justify-content-center align-items-center mt-3">
-                <Form.Select
-                  style={{ width: "auto" }}
-                  name="pageSize"
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(parseInt(e.target.value));
-
-                    fetchProfessionals(0, parseInt(e.target.value), filters.skill, filters.geographicalLocation, filters.employmentState)
-                      .then((result) => {
-                        console.log("Professionals fetched: ", result);
-                        setProfessionals(result);
-                        presentedProfessionals = result.content;
-                        setLoading(false);
-                      })
-                      .catch((error) => {
-                        setError(true);
-                        setLoading(false);
-                        console.log(error);
-                        throw new Error("GET /API/professionals : Network response was not ok");
-                      });
-                  }}
-                >
-                  <option value="10">10 professionals</option>
-                  <option value="20">20 professionals</option>
-                  <option value="50">50 professionals</option>
-                  <option value="100">100 professionals</option>
-                </Form.Select>
-              </Row>
             </Col>
           </Row>
         </>

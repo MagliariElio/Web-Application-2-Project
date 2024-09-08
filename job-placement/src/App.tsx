@@ -26,7 +26,6 @@ import { runCustomerTests, runJobOfferTests, runProfessionalTests } from "./test
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string>("");
 
   const [sidebarOpened, setSidebarOpened] = useState(true);
 
@@ -46,51 +45,34 @@ function App() {
 
   useEffect(() => {
     const fetchUserRoles = async () => {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      await JPAPIAuth.fetchMe(setMe)
-        .then(async () => {
-          if (me?.principal !== null) {
-            const res = await fetch("/documentStoreService/v1/API/documents/auth");
-            const json = await res.json();
+        await JPAPIAuth.fetchMe(setMe);
 
-            if (JSON.stringify(json.principal.claims.realm_access.roles[0])) {
-              var i = 0;
-              while (
-                json.principal.claims.realm_access.roles[i] !== RoleState.GUEST &&
-                json.principal.claims.realm_access.roles[i] !== RoleState.OPERATOR &&
-                json.principal.claims.realm_access.roles[i] !== RoleState.MANAGER
-              ) {
-                console.log(JSON.stringify(json.principal.claims.realm_access.roles[i]));
-                i = i + 1;
-              }
+        if (!me?.principal) return; // Se non c'è un principal, esci dalla funzione
 
-              const roleUser = json.principal.claims.realm_access.roles[i];
+        const res = await fetch("/documentStoreService/v1/API/documents/auth");
+        const json = await res.json();
 
-              if (roleUser) {
-                setRole(roleUser);
-              } else {
-                setRole(RoleState.OPERATOR);
-              }
-            } else {
-              setRole(RoleState.OPERATOR);
-            }
+        const roles = json?.principal?.claims?.realm_access?.roles || [];
 
-            if (me) {
-              var meRole = me;
-              meRole.role = role;
-              setMe(meRole);
-            }
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        const roleUser: RoleState = roles.find(
+          (role: string) => role === RoleState.GUEST || role === RoleState.OPERATOR || role === RoleState.MANAGER
+        );
 
-      setLoading(false);
+        if (me) {
+          var meRole = me;
+          meRole.role = roleUser;
+          setMe(meRole);
+        }
+      } catch (err) {
+        console.error("Error fetching user roles:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    // Call immediately on component mount
     fetchUserRoles();
 
     // Call periodically every 15 minutes (900000 ms)
@@ -133,7 +115,7 @@ function App() {
             {!loading && me?.principal && (
               <Routes>
                 <Route path="/ui" element={<JobOffersPage />} />
-                <Route path="/ui/profile" element={<ProfilePage me={me} role={role} />} />
+                <Route path="/ui/profile" element={<ProfilePage me={me} />} />
                 <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage me={me} /> : <Navigate to="/not-found" />} />
                 <Route

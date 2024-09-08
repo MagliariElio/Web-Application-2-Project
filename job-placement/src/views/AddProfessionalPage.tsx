@@ -7,11 +7,7 @@ import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import { createProfessional } from "../apis/ProfessionalRequests";
 import { Professional } from "../interfaces/Professional";
-import {
-  deleteContactWhatContact,
-  fetchAllContactWhatContact,
-  postNewWhatContact,
-} from "../apis/ContactRequests";
+import { deleteContactWhatContact, fetchAllContactWhatContact, postNewWhatContact } from "../apis/ContactRequests";
 import { Email } from "../interfaces/Email";
 import { Telephone } from "../interfaces/Telephone";
 import { Address } from "../interfaces/Address";
@@ -28,15 +24,13 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
   const [emails, setEmails] = useState<any[]>([]);
   const [singleEmailAddress, setSingleEmailAddress] = useState("");
-  const [singleEmailAddressComment, setSingleEmailAddressComment] =
-    useState("");
+  const [singleEmailAddressComment, setSingleEmailAddressComment] = useState("");
   const [removedEmails, setRemovedEmails] = useState<number[]>([]);
   const [emailError, setEmailError] = useState(false);
 
   const [telephones, setTelephones] = useState<any[]>([]);
   const [singleTelephoneNumber, setSingleTelephoneNumber] = useState("");
-  const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] =
-    useState("");
+  const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] = useState("");
   const [telephoneError, setTelephoneError] = useState(false);
 
   const [addresses, setAddresses] = useState<any[]>([]);
@@ -52,7 +46,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
   const [skills, setSkills] = useState<string[]>([]);
   const [singleSkill, setSingleSkill] = useState("");
   const [geographicalLocation, setGeographicalLocation] = useState("");
-  const [dailyRate, setDailyRate] = useState(0);
+  const [dailyRate, setDailyRate] = useState("");
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -84,27 +78,19 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
       .catch((error) => {
         navigate("/ui/professionals", { state: { success: false } });
         console.log("Error during professional post: ", error);
-        throw new Error(
-          "POST /API/professionals : Network response was not ok"
-        );
+        throw new Error("POST /API/professionals : Network response was not ok");
       });
   };
 
   return (
-    <div>
+    <div className="add-job-offer-container">
       {contactModalOpen != null && (
         <ContactModal
           me={me}
           open={contactModalOpen}
           setOpen={setContactModalOpen}
           contactContainer={
-            contactModalOpen === "email"
-              ? emails
-              : contactModalOpen === "telephone"
-              ? telephones
-              : contactModalOpen === "address"
-              ? addresses
-              : []
+            contactModalOpen === "email" ? emails : contactModalOpen === "telephone" ? telephones : contactModalOpen === "address" ? addresses : []
           }
           setContactContainer={
             contactModalOpen === "email"
@@ -120,61 +106,32 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
         <Col>
-          <h3>Add new professional</h3>
+          <h3>Add New Professional</h3>
         </Col>
         <Col className="d-flex justify-content-end">
-          <Button
-            className="d-flex align-items-center secondaryButton"
-            onClick={() => navigate(-1)}
-          >
+          <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1)}>
             <BsXLg size={"1.5em"} />
           </Button>
         </Col>
       </Row>
 
       <Form onSubmit={handleSubmit}>
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+            <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Surname"
-              value={surname}
-              onChange={(e) => setSurname(e.target.value)}
-              required
-            />
+            <Form.Control placeholder="Surname" value={surname} onChange={(e) => setSurname(e.target.value)} required />
           </Col>
         </Row>
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Ssn code"
-              value={ssnCode}
-              required
-              onChange={(e) => setSsnCode(e.target.value)}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control
-              as="textarea"
-              placeholder="Comments"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              maxLength={255}
-            />
+        <Row className="justify-content-center">
+          <Col xs={12} md={6} lg={6} className="mb-4">
+            <Form.Control placeholder="SSN Code" value={ssnCode} required onChange={(e) => setSsnCode(e.target.value)} />
           </Col>
         </Row>
 
-        <Row>
-          <Col xs={12} md={12} lg={6} className="mb-4">
+        <Row className="justify-content-center mb-4">
+          <Col xs={12} md={12} lg={3}>
             <Form.Control
               placeholder="Geographical location"
               required
@@ -182,23 +139,36 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               onChange={(e) => setGeographicalLocation(e.target.value)}
             />
           </Col>
-        </Row>
 
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Label>Daily rate</Form.Label>
+          <Col xs={12} md={12} lg={3}>
             <Form.Control
-              type="number"
-              step="0.01"
+              type="text"
               placeholder="Daily rate"
               value={dailyRate}
-              onChange={(e) => setDailyRate(parseFloat(e.target.value))}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*\.?\d{0,2}$/.test(value)) {
+                  setDailyRate(value);
+                }
+              }}
+              onBlur={() => {
+                if (dailyRate) {
+                  const formattedValue = parseFloat(dailyRate).toFixed(2);
+                  setDailyRate(formattedValue);
+                }
+              }}
               min={0}
             />
           </Col>
         </Row>
 
-        <Row className="mt-5">
+        <Row className="justify-content-center">
+          <Col xs={12} md={12} lg={6} className="mb-4">
+            <Form.Control as="textarea" placeholder="Comments" value={comment} onChange={(e) => setComment(e.target.value)} maxLength={255} />
+          </Col>
+        </Row>
+
+        <Row className="mt-3 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -214,7 +184,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {emails.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
               <p>No emails added yet</p>
             </Col>
@@ -223,9 +193,9 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         {emails.length > 0 &&
           emails.map((email, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{email.email}</p>
                     </Col>
@@ -252,7 +222,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
               className="secondaryButton w-100"
@@ -265,14 +235,14 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {emailError && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-4">
               <p className="text-danger">Invalid email address</p>
             </Col>
           </Row>
         )}
 
-        <Row className="mt-5">
+        <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -288,7 +258,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {telephones.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
               <p>No phone numbers added yet</p>
             </Col>
@@ -297,18 +267,13 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         {telephones.length > 0 &&
           telephones.map((telephone, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{telephone.telephone}</p>
                     </Col>
-                    <Col
-                      xs={12}
-                      md={12}
-                      lg={6}
-                      className="mb-0  fs-10 fw-light"
-                    >
+                    <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
                       <p className="text-truncate">{telephone.comment}</p>
                     </Col>
                   </Row>
@@ -329,7 +294,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             );
           })}
 
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
               className="secondaryButton w-100"
@@ -342,7 +307,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
 
-        <Row className="mt-5">
+        <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -358,7 +323,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {addresses.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
               <p>No addresses added yet</p>
             </Col>
@@ -367,13 +332,11 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         {addresses.length > 0 &&
           addresses.map((address, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">
-                        {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}
-                      </p>
+                      <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
                     </Col>
                     <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
                       <p className="text-truncate">{address.comment}</p>
@@ -396,7 +359,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             );
           })}
 
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
               className="secondaryButton w-100"
@@ -409,7 +372,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
 
-        <Row className="mt-5">
+        <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -426,23 +389,19 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         </Row>
 
         {skills.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
               <p>No skills added yet</p>
             </Col>
           </Row>
         )}
         {
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-2">
               <Row className="d-flex flex-wrap ps-2">
                 {skills.length > 0 &&
                   skills.map((skill, index) => (
-                    <div
-                      key={index}
-                      style={{ width: "auto" }}
-                      className="text-truncate me-2 tag mb-1"
-                    >
+                    <div key={index} style={{ width: "auto" }} className="text-truncate me-2 tag mb-1">
                       {skill}
 
                       <BsX
@@ -460,13 +419,9 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Row>
         }
 
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={6} lg={5} className="mb-2">
-            <Form.Control
-              placeholder="New skill"
-              value={singleSkill}
-              onChange={(e) => setSingleSkill(e.target.value)}
-            />
+            <Form.Control placeholder="New skill" value={singleSkill} onChange={(e) => setSingleSkill(e.target.value)} />
           </Col>
           <Col xs={12} md={6} lg={1} className="mb-2">
             <Button
@@ -481,13 +436,8 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
 
-        <Row className="mt-5">
-          <Col
-            xs={12}
-            md={12}
-            lg={6}
-            className="d-flex flex-column justify-content-center align-items-center"
-          >
+        <Row className="mt-5 justify-content-center">
+          <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
             <Button type="submit" className="primaryButton">
               Save professional
             </Button>
@@ -500,9 +450,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
 export default AddProfessionalPage;
 
-const loadContactContacts = async (
-  whatContact: string
-): Promise<Email[] | Telephone[] | Address[]> => {
+const loadContactContacts = async (whatContact: string): Promise<Email[] | Telephone[] | Address[]> => {
   if (whatContact === "email") {
     try {
       const allEmails = await fetchAllContactWhatContact("email");
@@ -550,9 +498,7 @@ const ContactModal = ({
   contactContainer: Email[] | Telephone[] | Address[];
   setContactContainer: any;
 }) => {
-  const [contacts, setContacts] = useState<Email[] | Telephone[] | Address[]>(
-    []
-  );
+  const [contacts, setContacts] = useState<Email[] | Telephone[] | Address[]>([]);
 
   const [singleContact, setSingleContact] = useState("");
   const [singleContactComment, setSingleContactComment] = useState("");
@@ -585,8 +531,7 @@ const ContactModal = ({
       </Modal.Header>
       <Modal.Body>
         <small>
-          Click on a {open} to select it or use side buttons to edit and delete
-          them from the {open} book
+          Click on a {open} to select it or use side buttons to edit and delete them from the {open} book
         </small>
 
         {contacts.length === 0 && (
@@ -599,19 +544,13 @@ const ContactModal = ({
 
         {contacts.length > 0 &&
           contacts
-            .filter(
-              (contact) => !contactContainer.find((c) => c.id === contact.id)
-            )
+            .filter((contact) => !contactContainer.find((c) => c.id === contact.id))
             .filter(
               (contact) =>
-                (open === "email" &&
-                  (contact as Email).email.includes(singleContact) &&
-                  (contact as Email).comment.includes(singleContactComment)) ||
+                (open === "email" && (contact as Email).email.includes(singleContact) && (contact as Email).comment.includes(singleContactComment)) ||
                 (open === "telephone" &&
                   (contact as Telephone).telephone.includes(singleContact) &&
-                  (contact as Telephone).comment.includes(
-                    singleContactComment
-                  )) ||
+                  (contact as Telephone).comment.includes(singleContactComment)) ||
                 (open === "address" &&
                   (contact as Address).address.includes(singleContact) &&
                   (contact as Address).comment.includes(singleContactComment))
@@ -620,95 +559,62 @@ const ContactModal = ({
               if (open === "email") {
                 return (a as Email).email.localeCompare((b as Email).email);
               } else if (open === "telephone") {
-                return (a as Telephone).telephone.localeCompare(
-                  (b as Telephone).telephone
-                );
+                return (a as Telephone).telephone.localeCompare((b as Telephone).telephone);
               } else {
-                return (a as Address).address.localeCompare(
-                  (b as Address).address
-                );
+                return (a as Address).address.localeCompare((b as Address).address);
               }
             })
             .map((contact, index) => {
-              return ( <>
-                <Row
-                  key={index}
-                  className="mb-1 mt-2 ms-1 d-flex align-items-center"
-                >
-                  <Col
-                    xs={12}
-                    md={8}
-                    lg={10}
-                    className={"d-flex align-items-center justify-content-between " + (deleteSelected === contact.id ? "secondaryDangerButton" : "secondaryButton") }
-                    onClick={() => {
-                      setContactContainer([...contactContainer, contact]);
-                      setOpen(null);
-                    }}
-                  >
-                    <Row className="w-100">
-                      <Col
-                        xs={12}
-                        md={12}
-                        lg={6}
-                        className="my-2  d-flex align-items-center"
-                      >
-                        <p className="text-truncate m-0">
-                          {open === "email"
-                            ? (contact as Email).email
-                            : open === "telephone"
-                            ? (contact as Telephone).telephone
-                            : `${(contact as Address).address}, ${(contact as Address).city}, ${(contact as Address).region}, ${(contact as Address).state}`}
-                        </p>
-                      </Col>
-                      <Col
-                        xs={12}
-                        md={12}
-                        lg={6}
-                        className="my-2 fs-10 fw-light d-flex align-items-center"
-                      >
-                        <p className="text-truncate m-0">
-                          {open === "email"
-                            ? (contact as Email).comment
-                            : open === "telephone"
-                            ? (contact as Telephone).comment
-                            : (contact as Address).comment}
-                        </p>
-                      </Col>
-                    </Row>
-                  </Col>
-                  <Col xs={6} md={2} lg={1}>
-                    <Col className="mb-0">
-                      <Button
-                        className="secondaryButton w-100 d-flex justify-content-center align-items-center "
-                        onClick={() => {
-                          // setContacts(contacts.filter((e, i) => i !== index));
-                        }}
-                      >
-                        <BsPencilSquare size={20} />
-                      </Button>
+              return (
+                <>
+                  <Row key={index} className="mb-1 mt-2 ms-1 d-flex align-items-center">
+                    <Col
+                      xs={12}
+                      md={8}
+                      lg={10}
+                      className={
+                        "d-flex align-items-center justify-content-between " +
+                        (deleteSelected === contact.id ? "secondaryDangerButton" : "secondaryButton")
+                      }
+                      onClick={() => {
+                        setContactContainer([...contactContainer, contact]);
+                        setOpen(null);
+                      }}
+                    >
+                      <Row className="w-100">
+                        <Col xs={12} md={12} lg={6} className="my-2  d-flex align-items-center">
+                          <p className="text-truncate m-0">
+                            {open === "email"
+                              ? (contact as Email).email
+                              : open === "telephone"
+                              ? (contact as Telephone).telephone
+                              : `${(contact as Address).address}, ${(contact as Address).city}, ${(contact as Address).region}, ${
+                                  (contact as Address).state
+                                }`}
+                          </p>
+                        </Col>
+                        <Col xs={12} md={12} lg={6} className="my-2 fs-10 fw-light d-flex align-items-center">
+                          <p className="text-truncate m-0">
+                            {open === "email"
+                              ? (contact as Email).comment
+                              : open === "telephone"
+                              ? (contact as Telephone).comment
+                              : (contact as Address).comment}
+                          </p>
+                        </Col>
+                      </Row>
                     </Col>
-                  </Col>
-                  <Col xs={6} md={2} lg={1}>
-                    <Col className="mb-0">
-                      <Button
-                        className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
-                        onClick={() => {
-                          if (contact.id !== undefined) {
-                            setDeleteSelected(contact.id);
-                          }
-                        }}
-                      >
-                        <BsTrash size={20} />
-                      </Button>
-                    </Col>
-                  </Col>
-                </Row>
-                {
-                  deleteSelected === contact.id &&
-                  <Row className="mt-2 ms-2 d-flex align-items-center">
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-danger my-auto">Are you sure you want to delete this {open}?</p>
-                      <p className="text-danger my-auto">It will be also removed from all contacts using it</p>
+                    <Col xs={6} md={2} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryButton w-100 d-flex justify-content-center align-items-center "
+                          onClick={() => {
+                            // setContacts(contacts.filter((e, i) => i !== index));
+                          }}
+                        >
+                          <BsPencilSquare size={20} />
+                        </Button>
+                      </Col>
                     </Col>
                     <Col xs={6} md={2} lg={1}>
                       <Col className="mb-0">
@@ -716,39 +622,59 @@ const ContactModal = ({
                           className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
                           onClick={() => {
                             if (contact.id !== undefined) {
-                              deleteContactWhatContact(open!!, contact.id.toString(), me).then(() => {
-                                setContacts((prevContacts) => prevContacts.filter((e) => e.id !== contact.id) as Email[] | Telephone[] | Address[]);
-                  
-                                setDeleteSelected(null);
-                              });
+                              setDeleteSelected(contact.id);
                             }
                           }}
                         >
-                          Yes
-                        </Button>
-                      </Col>
-                    </Col>
-                    <Col xs={6} md={2} lg={1}>
-                      <Col className="mb-0">
-                        <Button
-                          className="secondaryButton w-100 d-flex justify-content-center align-items-center "
-                          onClick={() => {
-                            setDeleteSelected(null);
-                          }}
-                        >
-                          No
+                          <BsTrash size={20} />
                         </Button>
                       </Col>
                     </Col>
                   </Row>
-                }
-              </>);
+                  {deleteSelected === contact.id && (
+                    <Row className="mt-2 ms-2 d-flex align-items-center">
+                      <Col xs={12} md={12} lg={6} className="mb-0">
+                        <p className="text-danger my-auto">Are you sure you want to delete this {open}?</p>
+                        <p className="text-danger my-auto">It will be also removed from all contacts using it</p>
+                      </Col>
+                      <Col xs={6} md={2} lg={1}>
+                        <Col className="mb-0">
+                          <Button
+                            className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
+                            onClick={() => {
+                              if (contact.id !== undefined) {
+                                deleteContactWhatContact(open!!, contact.id.toString(), me).then(() => {
+                                  setContacts((prevContacts) => prevContacts.filter((e) => e.id !== contact.id) as Email[] | Telephone[] | Address[]);
+
+                                  setDeleteSelected(null);
+                                });
+                              }
+                            }}
+                          >
+                            Yes
+                          </Button>
+                        </Col>
+                      </Col>
+                      <Col xs={6} md={2} lg={1}>
+                        <Col className="mb-0">
+                          <Button
+                            className="secondaryButton w-100 d-flex justify-content-center align-items-center "
+                            onClick={() => {
+                              setDeleteSelected(null);
+                            }}
+                          >
+                            No
+                          </Button>
+                        </Col>
+                      </Col>
+                    </Row>
+                  )}
+                </>
+              );
             })}
 
         <Form className="mt-4">
-          <small className="mb-1 ms-1">
-            Use fields to search or create an email
-          </small>
+          <small className="mb-1 ms-1">Use fields to search or create an email</small>
           <Row className="d-flex align-items-center">
             <Col xs={12} md={12} lg={6} className="">
               <Form.Control
@@ -756,13 +682,7 @@ const ContactModal = ({
                 onChange={(e) => {
                   setSingleContact(e.target.value);
                 }}
-                placeholder={
-                  open === "email"
-                    ? "Email address"
-                    : open === "telephone"
-                    ? "Telephone number"
-                    : "Address"
-                }
+                placeholder={open === "email" ? "Email address" : open === "telephone" ? "Telephone number" : "Address"}
               />
             </Col>
             {open === "address" && (
@@ -796,47 +716,25 @@ const ContactModal = ({
                 </Col>
               </>
             )}
-            <Col xs={12} md={12} lg={open === "address" ? 9 : 3 } className="">
+            <Col xs={12} md={12} lg={open === "address" ? 9 : 3} className="">
               <Form.Control
                 value={singleContactComment}
                 onChange={(e) => {
                   setSingleContactComment(e.target.value);
                 }}
-                placeholder={
-                  open === "email"
-                    ? "Email address comment"
-                    : open === "telephone"
-                    ? "Telephone number comment"
-                    : "Address comment"
-                }
+                placeholder={open === "email" ? "Email address comment" : open === "telephone" ? "Telephone number comment" : "Address comment"}
               />
             </Col>
-            <Col
-              xs={12}
-              md={12}
-              lg={3}
-              className="d-flex flex-column justify-content-center align-items-center"
-            >
+            <Col xs={12} md={12} lg={3} className="d-flex flex-column justify-content-center align-items-center">
               <Button
                 disabled={
                   (open === "email" &&
-                    (singleContact.length === 0 ||
-                      contactContainer.some(
-                        (c): c is Email =>
-                          "email" in c && c.email === singleContact
-                      ))) ||
+                    (singleContact.length === 0 || contactContainer.some((c): c is Email => "email" in c && c.email === singleContact))) ||
                   (open === "telephone" &&
                     (singleContact.length === 0 ||
-                      contactContainer.some(
-                        (c): c is Telephone =>
-                          "telephone" in c && c.telephone === singleContact
-                      ))) ||
+                      contactContainer.some((c): c is Telephone => "telephone" in c && c.telephone === singleContact))) ||
                   (open === "address" &&
-                    (singleContact.length === 0 ||
-                      contactContainer.some(
-                        (c): c is Address =>
-                          "address" in c && c.address === singleContact
-                      )))
+                    (singleContact.length === 0 || contactContainer.some((c): c is Address => "address" in c && c.address === singleContact)))
                 }
                 className="primaryButton"
                 onClick={() => {
