@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Modal, Row, Toast, ToastContainer } from "react-bootstrap";
+import { Button, Col, Modal, OverlayTrigger, Row, Toast, ToastContainer, Tooltip } from "react-bootstrap";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { BsChevronDown, BsChevronUp, BsPencilSquare, BsTrash } from "react-icons/bs";
 import { MeInterface } from "../interfaces/MeInterface";
 import { employmentStateToText, toTitleCase } from "../utils/costants";
 import { deleteProfessional, fetchProfessional } from "../apis/ProfessionalRequests";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
-import { LoadingSection } from "../App";
 
 function ProfessionalPage({ me }: { me: MeInterface }) {
   // Estrai l'ID dall'URL
@@ -75,21 +74,26 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
           <Modal.Title>Delete professional</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="text-center">Are you sure you want to permanently delete professional</p>
+          <p style={{ color: "#856404", fontSize: "1rem", backgroundColor: "#fff3cd", padding: "10px", borderRadius: "5px" }}>
+            <strong>Warning:</strong> Are you sure you want to <strong>permanently delete</strong> this professional record? This action is <strong>irreversible</strong> and
+            will delete all <strong>associated job applications</strong>, including <strong>pending</strong> and <strong>accepted</strong> ones.
+            Linked job offers will revert to the <strong>selection phase</strong>.
+          </p>
+
           <p className="text-center fs-3 fw-semibold">
             {`${professional?.professionalDTO.information.name} ${professional?.professionalDTO.information.surname}?`}{" "}
           </p>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => handleCloseDeleteModal()}>
+        <Modal.Footer className="justify-content-between">
+          <Button variant="secondary" className="ms-5" onClick={() => handleCloseDeleteModal()}>
             Close
           </Button>
           <Button
             variant="danger"
+            className="me-5"
             onClick={() => {
               deleteProfessional(Number.parseInt(id!!), me)
                 .then((json) => {
-                  console.log("Deleted professional: ", json);
                   navigate("/ui/professionals", { state: { success: true } });
                 })
                 .catch((error) => {
@@ -109,14 +113,18 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
         </Col>
         {!loading && (
           <Col className="d-flex justify-content-end">
-            <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate(`/ui/professionals/${id}/edit`)}>
-              <BsPencilSquare size={"1em"} className="me-2" />
-              Edit Professional
-            </Button>
-            <Button className="d-flex align-items-center primaryDangerButton me-4" onClick={() => setShowDeleteModal(true)}>
-              <BsTrash size={"1em"} className="me-2" />
-              Delete Professional
-            </Button>
+            <OverlayTrigger overlay={<Tooltip id="editButton">Edit Professional</Tooltip>}>
+              <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate(`/ui/professionals/${id}/edit`)}>
+                <BsPencilSquare size={"1em"} className="me-2" />
+                Edit
+              </Button>
+            </OverlayTrigger>
+            <OverlayTrigger overlay={<Tooltip id="deleteButton">Delete Professional</Tooltip>}>
+              <Button className="d-flex align-items-center primaryDangerButton me-4" onClick={() => setShowDeleteModal(true)}>
+                <BsTrash size={"1em"} className="me-2" />
+                Delete
+              </Button>
+            </OverlayTrigger>
           </Col>
         )}
       </Row>
@@ -235,54 +243,55 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
         </Row>
       )}
 
-      {!loading && professional?.jobofferDTOS.map((joboffer) => (
-        <div
-          key={joboffer.id}
-          className="job-offer-item mb-4 p-3"
-          onClick={() =>
-            navigate(`/ui/joboffers/${joboffer.id}`, {
-              state: { jobOfferSelected: joboffer },
-            })
-          }
-        >
-          <Row className="align-items-center">
-            <Col xs={12} className="mb-2">
-              <h5 className="job-title">{joboffer.name}</h5>
-            </Col>
-            <Col md={6} xs={12}>
-              <p className="mb-1">
-                <strong>Contract Type:</strong> {joboffer.contractType}
-              </p>
-            </Col>
-            <Col md={6} xs={12}>
-              <p className="mb-1">
-                <strong>Location:</strong> {joboffer.location}
-              </p>
-            </Col>
-            <Col md={6} xs={12}>
-              <p className="mb-1">
-                <strong>Work Mode:</strong> {joboffer.workMode}
-              </p>
-            </Col>
-            <Col md={6} xs={12}>
-              <p className="mb-1">
-                <strong>Duration:</strong> {joboffer.duration} days
-              </p>
-            </Col>
-            <Col md={6} xs={12}>
-              <p className="mb-1">
-                <strong>Value:</strong> ${joboffer.value}
-              </p>
-            </Col>
-            <Col md={6} xs={12}>
-              <p className="mb-0">
-                <strong>Status:</strong>{" "}
-                <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
-              </p>
-            </Col>
-          </Row>
-        </div>
-      ))}
+      {!loading &&
+        professional?.jobofferDTOS.map((joboffer) => (
+          <div
+            key={joboffer.id}
+            className="job-offer-item mb-4 p-3"
+            onClick={() =>
+              navigate(`/ui/joboffers/${joboffer.id}`, {
+                state: { jobOfferSelected: joboffer },
+              })
+            }
+          >
+            <Row className="align-items-center">
+              <Col xs={12} className="mb-2">
+                <h5 className="job-title">{joboffer.name}</h5>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Contract Type:</strong> {joboffer.contractType}
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Location:</strong> {joboffer.location}
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Work Mode:</strong> {joboffer.workMode}
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Duration:</strong> {joboffer.duration} days
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-1">
+                  <strong>Value:</strong> ${joboffer.value}
+                </p>
+              </Col>
+              <Col md={6} xs={12}>
+                <p className="mb-0">
+                  <strong>Status:</strong>{" "}
+                  <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
+                </p>
+              </Col>
+            </Row>
+          </div>
+        ))}
     </div>
   );
 }

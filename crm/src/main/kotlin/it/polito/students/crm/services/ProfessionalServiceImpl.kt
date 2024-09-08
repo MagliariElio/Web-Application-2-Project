@@ -38,9 +38,28 @@ class ProfessionalServiceImpl(
 
         filterMap.entries.forEach { filter ->
             list = when (filter.key) {
-                ProfessionalEnumFields.SKILL -> list.filter { it.skills.any { skill -> skill.contains(filter.value, ignoreCase = true) } }
-                ProfessionalEnumFields.LOCATION -> list.filter { it.geographicalLocation.contains(filter.value, ignoreCase = true) }
-                ProfessionalEnumFields.EMPLOYMENT_STATE -> list.filter { it.employmentState.name.contains(filter.value, ignoreCase = true) }
+                ProfessionalEnumFields.SKILL -> list.filter {
+                    it.skills.any { skill ->
+                        skill.contains(
+                            filter.value,
+                            ignoreCase = true
+                        )
+                    }
+                }
+
+                ProfessionalEnumFields.LOCATION -> list.filter {
+                    it.geographicalLocation.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
+
+                ProfessionalEnumFields.EMPLOYMENT_STATE -> list.filter {
+                    it.employmentState.name.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
             }
         }
 
@@ -106,19 +125,34 @@ class ProfessionalServiceImpl(
         if (professional.isPresent) {
             val professionalSaved = professional.get()
 
-            if(professionalSaved.deleted){
+            if (professionalSaved.deleted) {
                 logger.info("ProfessionalService: The professional with id $professionalID was not found on the db")
                 throw ProfessionalNotFoundException("ProfessionalService: Professional with id=$professionalID not found!")
             }
 
-            professionalSaved.deleted = true
-
             professionalSaved.jobOffers.forEach { jobOffer ->
-                jobOffer.candidateProfessionals.remove(professionalSaved)
-                if(jobOffer.candidateProfessionals.isEmpty()){
+                jobOffer.candidateProfessionals.removeIf { it.id == professionalID }
+                jobOffer.candidatesProfessionalRejected.removeIf { it == professionalID }
+                jobOffer.candidatesProfessionalRevoked.removeIf { it == professionalID }
+
+                if (jobOffer.professional?.id == professionalID) {
+                    jobOffer.oldStatus = JobStatusEnum.CREATED
                     jobOffer.status = JobStatusEnum.SELECTION_PHASE
+                    jobOffer.professional = null
+                    jobOffer.value = 0.0
                 }
+
+                if (jobOffer.candidateProfessionals.isEmpty()) {
+                    jobOffer.oldStatus = JobStatusEnum.CREATED
+                    jobOffer.status = JobStatusEnum.CREATED
+                    jobOffer.value = 0.0
+                }
+
+                jobOfferRepository.save(jobOffer)
+                professionalSaved.jobOffers.removeIf { it.id == jobOffer.id }
             }
+
+            professionalSaved.deleted = true
 
             professionalRepository.save(professionalSaved)
 

@@ -318,20 +318,35 @@ class JobOfferServiceImpl(
                         throw ProfessionalNotFoundException("Professional not found")
                     }
 
-                    professional!!.jobOffers.add(oldJobOffer)
+                    if (professional!!.employmentState == EmploymentStateEnum.EMPLOYED || professional!!.employmentState == EmploymentStateEnum.NOT_AVAILABLE) {
+                        throw NotAvailableProfessionalException("This professional cannot start a job now")
+                    }
 
+                    if (professionalsId[0] != oldJobOffer.professional!!.id) {
+                        throw InconsistentProfessionalStatusTransitionException("This professional is not the one that passed the candidate proposal step")
+                    }
+
+                    // se viene scelto per questa job offer, in tutte le altre in pending non viene più selezionato
+                    professional?.jobOffers?.forEach {
+                        if(it.id != oldJobOffer.id && it.professional?.id == professional?.id) {
+                            it.oldStatus = JobStatusEnum.CREATED
+                            it.status = JobStatusEnum.SELECTION_PHASE
+                            it.professional = null
+                            it.value = 0.0
+
+                            if (it.candidateProfessionals.isEmpty()) {
+                                it.oldStatus = JobStatusEnum.CREATED
+                                it.status = JobStatusEnum.CREATED
+                            }
+                        }
+                    }
+
+                    professional!!.jobOffers.add(oldJobOffer)
                     professionalRepository.save(professional!!)
                 } catch (e: Exception) {
                     throw ProfessionalNotFoundException("Professional not found")
                 }
 
-                if (professional!!.employmentState == EmploymentStateEnum.EMPLOYED || professional!!.employmentState == EmploymentStateEnum.NOT_AVAILABLE) {
-                    throw NotAvailableProfessionalException("This professional cannot start a job now")
-                }
-
-                if (professionalsId[0] != oldJobOffer.professional!!.id) {
-                    throw InconsistentProfessionalStatusTransitionException("This professional is not the one that passed the candidate proposal step")
-                }
                 oldJobOffer.professional!!.employmentState = EmploymentStateEnum.EMPLOYED
                 oldJobOffer.professional!!.jobOffers.add(oldJobOffer)
                 if (note != null) oldJobOffer.note = note

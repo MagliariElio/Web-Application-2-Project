@@ -10,7 +10,6 @@ import it.polito.students.crm.repositories.*
 import it.polito.students.crm.utils.*
 import it.polito.students.crm.utils.Factory.Companion.toEntity
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -51,11 +50,34 @@ class CustomerServiceImpl(
         // Applica ulteriori filtri basati sui campi
         filterMap.entries.forEach { filter ->
             filteredList = when (filter.key) {
-                ContactEnumFields.NAME -> filteredList.filter { it.information.contactDTO.name.contains(filter.value, ignoreCase = true) }
-                ContactEnumFields.SURNAME -> filteredList.filter { it.information.contactDTO.surname.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.NAME -> filteredList.filter {
+                    it.information.contactDTO.name.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
+
+                ContactEnumFields.SURNAME -> filteredList.filter {
+                    it.information.contactDTO.surname.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
+
                 ContactEnumFields.CATEGORY -> filteredList.filter { it.information.contactDTO.category == CategoryOptions.CUSTOMER }
-                ContactEnumFields.SSN_CODE -> filteredList.filter { it.information.contactDTO.ssnCode.contains(filter.value, ignoreCase = true) }
-                ContactEnumFields.COMMENT -> filteredList.filter { it.information.contactDTO.comment.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.SSN_CODE -> filteredList.filter {
+                    it.information.contactDTO.ssnCode.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
+
+                ContactEnumFields.COMMENT -> filteredList.filter {
+                    it.information.contactDTO.comment.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
             }
         }
 
@@ -114,7 +136,8 @@ class CustomerServiceImpl(
 
     override fun updateCustomerDetails(customerID: Long, newContactDetails: CreateContactDTO): CustomerDTO {
         val customer = getCustomer(customerID).toEntity(factory)
-        val prev_contact = contactService.getContact(customer.information.id)        // if not found it raises an exception
+        val prev_contact =
+            contactService.getContact(customer.information.id)        // if not found it raises an exception
 
         if (prev_contact.category == CategoryOptions.PROFESSIONAL) {
             throw InvalidUpdateException(ErrorsPage.INVALID_UPDATE_CUSTOMER)
@@ -217,7 +240,7 @@ class CustomerServiceImpl(
         // Delete all Job Offers linked to the customer
         jobOfferList.forEach {
             it.deleted = true
-            if(it.professional?.employmentState == EmploymentStateEnum.EMPLOYED) {
+            if (it.professional?.employmentState == EmploymentStateEnum.EMPLOYED) {
                 it.professional!!.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
             }
             jobOfferRepository.save(it)

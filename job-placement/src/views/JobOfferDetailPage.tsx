@@ -46,6 +46,7 @@ import {
 import { LoadingSection } from "../App";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -169,7 +170,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       if (jobOfferSelected) {
         result = jobOfferSelected;
       } else if (id) {
-        result = await fetchJobOfferById(parseInt(id));
+        result = await fetchJobOfferById(parseFloat(id));
       } else {
         return;
       }
@@ -190,14 +191,24 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
       setLoading(false);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+
       setError(true);
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
-    //loadJobOffer(jobOfferSelected);
     loadJobOffer(null);
   }, [id]);
 
@@ -584,7 +595,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     return (
       <Container className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
         <Alert variant="danger" className="text-center w-50">
-          <h5>An error occurred. Please, reload the page!</h5>
+          {errorMessage ? <h5>{errorMessage}</h5> : <h5>An error occurred. Please, reload the page!</h5>}
         </Alert>
       </Container>
     );
@@ -592,7 +603,12 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
   return (
     <Container className="mt-2">
-      <ConfirmDeleteModal show={showModalDeleteConfirmation} handleClose={handleCloseModal} handleConfirm={handleDeleteJobOffer} />
+      <ConfirmDeleteModal
+        name={jobOffer?.name ? jobOffer?.name : ""}
+        show={showModalDeleteConfirmation}
+        handleClose={handleCloseModal}
+        handleConfirm={handleDeleteJobOffer}
+      />
       <ModalConfirmation
         show={showModalConfirmAbort}
         handleCancel={() => setShowModalConfirmAbort(false)}
@@ -624,7 +640,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         handleCancel={() => setShowModalConfirmApplication(false)}
         handleConfirm={handleGoToConsolidated}
         title="Confirm Application"
-        body="<strong>Notice:</strong> By confirming, this professional candidate will be assigned to work on the job offer. This operation can only be undone through <strong>revocation</strong>. Please <strong>confirm</strong> if you wish to proceed."
+        body="<strong>Notice:</strong> By confirming, this professional candidate will be assigned to work on the job offer. This operation can only be undone through <strong>revocation</strong>. Additionally, all pending applications for other job offers will be <strong>cancelled</strong>. Please <strong>confirm</strong> if you wish to proceed."
         actionType={true}
       />
 
@@ -701,17 +717,15 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   </Col>
                   {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
                     <>
-                      <Col md={2} className="d-flex justify-content-end">
-                        <OverlayTrigger overlay={<Tooltip id="deleteButton">Delete</Tooltip>}>
-                          <Button variant="danger" onClick={() => setShowModalDeleteConfirmation(true)}>
-                            <FaTrash /> Delete
+                      <Col className="d-flex justify-content-end">
+                        <OverlayTrigger overlay={<Tooltip id="editButton">Edit</Tooltip>}>
+                          <Button variant="primary" className="primaryButton me-3" onClick={() => setIsEditing(true)}>
+                            <BsPencilSquare /> Edit
                           </Button>
                         </OverlayTrigger>
-                      </Col>
-                      <Col md={1} className="d-flex justify-content-end">
-                        <OverlayTrigger overlay={<Tooltip id="editButton">Edit</Tooltip>}>
-                          <Button variant="primary" onClick={() => setIsEditing(true)}>
-                            <FaPen /> Edit
+                        <OverlayTrigger overlay={<Tooltip id="deleteButton">Delete</Tooltip>}>
+                          <Button variant="danger" className="primaryDangerButton" onClick={() => setShowModalDeleteConfirmation(true)}>
+                            <BsTrash /> Delete
                           </Button>
                         </OverlayTrigger>
                       </Col>
@@ -1453,26 +1467,28 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 };
 
 const ConfirmDeleteModal: React.FC<{
+  name: string;
   show: boolean;
   handleClose: () => void;
   handleConfirm: () => void;
-}> = ({ show, handleClose, handleConfirm }) => {
+}> = ({ name, show, handleClose, handleConfirm }) => {
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>Confirm Delete</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
-          Are you sure you want to delete this job offer? This action is
+        <p style={{ color: "#856404", fontSize: "1rem", backgroundColor: "#fff3cd", padding: "10px", borderRadius: "5px" }}>
+          <strong>Warning:</strong> Are you sure you want to delete this job offer? This action is
           <strong> irreversible</strong>.
         </p>
+        <p className="text-center fs-3 fw-semibold">{name}?</p>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+      <Modal.Footer className="justify-content-between">
+        <Button variant="secondary" className="ms-5" onClick={handleClose}>
           Cancel
         </Button>
-        <Button variant="danger" onClick={handleConfirm}>
+        <Button variant="danger" className="me-5" onClick={handleConfirm}>
           Confirm
         </Button>
       </Modal.Footer>
@@ -1669,10 +1685,10 @@ const ModalConfirmation: React.FC<{
         />
       </Modal.Body>
       <Modal.Footer className="justify-content-between">
-        <Button variant="secondary" onClick={handleCancel}>
+        <Button variant="secondary" className="ms-5" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button variant={actionType ? "success" : "danger"} onClick={handleConfirm}>
+        <Button variant={actionType ? "success" : "danger"} className="me-5" onClick={handleConfirm}>
           Confirm
         </Button>
       </Modal.Footer>

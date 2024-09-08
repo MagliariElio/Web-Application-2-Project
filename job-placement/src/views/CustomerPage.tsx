@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Modal, Row, Toast, ToastContainer } from "react-bootstrap";
+import { Button, ButtonGroup, Col, Modal, OverlayTrigger, Row, Toast, ToastContainer, Tooltip } from "react-bootstrap";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Customer } from "../interfaces/Customer";
 import { BsChevronDown, BsChevronUp, BsPencilSquare, BsPlus, BsTrash } from "react-icons/bs";
@@ -75,15 +75,18 @@ function CustomerPage({ me }: { me: MeInterface }) {
           <Modal.Title>Delete customer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="text-center">Are you sure you want to permanently delete customer</p>
+          <p style={{ color: "#856404", fontSize: "1rem", backgroundColor: "#fff3cd", padding: "10px", borderRadius: "5px" }}>
+            <strong>Warning:</strong> Are you certain you wish to permanently delete this customer? This action cannot be undone. All associated <strong>job offers</strong> will also be <strong>irreversibly removed</strong>, if present.
+          </p>
           <p className="text-center fs-3 fw-semibold">{`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname}?`} </p>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => handleCloseDeleteModal()}>
+        <Modal.Footer className="justify-content-between">
+          <Button variant="secondary" className="ms-5" onClick={() => handleCloseDeleteModal()}>
             Close
           </Button>
           <Button
             variant="danger"
+            className="me-5"
             onClick={() => {
               deleteCustomer(Number.parseInt(id!!), me)
                 .then((json) => {
@@ -107,14 +110,18 @@ function CustomerPage({ me }: { me: MeInterface }) {
         </Col>
         {!loading && (
           <Col className="d-flex justify-content-end">
-            <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate(`/ui/customers/${id}/edit`)}>
-              <BsPencilSquare size={"1em"} className="me-2" />
-              Edit Customer
-            </Button>
-            <Button className="d-flex align-items-center primaryDangerButton me-4" onClick={() => setShowDeleteModal(true)}>
-              <BsTrash size={"1em"} className="me-2" />
-              Delete Customer
-            </Button>
+            <OverlayTrigger overlay={<Tooltip id="editButton">Edit Customer</Tooltip>}>
+              <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate(`/ui/customers/${id}/edit`)}>
+                <BsPencilSquare size={"1em"} className="me-2" />
+                Edit
+              </Button>
+            </OverlayTrigger>
+            <OverlayTrigger overlay={<Tooltip id="deleteButton">Delete Customer</Tooltip>}>
+              <Button className="d-flex align-items-center primaryDangerButton me-4" onClick={() => setShowDeleteModal(true)}>
+                <BsTrash size={"1em"} className="me-2" />
+                Delete
+              </Button>
+            </OverlayTrigger>
           </Col>
         )}
       </Row>

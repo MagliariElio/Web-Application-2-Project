@@ -385,32 +385,36 @@ function ProfessionalsPage() {
                   )}
                 </Col>
               </Row>
-              <Col className="d-flex justify-content-center mt-4 justify-self-center">
-                <Pagination className="custom-pagination">
-                  <Pagination.First onClick={() => changePage(0)} disabled={professionals.currentPage === 0} />
-                  <Pagination.Prev onClick={() => changePage(professionals.currentPage - 1)} disabled={professionals.currentPage === 0} />
 
-                  {Array.from({ length: Math.min(5, professionals.totalPages) }, (_, index) => {
-                    const startPage = Math.max(Math.min(professionals.currentPage - 2, professionals.totalPages - 5), 0);
-                    const actualPage = startPage + index;
+              {/* Pagination */}
+              <Row className="mt-auto">
+                <Col className="d-flex justify-content-center mt-4 custom-pagination">
+                  <Pagination>
+                    <Pagination.First onClick={() => changePage(0)} disabled={professionals.currentPage === 0} />
+                    <Pagination.Prev onClick={() => changePage(professionals.currentPage - 1)} disabled={professionals.currentPage === 0} />
 
-                    return (
-                      <Pagination.Item key={actualPage} active={actualPage === professionals.currentPage} onClick={() => changePage(actualPage)}>
-                        {actualPage + 1}
-                      </Pagination.Item>
-                    );
-                  })}
+                    {Array.from({ length: Math.min(5, professionals.totalPages) }, (_, index) => {
+                      const startPage = Math.max(Math.min(professionals.currentPage - 2, professionals.totalPages - 5), 0);
+                      const actualPage = startPage + index;
 
-                  <Pagination.Next
-                    onClick={() => changePage(professionals.currentPage + 1)}
-                    disabled={professionals.currentPage + 1 === professionals.totalPages}
-                  />
-                  <Pagination.Last
-                    onClick={() => changePage(professionals.totalPages - 1)}
-                    disabled={professionals.currentPage + 1 === professionals.totalPages}
-                  />
-                </Pagination>
-              </Col>
+                      return (
+                        <Pagination.Item key={actualPage} active={actualPage === professionals.currentPage} onClick={() => changePage(actualPage)}>
+                          {actualPage + 1}
+                        </Pagination.Item>
+                      );
+                    })}
+
+                    <Pagination.Next
+                      onClick={() => changePage(professionals.currentPage + 1)}
+                      disabled={professionals.currentPage + 1 === professionals.totalPages}
+                    />
+                    <Pagination.Last
+                      onClick={() => changePage(professionals.totalPages - 1)}
+                      disabled={professionals.currentPage + 1 === professionals.totalPages}
+                    />
+                  </Pagination>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </>
