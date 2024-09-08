@@ -3,18 +3,13 @@ import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination, But
 import { JobOffer } from "../interfaces/JobOffer";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  FaBan,
   FaCheck,
   FaCheckCircle,
   FaCircle,
   FaClock,
-  FaExclamationTriangle,
-  FaHourglassHalf,
   FaMapMarkerAlt,
   FaMoneyBillWave,
   FaPen,
-  FaQuestionCircle,
-  FaSpinner,
   FaThumbsUp,
   FaTimes,
   FaTimesCircle,
@@ -126,6 +121,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   // Boolean Confirm Action through a Modal
   const [showModalConfirmAbort, setShowModalConfirmAbort] = useState(false);
   const [showModalConfirmDone, setShowModalConfirmDone] = useState(false);
+  const [showModalConfirmCandidate, setShowModalConfirmCandidate] = useState({ b: false, i: -1 });
+  const [showModalConfirmApplication, setShowModalConfirmApplication] = useState(false);
+  const [showModalCancelApplication, setShowModalCancelApplication] = useState(false);
+  const [showModalRevokeApplication, setShowModalRevokeApplication] = useState(false);
 
   const errorRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -327,6 +326,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
    * The function also manages the loading state during the asynchronous operations.
    */
   const handleGoToSelectionPhase = async () => {
+    setShowModalRevokeApplication(false);
+
     const jobOffer = {
       professionalsId: candidateProfessionalList.map((p: Professional) => p.id),
     };
@@ -407,6 +408,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const handleSelectCandidateProfessional = async (indexCandidate: number) => {
     const candidate = candidateProfessionalList[indexCandidate];
     try {
+      setShowModalConfirmCandidate({ b: false, i: -1 });
       setLoading(true);
 
       const jobOfferResponse = await goToCandidateProposalPhase(parseInt(id ? id : ""), me.xsrfToken, candidate.id);
@@ -434,6 +436,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
    * Displays an error message if the operation fails or if the state is not appropriate.
    */
   const handleGoToConsolidated = async () => {
+    setShowModalConfirmApplication(false);
+    
     if (jobOffer?.status !== JobOfferState.CANDIDATE_PROPOSAL || !professional?.id) {
       setErrorMessage("This action is not available in this moment.");
       if (errorRef.current) {
@@ -471,7 +475,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
    * Only available if the job offer is currently in the "candidate proposal" state.
    * Displays an error message if the operation fails or if the state is not appropriate.
    */
-  const handleCancelCadidation = async () => {
+  const handleCancelApplication = async () => {
+    setShowModalCancelApplication(false);
+
     if (jobOffer?.status !== JobOfferState.CANDIDATE_PROPOSAL) {
       setErrorMessage("This action is not available in this moment.");
       if (errorRef.current) {
@@ -598,8 +604,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         handleCancel={() => setShowModalConfirmAbort(false)}
         handleConfirm={handleAbortJobOffer}
         title="Confirm Job Offer Termination"
-        body="<strong>Important:</strong> You are about to terminate this job offer. This action is <strong>permanent</strong> and cannot be undone.
-          Please confirm if you wish to proceed with the termination."
+        body="<strong>Important:</strong> You are about to terminate this job offer. This action is <strong>permanent</strong> and cannot be undone. Please <strong>confirm</strong> if you wish to proceed with the termination."
         actionType={false}
       />
       <ModalConfirmation
@@ -607,8 +612,44 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         handleCancel={() => setShowModalConfirmDone(false)}
         handleConfirm={handleDoneJobOffer}
         title="Confirm Job Offer Completion"
-        body="<strong>Warning:</strong> You are about to mark this job offer as done. This action is <strong>permanent</strong> and cannot be undone. Please confirm if you wish to proceed."
+        body="<strong>Warning:</strong> You are about to mark this job offer as done. This action is <strong>permanent</strong> and cannot be undone. Please <strong>confirm</strong> if you wish to proceed."
         actionType={true}
+      />
+
+      <ModalConfirmation
+        show={showModalConfirmCandidate.b}
+        handleCancel={() => setShowModalConfirmCandidate({ b: false, i: -1 })}
+        handleConfirm={() => handleSelectCandidateProfessional(showModalConfirmCandidate.i)}
+        title="Confirm Candidate"
+        body="<strong>Warning:</strong> You are about to accept this professional candidate for the job offer. They will be responsible for completing it. This action can be undone later through <strong>cancellation</strong>. Please <strong>confirm</strong> if you wish to proceed."
+        actionType={true}
+      />
+
+      <ModalConfirmation
+        show={showModalConfirmApplication}
+        handleCancel={() => setShowModalConfirmApplication(false)}
+        handleConfirm={handleGoToConsolidated}
+        title="Confirm Application"
+        body="<strong>Notice:</strong> By confirming, this professional candidate will be assigned to work on the job offer. This operation can only be undone through <strong>revocation</strong>. Please <strong>confirm</strong> if you wish to proceed."
+        actionType={true}
+      />
+
+      <ModalConfirmation
+        show={showModalCancelApplication}
+        handleCancel={() => setShowModalCancelApplication(false)}
+        handleConfirm={handleCancelApplication}
+        title="Cancel Application"
+        body="<strong>Notice:</strong> By proceeding, you will cancel this professional candidate's application, returning them to the <strong>selection phase</strong>. Please <strong>confirm</strong> if you wish to continue with this action."
+        actionType={false}
+      />
+
+      <ModalConfirmation
+        show={showModalRevokeApplication}
+        handleCancel={() => setShowModalRevokeApplication(false)}
+        handleConfirm={handleGoToSelectionPhase}
+        title="Revoke Application"
+        body="<strong>Warning:</strong> By proceeding, you will revoke the professional candidate's acceptance for this job offer, returning them to the <strong>selection phase</strong>. Please <strong>confirm</strong> if you wish to continue with this action."
+        actionType={false}
       />
 
       <Row className="justify-content-center align-items-center">
@@ -1049,13 +1090,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && !isEditing && (
                       <>
                         <OverlayTrigger overlay={<Tooltip id="confirmApplicationButton">Confirm Application</Tooltip>}>
-                          <Button variant="success" className="me-2" onClick={handleGoToConsolidated}>
+                          <Button variant="success" className="me-2" onClick={() => setShowModalConfirmApplication(true)}>
                             <FaCheck className="me-1" />
                             Confirm
                           </Button>
                         </OverlayTrigger>
                         <OverlayTrigger overlay={<Tooltip id="cancelApplicationButton">Cancel Application</Tooltip>}>
-                          <Button variant="danger" onClick={handleCancelCadidation}>
+                          <Button variant="danger" onClick={() => setShowModalCancelApplication(true)}>
                             <FaTrash className="me-1" />
                             Cancel
                           </Button>
@@ -1064,7 +1105,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     )}
                     {jobOffer?.status === JobOfferState.CONSOLIDATED && !isEditing && (
                       <OverlayTrigger overlay={<Tooltip id="revokeApplicationButton">Revoke Acceptance</Tooltip>}>
-                        <Button variant="danger" onClick={handleGoToSelectionPhase}>
+                        <Button variant="danger" onClick={() => setShowModalRevokeApplication(true)}>
                           <FaTrash className="me-1" />
                           Revoke
                         </Button>
@@ -1298,7 +1339,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                         <Button
                                           variant="success"
                                           className="me-2"
-                                          onClick={() => handleSelectCandidateProfessional(index)}
+                                          onClick={() => setShowModalConfirmCandidate({ b: true, i: index })}
                                           disabled={
                                             jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
                                             isModifyCandidatesList ||
