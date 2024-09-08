@@ -24,6 +24,7 @@ import {
   EmploymentStateEnum,
   EmploymentStateEnumSearchCandidateProfessional,
   JobOfferState,
+  RoleState,
   toTitleCase,
   workModeList,
 } from "../utils/costants";
@@ -715,7 +716,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   <Col md={9}>
                     <h3 className="font-weight-bold">{jobOffer?.name}</h3>
                   </Col>
-                  {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
+                  {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && me.role === RoleState.OPERATOR && (
                     <>
                       <Col className="d-flex justify-content-end">
                         <OverlayTrigger overlay={<Tooltip id="editButton">Edit</Tooltip>}>
@@ -1167,23 +1168,24 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 <Col md={9} className="d-flex align-items-center">
                   <strong>Professional Candidates </strong>
                 </Col>
-                {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) && (
-                  <>
-                    <Col md={2} className="text-end">
-                      <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
-                        Add Candidate
-                      </Button>
-                    </Col>
-                    {isModifyCandidatesList && !loadingCandidateProfessional && (
-                      <Col md={1} className="text-end">
-                        {/* Si attiva quando si aggiunge un nuovo professional candidato */}
-                        <Button variant="success" onClick={handleGoToSelectionPhase}>
-                          Confirm
+                {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) &&
+                  me.role === RoleState.OPERATOR && (
+                    <>
+                      <Col md={2} className="text-end">
+                        <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
+                          Add Candidate
                         </Button>
                       </Col>
-                    )}
-                  </>
-                )}
+                      {isModifyCandidatesList && !loadingCandidateProfessional && (
+                        <Col md={1} className="text-end">
+                          {/* Si attiva quando si aggiunge un nuovo professional candidato */}
+                          <Button variant="success" onClick={handleGoToSelectionPhase}>
+                            Confirm
+                          </Button>
+                        </Col>
+                      )}
+                    </>
+                  )}
 
                 {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
                   <Col md={12} className="mt-2">
@@ -1438,7 +1440,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
             {!isEditing && (
               <Row className="mt-5">
-                {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && (
+                {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && me.role === RoleState.OPERATOR && (
                   <Col className="text-center">
                     <Button className="secondaryDangerButton mb-2" variant="danger" size="lg" onClick={() => setShowModalConfirmAbort(true)}>
                       Abort
@@ -1450,7 +1452,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     Go Back
                   </Button>
                 </Col>
-                {jobOffer?.status === JobOfferState.CONSOLIDATED && (
+                {jobOffer?.status === JobOfferState.CONSOLIDATED && me.role === RoleState.OPERATOR && (
                   <Col className="text-center">
                     <Button className="primarySuccessButton mb-2" variant="primary" size="lg" onClick={() => setShowModalConfirmDone(true)}>
                       Done

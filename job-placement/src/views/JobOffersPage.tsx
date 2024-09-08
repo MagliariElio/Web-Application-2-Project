@@ -5,12 +5,12 @@ import { BsPlus, BsSearch } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse.ts";
 import { useLocation, useNavigate } from "react-router-dom";
 import { JobOffer } from "../interfaces/JobOffer.ts";
-import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants.ts";
+import { contractTypeList, JobOfferState, RoleState, toTitleCase, workModeList } from "../utils/costants.ts";
 import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
-import { LoadingSection } from "../App.tsx";
 import { Filters } from "../interfaces/Filters.ts";
+import { MeInterface } from "../interfaces/MeInterface.ts";
 
-const JobOffersPage = () => {
+const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   const navigate = useNavigate();
 
   const [jobOffers, setJobOffers] = useState<PagedResponse<JobOffer> | null>(null);
@@ -180,12 +180,14 @@ const JobOffersPage = () => {
             </Form.Select>
           </Form.Group>
         </Col>
-        <Col md={2} className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/joboffers/add")}>
-            <BsPlus size={"1.5em"} className="me-1" />
-            Add Job Offer
-          </Button>
-        </Col>
+        {me.role === RoleState.OPERATOR && (
+          <Col md={2} className="d-flex justify-content-end">
+            <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/joboffers/add")}>
+              <BsPlus size={"1.5em"} className="me-1" />
+              Add Job Offer
+            </Button>
+          </Col>
+        )}
       </Row>
 
       {errorMessage && (
@@ -212,7 +214,7 @@ const JobOffersPage = () => {
             <div className="loading-card"></div>
             <div className="loading-card"></div>
             <div className="loading-card"></div>
-            </Col>
+          </Col>
         </Row>
       )}
 

@@ -11,7 +11,7 @@ import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, Bs
 import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
 import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
-import JPPageNotFound from "./views/PageNotFound.tsx";
+import PageNotFound from "./views/PageNotFound.tsx";
 import AddCustomerPage from "./views/AddCustomerPage.tsx";
 import AddJobOfferPage from "./views/AddJobOfferPage.tsx";
 import JobOfferDetail from "./views/JobOfferDetailPage.tsx";
@@ -22,6 +22,8 @@ import EditCustomerPage from "./views/EditCustomerPage.tsx";
 import { RoleState } from "./utils/costants.ts";
 import EditProfessionalPage from "./views/EditProfessionalPage.tsx";
 import { runCustomerTests, runJobOfferTests, runProfessionalTests } from "./testing/TestRunner.ts";
+import { FaSignInAlt, FaUsers } from "react-icons/fa";
+import AboutUs from "./views/AboutUs.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -114,7 +116,8 @@ function App() {
 
             {!loading && me?.principal && (
               <Routes>
-                <Route path="/ui" element={<JobOffersPage />} />
+                <Route path="/ui" element={<JobOffersPage me={me} />} />
+                <Route path="/ui/aboutus" element={<AboutUs />} />
                 <Route path="/ui/profile" element={<ProfilePage me={me} />} />
                 <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
                 <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage me={me} /> : <Navigate to="/not-found" />} />
@@ -136,10 +139,13 @@ function App() {
                   path="/ui/professionals/add"
                   element={me && me.principal !== null ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />}
                 />
-                <Route path="/ui/joboffers/add" element={me && me.principal !== null ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />} />
+                <Route
+                  path="/ui/joboffers/add"
+                  element={me && me.principal !== null && me.role === RoleState.OPERATOR ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />}
+                />
                 <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
 
-                <Route path="*" element={<JPPageNotFound />} />
+                <Route path="*" element={<PageNotFound />} />
               </Routes>
             )}
 
@@ -182,43 +188,57 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
           </div>
           <hr className="border-top border-light" />
         </div>
-        {me &&
-          me.principal !== null && ( // Only logged user links here
-            <>
-              <Nav.Link
-                className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
-                onClick={() => {
-                  if (location.pathname !== "/ui") navigate("/ui");
-                }}
-              >
-                <BsBriefcaseFill className={opened ? "me-2" : ""} />
-                {opened && "Job Offers"}
-              </Nav.Link>
-              <Nav.Link
-                className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
-                onClick={() => {
-                  if (location.pathname !== "/ui/customers") navigate("/ui/customers");
-                }}
-              >
-                <BsBuildingsFill className={opened ? "me-2" : ""} />
-                {opened && "Customers"}
-              </Nav.Link>
-              <Nav.Link
-                className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
-                onClick={() => {
-                  if (location.pathname !== "/ui/professionals") navigate("/ui/professionals");
-                }}
-              >
-                <BsBriefcaseFill className={opened ? "me-2" : ""} />
-                {opened && "Professionals"}
-              </Nav.Link>
-            </>
-          )}
+        {me?.principal !== null && ( // Only logged user links here
+          <>
+            <Nav.Link
+              className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
+              onClick={() => {
+                if (location.pathname !== "/ui") navigate("/ui");
+              }}
+            >
+              <BsBriefcaseFill className={opened ? "me-2" : ""} />
+              {opened && "Job Offers"}
+            </Nav.Link>
+            <Nav.Link
+              className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
+              onClick={() => {
+                if (location.pathname !== "/ui/customers") navigate("/ui/customers");
+              }}
+            >
+              <BsBuildingsFill className={opened ? "me-2" : ""} />
+              {opened && "Customers"}
+            </Nav.Link>
+            <Nav.Link
+              className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
+              onClick={() => {
+                if (location.pathname !== "/ui/professionals") navigate("/ui/professionals");
+              }}
+            >
+              <BsBriefcaseFill className={opened ? "me-2" : ""} />
+              {opened && "Professionals"}
+            </Nav.Link>
+          </>
+        )}
 
-        <Nav.Link href="#" className={opened ? navLinkClassnameOpened + " mt-auto" : navLinkClassnameClosed + " mt-auto"}>
-          <BsGearFill className={opened ? "me-2" : ""} />
-          {opened && "Settings"}
+        <div className="flex-grow-1"></div>
+
+        {me?.principal !== null && (
+            <Nav.Link href="#" className={opened ? navLinkClassnameOpened + " mt-auto" : navLinkClassnameClosed + " mt-auto"}>
+              <BsGearFill className={opened ? "me-2" : ""} />
+              {opened && "Settings"}
+            </Nav.Link>
+        )}
+
+        <Nav.Link
+          className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
+          onClick={() => {
+            if (location.pathname !== "/ui/aboutus") navigate("/ui/aboutus");
+          }}
+        >
+          <FaUsers className={opened ? "me-2" : ""} />
+          {opened && "About Us"}
         </Nav.Link>
+
         <Button
           className={
             opened
@@ -240,11 +260,16 @@ const LoginPrompt = () => {
       <Row className="justify-content-center">
         <Col md={8} lg={6}>
           <Card className="shadow-lg border-0">
-            <Card.Body className="text-center">
-              <Card.Title className="mb-4 fw-bold fs-3">Access Required</Card.Title>
+            <Card.Body className="text-center p-5">
+              <div className="icon-container mb-4">
+                <FaSignInAlt className="icon-login" />
+              </div>
+              <Card.Title className="mb-4 fw-bold fs-3" style={{ color: "#343a40" }}>
+                Access Required
+              </Card.Title>
               <Card.Text className="mb-4 fs-5 text-muted">
-                To continue using this application, please log in with your credentials. Click the properly button to be redirected to the secure
-                login page.
+                To continue using this application, please <strong>log in</strong> with your credentials. Click the properly button to be redirected
+                to the secure login page.
               </Card.Text>
             </Card.Body>
           </Card>
