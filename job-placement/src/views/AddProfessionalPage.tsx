@@ -28,7 +28,6 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
   const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
 
   const [emails, setEmails] = useState<any[]>([]);
-  //const [removedEmails, setRemovedEmails] = useState<number[]>([]);
 
   const [telephones, setTelephones] = useState<any[]>([]);
 
@@ -229,9 +228,6 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        // if (email.id !== undefined) {
-                        //   setRemovedEmails([...removedEmails, email.id]);
-                        // }
                         setEmails(emails.filter((e, i) => i !== index));
                       }}
                     >

@@ -7,6 +7,7 @@ import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import { Customer } from "../interfaces/Customer";
 import { fetchCustomer, updateCustomer } from "../apis/CustomerRequests";
+import { ContactModal } from "./AddProfessionalPage";
 
 function EditCustomerPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -17,25 +18,13 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   const [ssnCode, setSsnCode] = useState("");
   const [comment, setComment] = useState("");
 
+  const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
+
   const [emails, setEmails] = useState<any[]>([]);
-  const [singleEmailAddress, setSingleEmailAddress] = useState("");
-  const [singleEmailAddressComment, setSingleEmailAddressComment] = useState("");
-  const [emailError, setEmailError] = useState(false);
 
   const [telephones, setTelephones] = useState<any[]>([]);
-  const [singleTelephoneNumber, setSingleTelephoneNumber] = useState("");
-  const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] = useState("");
-  const [telephoneError, setTelephoneError] = useState(false);
 
   const [addresses, setAddresses] = useState<any[]>([]);
-  const [singleAddress, setSingleAddress] = useState({
-    address: "",
-    city: "",
-    region: "",
-    state: "",
-    comment: "",
-  });
-  const [addressError, setAddressError] = useState(false);
 
   useEffect(() => {
     if (id === undefined || id === null || id === "" || Number.parseInt(id) < 1) {
@@ -90,6 +79,33 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
 
   return (
     <div className="add-job-offer-container">
+
+{contactModalOpen != null && (
+        <ContactModal
+          me={me}
+          open={contactModalOpen}
+          setOpen={setContactModalOpen}
+          contactContainer={
+            contactModalOpen === "email"
+              ? emails
+              : contactModalOpen === "telephone"
+              ? telephones
+              : contactModalOpen === "address"
+              ? addresses
+              : []
+          }
+          setContactContainer={
+            contactModalOpen === "email"
+              ? setEmails
+              : contactModalOpen === "telephone"
+              ? setTelephones
+              : contactModalOpen === "address"
+              ? setAddresses
+              : []
+          }
+        />
+      )}
+
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
         <Col>
           <h3>Edit customer</h3>
@@ -152,9 +168,12 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         {emails.length > 0 &&
           emails.map((email, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
+              <Row
+                key={index}
+                className="mb-1 d-flex align-items-center justify-content-center"
+              >
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{email.email}</p>
                     </Col>
@@ -179,54 +198,17 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
             );
           })}
         <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={2} className="mb-2">
-            <Form.Control
-              placeholder="Email address"
-              value={singleEmailAddress}
-              onChange={(e) => {
-                setSingleEmailAddress(e.target.value);
-                setEmailError(false);
-              }}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Email address comment"
-              value={singleEmailAddressComment}
-              onChange={(e) => setSingleEmailAddressComment(e.target.value)}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={1} className="mb-2">
+          <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
               className="secondaryButton w-100"
               onClick={() => {
-                if (checkValidEmail(singleEmailAddress)) {
-                  setEmails([
-                    ...emails,
-                    {
-                      email: singleEmailAddress,
-                      comment: singleEmailAddressComment,
-                    },
-                  ]);
-                  setSingleEmailAddress("");
-                  setSingleEmailAddressComment("");
-                  setEmailError(false);
-                } else {
-                  setEmailError(true);
-                }
+                setContactModalOpen("email");
               }}
             >
               Add email
             </Button>
           </Col>
         </Row>
-        {emailError && (
-          <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6}>
-              <p className="text-danger">Invalid email address</p>
-            </Col>
-          </Row>
-        )}
 
         <Row className="mt-3 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
@@ -253,13 +235,21 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         {telephones.length > 0 &&
           telephones.map((telephone, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
+              <Row
+                key={index}
+                className="mb-1 d-flex align-items-center justify-content-center"
+              >
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{telephone.telephone}</p>
                     </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
+                    <Col
+                      xs={12}
+                      md={12}
+                      lg={6}
+                      className="mb-0  fs-10 fw-light"
+                    >
                       <p className="text-truncate">{telephone.comment}</p>
                     </Col>
                   </Row>
@@ -280,54 +270,17 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
             );
           })}
         <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={2} className="mb-2">
-            <Form.Control
-              placeholder="Telephone number"
-              value={singleTelephoneNumber}
-              onChange={(e) => {
-                setSingleTelephoneNumber(e.target.value);
-                setTelephoneError(false);
-              }}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Telephone number comment"
-              value={singleTelephoneNumberComment}
-              onChange={(e) => setSingleTelephoneNumberComment(e.target.value)}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={1} className="mb-2">
+          <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
-              className="secondaryButton w-100 px-0"
+              className="secondaryButton w-100"
               onClick={() => {
-                if (checkValidTelephone(singleTelephoneNumber)) {
-                  setTelephones([
-                    ...telephones,
-                    {
-                      telephone: singleTelephoneNumber,
-                      comment: singleTelephoneNumberComment,
-                    },
-                  ]);
-                  setSingleTelephoneNumber("");
-                  setSingleTelephoneNumberComment("");
-                  setTelephoneError(false);
-                } else {
-                  setTelephoneError(true);
-                }
+                setContactModalOpen("telephone");
               }}
             >
-              Add number
+              Add telephone
             </Button>
           </Col>
         </Row>
-        {telephoneError && (
-          <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6}>
-              <p className="text-danger">Invalid telephone number</p>
-            </Col>
-          </Row>
-        )}
 
         <Row className="mt-3 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
@@ -356,7 +309,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
             return (
               <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
                     </Col>
@@ -381,78 +334,19 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
             );
           })}
         <Row className="justify-content-center">
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Address"
-              value={singleAddress.address}
-              onChange={(e) => setSingleAddress({ ...singleAddress, address: e.target.value })}
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="City"
-              value={singleAddress.city}
-              onChange={(e) => setSingleAddress({ ...singleAddress, city: e.target.value })}
-            />
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Region"
-              value={singleAddress.region}
-              onChange={(e) => setSingleAddress({ ...singleAddress, region: e.target.value })}
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="State"
-              value={singleAddress.state}
-              onChange={(e) => setSingleAddress({ ...singleAddress, state: e.target.value })}
-            />
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
-            <Form.Control
-              as="textarea"
-              placeholder="Address comment"
-              value={singleAddress.comment}
-              onChange={(e) => setSingleAddress({ ...singleAddress, comment: e.target.value })}
-            />
-          </Col>
-        </Row>
-        {addressError && (
-          <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6} className="mb-2">
-              <p className="text-danger">Address, city, region and state are required</p>
-            </Col>
-          </Row>
-        )}
-        <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2 d-flex justify-content-center">
             <Button
-              className="secondaryButton"
+              className="secondaryButton w-100"
               onClick={() => {
-                if (singleAddress.address === "" || singleAddress.city === "" || singleAddress.region === "" || singleAddress.state === "") {
-                  setAddressError(true);
-                  return;
-                }
-                setAddresses([...addresses, singleAddress]);
-                setSingleAddress({
-                  address: "",
-                  city: "",
-                  region: "",
-                  state: "",
-                  comment: "",
-                });
-                setAddressError(false);
+                setContactModalOpen("address");
               }}
             >
               Add address
             </Button>
           </Col>
         </Row>
+
+        
 
         <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">

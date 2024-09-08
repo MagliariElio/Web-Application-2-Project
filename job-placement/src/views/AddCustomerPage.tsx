@@ -153,9 +153,6 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        // if (email.id !== undefined) {
-                        //   setRemovedEmails([...removedEmails, email.id]);
-                        // }
                         setEmails(emails.filter((e, i) => i !== index));
                       }}
                     >
