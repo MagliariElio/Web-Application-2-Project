@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsX, BsXLg } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,6 +13,8 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const errorRef = useRef<HTMLDivElement | null>(null);
 
   const { id } = useParams();
   const [contactID, setContactID] = useState<number>(0);
@@ -82,7 +84,62 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (name === "" || surname === "" || ssnCode === "") {
+    if (name.trim() === "") {
+      setErrorMessage("The name cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (surname.trim() === "") {
+      setErrorMessage("The surname cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (ssnCode.trim() === "") {
+      setErrorMessage("The SSN Code cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (geographicalLocation.trim() === "") {
+      setErrorMessage("The geographical location cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (skills.length === 0) {
+      setErrorMessage("You must add at least one skill before saving.");
+
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (addresses.length === 0) {
+      setErrorMessage("You must add at least one address before saving.");
+
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (emails.length === 0 && telephones.length === 0) {
+      setErrorMessage("You must add at least one email or phone number before saving.");
+
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
       return;
     }
 
@@ -132,6 +189,21 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
           </Row>
 
           <Form onSubmit={handleSubmit}>
+            {errorMessage && (
+              <Row className="justify-content-center" ref={errorRef}>
+                <Col xs={12} md={10} lg={6}>
+                  <Alert
+                    variant="danger"
+                    onClose={() => setErrorMessage("")}
+                    className="d-flex mt-3 justify-content-center align-items-center"
+                    dismissible
+                  >
+                    {errorMessage}
+                  </Alert>
+                </Col>
+              </Row>
+            )}
+
             <Row className="justify-content-center">
               <Col xs={12} md={6} lg={3} className="mb-4">
                 <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -172,6 +244,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                     }
                   }}
                   min={0}
+                  required
                 />
               </Col>
             </Row>
@@ -207,7 +280,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
             {emails.length === 0 && (
               <Row className="justify-content-center">
                 <Col xs={12} md={12} lg={6} className="mb-0">
-                  <p>No emails added yet</p>
+                  <p>No emails added yet.</p>
                 </Col>
               </Row>
             )}
@@ -308,7 +381,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
             {telephones.length === 0 && (
               <Row className="justify-content-center">
                 <Col xs={12} md={12} lg={6}>
-                  <p>No phone numbers added yet</p>
+                  <p>No phone numbers added yet.</p>
                 </Col>
               </Row>
             )}
@@ -409,7 +482,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
             {addresses.length === 0 && (
               <Row className="justify-content-center">
                 <Col xs={12} md={12} lg={6} className="mb-0">
-                  <p>No addresses added yet</p>
+                  <p>No addresses added yet.</p>
                 </Col>
               </Row>
             )}
@@ -556,7 +629,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
             {skills.length === 0 && (
               <Row className="justify-content-center">
                 <Col xs={12} md={12} lg={6} className="mb-0">
-                  <p>No skills added yet</p>
+                  <p>No skills added yet.</p>
                 </Col>
               </Row>
             )}
@@ -592,6 +665,14 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                 <Button
                   className="secondaryButton w-100"
                   onClick={() => {
+                    if (singleSkill.trim() === "") {
+                      setErrorMessage("Please enter a skill before adding.");
+                      if (errorRef.current) {
+                        errorRef.current.scrollIntoView({ behavior: "smooth" });
+                      }
+                      return;
+                    }
+                    
                     setSkills([...skills, singleSkill]);
                     setSingleSkill("");
                   }}

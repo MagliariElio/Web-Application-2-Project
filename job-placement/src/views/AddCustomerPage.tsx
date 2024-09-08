@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { useRef, useState } from "react";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,9 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
   const [surname, setSurname] = useState("");
   const [ssnCode, setSsnCode] = useState("");
   const [comment, setComment] = useState("");
-
+  const [errorMessage, setErrorMessage] = useState("");
+  const errorRef = useRef<HTMLDivElement | null>(null);
+  
   const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
 
   const [emails, setEmails] = useState<any[]>([]);
@@ -27,7 +29,45 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (name === "" || surname === "" || ssnCode === "") {
+    if (name.trim() === "") {
+      setErrorMessage("The name cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (surname.trim() === "") {
+      setErrorMessage("The surname cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (ssnCode.trim() === "") {
+      setErrorMessage("The SSN Code cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (addresses.length === 0) {
+      setErrorMessage("You must add at least one address before saving.");
+
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (emails.length === 0 && telephones.length === 0) {
+      setErrorMessage("You must add at least one email or phone number before saving.");
+
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
       return;
     }
 
@@ -87,6 +127,21 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
       </Row>
 
       <Form onSubmit={handleSubmit}>
+        {errorMessage && (
+          <Row className="justify-content-center" ref={errorRef}>
+            <Col xs={12} md={10} lg={6}>
+              <Alert
+                variant="danger"
+                onClose={() => setErrorMessage("")}
+                className="d-flex mt-3 justify-content-center align-items-center"
+                dismissible
+              >
+                {errorMessage}
+              </Alert>
+            </Col>
+          </Row>
+        )}
+
         <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -308,7 +363,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
             <Button type="submit" className="primaryButton">
-              Save customer
+              Save
             </Button>
           </Col>
         </Row>

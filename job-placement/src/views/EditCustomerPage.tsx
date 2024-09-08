@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import { Customer } from "../interfaces/Customer";
 import { fetchCustomer, updateCustomer } from "../apis/CustomerRequests";
@@ -25,6 +24,9 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   const [telephones, setTelephones] = useState<any[]>([]);
 
   const [addresses, setAddresses] = useState<any[]>([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const errorRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (id === undefined || id === null || id === "" || Number.parseInt(id) < 1) {
@@ -51,7 +53,45 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (name === "" || surname === "" || ssnCode === "") {
+    if (name.trim() === "") {
+      setErrorMessage("The name cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (surname.trim() === "") {
+      setErrorMessage("The surname cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (ssnCode.trim() === "") {
+      setErrorMessage("The SSN Code cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (addresses.length === 0) {
+      setErrorMessage("You must add at least one address before saving.");
+
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (emails.length === 0 && telephones.length === 0) {
+      setErrorMessage("You must add at least one email or phone number before saving.");
+
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
       return;
     }
 
@@ -79,20 +119,13 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
 
   return (
     <div className="add-job-offer-container">
-
-{contactModalOpen != null && (
+      {contactModalOpen != null && (
         <ContactModal
           me={me}
           open={contactModalOpen}
           setOpen={setContactModalOpen}
           contactContainer={
-            contactModalOpen === "email"
-              ? emails
-              : contactModalOpen === "telephone"
-              ? telephones
-              : contactModalOpen === "address"
-              ? addresses
-              : []
+            contactModalOpen === "email" ? emails : contactModalOpen === "telephone" ? telephones : contactModalOpen === "address" ? addresses : []
           }
           setContactContainer={
             contactModalOpen === "email"
@@ -118,6 +151,21 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
       </Row>
 
       <Form onSubmit={handleSubmit}>
+        {errorMessage && (
+          <Row className="justify-content-center" ref={errorRef}>
+            <Col xs={12} md={10} lg={6}>
+              <Alert
+                variant="danger"
+                onClose={() => setErrorMessage("")}
+                className="d-flex mt-3 justify-content-center align-items-center"
+                dismissible
+              >
+                {errorMessage}
+              </Alert>
+            </Col>
+          </Row>
+        )}
+
         <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -168,10 +216,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         {emails.length > 0 &&
           emails.map((email, index) => {
             return (
-              <Row
-                key={index}
-                className="mb-1 d-flex align-items-center justify-content-center"
-              >
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
@@ -235,21 +280,13 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         {telephones.length > 0 &&
           telephones.map((telephone, index) => {
             return (
-              <Row
-                key={index}
-                className="mb-1 d-flex align-items-center justify-content-center"
-              >
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{telephone.telephone}</p>
                     </Col>
-                    <Col
-                      xs={12}
-                      md={12}
-                      lg={6}
-                      className="mb-0  fs-10 fw-light"
-                    >
+                    <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
                       <p className="text-truncate">{telephone.comment}</p>
                     </Col>
                   </Row>
@@ -345,8 +382,6 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
             </Button>
           </Col>
         </Row>
-
-        
 
         <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
