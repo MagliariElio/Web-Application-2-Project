@@ -19,14 +19,12 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
 
   const [emails, setEmails] = useState<any[]>([]);
   const [singleEmailAddress, setSingleEmailAddress] = useState("");
-  const [singleEmailAddressComment, setSingleEmailAddressComment] =
-    useState("");
+  const [singleEmailAddressComment, setSingleEmailAddressComment] = useState("");
   const [emailError, setEmailError] = useState(false);
 
   const [telephones, setTelephones] = useState<any[]>([]);
   const [singleTelephoneNumber, setSingleTelephoneNumber] = useState("");
-  const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] =
-    useState("");
+  const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] = useState("");
   const [telephoneError, setTelephoneError] = useState(false);
 
   const [addresses, setAddresses] = useState<any[]>([]);
@@ -40,12 +38,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   const [addressError, setAddressError] = useState(false);
 
   useEffect(() => {
-    if (
-      id === undefined ||
-      id === null ||
-      id === "" ||
-      Number.parseInt(id) < 1
-    ) {
+    if (id === undefined || id === null || id === "" || Number.parseInt(id) < 1) {
       navigate("/not-found");
       return;
     }
@@ -62,9 +55,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
       })
       .catch((error) => {
         navigate("/not-found");
-        throw new Error(
-          `GET /API/customer/${id} : Network response was not ok`
-        );
+        throw new Error(`GET /API/customer/${id} : Network response was not ok`);
       });
   }, [id]);
 
@@ -98,62 +89,45 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   };
 
   return (
-    <div>
+    <div className="add-job-offer-container">
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
         <Col>
           <h3>Edit customer</h3>
         </Col>
         <Col className="d-flex justify-content-end">
-          <Button
-            className="d-flex align-items-center secondaryButton"
-            onClick={() => navigate(-1)}
-          >
+          <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1)}>
             <BsXLg size={"1.5em"} />
           </Button>
         </Col>
       </Row>
 
       <Form onSubmit={handleSubmit}>
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+            <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Surname"
-              value={surname}
-              onChange={(e) => setSurname(e.target.value)}
-              required
-            />
+            <Form.Control placeholder="Surname" value={surname} onChange={(e) => setSurname(e.target.value)} required />
           </Col>
         </Row>
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Ssn code"
-              value={ssnCode}
-              required
-              onChange={(e) => setSsnCode(e.target.value)}
-            />
+        <Row className="justify-content-center">
+          <Col xs={12} md={6} lg={6} className="mb-4">
+            <Form.Control placeholder="Ssn code" value={ssnCode} required onChange={(e) => setSsnCode(e.target.value)} />
           </Col>
         </Row>
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-4">
             <Form.Control
               as="textarea"
               placeholder="Comments"
               value={comment}
+              rows={4}
               onChange={(e) => setComment(e.target.value)}
               maxLength={255}
             />
           </Col>
         </Row>
-        <Row className="mt-5">
+        <Row className="mt-3 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -169,7 +143,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {emails.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
               <p>No emails added yet</p>
             </Col>
@@ -178,7 +152,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         {emails.length > 0 &&
           emails.map((email, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row>
                     <Col xs={12} md={12} lg={6} className="mb-0">
@@ -204,7 +178,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={2} className="mb-2">
             <Form.Control
               placeholder="Email address"
@@ -247,14 +221,14 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {emailError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
+          <Row className="justify-content-center">
+            <Col xs={12} md={12} lg={6}>
               <p className="text-danger">Invalid email address</p>
             </Col>
           </Row>
         )}
 
-        <Row className="mt-5">
+        <Row className="mt-3 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -270,8 +244,8 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {telephones.length === 0 && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-0">
+          <Row className="justify-content-center">
+            <Col xs={12} md={12} lg={6}>
               <p>No phone numbers added yet</p>
             </Col>
           </Row>
@@ -279,18 +253,13 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         {telephones.length > 0 &&
           telephones.map((telephone, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row>
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{telephone.telephone}</p>
                     </Col>
-                    <Col
-                      xs={12}
-                      md={12}
-                      lg={6}
-                      className="mb-0  fs-10 fw-light"
-                    >
+                    <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
                       <p className="text-truncate">{telephone.comment}</p>
                     </Col>
                   </Row>
@@ -310,7 +279,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={2} className="mb-2">
             <Form.Control
               placeholder="Telephone number"
@@ -353,14 +322,14 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {telephoneError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
+          <Row className="justify-content-center">
+            <Col xs={12} md={12} lg={6}>
               <p className="text-danger">Invalid telephone number</p>
             </Col>
           </Row>
         )}
 
-        <Row className="mt-5">
+        <Row className="mt-3 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -376,7 +345,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {addresses.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
               <p>No addresses added yet</p>
             </Col>
@@ -385,13 +354,11 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         {addresses.length > 0 &&
           addresses.map((address, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row>
                     <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">
-                        {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}
-                      </p>
+                      <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
                     </Col>
                     <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
                       <p className="text-truncate">{address.comment}</p>
@@ -413,83 +380,61 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-2">
             <Form.Control
               placeholder="Address"
               value={singleAddress.address}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, address: e.target.value })
-              }
+              onChange={(e) => setSingleAddress({ ...singleAddress, address: e.target.value })}
             />
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-2">
             <Form.Control
               placeholder="City"
               value={singleAddress.city}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, city: e.target.value })
-              }
+              onChange={(e) => setSingleAddress({ ...singleAddress, city: e.target.value })}
             />
           </Col>
         </Row>
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-2">
             <Form.Control
               placeholder="Region"
               value={singleAddress.region}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, region: e.target.value })
-              }
+              onChange={(e) => setSingleAddress({ ...singleAddress, region: e.target.value })}
             />
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-2">
             <Form.Control
               placeholder="State"
               value={singleAddress.state}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, state: e.target.value })
-              }
+              onChange={(e) => setSingleAddress({ ...singleAddress, state: e.target.value })}
             />
           </Col>
         </Row>
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Form.Control
               as="textarea"
               placeholder="Address comment"
               value={singleAddress.comment}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, comment: e.target.value })
-              }
+              onChange={(e) => setSingleAddress({ ...singleAddress, comment: e.target.value })}
             />
           </Col>
         </Row>
         {addressError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">
-                Address, city, region and state are required
-              </p>
+          <Row className="justify-content-center">
+            <Col xs={12} md={12} lg={6} className="mb-2">
+              <p className="text-danger">Address, city, region and state are required</p>
             </Col>
           </Row>
         )}
-        <Row>
-          <Col
-            xs={12}
-            md={12}
-            lg={6}
-            className="mb-2 d-flex justify-content-center"
-          >
+        <Row className="justify-content-center">
+          <Col xs={12} md={12} lg={6} className="mb-2 d-flex justify-content-center">
             <Button
               className="secondaryButton"
               onClick={() => {
-                if (
-                  singleAddress.address === "" ||
-                  singleAddress.city === "" ||
-                  singleAddress.region === "" ||
-                  singleAddress.state === ""
-                ) {
+                if (singleAddress.address === "" || singleAddress.city === "" || singleAddress.region === "" || singleAddress.state === "") {
                   setAddressError(true);
                   return;
                 }
@@ -509,15 +454,10 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
 
-        <Row className="mt-5">
-          <Col
-            xs={12}
-            md={12}
-            lg={6}
-            className="d-flex flex-column justify-content-center align-items-center"
-          >
+        <Row className="mt-5 justify-content-center">
+          <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
             <Button type="submit" className="primaryButton">
-              Save customer
+              Save
             </Button>
           </Col>
         </Row>

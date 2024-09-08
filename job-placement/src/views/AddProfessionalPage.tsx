@@ -150,7 +150,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
         <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control as="textarea" placeholder="Comments" value={comment} onChange={(e) => setComment(e.target.value)} maxLength={255} />
+            <Form.Control as="textarea" placeholder="Comments" rows={4} value={comment} onChange={(e) => setComment(e.target.value)} maxLength={255} />
           </Col>
         </Row>
 

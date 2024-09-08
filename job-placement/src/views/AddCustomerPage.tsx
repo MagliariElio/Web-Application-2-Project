@@ -18,7 +18,6 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
 
   const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
 
-
   const [emails, setEmails] = useState<any[]>([]);
 
   const [telephones, setTelephones] = useState<any[]>([]);
@@ -56,8 +55,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
 
   return (
     <div className="add-job-offer-container">
-
-{contactModalOpen != null && (
+      {contactModalOpen != null && (
         <ContactModal
           me={me}
           open={contactModalOpen}
@@ -104,7 +102,14 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         </Row>
         <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control as="textarea" placeholder="Comments" value={comment} onChange={(e) => setComment(e.target.value)} maxLength={255} />
+            <Form.Control
+              as="textarea"
+              placeholder="Comments"
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              maxLength={255}
+            />
           </Col>
         </Row>
         <Row className="mt-5 justify-content-center">
@@ -162,7 +167,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
             );
           })}
 
-<Row className="justify-content-center">
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
               className="secondaryButton w-100"
@@ -174,7 +179,6 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
             </Button>
           </Col>
         </Row>
-        
 
         <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
@@ -303,7 +307,6 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
             </Button>
           </Col>
         </Row>
-        
 
         <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">

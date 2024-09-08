@@ -6,5 +6,5 @@ export interface Professional{
     skills: string[],
     employmentState: 'EMPLOYED' | 'UNEMPLOYED' | 'AVAILABLE_FOR_WORK' | 'NOT_AVAILABLE';
     geographicalLocation: string,
-    dailyRate: number,
+    dailyRate: string,
 }
