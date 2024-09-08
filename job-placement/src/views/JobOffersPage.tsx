@@ -256,7 +256,7 @@ const JobOffersPage = () => {
                       </Col>
                       <Col md={6} xs={12}>
                         <p className="mb-1">
-                          <strong>Duration:</strong> {joboffer.duration} days
+                          <strong>Duration:</strong> {joboffer.duration} {joboffer.duration === 1 ? "day" : "days"}
                         </p>
                       </Col>
                       <Col md={6} xs={12}>

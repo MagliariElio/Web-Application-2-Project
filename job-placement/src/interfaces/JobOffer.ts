@@ -14,6 +14,6 @@ export interface JobOffer{
     customerId: number
     professionalId: number
     candidateProfessionalIds: number[],
-    candidatesProfessionalRefused: number[],
+    candidatesProfessionalRejected: number[],
     candidatesProfessionalRevoked: number[]
 }

@@ -90,11 +90,11 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [searchName, setSearchName] = useState("");
   const [searchSurname, setSearchSurname] = useState("");
   const [searchSsnCode, setSearchSsnCode] = useState("");
-  const [filterByRefused, setFilterByRefused] = useState(false);
+  const [filterByRejected, setFilterByRejected] = useState(false);
   const [filterByRevoked, setFilterByRevoked] = useState(false);
   const resetFilteredCandidateProfessionalList = (candidates: Professional[]) => {
-    if (filterByRefused) {
-      candidates = candidates.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id));
+    if (filterByRejected) {
+      candidates = candidates.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
     } else if (filterByRevoked) {
       candidates = candidates.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
     }
@@ -435,7 +435,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
    */
   const handleGoToConsolidated = async () => {
     setShowModalConfirmApplication(false);
-    
+
     if (jobOffer?.status !== JobOfferState.CANDIDATE_PROPOSAL || !professional?.id) {
       setErrorMessage("This action is not available in this moment.");
       if (errorRef.current) {
@@ -571,8 +571,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       setFilteredCandidateProfessionalList(list);
     }
 
-    if (filterByRefused === true) {
-      const list = updatedList.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id));
+    if (filterByRejected === true) {
+      const list = updatedList.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
       setFilteredCandidateProfessionalList(list);
     } else if (filterByRevoked === true) {
       const list = updatedList.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
@@ -834,7 +834,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               {!isEditing ? (
                 <div>
                   <FaClock className="mr-2" /> <strong>Duration: </strong>
-                  {jobOffer?.duration} days
+                  {jobOffer?.duration} {jobOffer?.duration === 1 ? "day" : "days"}
                 </div>
               ) : (
                 <Form.Group as={Row} controlId="duration" className="d-flex align-items-center">
@@ -1054,15 +1054,15 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
                 <Col xs={12} md={6} className="mb-3">
                   <Form.Label>Surname</Form.Label>
-                  <Form.Control type="text" name="professionalSurname" value={customer?.information.contactDTO.surname || ""} disabled />
+                  <Form.Control type="text" name="customerSurname" value={customer?.information.contactDTO.surname || ""} disabled />
                 </Col>
                 <Col xs={12} md={6} className="mb-3">
                   <Form.Label>Name</Form.Label>
-                  <Form.Control type="text" name="professionalName" value={customer?.information.contactDTO.name || ""} disabled />
+                  <Form.Control type="text" name="customerName" value={customer?.information.contactDTO.name || ""} disabled />
                 </Col>
                 <Col xs={12} md={6} className="mb-3">
                   <Form.Label>SSN Code</Form.Label>
-                  <Form.Control type="text" name="professionalSSnCode" value={customer?.information.contactDTO.ssnCode || ""} disabled />
+                  <Form.Control type="text" name="customerSSnCode" value={customer?.information.contactDTO.ssnCode || ""} disabled />
                 </Col>
               </Form.Group>
             </Col>
@@ -1191,7 +1191,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     <FaTimes className="me-2 text-danger" />
                     <span>Candidates who have rejected position:</span>
                     <strong className="ms-2">
-                      {filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRefused.includes(candidate.id)).length}
+                      {filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRejected.includes(candidate.id)).length}
                     </strong>
                   </div>
                   <div className="d-flex align-items-center">
@@ -1223,14 +1223,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       handleSearchChangeBySkill={(e: string) => {
                         setSearchSkill(e);
                         var list = candidateProfessionalList.filter((c) => c.skills.some((skill) => skill.toLowerCase().includes(e.toLowerCase())));
-                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list;
+                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                         list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
                         setFilteredCandidateProfessionalList(list);
                       }}
                       handleSearchChangeByLocation={(e: string) => {
                         setSearchLocation(e);
                         var list = candidateProfessionalList.filter((c) => c.geographicalLocation.toLowerCase().includes(e.toLowerCase()));
-                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list;
+                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                         list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
                         setFilteredCandidateProfessionalList(list);
                       }}
@@ -1238,7 +1238,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       handleSearchChangeByName={(e: string) => {
                         setSearchName(e);
                         var list = candidateProfessionalList.filter((c) => c.information.name.toLowerCase().includes(e.toLowerCase()));
-                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list;
+                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                         list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
                         setFilteredCandidateProfessionalList(list);
                       }}
@@ -1246,7 +1246,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       handleSearchChangeBySurname={(e: string) => {
                         setSearchSurname(e);
                         var list = candidateProfessionalList.filter((c) => c.information.surname.toLowerCase().includes(e.toLowerCase()));
-                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list;
+                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                         list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
                         setFilteredCandidateProfessionalList(list);
                       }}
@@ -1254,14 +1254,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       handleSearchChangeBySsnCode={(e: string) => {
                         setSearchSsnCode(e);
                         var list = candidateProfessionalList.filter((c) => c.information.ssnCode.toLowerCase().includes(e.toLowerCase()));
-                        list = filterByRefused ? list.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id)) : list;
+                        list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                         list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
                         setFilteredCandidateProfessionalList(list);
                       }}
-                      filterByRefused={filterByRefused}
-                      handleFilterByRefused={(e: boolean) => {
-                        setFilterByRefused(e);
-                        const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRefused.includes(c.id));
+                      filterByRejected={filterByRejected}
+                      handleFilterByRejected={(e: boolean) => {
+                        setFilterByRejected(e);
+                        const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
                         setFilteredCandidateProfessionalList(list);
                       }}
                       filterByRevoked={filterByRevoked}
@@ -1290,7 +1290,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           </tr>
                         )}
                         {filteredCandidateProfessionalList.map((candidate, index) => {
-                          const hasRefused = jobOffer?.candidatesProfessionalRefused.includes(candidate.id);
+                          const hasRejected = jobOffer?.candidatesProfessionalRejected.includes(candidate.id);
                           const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
                           const isPendingApproval = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
                           const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
@@ -1302,7 +1302,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                               <td>{candidate.information.surname}</td>
                               <td>{candidate.information.ssnCode}</td>
                               <td className="d-flex align-items-center justify-content-center text-center">
-                                {hasRefused && (
+                                {hasRejected && (
                                   <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
                                     <FaTimes className="me-1" />
                                     Rejected
@@ -1330,7 +1330,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                   </Badge>
                                 )}
 
-                                {!hasRefused && !hasAccepted && !isPendingApproval && !isRevoked && (
+                                {!hasRejected && !hasAccepted && !isPendingApproval && !isRevoked && (
                                   <ButtonGroup>
                                     {jobOffer?.status !== JobOfferState.CREATED && (
                                       <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
@@ -1678,8 +1678,8 @@ const SearchCandidate: React.FC<{
   handleSearchChangeBySurname: (e: string) => void;
   searchSsnCode: string;
   handleSearchChangeBySsnCode: (e: string) => void;
-  filterByRefused: boolean;
-  handleFilterByRefused: (e: boolean) => void;
+  filterByRejected: boolean;
+  handleFilterByRejected: (e: boolean) => void;
   filterByRevoked: boolean;
   handleFilterByRevoked: (e: boolean) => void;
 }> = ({
@@ -1694,8 +1694,8 @@ const SearchCandidate: React.FC<{
   handleSearchChangeBySurname,
   searchSsnCode,
   handleSearchChangeBySsnCode,
-  filterByRefused,
-  handleFilterByRefused,
+  filterByRejected,
+  handleFilterByRejected,
   filterByRevoked,
   handleFilterByRevoked,
 }) => {
@@ -1790,11 +1790,11 @@ const SearchCandidate: React.FC<{
               onChange={(e) => {
                 setFilter(e.target.value as "filterByRejection" | "");
                 if (e.target.value === "filterByRejection") {
-                  handleFilterByRefused(true);
+                  handleFilterByRejected(true);
                 } else if (e.target.value === "filterByRevokation") {
                   handleFilterByRevoked(true);
                 } else {
-                  handleFilterByRefused(false);
+                  handleFilterByRejected(false);
                   handleFilterByRevoked(false);
                 }
               }}

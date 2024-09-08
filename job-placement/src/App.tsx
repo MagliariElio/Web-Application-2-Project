@@ -93,8 +93,8 @@ function App() {
     // Call immediately on component mount
     fetchUserRoles();
 
-    // Call periodically every 5 minutes (300000 ms)
-    const interval = setInterval(fetchUserRoles, 300000);
+    // Call periodically every 15 minutes (900000 ms)
+    const interval = setInterval(fetchUserRoles, 900000);
 
     // Cleanup on unmount to avoid memory leaks
     return () => clearInterval(interval);
