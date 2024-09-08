@@ -23,25 +23,11 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
   const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
 
   const [emails, setEmails] = useState<any[]>([]);
-  const [singleEmailAddress, setSingleEmailAddress] = useState("");
-  const [singleEmailAddressComment, setSingleEmailAddressComment] = useState("");
-  const [removedEmails, setRemovedEmails] = useState<number[]>([]);
-  const [emailError, setEmailError] = useState(false);
+  //const [removedEmails, setRemovedEmails] = useState<number[]>([]);
 
   const [telephones, setTelephones] = useState<any[]>([]);
-  const [singleTelephoneNumber, setSingleTelephoneNumber] = useState("");
-  const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] = useState("");
-  const [telephoneError, setTelephoneError] = useState(false);
 
   const [addresses, setAddresses] = useState<any[]>([]);
-  const [singleAddress, setSingleAddress] = useState({
-    address: "",
-    city: "",
-    region: "",
-    state: "",
-    comment: "",
-  });
-  const [addressError, setAddressError] = useState(false);
 
   const [skills, setSkills] = useState<string[]>([]);
   const [singleSkill, setSingleSkill] = useState("");
@@ -209,9 +195,9 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        if (email.id !== undefined) {
-                          setRemovedEmails([...removedEmails, email.id]);
-                        }
+                        // if (email.id !== undefined) {
+                        //   setRemovedEmails([...removedEmails, email.id]);
+                        // }
                         setEmails(emails.filter((e, i) => i !== index));
                       }}
                     >
@@ -234,13 +220,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             </Button>
           </Col>
         </Row>
-        {emailError && (
-          <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">Invalid email address</p>
-            </Col>
-          </Row>
-        )}
+        
 
         <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
@@ -485,7 +465,7 @@ const loadContactContacts = async (whatContact: string): Promise<Email[] | Telep
   return [] as Email[] | Telephone[] | Address[];
 };
 
-const ContactModal = ({
+export const ContactModal = ({
   me,
   open,
   setOpen,
@@ -779,41 +759,3 @@ const ContactModal = ({
     </Modal>
   );
 };
-
-/*
-
-<Col xs={12} md={12} lg={2} className="mb-2">
-                    <Form.Control
-                        placeholder="Email address"
-                        value={singleEmailAddress}
-                        onChange={(e) => {setSingleEmailAddress(e.target.value); setEmailError(false);}}
-                    />
-                </Col>
-                <Col xs={12} md={12} lg={3} className="mb-2">
-                    <Form.Control
-                        placeholder="Email address comment"
-                        value={singleEmailAddressComment}
-                        onChange={(e) => setSingleEmailAddressComment(e.target.value)}
-                    />
-                </Col>
-
-
-
-
-
-
-
-                if(checkValidEmail(singleEmailAddress)) {
-                            setEmails([...emails, {email: singleEmailAddress, comment: singleEmailAddressComment}]);
-                            setSingleEmailAddress('');
-                            setSingleEmailAddressComment('');
-                            setEmailError(false);
-                        }
-                        else {
-                            setEmailError(true);
-                        }
-
-
-
-
-                */
