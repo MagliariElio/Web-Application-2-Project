@@ -105,8 +105,6 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     setSearchName("");
     setSearchSurname("");
     setSearchSsnCode("");
-    setFilterByRefused(false);
-    setFilterByRevoked(false);
   };
   const handleAddCandidate = (professional: Professional) => {
     var list: Professional[] = candidateProfessionalList;
@@ -1796,7 +1794,8 @@ const SearchCandidate: React.FC<{
                 } else if (e.target.value === "filterByRevokation") {
                   handleFilterByRevoked(true);
                 } else {
-                  resetList();
+                  handleFilterByRefused(false);
+                  handleFilterByRevoked(false);
                 }
               }}
             >
