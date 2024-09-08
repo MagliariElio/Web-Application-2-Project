@@ -197,4 +197,22 @@ class EmailServiceImpl(
         return emailRepository.save(newEmail).toDTO()
     }
 
+    override fun editEmail(emailId: Long, email: String, comment: String?): EmailDTO {
+        val optionalEmail = emailRepository.findById(emailId)
+
+        if (optionalEmail.isPresent) {
+            val emailEntity = optionalEmail.get()
+
+            emailEntity.email = email
+            emailEntity.comment = comment ?: ""
+
+            emailRepository.save(emailEntity)
+
+            return emailEntity.toDTO()
+
+        } else {
+            throw EntityNotFoundException("Email con ID $emailId non trovata.")
+        }
+    }
+
 }

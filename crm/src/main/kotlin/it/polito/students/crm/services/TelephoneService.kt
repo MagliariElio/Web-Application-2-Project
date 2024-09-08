@@ -73,4 +73,14 @@ interface TelephoneService {
      */
     fun deleteTelephone(telephoneId: Long)
 
+    /**
+     * edit an exisiting telephone to book
+     *
+     * @param telephoneId
+     * @param telephone
+     * @param comment
+     * @return - new telephone
+     */
+    fun editTelephone(telephoneId: Long, telephone: String, comment: String?): TelephoneDTO
+
 }

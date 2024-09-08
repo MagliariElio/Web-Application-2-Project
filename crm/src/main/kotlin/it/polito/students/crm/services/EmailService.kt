@@ -76,5 +76,15 @@ interface EmailService {
      */
     fun storeNewEmail(email:String, comment: String?): EmailDTO
 
+    /**
+     * Edit an existing email to emails book
+     *
+     * @param emailId
+     * @param email
+     * @param comment
+     * @return list of all emailsDTOs
+     */
+    fun editEmail(emailId: Long, email:String, comment: String?): EmailDTO
+
 
 }

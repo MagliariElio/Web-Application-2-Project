@@ -182,4 +182,32 @@ class AddressServiceImpl(
             throw EntityNotFoundException("Indirizzo con ID $addressId non trovato.")
         }
     }
+
+    override fun editAddress(
+        addressId: Long,
+        address: String?,
+        city: String?,
+        region: String?,
+        state: String?,
+        comment: String?
+    ): AddressDTO {
+        val optionalAddress = addressRepository.findById(addressId)
+
+        if (optionalAddress.isPresent) {
+            val addressEntity = optionalAddress.get()
+
+            addressEntity.address = address ?: ""
+            addressEntity.city = city ?: ""
+            addressEntity.region = region ?: ""
+            addressEntity.state = state ?: ""
+            addressEntity.comment = comment ?: ""
+
+            addressRepository.save(addressEntity)
+
+            return addressEntity.toDTO()
+
+        } else {
+            throw EntityNotFoundException("Indirizzo con ID $addressId non trovato.")
+        }
+    }
 }

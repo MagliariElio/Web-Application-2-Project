@@ -77,3 +77,31 @@ export const deleteContactWhatContact = async (whatContact: string, id: string, 
     throw error;
   }
 }
+
+export const editContactWhatContact = async (whatContact: string, id: string, updatedWhatContact: any, me: MeInterface): Promise<any> => {
+  try {
+    const response = await fetch(`/crmService/v1/API/contacts/whatContact/${whatContact}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-XSRF-Token': me.xsrfToken
+      },
+      body: JSON.stringify(updatedWhatContact)
+    });
+
+    if (!response.ok) {
+      const errorMessage = `PUT /API/contacts/whatContact/${whatContact}/${id} : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+
+    return data;
+
+  } catch (error) {
+
+    console.error("Error updating contact:", error);
+    throw error;
+  }
+}

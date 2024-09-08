@@ -187,4 +187,23 @@ class TelephoneServiceImpl(
             throw EntityNotFoundException("Telefono con ID $telephoneId non trovato.")
         }
     }
+
+    override fun editTelephone(telephoneId: Long, telephone: String, comment: String?): TelephoneDTO {
+        val optionalTelephone = telephoneRepository.findById(telephoneId)
+
+        if (optionalTelephone.isPresent) {
+            val telephoneEntity = optionalTelephone.get()
+
+            telephoneEntity.telephone = telephone
+            telephoneEntity.comment = comment ?: ""
+
+            telephoneRepository.save(telephoneEntity)
+
+            return telephoneEntity.toDTO()
+
+
+        } else {
+            throw EntityNotFoundException("Telefono con ID $telephoneId non trovato.")
+        }
+    }
 }
