@@ -1,24 +1,12 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Col,
-  Modal,
-  Row,
-  Toast,
-  ToastContainer,
-} from "react-bootstrap";
+import { Button, Col, Modal, Row, Toast, ToastContainer } from "react-bootstrap";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Customer } from "../interfaces/Customer";
-import {
-  BsChevronDown,
-  BsChevronUp,
-  BsPencilSquare,
-  BsPlus,
-  BsTrash,
-} from "react-icons/bs";
+import { BsChevronDown, BsChevronUp, BsPencilSquare, BsPlus, BsTrash } from "react-icons/bs";
 import { MeInterface } from "../interfaces/MeInterface";
 import { deleteCustomer, fetchCustomer } from "../apis/CustomerRequests";
 import { toTitleCase } from "../utils/costants";
+import { LoadingSection } from "../App";
 
 function CustomerPage({ me }: { me: MeInterface }) {
   // Estrai l'ID dall'URL
@@ -48,12 +36,7 @@ function CustomerPage({ me }: { me: MeInterface }) {
   const [expandedInfoSection, setExpandedInfoSection] = useState(false);
 
   useEffect(() => {
-    if (
-      id === undefined ||
-      id === null ||
-      id === "" ||
-      Number.parseInt(id) < 1
-    ) {
+    if (id === undefined || id === null || id === "" || Number.parseInt(id) < 1) {
       navigate("/not-found");
       return;
     }
@@ -76,23 +59,13 @@ function CustomerPage({ me }: { me: MeInterface }) {
     <div className="w-100">
       {showAlert && (
         <ToastContainer position="top-end" className="p-3">
-          <Toast
-            bg={success ? "success" : "danger"}
-            show={success != null}
-            onClose={() => (location.state = null)}
-          >
+          <Toast bg={success ? "success" : "danger"} show={success != null} onClose={() => (location.state = null)}>
             <Toast.Header>
-              <img
-                src="holder.js/20x20?text=%20"
-                className="rounded me-2"
-                alt=""
-              />
+              <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
               <strong className="me-auto">JobConnect</strong>
               <small>now</small>
             </Toast.Header>
-            <Toast.Body>
-              {success ? "Operation correctly executed!" : "Operation failed!"}
-            </Toast.Body>
+            <Toast.Body>{success ? "Operation correctly executed!" : "Operation failed!"}</Toast.Body>
           </Toast>
         </ToastContainer>
       )}
@@ -102,12 +75,8 @@ function CustomerPage({ me }: { me: MeInterface }) {
           <Modal.Title>Delete customer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="text-center">
-            Are you sure you want to permanently delete customer
-          </p>
-          <p className="text-center fs-3 fw-semibold">
-            {`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname}?`}{" "}
-          </p>
+          <p className="text-center">Are you sure you want to permanently delete customer</p>
+          <p className="text-center fs-3 fw-semibold">{`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname}?`} </p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => handleCloseDeleteModal()}>
@@ -132,13 +101,7 @@ function CustomerPage({ me }: { me: MeInterface }) {
         </Modal.Footer>
       </Modal>
 
-      {loading && (
-        <Row className="d-flex justify-content-center align-items-center w-100 p-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </Row>
-      )}
+      {loading && <LoadingSection h={null} />}
       {!loading && (
         <>
           <Row className="d-flex flex-row p-0 mb-3 align-items-center">
@@ -146,17 +109,11 @@ function CustomerPage({ me }: { me: MeInterface }) {
               <h3>Customer</h3>
             </Col>
             <Col className="d-flex justify-content-end">
-              <Button
-                className="d-flex align-items-center primaryButton me-4"
-                onClick={() => navigate(`/ui/customers/${id}/edit`)}
-              >
+              <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate(`/ui/customers/${id}/edit`)}>
                 <BsPencilSquare size={"1em"} className="me-2" />
                 Edit Customer
               </Button>
-              <Button
-                className="d-flex align-items-center primaryDangerButton me-4"
-                onClick={() => setShowDeleteModal(true)}
-              >
+              <Button className="d-flex align-items-center primaryDangerButton me-4" onClick={() => setShowDeleteModal(true)}>
                 <BsTrash size={"1em"} className="me-2" />
                 Delete Customer
               </Button>
@@ -167,15 +124,11 @@ function CustomerPage({ me }: { me: MeInterface }) {
             <Row className="d-flex mb-2">
               <h4 className="p-0 m-0 d-flex align-items-center">
                 {`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname}`}
-                <span className="fw-light fs-6 ms-2">
-                  ({customer?.information.contactDTO.ssnCode})
-                </span>
+                <span className="fw-light fs-6 ms-2">({customer?.information.contactDTO.ssnCode})</span>
               </h4>
             </Row>
             <Row className="d-flex">
-              <p className="p-0 m-0 fs-6 fw-light">
-                {customer?.information.contactDTO.comment}
-              </p>
+              <p className="p-0 m-0 fs-6 fw-light">{customer?.information.contactDTO.comment}</p>
             </Row>
 
             {expandedInfoSection && (
@@ -220,15 +173,12 @@ function CustomerPage({ me }: { me: MeInterface }) {
 
                 <Col xs={12} md={6} lg={4}>
                   <Row className="d-flex flex-column mt-3">
-                    <Row className="d-flex"> 
+                    <Row className="d-flex">
                       <h6 className="p-0 m-0 mb-2">Addresses</h6>
                     </Row>
                     {customer?.information.addressDTOs.map((address, index) => (
                       <Row key={index} className="d-flex mb-2">
-                        <p className="p-0 m-0 fs-6">
-                          {" "}
-                          {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}{" "}
-                        </p>
+                        <p className="p-0 m-0 fs-6"> {`${address.address}, ${address.city}, ${address.region}, ${address.state}`} </p>
                         <small className="m-0 p-0">{address.comment}</small>
                       </Row>
                     ))}
@@ -269,18 +219,18 @@ function CustomerPage({ me }: { me: MeInterface }) {
             <Row className="d-flex justify-content-between mt-5 mb-3">
               <h4 className="w-25">Job Offers</h4>
               <Col xs="auto" className="me-4">
-              <Button
-                className="d-flex align-items-center primaryButton"
-                onClick={() =>
-                  navigate(`/ui/joboffers/add`, {
-                    state: { customer: customer },
-                  })
-                }
-              >
-                <BsPlus size={"1.5em"} className="me-1" />
-                Add Job Offer
-              </Button>
-            </Col>
+                <Button
+                  className="d-flex align-items-center primaryButton"
+                  onClick={() =>
+                    navigate(`/ui/joboffers/add`, {
+                      state: { customer: customer },
+                    })
+                  }
+                >
+                  <BsPlus size={"1.5em"} className="me-1" />
+                  Add Job Offer
+                </Button>
+              </Col>
             </Row>
           )}
 
@@ -332,9 +282,7 @@ function CustomerPage({ me }: { me: MeInterface }) {
                 <Col md={6} xs={12}>
                   <p className="mb-0">
                     <strong>Status:</strong>{" "}
-                    <span className={`status ${joboffer.status.toLowerCase()}`}>
-                      {toTitleCase(joboffer.status).toLocaleUpperCase()}
-                    </span>
+                    <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
                   </p>
                 </Col>
               </Row>

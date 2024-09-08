@@ -1191,7 +1191,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     <FaTimes className="me-2 text-danger" />
                     <span>Candidates who have rejected position:</span>
                     <strong className="ms-2">
-                      {filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRejected.includes(candidate.id)).length}
+                      {
+                        filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRejected.includes(candidate.id))
+                          .length
+                      }
                     </strong>
                   </div>
                   <div className="d-flex align-items-center">
@@ -1218,6 +1221,11 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   <>
                     <SearchCandidate
                       resetList={() => resetFilteredCandidateProfessionalList(candidateProfessionalList)}
+                      resetFilters={() => {
+                        setFilterByRejected(false);
+                        setFilterByRevoked(false);
+                        setFilteredCandidateProfessionalList(candidateProfessionalList);
+                      }}
                       searchSkill={searchSkill}
                       searchLocation={searchLocation}
                       handleSearchChangeBySkill={(e: string) => {
@@ -1287,6 +1295,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           <tr key={0}>
                             <td>-1</td>
                             <td>No professional candidates found with this filter.</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                           </tr>
                         )}
                         {filteredCandidateProfessionalList.map((candidate, index) => {
@@ -1668,6 +1679,7 @@ const ModalConfirmation: React.FC<{
 
 const SearchCandidate: React.FC<{
   resetList: () => void;
+  resetFilters: () => void;
   searchSkill: string;
   handleSearchChangeBySkill: (e: string) => void;
   searchLocation: string;
@@ -1684,6 +1696,7 @@ const SearchCandidate: React.FC<{
   handleFilterByRevoked: (e: boolean) => void;
 }> = ({
   resetList,
+  resetFilters,
   searchSkill,
   handleSearchChangeBySkill,
   searchLocation,
@@ -1788,14 +1801,13 @@ const SearchCandidate: React.FC<{
               style={{ cursor: "pointer" }}
               value={filter}
               onChange={(e) => {
-                setFilter(e.target.value as "filterByRejection" | "");
+                setFilter(e.target.value as "filterByRejection" | "filterByRevokation" | "");
                 if (e.target.value === "filterByRejection") {
                   handleFilterByRejected(true);
                 } else if (e.target.value === "filterByRevokation") {
                   handleFilterByRevoked(true);
                 } else {
-                  handleFilterByRejected(false);
-                  handleFilterByRevoked(false);
+                  resetFilters();
                 }
               }}
             >
