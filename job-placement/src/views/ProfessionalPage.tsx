@@ -167,7 +167,7 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                   </Row>
 
                   <Row className="d-flex">
-                    <p className="p-0 m-0 fs-6">{professional?.professionalDTO.dailyRate} </p>
+                    <p className="p-0 m-0 fs-6">{professional?.professionalDTO.dailyRate} $</p>
                   </Row>
                 </Row>
               </Col>
