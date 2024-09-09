@@ -8,19 +8,16 @@ import it.polito.students.crm.dtos.*
 import it.polito.students.crm.entities.*
 import it.polito.students.crm.exception_handlers.ContactNotFoundException
 import it.polito.students.crm.exception_handlers.CustomerNotFoundException
-import it.polito.students.crm.exception_handlers.ProfessionalNotFoundException
 import it.polito.students.crm.repositories.*
 import it.polito.students.crm.services.ContactServiceImpl
 import it.polito.students.crm.services.CustomerServiceImpl
 import it.polito.students.crm.utils.CategoryOptions
 import it.polito.students.crm.utils.ContactEnumFields
 import it.polito.students.crm.utils.Factory
-import it.polito.students.crm.utils.Factory.Companion.copy
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.internal.stubbing.answers.ThrowsException
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -32,13 +29,13 @@ import java.util.*
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 class CrmCustomersServiceUnitTest {
-    private final val customerRepository: CustomerRepository = mockk()
-    private final val contactRepository: ContactRepository = mockk()
-    private final val addressRepository: AddressRepository = mockk()
-    private final val emailRepository: EmailRepository = mockk()
-    private final val telephoneRepository: TelephoneRepository = mockk()
-    private final val jobOfferRepository: JobOfferRepository = mockk()
-    private final val factory = Factory(jobOfferRepository)
+    private val customerRepository: CustomerRepository = mockk()
+    private val contactRepository: ContactRepository = mockk()
+    private val addressRepository: AddressRepository = mockk()
+    private val emailRepository: EmailRepository = mockk()
+    private val telephoneRepository: TelephoneRepository = mockk()
+    private val jobOfferRepository: JobOfferRepository = mockk()
+    private val factory = Factory(jobOfferRepository)
 
     val contactService = ContactServiceImpl(contactRepository, emailRepository, telephoneRepository, addressRepository)
 
@@ -289,11 +286,11 @@ class CrmCustomersServiceUnitTest {
         }
 
         //every { contactService.storeContact(contactCreate, CategoryOptions.CUSTOMER) } returns newContact.toDTOWithAssociatedData()
-        for (emailField in newContact.emails!!) {
+        for (emailField in newContact.emails) {
             every { emailRepository.findByEmail(emailField.email) } returns emailField
         }
 
-        for (addressField in newContact.addresses!!) {
+        for (addressField in newContact.addresses) {
             every {
                 addressRepository.findByAddressIgnoreCaseAndCityIgnoreCaseAndRegionIgnoreCaseAndStateIgnoreCase(
                     addressField.address,
@@ -304,7 +301,7 @@ class CrmCustomersServiceUnitTest {
             } returns addressField
         }
 
-        for (telephoneField in newContact.telephones!!) {
+        for (telephoneField in newContact.telephones) {
             every { telephoneRepository.findByTelephone(telephoneField.telephone) } returns telephoneField
         }
 

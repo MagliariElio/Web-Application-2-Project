@@ -17,8 +17,6 @@ import org.apache.coyote.BadRequestException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -134,7 +132,7 @@ class CrmCustomersController(private val customerService: CustomerService) {
         @RequestBody requestBody: Map<String, Long>
     ): ResponseEntity<out Any> {
         try {
-            val contactID = requestBody["contactID"] as? Long ?: return ResponseEntity.badRequest()
+            val contactID = requestBody["contactID"] ?: return ResponseEntity.badRequest()
                 .body(mapOf("error" to CONTACT_ID_NOT_SPECIFIED_ERROR))
 
             if (customerID < 0 || contactID < 0) {

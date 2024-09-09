@@ -328,7 +328,7 @@ class JobOfferServiceImpl(
 
                     // se viene scelto per questa job offer, in tutte le altre in pending non viene più selezionato
                     professional?.jobOffers?.forEach {
-                        if(it.id != oldJobOffer.id && it.professional?.id == professional?.id) {
+                        if (it.id != oldJobOffer.id && it.professional?.id == professional?.id) {
                             it.oldStatus = JobStatusEnum.CREATED
                             it.status = JobStatusEnum.SELECTION_PHASE
                             it.professional = null

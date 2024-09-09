@@ -33,7 +33,6 @@ import org.apache.coyote.BadRequestException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -475,8 +474,7 @@ class CrmContactsController(
             }
 
             return ResponseEntity(result, HttpStatus.OK)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             logger.info("Server internal error: ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -486,7 +484,7 @@ class CrmContactsController(
     fun postNewWhatContact(
         @PathVariable whatContact: String,
         @RequestBody createWhatContactDTO: CreateWhatContactDTO
-    ) : ResponseEntity<Any> {
+    ): ResponseEntity<Any> {
         try {
             val contactType = WhatContactOptions.valueOf(whatContact.uppercase())
 
@@ -520,18 +518,30 @@ class CrmContactsController(
             }
 
             val result = when (contactType) {
-                WhatContactOptions.EMAIL -> emailService.storeNewEmail(createWhatContactDTO.createEmailDTO!!.email, createWhatContactDTO.createEmailDTO!!.comment)
-                WhatContactOptions.ADDRESS -> addressService.storeNewAddress(createWhatContactDTO.createAddressDTO!!.address, createWhatContactDTO.createAddressDTO!!.city, createWhatContactDTO.createAddressDTO!!.region, createWhatContactDTO.createAddressDTO!!.state, createWhatContactDTO.createAddressDTO!!.comment)
-                WhatContactOptions.TELEPHONE -> telephoneService.storeNewTelephone(createWhatContactDTO.createTelephoneDTO!!.telephone, createWhatContactDTO.createTelephoneDTO!!.comment)
+                WhatContactOptions.EMAIL -> emailService.storeNewEmail(
+                    createWhatContactDTO.createEmailDTO!!.email,
+                    createWhatContactDTO.createEmailDTO!!.comment
+                )
+
+                WhatContactOptions.ADDRESS -> addressService.storeNewAddress(
+                    createWhatContactDTO.createAddressDTO!!.address,
+                    createWhatContactDTO.createAddressDTO!!.city,
+                    createWhatContactDTO.createAddressDTO!!.region,
+                    createWhatContactDTO.createAddressDTO!!.state,
+                    createWhatContactDTO.createAddressDTO!!.comment
+                )
+
+                WhatContactOptions.TELEPHONE -> telephoneService.storeNewTelephone(
+                    createWhatContactDTO.createTelephoneDTO!!.telephone,
+                    createWhatContactDTO.createTelephoneDTO!!.comment
+                )
             }
 
             return ResponseEntity(result, HttpStatus.OK)
-        }
-        catch (e: BadRequestException) {
+        } catch (e: BadRequestException) {
             logger.info("Failed to insert a new $whatContact detail. Details: Body not well formatted")
             return ResponseEntity.badRequest().body(mapOf("error" to e.message))
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             logger.info("Server internal error: ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -541,7 +551,7 @@ class CrmContactsController(
     fun deleteWhatContact(
         @PathVariable whatContact: String,
         @PathVariable id: Long
-    ) : ResponseEntity<Any> {
+    ): ResponseEntity<Any> {
         try {
             val contactType = WhatContactOptions.valueOf(whatContact.uppercase())
 
@@ -557,17 +567,14 @@ class CrmContactsController(
                 WhatContactOptions.TELEPHONE -> telephoneService.deleteTelephone(id)
             }
 
-            return ResponseEntity(mapOf("result" to "Delete operation succesfully completed" ), HttpStatus.OK)
-        }
-        catch (e: IllegalArgumentException) {
+            return ResponseEntity(mapOf("result" to "Delete operation succesfully completed"), HttpStatus.OK)
+        } catch (e: IllegalArgumentException) {
             logger.info("Illegal argument exception: ${e.message}")
             return ResponseEntity.badRequest().body(mapOf("error" to e.message))
-        }
-        catch (e: EntityNotFoundException) {
+        } catch (e: EntityNotFoundException) {
             logger.info("Entity not found: ${e.message}")
             return ResponseEntity.badRequest().body(mapOf("error" to e.message))
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             logger.info("Server internal error: ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -578,7 +585,7 @@ class CrmContactsController(
         @PathVariable whatContact: String,
         @PathVariable id: Long,
         @RequestBody editWhatContactDTO: CreateWhatContactDTO
-    ) : ResponseEntity<Any> {
+    ): ResponseEntity<Any> {
         try {
             val contactType = WhatContactOptions.valueOf(whatContact.uppercase())
 
@@ -612,18 +619,33 @@ class CrmContactsController(
             }
 
             val result = when (contactType) {
-                WhatContactOptions.EMAIL -> emailService.editEmail(id, editWhatContactDTO.createEmailDTO!!.email, editWhatContactDTO.createEmailDTO!!.comment)
-                WhatContactOptions.ADDRESS -> addressService.editAddress(id, editWhatContactDTO.createAddressDTO!!.address, editWhatContactDTO.createAddressDTO!!.city, editWhatContactDTO.createAddressDTO!!.region, editWhatContactDTO.createAddressDTO!!.state, editWhatContactDTO.createAddressDTO!!.comment)
-                WhatContactOptions.TELEPHONE -> telephoneService.editTelephone(id, editWhatContactDTO.createTelephoneDTO!!.telephone, editWhatContactDTO.createTelephoneDTO!!.comment)
+                WhatContactOptions.EMAIL -> emailService.editEmail(
+                    id,
+                    editWhatContactDTO.createEmailDTO!!.email,
+                    editWhatContactDTO.createEmailDTO!!.comment
+                )
+
+                WhatContactOptions.ADDRESS -> addressService.editAddress(
+                    id,
+                    editWhatContactDTO.createAddressDTO!!.address,
+                    editWhatContactDTO.createAddressDTO!!.city,
+                    editWhatContactDTO.createAddressDTO!!.region,
+                    editWhatContactDTO.createAddressDTO!!.state,
+                    editWhatContactDTO.createAddressDTO!!.comment
+                )
+
+                WhatContactOptions.TELEPHONE -> telephoneService.editTelephone(
+                    id,
+                    editWhatContactDTO.createTelephoneDTO!!.telephone,
+                    editWhatContactDTO.createTelephoneDTO!!.comment
+                )
             }
 
             return ResponseEntity(result, HttpStatus.OK)
-        }
-        catch (e: BadRequestException) {
+        } catch (e: BadRequestException) {
             logger.info("Failed to insert a new $whatContact detail. Details: Body not well formatted")
             return ResponseEntity.badRequest().body(mapOf("error" to e.message))
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             logger.info("Server internal error: ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
         }

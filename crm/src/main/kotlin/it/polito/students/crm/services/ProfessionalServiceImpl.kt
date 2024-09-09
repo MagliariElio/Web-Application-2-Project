@@ -13,7 +13,6 @@ import it.polito.students.crm.utils.JobStatusEnum
 import it.polito.students.crm.utils.ProfessionalEnumFields
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -32,41 +31,40 @@ class ProfessionalServiceImpl(
         pageSize: Int,
         filterMap: HashMap<ProfessionalEnumFields, String>
     ): PageImpl<ProfessionalDTO> {
-        val pageable = PageRequest.of(pageNumber, pageSize)
-        val page: Page<Professional> = professionalRepository.findAll(pageable)
-        var list = page.content.filter { !it.deleted }.map { it.toDTO() }
+        val allProfessionals: List<Professional> = professionalRepository.findAll()
+
+        var filteredList = allProfessionals.filter { !it.deleted }.map { professional ->
+            professional.jobOffers = professional.jobOffers.filter { !it.deleted }.toMutableSet()
+            professional
+        }.map { it.toDTO() }
 
         filterMap.entries.forEach { filter ->
-            list = when (filter.key) {
-                ProfessionalEnumFields.SKILL -> list.filter {
+            filteredList = when (filter.key) {
+                ProfessionalEnumFields.SKILL -> filteredList.filter {
                     it.skills.any { skill ->
-                        skill.contains(
-                            filter.value,
-                            ignoreCase = true
-                        )
+                        skill.contains(filter.value, ignoreCase = true)
                     }
                 }
 
-                ProfessionalEnumFields.LOCATION -> list.filter {
-                    it.geographicalLocation.contains(
-                        filter.value,
-                        ignoreCase = true
-                    )
+                ProfessionalEnumFields.LOCATION -> filteredList.filter {
+                    it.geographicalLocation.contains(filter.value, ignoreCase = true)
                 }
 
-                ProfessionalEnumFields.EMPLOYMENT_STATE -> list.filter {
-                    it.employmentState.name.contains(
-                        filter.value,
-                        ignoreCase = true
-                    )
+                ProfessionalEnumFields.EMPLOYMENT_STATE -> filteredList.filter {
+                    it.employmentState.name.contains(filter.value, ignoreCase = true)
                 }
             }
         }
 
+        val pageable = PageRequest.of(pageNumber, pageSize)
 
-        val pageImpl = PageImpl(list, pageable, list.size.toLong())
-        return pageImpl
+        val start = pageNumber * pageSize
+        val end = minOf(start + pageSize, filteredList.size)
+        val paginatedList = if (start <= filteredList.size) filteredList.subList(start, end) else emptyList()
+
+        return PageImpl(paginatedList, pageable, filteredList.size.toLong())
     }
+
 
     override fun getProfessional(id: Long): ProfessionalWithAssociatedDataDTO {
         val optionalContact = professionalRepository.findById(id)

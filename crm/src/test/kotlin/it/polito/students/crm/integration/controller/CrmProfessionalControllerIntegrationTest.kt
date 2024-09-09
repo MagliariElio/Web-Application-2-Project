@@ -556,6 +556,7 @@ class CrmProfessionalControllerIntegrationTest : IntegrationTest() {
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.jsonPath("$").value(ErrorsPage.NAME_SURNAME_ERROR))
     }
+
     @Test
     fun patchProfessional_SSNCode_error() {
         val createProfessional = createProfessionalDtoList[0]
@@ -783,7 +784,7 @@ class CrmProfessionalControllerIntegrationTest : IntegrationTest() {
      * POST /API/PROFESSIONAL
      */
     @Test
-    fun post_goodTest(){
+    fun post_goodTest() {
         val professional = createProfessionalDtoList[0]
 
         val objectMapper = ObjectMapper()
@@ -795,22 +796,38 @@ class CrmProfessionalControllerIntegrationTest : IntegrationTest() {
                 .content(requestBody)
         ).andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.name")
-                .value(professional.information.name))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.surname")
-                .value(professional.information.surname))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.ssnCode")
-                .value(professional.information.ssnCode))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.comment")
-                .value(professional.information.comment))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.category")
-                .value(professional.information.category))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.dailyRate")
-                .value(professional.dailyRate))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.geographicalLocation")
-                .value(professional.geographicalLocation))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.skills.size()")
-                .value(professional.skills.size))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.name")
+                    .value(professional.information.name)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.surname")
+                    .value(professional.information.surname)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.ssnCode")
+                    .value(professional.information.ssnCode)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.comment")
+                    .value(professional.information.comment)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.category")
+                    .value(professional.information.category)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.dailyRate")
+                    .value(professional.dailyRate)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.geographicalLocation")
+                    .value(professional.geographicalLocation)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.skills.size()")
+                    .value(professional.skills.size)
+            )
             .andReturn()
 
         // Extracting ID from the response content
@@ -942,22 +959,38 @@ class CrmProfessionalControllerIntegrationTest : IntegrationTest() {
                 .content(requestBody)
         ).andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.name")
-                .value(professional.information.name))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.surname")
-                .value(professional.information.surname))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.ssnCode")
-                .value(professional.information.ssnCode))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.comment")
-                .value(professional.information.comment))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.category")
-                .value(professional.information.category))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.dailyRate")
-                .value(professional.dailyRate))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.geographicalLocation")
-                .value(professional.geographicalLocation))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.skills.size()")
-                .value(professional.skills.size))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.name")
+                    .value(professional.information.name)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.surname")
+                    .value(professional.information.surname)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.ssnCode")
+                    .value(professional.information.ssnCode)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.comment")
+                    .value(professional.information.comment)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.category")
+                    .value(professional.information.category)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.dailyRate")
+                    .value(professional.dailyRate)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.geographicalLocation")
+                    .value(professional.geographicalLocation)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.skills.size()")
+                    .value(professional.skills.size)
+            )
             .andReturn()
 
         // Extracting ID from the response content
@@ -989,22 +1022,38 @@ class CrmProfessionalControllerIntegrationTest : IntegrationTest() {
                 .content(requestBody)
         ).andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.name")
-                .value(professional.information.name))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.surname")
-                .value(professional.information.surname))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.ssnCode")
-                .value(professional.information.ssnCode))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.comment")
-                .value(professional.information.comment))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.category")
-                .value(professional.information.category))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.dailyRate")
-                .value(professional.dailyRate))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.geographicalLocation")
-                .value(professional.geographicalLocation))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.skills.size()")
-                .value(professional.skills.size))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.name")
+                    .value(professional.information.name)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.surname")
+                    .value(professional.information.surname)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.ssnCode")
+                    .value(professional.information.ssnCode)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.comment")
+                    .value(professional.information.comment)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.category")
+                    .value(professional.information.category)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.dailyRate")
+                    .value(professional.dailyRate)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.geographicalLocation")
+                    .value(professional.geographicalLocation)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.skills.size()")
+                    .value(professional.skills.size)
+            )
             .andReturn()
 
         // Extracting ID from the response content
@@ -1036,22 +1085,38 @@ class CrmProfessionalControllerIntegrationTest : IntegrationTest() {
                 .content(requestBody)
         ).andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.name")
-                .value(professional.information.name))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.surname")
-                .value(professional.information.surname))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.ssnCode")
-                .value(professional.information.ssnCode))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.comment")
-                .value(professional.information.comment))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.information.category")
-                .value(professional.information.category))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.dailyRate")
-                .value(professional.dailyRate))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.geographicalLocation")
-                .value(professional.geographicalLocation))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.skills.size()")
-                .value(professional.skills.size))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.name")
+                    .value(professional.information.name)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.surname")
+                    .value(professional.information.surname)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.ssnCode")
+                    .value(professional.information.ssnCode)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.comment")
+                    .value(professional.information.comment)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.information.category")
+                    .value(professional.information.category)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.dailyRate")
+                    .value(professional.dailyRate)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.geographicalLocation")
+                    .value(professional.geographicalLocation)
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.skills.size()")
+                    .value(professional.skills.size)
+            )
             .andReturn()
 
         // Extracting ID from the response content

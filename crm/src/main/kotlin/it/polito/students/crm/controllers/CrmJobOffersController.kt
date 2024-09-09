@@ -253,7 +253,7 @@ class CrmJobOffersController(
 
             val editedJobOffer =
                 jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
-            if(editedJobOffer.status == JobStatusEnum.DONE){
+            if (editedJobOffer.status == JobStatusEnum.DONE) {
                 kafkaProducer.sendCompletedJobOffer(KafkaTopics.TOPIC_COMPLETED_JOB_OFFER, editedJobOffer)
             }
             return ResponseEntity(editedJobOffer, HttpStatus.OK)

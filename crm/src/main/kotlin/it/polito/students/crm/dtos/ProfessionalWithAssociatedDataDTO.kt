@@ -9,5 +9,5 @@ data class ProfessionalWithAssociatedDataDTO(
 
 fun Professional.toDTOWithAssociatedData(): ProfessionalWithAssociatedDataDTO = ProfessionalWithAssociatedDataDTO(
     this.toDTO(),
-    this.jobOffers.map { it.toDTO() }
+    this.jobOffers.filter { !it.deleted }.map { it.toDTO() }
 )

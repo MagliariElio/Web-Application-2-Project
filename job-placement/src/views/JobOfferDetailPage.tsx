@@ -338,7 +338,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const handleGoToSelectionPhase = async () => {
     setShowModalRevokeApplication(false);
 
-    const jobOffer = {
+    const jobOfferProfessionals = {
       professionalsId: candidateProfessionalList.map((p: Professional) => p.id),
     };
 
@@ -351,13 +351,27 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
 
     try {
-      setLoading(true);
-      const jobOfferResponse = await goToSelectionPhase(parseInt(id ? id : ""), me.xsrfToken, jobOffer);
+      //setLoading(true);
+      setLoadingCandidateProfessional(true);
+      const jobOfferResponse: JobOffer = await goToSelectionPhase(parseInt(id ? id : ""), me.xsrfToken, jobOfferProfessionals);
 
-      await loadJobOffer(jobOfferResponse);
+      var jobOfferResult = jobOffer;
+      if (jobOfferResult) {
+        jobOfferResult.candidateProfessionalIds = jobOfferResponse.candidateProfessionalIds;
+        jobOfferResult.candidatesProfessionalRejected = jobOfferResponse.candidatesProfessionalRejected;
+        jobOfferResult.candidatesProfessionalRevoked = jobOfferResponse.candidatesProfessionalRevoked;
+        setJobOffer(jobOfferResult);
+        setFormDataJobOffer(jobOfferResult);
+      }
+
+      //await loadJobOffer(jobOfferResponse);
+
+      //setCandidateProfessionalList(jobOfferResponse..map((p) => p.professionalDTO));
+      //resetFilteredCandidateProfessionalList(jobOfferResponse.map((p) => p.professionalDTO));
 
       setErrorMessage("");
-      setLoading(false);
+      setLoadingCandidateProfessional(false);
+      //setLoading(false);
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
@@ -365,7 +379,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         setErrorMessage("An unexpected error occurred");
       }
 
-      setLoading(false);
+      //setLoading(false);
+      setLoadingCandidateProfessional(false);
 
       // Scroll to error message when it appears
       if (errorRef.current) {

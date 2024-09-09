@@ -1,12 +1,10 @@
 package it.polito.students.crm.integration.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.mockk.InternalPlatformDsl.toArray
 import it.polito.students.crm.dtos.*
 import it.polito.students.crm.entities.*
 import it.polito.students.crm.integration.IntegrationTest
 import it.polito.students.crm.utils.CategoryOptions
-import it.polito.students.crm.utils.EmploymentStateEnum
 import it.polito.students.crm.utils.ErrorsPage
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -311,7 +309,7 @@ class CrmJobOfferControllerIntegrationTest : IntegrationTest() {
         val responseContent3 = result3.response.contentAsString
         val idProfessional = responseContent3.substringAfter("id\":").substringBefore(",").toLong()
 
-         //Change status of job offer
+        //Change status of job offer
         val changeStatus = ChangeJobStatusDTO(
             nextStatus = "SELECTION_PHASE",
             professionalsId = listOf(idProfessional),
@@ -677,7 +675,10 @@ class CrmJobOfferControllerIntegrationTest : IntegrationTest() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody5)
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.errors").value("The value provided for the job status field is invalid. Possible values: [CREATED, SELECTION_PHASE, CANDIDATE_PROPOSAL, CONSOLIDATED, DONE, ABORT]"))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.errors")
+                    .value("The value provided for the job status field is invalid. Possible values: [CREATED, SELECTION_PHASE, CANDIDATE_PROPOSAL, CONSOLIDATED, DONE, ABORT]")
+            )
     }
 
     @Test

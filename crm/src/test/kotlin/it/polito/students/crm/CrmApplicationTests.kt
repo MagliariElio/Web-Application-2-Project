@@ -148,7 +148,17 @@ class CrmApplicationTests {
             val professionalId =
                 if (jobOfferJson.has("professionalId") && jobOfferJson["professionalId"].asLong() > 0) jobOfferJson["professionalId"].asLong() else null
 
-            return JobOfferDTO(id, status, requiredSkills, duration, value, note, customerId, professionalId, emptyList())
+            return JobOfferDTO(
+                id,
+                status,
+                requiredSkills,
+                duration,
+                value,
+                note,
+                customerId,
+                professionalId,
+                emptyList()
+            )
         }
 
         /**

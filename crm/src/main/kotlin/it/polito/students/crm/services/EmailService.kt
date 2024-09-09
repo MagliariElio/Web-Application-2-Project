@@ -2,7 +2,6 @@ package it.polito.students.crm.services
 
 import it.polito.students.crm.dtos.CreateEmailDTO
 import it.polito.students.crm.dtos.EmailDTO
-import org.hibernate.annotations.Comment
 
 interface EmailService {
     /**
@@ -74,7 +73,7 @@ interface EmailService {
      * @param comment
      * @return list of all emailsDTOs
      */
-    fun storeNewEmail(email:String, comment: String?): EmailDTO
+    fun storeNewEmail(email: String, comment: String?): EmailDTO
 
     /**
      * Edit an existing email to emails book
@@ -84,7 +83,7 @@ interface EmailService {
      * @param comment
      * @return list of all emailsDTOs
      */
-    fun editEmail(emailId: Long, email:String, comment: String?): EmailDTO
+    fun editEmail(emailId: Long, email: String, comment: String?): EmailDTO
 
 
 }

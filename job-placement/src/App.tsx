@@ -50,23 +50,17 @@ function App() {
       try {
         setLoading(true);
 
-        await JPAPIAuth.fetchMe(setMe);
-
-        if (!me?.principal) return; // Se non c'è un principal, esci dalla funzione
-
-        const res = await fetch("/documentStoreService/v1/API/documents/auth");
-        const json = await res.json();
-
-        const roles = json?.principal?.claims?.realm_access?.roles || [];
+        var meResult = await JPAPIAuth.fetchMe();
+        const roleResult = await JPAPIAuth.fetchRole();
+        const roles = roleResult?.principal?.claims?.realm_access?.roles || [];
 
         const roleUser: RoleState = roles.find(
           (role: string) => role === RoleState.GUEST || role === RoleState.OPERATOR || role === RoleState.MANAGER
         );
 
-        if (me) {
-          var meRole = me;
-          meRole.role = roleUser;
-          setMe(meRole);
+        if (meResult) {
+          meResult.role = roleUser;
+          setMe(meResult);
         }
       } catch (err) {
         console.error("Error fetching user roles:", err);
@@ -223,10 +217,10 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
         <div className="flex-grow-1"></div>
 
         {me?.principal !== null && (
-            <Nav.Link href="#" className={opened ? navLinkClassnameOpened + " mt-auto" : navLinkClassnameClosed + " mt-auto"}>
-              <BsGearFill className={opened ? "me-2" : ""} />
-              {opened && "Settings"}
-            </Nav.Link>
+          <Nav.Link href="#" className={opened ? navLinkClassnameOpened + " mt-auto" : navLinkClassnameClosed + " mt-auto"}>
+            <BsGearFill className={opened ? "me-2" : ""} />
+            {opened && "Settings"}
+          </Nav.Link>
         )}
 
         <Nav.Link

@@ -3,7 +3,6 @@ package it.polito.students.crm.controllers
 import it.polito.students.crm.dtos.CreateAddressDTO
 import it.polito.students.crm.dtos.CreateProfessionalDTO
 import it.polito.students.crm.dtos.UpdateProfessionalDTO
-import it.polito.students.crm.entities.Professional
 import it.polito.students.crm.exception_handlers.ContactNotFoundException
 import it.polito.students.crm.exception_handlers.ProfessionalNotFoundException
 import it.polito.students.crm.services.ContactService
@@ -156,25 +155,26 @@ class CrmProfessionalsController(
             }
 
             //Check dailyrate
-            if(professional.dailyRate < 0){
+            if (professional.dailyRate < 0) {
                 throw BadRequestException(ErrorsPage.DAILYRATE_ERROR)
             }
 
             //Check geographical location
-            if(professional.geographicalLocation.isBlank()){
+            if (professional.geographicalLocation.isBlank()) {
                 throw BadRequestException(ErrorsPage.GEOGRAPHICAL_LOCATION_ERROR)
             }
 
             //check skills list
-            if (professional.skills != null && professional.skills!!.isNotEmpty()) {
-                professional.skills?.forEach {
+            if (professional.skills != null && professional.skills.isNotEmpty()) {
+                professional.skills.forEach {
                     if (it.isBlank()) {
                         throw BadRequestException(ErrorsPage.SKILLS_ERROR)
                     }
                 }
             }
 
-            val savedProfessional = professionalService.storeProfessional(professional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+            val savedProfessional =
+                professionalService.storeProfessional(professional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
             return ResponseEntity(savedProfessional, HttpStatus.CREATED)
         } catch (e: BadRequestException) {
             logger.info("Error: ${e.message}")
@@ -194,7 +194,7 @@ class CrmProfessionalsController(
         @RequestBody @Valid professionalDto: UpdateProfessionalDTO
     ): ResponseEntity<out Any> {
         try {
-            if(professionalID < 0){
+            if (professionalID < 0) {
                 throw BadRequestException(ErrorsPage.ID_ERROR)
             }
 
@@ -220,24 +220,24 @@ class CrmProfessionalsController(
             val category = CategoryOptions.valueOf(professionalDto.information.category!!.uppercase())
 
             //Check employment state
-            if (professionalDto.employmentState != null && professionalDto.employmentState!!.isNotBlank()) {
-                checkEmploymentStateIsValid(professionalDto.employmentState!!.uppercase())
-            }else {
+            if (professionalDto.employmentState != null && professionalDto.employmentState.isNotBlank()) {
+                checkEmploymentStateIsValid(professionalDto.employmentState.uppercase())
+            } else {
                 throw BadRequestException(ErrorsPage.EMPLYMENT_STATE_ERROR)
             }
 
             //Check dailyrate
-            if(professionalDto.dailyRate < 0){
+            if (professionalDto.dailyRate < 0) {
                 throw BadRequestException(ErrorsPage.DAILYRATE_ERROR)
             }
 
             //Check geographical location
-            if(professionalDto.geographicalLocation.isBlank()){
+            if (professionalDto.geographicalLocation.isBlank()) {
                 throw BadRequestException(ErrorsPage.GEOGRAPHICAL_LOCATION_ERROR)
             }
             //check skills list
-            if (professionalDto.skills != null && professionalDto.skills!!.isNotEmpty()) {
-                professionalDto.skills?.forEach {
+            if (professionalDto.skills != null && professionalDto.skills.isNotEmpty()) {
+                professionalDto.skills.forEach {
                     if (it.isBlank()) {
                         throw BadRequestException(ErrorsPage.SKILLS_ERROR)
                     }
@@ -272,7 +272,7 @@ class CrmProfessionalsController(
         } catch (e: ContactNotFoundException) {
             logger.info("Error with contact id equal to ${professionalID}: ${e.message}")
             return ResponseEntity(e.message, HttpStatus.NOT_FOUND)
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             logger.info("Failed to update a new professional detail. Details: ${e.message}")
             return ResponseEntity(
                 "Failed to update a new professional detail. Details: ${e.message}",

@@ -1,8 +1,6 @@
 package it.polito.students.crm.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.polito.students.crm.dtos.CreateJobOfferDTO
-import it.polito.students.crm.dtos.CreateMessageDTO
 import it.polito.students.crm.dtos.JobOfferDTO
 import it.polito.students.crm.dtos.MessageDTO
 import org.apache.kafka.clients.producer.KafkaProducer

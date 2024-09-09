@@ -31,15 +31,15 @@ import java.util.*
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 class CrmContactsServiceUnitTest {
-    private final val messageRepository: MessageRepository = mockk()
-    private final val historyRepository: HistoryRepository = mockk()
-    private final val contactRepository: ContactRepository = mockk()
-    private final val addressRepository: AddressRepository = mockk()
-    private final val emailRepository: EmailRepository = mockk()
-    private final val telephoneRepository: TelephoneRepository = mockk()
+    private val messageRepository: MessageRepository = mockk()
+    private val historyRepository: HistoryRepository = mockk()
+    private val contactRepository: ContactRepository = mockk()
+    private val addressRepository: AddressRepository = mockk()
+    private val emailRepository: EmailRepository = mockk()
+    private val telephoneRepository: TelephoneRepository = mockk()
 
     val contactService = ContactServiceImpl(contactRepository, emailRepository, telephoneRepository, addressRepository)
-    private final val messageService = MessageServiceImpl(
+    private val messageService = MessageServiceImpl(
         messageRepository,
         historyRepository,
         contactRepository,

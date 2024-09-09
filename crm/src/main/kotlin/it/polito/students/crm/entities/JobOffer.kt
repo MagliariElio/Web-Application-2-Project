@@ -41,10 +41,12 @@ class JobOffer {
     var candidateProfessionals: MutableList<Professional> = mutableListOf()
 
     @ElementCollection
-    var candidatesProfessionalRejected: MutableList<Long>  = mutableListOf() // lista dei candidati che hanno rifiutato la candidatura
+    var candidatesProfessionalRejected: MutableList<Long> =
+        mutableListOf() // lista dei candidati che hanno rifiutato la candidatura
 
     @ElementCollection
-    var candidatesProfessionalRevoked: MutableList<Long> = mutableListOf() // lista dei candidati che hanno rifiutato la candidatura dopo aver accettato
+    var candidatesProfessionalRevoked: MutableList<Long> =
+        mutableListOf() // lista dei candidati che hanno rifiutato la candidatura dopo aver accettato
 
     var deleted = false
 }

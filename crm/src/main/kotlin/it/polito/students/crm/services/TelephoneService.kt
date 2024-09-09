@@ -2,7 +2,6 @@ package it.polito.students.crm.services
 
 import it.polito.students.crm.dtos.CreateTelephoneDTO
 import it.polito.students.crm.dtos.TelephoneDTO
-import org.springframework.http.ResponseEntity
 
 interface TelephoneService {
     /**

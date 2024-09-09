@@ -333,9 +333,10 @@ class CrmJobOffersControllerUnitTest(
         val objectMapper = ObjectMapper()
         val requestBody = objectMapper.writeValueAsString(createJobOfferDTO)
 
-        mockMvc.perform(post("/API/joboffers/")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody)
+        mockMvc.perform(
+            post("/API/joboffers/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$").value("The 'required skills' list cannot contain skill entries with empty strings. Please ensure all skills are properly named."))
@@ -352,9 +353,10 @@ class CrmJobOffersControllerUnitTest(
         val objectMapper = ObjectMapper()
         val requestBody = objectMapper.writeValueAsString(createJobOfferDTO)
 
-        mockMvc.perform(post("/API/joboffers/")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody)
+        mockMvc.perform(
+            post("/API/joboffers/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$").value("The 'duration' field cannot be negative. Please ensure the duration is a positive value."))
@@ -371,9 +373,10 @@ class CrmJobOffersControllerUnitTest(
         val objectMapper = ObjectMapper()
         val requestBody = objectMapper.writeValueAsString(createJobOfferDTO)
 
-        mockMvc.perform(post("/API/joboffers/")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody)
+        mockMvc.perform(
+            post("/API/joboffers/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$").value("The provided value for customerId is not valid. Please ensure that you provide a positive integer for the customerId parameter."))
@@ -447,7 +450,7 @@ class CrmJobOffersControllerUnitTest(
      * GET /API/JOBOFFES/?CUSTOMERID=CID&PROFESSIONALID=PID&STATUS=OPEN/ACCEPTERD/ABORT
      */
     @Test
-    fun getJobOffer_goodCase(){
+    fun getJobOffer_goodCase() {
 
         val jobOffer: PageImpl<JobOfferDTO> = PageImpl(jobOfferList)
 
@@ -495,9 +498,9 @@ class CrmJobOffersControllerUnitTest(
     }
 
     @Test
-    fun getJobOffer_pageLimitOne(){
+    fun getJobOffer_pageLimitOne() {
 
-        val jobOffer: PageImpl<JobOfferDTO> = PageImpl(jobOfferList.subList(0,1))
+        val jobOffer: PageImpl<JobOfferDTO> = PageImpl(jobOfferList.subList(0, 1))
 
         every { jobOfferService.getAllJobOffers(0, 1, any(), any(), any()) } returns jobOffer
 
@@ -520,11 +523,11 @@ class CrmJobOffersControllerUnitTest(
     }
 
     @Test
-    fun getJobOffer_withoutPage(){
+    fun getJobOffer_withoutPage() {
 
         val jobOffer: PageImpl<JobOfferDTO> = PageImpl(jobOfferList)
 
-        every { jobOfferService.getAllJobOffers( 0,10, any(), any(), any()) } returns jobOffer
+        every { jobOfferService.getAllJobOffers(0, 10, any(), any(), any()) } returns jobOffer
 
         mockMvc.perform(get("/API/joboffers?limit=10"))
             .andExpect(status().isOk)

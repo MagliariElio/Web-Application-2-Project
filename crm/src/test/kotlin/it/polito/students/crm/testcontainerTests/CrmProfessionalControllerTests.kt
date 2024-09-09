@@ -443,7 +443,8 @@ class CrmProfessionalControllerTests {
     fun shouldNotSaveProfessionalBadRequestNotValidAddress() {
         val createProfessional = createProfessionalDtoList.first()
 
-        createProfessional.information.addresses = listOf(CreateAddressDTO(address = "", state = "", city = "", region = "", comment = null))
+        createProfessional.information.addresses =
+            listOf(CreateAddressDTO(address = "", state = "", city = "", region = "", comment = null))
 
         given()
             .contentType(ContentType.JSON)

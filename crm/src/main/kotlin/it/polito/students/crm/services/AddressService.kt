@@ -70,7 +70,14 @@ interface AddressService {
      * @param comment
      * @return - the new address
      */
-    fun editAddress(addressId: Long, address: String?, city: String?, region: String?, state: String?, comment: String?): AddressDTO
+    fun editAddress(
+        addressId: Long,
+        address: String?,
+        city: String?,
+        region: String?,
+        state: String?,
+        comment: String?
+    ): AddressDTO
 
 
     /**

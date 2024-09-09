@@ -12,24 +12,20 @@ import it.polito.students.crm.repositories.ContactRepository
 import it.polito.students.crm.repositories.CustomerRepository
 import it.polito.students.crm.utils.CategoryOptions
 import it.polito.students.crm.utils.ErrorsPage
-import org.hamcrest.Matchers.hasSize
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.shaded.org.bouncycastle.math.raw.Nat.equalTo
-import org.hamcrest.Matchers.equalTo
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.test.annotation.DirtiesContext
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
-import org.testcontainers.shaded.org.hamcrest.Matchers
-import java.util.List
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -67,7 +63,7 @@ class CrmCustomerControllerTests {
     lateinit var customerRepository: CustomerRepository
 
     @Autowired
-    lateinit var contactRepository : ContactRepository
+    lateinit var contactRepository: ContactRepository
 
     @BeforeEach
     fun setUp() {
@@ -154,7 +150,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldGetAllCustomers() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -178,7 +174,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldGetAllCustomersFilteredbyName() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -196,7 +192,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldGetAllCustomersFilteredBySurname() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -214,7 +210,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldGetAllCustomersFilteredBySsnCode() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -236,7 +232,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldGetTheCustomerByID() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -254,7 +250,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldGetTheCustomerAndGetErrorNegativeId() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -270,7 +266,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldNotGetTheCustomerAndGetErrorNotFound() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -463,7 +459,10 @@ class CrmCustomerControllerTests {
             .patch("/API/customers/1")
             .then()
             .statusCode(400)
-            .body("error", equalTo("Unable to update customer. It is necessary to specify a contact id in the body request."))
+            .body(
+                "error",
+                equalTo("Unable to update customer. It is necessary to specify a contact id in the body request.")
+            )
     }
 
     @Test
@@ -511,7 +510,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldDeleteTheCustomer() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -558,7 +557,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldNotDeleteTheCustomer_CustomernotFound() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
@@ -609,7 +608,7 @@ class CrmCustomerControllerTests {
     @Test
     fun shouldNotDeleteTheCustomer_AlreadyDeleted() {
         //save all customers of the list
-        customersList.forEach{
+        customersList.forEach {
             customerRepository.save(it)
         }
 
