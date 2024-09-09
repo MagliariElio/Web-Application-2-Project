@@ -17,6 +17,8 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   const [ssnCode, setSsnCode] = useState("");
   const [comment, setComment] = useState("");
 
+  const [constactId, setContactId] = useState<number | null>(null);
+
   const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
 
   const [emails, setEmails] = useState<any[]>([]);
@@ -36,6 +38,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
 
     fetchCustomer(Number.parseInt(id))
       .then((json: Customer) => {
+        setContactId(json.information.contactDTO.id);
         setName(json.information.contactDTO.name);
         setSurname(json.information.contactDTO.surname);
         setSsnCode(json.information.contactDTO.ssnCode);
@@ -77,25 +80,8 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
       return;
     }
 
-    if (addresses.length === 0) {
-      setErrorMessage("You must add at least one address before saving.");
-
-      if (errorRef.current) {
-        errorRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-      return;
-    }
-
-    if (emails.length === 0 && telephones.length === 0) {
-      setErrorMessage("You must add at least one email or phone number before saving.");
-
-      if (errorRef.current) {
-        errorRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-      return;
-    }
-
     const customer = {
+      id: constactId,
       name: name,
       surname: surname,
       ssnCode: ssnCode,

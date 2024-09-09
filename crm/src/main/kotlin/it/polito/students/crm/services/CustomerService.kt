@@ -2,6 +2,7 @@ package it.polito.students.crm.services
 
 import it.polito.students.crm.dtos.CreateContactDTO
 import it.polito.students.crm.dtos.CustomerDTO
+import it.polito.students.crm.dtos.UpdateContactDTO
 import it.polito.students.crm.utils.ContactEnumFields
 import org.springframework.data.domain.PageImpl
 
@@ -54,7 +55,7 @@ interface CustomerService {
      * @param newContactDetails The new data to be ssociated to the new contact.
      * @throws CustomerNotFoundException if the customer is not found.
      */
-    fun updateCustomerDetails(customerID: Long, newContactDetails: CreateContactDTO): CustomerDTO
+    fun updateCustomerDetails(customerID: Long, newContactDetails: UpdateContactDTO): CustomerDTO
 
     /**
      * Deletes a customer by their ID.

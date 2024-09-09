@@ -7,9 +7,9 @@ export interface EditProfessional {
     ssnCode: string;
     comment: string;
     category: string;
-    //emails: string[];
-    //telephones: string[];
-    //addresses: string[];
+    emails: string[];
+    telephones: string[];
+    addresses: string[];
   };
   skills: string[];
   employmentState: string;

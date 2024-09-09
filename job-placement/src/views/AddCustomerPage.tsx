@@ -3,7 +3,6 @@ import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import { createCustomer } from "../apis/CustomerRequests";
 import { ContactModal } from "./AddProfessionalPage";

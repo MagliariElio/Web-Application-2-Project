@@ -244,6 +244,30 @@ class CrmProfessionalsController(
                 }
             }
 
+            if (professionalDto.information.emails != null && professionalDto.information.emails!!.isNotEmpty()) {
+                professionalDto.information.emails?.forEach {
+                    if (!isValidEmail(it.email)) {
+
+                        throw BadRequestException(ErrorsPage.EMAILS_NOT_VALID)
+                    }
+                }
+            }
+            if (professionalDto.information.addresses != null && professionalDto.information.addresses!!.isNotEmpty()) {
+                professionalDto.information.addresses?.forEach {
+                    if (!(!(it.city.isNullOrBlank() || it.address.isNullOrBlank() || it.region.isNullOrBlank() || it.state.isNullOrBlank()))) {
+                        throw BadRequestException(ErrorsPage.ADDRESSES_NOT_VALID)
+                    }
+                }
+            }
+            if (professionalDto.information.telephones != null && professionalDto.information.telephones!!.isNotEmpty()) {
+                //If a telephone number is not valid throws an exception
+                professionalDto.information.telephones?.forEach {
+                    if (!isValidPhone(it.telephone)) {
+                        throw BadRequestException(ErrorsPage.TELEPHONES_NOT_VALID)
+                    }
+                }
+            }
+
 
             professionalDto.id = professionalID
 

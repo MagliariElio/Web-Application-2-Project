@@ -134,96 +134,17 @@ class CustomerServiceImpl(
         return customerRepository.save(customer).toDTO()
     }
 
-    override fun updateCustomerDetails(customerID: Long, newContactDetails: CreateContactDTO): CustomerDTO {
+    override fun updateCustomerDetails(customerID: Long, newContactDetails: UpdateContactDTO): CustomerDTO {
         val customer = getCustomer(customerID).toEntity(factory)
-        val prev_contact =
-            contactService.getContact(customer.information.id)        // if not found it raises an exception
+        val prev_contact = contactService.getContact(customer.information.id)        // if not found it raises an exception
 
         if (prev_contact.category == CategoryOptions.PROFESSIONAL) {
             throw InvalidUpdateException(ErrorsPage.INVALID_UPDATE_CUSTOMER)
         }
 
-        // Create a new Contact
-        val contact = Contact().apply {
-            name = newContactDetails.name
-            surname = newContactDetails.surname
-            ssnCode = newContactDetails.ssnCode ?: ""
-            this.category = CategoryOptions.CUSTOMER
-            comment = newContactDetails.comment ?: ""
-        }
+        contactService.updateContact(newContactDetails, CategoryOptions.CUSTOMER)
 
-// If inserted add email
-        if (newContactDetails.emails != null) {
-            // Read from a list of emails and add to contact
-            newContactDetails.emails?.forEach { e: CreateEmailDTO ->
-                // Check if email is already stored in DB
-                val existedEmail = emailRepository.findByEmail(e.email)
-                if (existedEmail != null) {
-                    contact.addEmail(existedEmail)
-                } else {
-                    val email = Email().apply {
-                        email = e.email
-                        comment = e.comment ?: ""
-                    }
-                    emailRepository.save(email) // Save the email first
-                    contact.addEmail(email)
-                }
-            }
-        }
-
-// If inserted add telephone
-        if (newContactDetails.telephones != null) {
-            // Read from a list of telephones and add to contact
-            newContactDetails.telephones?.forEach { t: CreateTelephoneDTO ->
-                // Check if telephone is already stored in DB
-                val existedTelephone = telephoneRepository.findByTelephone(t.telephone)
-                if (existedTelephone != null) {
-                    contact.addTelephone(existedTelephone)
-                } else {
-                    val telephone = Telephone().apply {
-                        telephone = t.telephone
-                        comment = t.comment ?: ""
-                    }
-                    telephoneRepository.save(telephone) // Save the telephone first
-                    contact.addTelephone(telephone)
-                }
-            }
-        }
-
-// If inserted add address
-        if (newContactDetails.addresses != null) {
-            // Read from a list of addresses and add to contact
-            newContactDetails.addresses?.forEach {
-                // Check if an address has been already stored
-                val existedAddress: Address? = addressRepository
-                    .findByAddressIgnoreCaseAndCityIgnoreCaseAndRegionIgnoreCaseAndStateIgnoreCase(
-                        it.address!!,
-                        it.city!!,
-                        it.region!!,
-                        it.state!!
-                    )
-                if (existedAddress != null) {
-                    contact.addAddress(existedAddress)
-                } else {
-                    // Create a new Address
-                    val address = Address().apply {
-                        state = it.state ?: ""
-                        region = it.region ?: ""
-                        city = it.city ?: ""
-                        address = it.address ?: ""
-                        comment = it.comment ?: ""
-                    }
-                    addressRepository.save(address) // Save the address first
-                    contact.addAddress(address)
-                }
-            }
-        }
-
-// Save contact in the database
-        val contactSaved = contactRepository.save(contact) // Ensure the contact is saved
-
-        customer.information = contactSaved
-        return customerRepository.save(customer).toDTO()
+        return customerRepository.findById(customerID).get().toDTO()
 
     }
 

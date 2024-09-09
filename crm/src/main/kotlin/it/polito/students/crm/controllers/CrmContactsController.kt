@@ -267,7 +267,7 @@ class CrmContactsController(
 
             when (wc) {
                 WhatContactOptions.EMAIL -> {
-                    val savedTelephone = telephoneService.getTelephoneList(contactID)
+                    val savedTelephone = emailService.getEmailList(contactID)
                     return ResponseEntity(savedTelephone, HttpStatus.OK)
                 }
 

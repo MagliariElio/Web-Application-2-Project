@@ -105,3 +105,57 @@ export const editContactWhatContact = async (whatContact: string, id: string, up
     throw error;
   }
 }
+
+export const fetchContactEmails = async (contactId: number): Promise<Email[]> => {
+  try {
+    const response = await fetch(`/crmService/v1/API/contacts/${contactId}/email`);
+
+    if (!response.ok) {
+      const errorMessage = `GET /API/contacts/${contactId}/emails : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    const data: Email[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching contacts emails:", error);
+    throw error;
+  }
+}
+
+export const fetchContactTelephones = async (contactId: number): Promise<Telephone[]> => {
+  try {
+    const response = await fetch(`/crmService/v1/API/contacts/${contactId}/telephone`);
+
+    if (!response.ok) {
+      const errorMessage = `GET /API/contacts/${contactId}/telephones : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    const data: Telephone[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching contacts telephones:", error);
+    throw error;
+  }
+}
+
+export const fetchContactAddresses = async (contactId: number): Promise<Address[]> => {
+  try {
+    const response = await fetch(`/crmService/v1/API/contacts/${contactId}/address`);
+
+    if (!response.ok) {
+      const errorMessage = `GET /API/contacts/${contactId}/addresses : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    const data: Address[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching contacts addresses:", error);
+    throw error;
+  }
+}
