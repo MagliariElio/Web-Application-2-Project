@@ -9,7 +9,6 @@ import {
   updateProfessional,
 } from "../apis/ProfessionalRequests";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
-import { LoadingSection } from "../App";
 import { ContactModal } from "./AddProfessionalPage";
 import {
   fetchContactAddresses,

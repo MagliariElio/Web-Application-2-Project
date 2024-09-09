@@ -14,8 +14,6 @@ import { PagedResponse } from "../interfaces/PagedResponse";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Professional } from "../interfaces/Professional";
 import { fetchProfessionals } from "../apis/ProfessionalRequests";
-import { LoadingSection } from "../App";
-
 function ProfessionalsPage() {
   const navigate = useNavigate();
 
