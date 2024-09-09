@@ -257,11 +257,11 @@ export const abortJobOffer = async (jobOfferId: number, xsrfToken: string) => {
   }
 };
 
-export const goToCandidateProposalPhase = async (jobOfferId: number, xsrfToken: string, candidateId: number) => {
+export const goToCandidateProposalPhase = async (jobOfferId: number, xsrfToken: string, candidates: number[]) => {
   try {
     const jobOffer = {
       nextStatus: JobOfferState.CANDIDATE_PROPOSAL,
-      professionalsId: [candidateId],
+      professionalsId: candidates,
     };
 
     const response = await fetch(`/crmService/v1/API/joboffers/${jobOfferId}`, {

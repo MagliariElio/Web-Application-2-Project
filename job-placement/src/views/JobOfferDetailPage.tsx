@@ -9,7 +9,7 @@ import {
   FaClock,
   FaMapMarkerAlt,
   FaMoneyBillWave,
-  FaPen,
+  FaReply,
   FaThumbsUp,
   FaTimes,
   FaTimesCircle,
@@ -54,9 +54,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [jobOffer, setJobOffer] = useState<JobOffer | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [professional, setProfessional] = useState<Professional | null>(null);
+
   const [candidateProfessionalList, setCandidateProfessionalList] = useState<Professional[]>([]);
+  const [candidateProposalProfessionalList, setCandidateProposalProfessionalList] = useState<Professional[]>([]);
+
   const [filteredCandidateProfessionalList, setFilteredCandidateProfessionalList] = useState<Professional[]>([]);
   const [loadingCandidateProfessional, setLoadingCandidateProfessional] = useState(true);
+  const [loadingCandidateProposalProfessional, setLoadingCandidateProposalProfessional] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -118,10 +123,30 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     candidateProfessionalList.filter((p: Professional) => !jobOffer?.candidateProfessionalIds.includes(p.id)).length !== 0 ||
     candidateProfessionalList.length !== jobOffer?.candidateProfessionalIds.length;
 
+  // Add Professional Candidate in the Selection Phase
+  const handleAddCandidateProposal = (professional: Professional) => {
+    const list = [...candidateProposalProfessionalList];
+    const isAlreadyInList = list.some((p: Professional) => p.id === professional.id);
+
+    if (!isAlreadyInList) {
+      list.push(professional);
+    }
+
+    setCandidateProposalProfessionalList(list);
+    //resetFilteredCandidateProfessionalList(list);
+  };
+  const handleRemoveCandidateProposal = (professional: Professional) => {
+    var list = [...candidateProposalProfessionalList];
+
+    list = list.filter((c: Professional) => c.id !== professional.id);
+    setCandidateProposalProfessionalList(list);
+    //resetFilteredCandidateProfessionalList(list);
+  };
+
   // Boolean Confirm Action through a Modal
   const [showModalConfirmAbort, setShowModalConfirmAbort] = useState(false);
   const [showModalConfirmDone, setShowModalConfirmDone] = useState(false);
-  const [showModalConfirmCandidate, setShowModalConfirmCandidate] = useState({ b: false, i: -1 });
+  const [showModalConfirmCandidate, setShowModalConfirmCandidate] = useState(false);
   const [showModalConfirmApplication, setShowModalConfirmApplication] = useState(false);
   const [showModalCancelApplication, setShowModalCancelApplication] = useState(false);
   const [showModalRevokeApplication, setShowModalRevokeApplication] = useState(false);
@@ -163,6 +188,40 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
   };
 
+  const loadCandidateProposalProfessionals = async (candidateList: number[]) => {
+    try {
+      setLoadingCandidateProposalProfessional(true);
+      setCandidateProposalProfessionalList([]);
+      //resetFilteredCandidateProfessionalList([]);
+
+      const resultList: ProfessionalWithAssociatedData[] = await Promise.all(
+        candidateList.map(async (id) => {
+          const result = await fetchProfessional(id);
+          return result;
+        })
+      );
+
+      setCandidateProposalProfessionalList(resultList.map((p) => p.professionalDTO));
+      //resetFilteredCandidateProfessionalList(resultList.map((p) => p.professionalDTO));
+      setLoadingCandidateProposalProfessional(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+
+      setLoadingCandidateProposalProfessional(false);
+      setCandidateProposalProfessionalList([]);
+      //resetFilteredCandidateProfessionalList([]);
+    }
+  };
+
   const loadJobOffer = async (jobOfferSelected: JobOffer | null) => {
     try {
       var result = null;
@@ -188,7 +247,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         setProfessional(resultProfessional.professionalDTO);
       }
 
-      loadCandidateProfessionals(result?.candidateProfessionalIds);
+      loadCandidateProfessionals(result?.candidateProfessionalIds); // carica i candidati nella fase di selezione
+      loadCandidateProposalProfessionals(result?.candidatesProposalProfessional); // carica i candidati nella fase di candidate proposal
 
       setLoading(false);
     } catch (error) {
@@ -357,6 +417,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
       var jobOfferResult = jobOffer;
       if (jobOfferResult) {
+        jobOfferResult.oldStatus = jobOfferResponse.oldStatus;
+        jobOfferResult.status = jobOfferResponse.status;
         jobOfferResult.candidateProfessionalIds = jobOfferResponse.candidateProfessionalIds;
         jobOfferResult.candidatesProfessionalRejected = jobOfferResponse.candidatesProfessionalRejected;
         jobOfferResult.candidatesProfessionalRevoked = jobOfferResponse.candidatesProfessionalRevoked;
@@ -427,16 +489,15 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
    * Handles the selection of a candidate for a job offer.
    * Fetches the job offer details after proposing the candidate and updates the state.
    * Displays an error message if the operation fails.
-   *
-   * @param {number} indexCandidate - The index of the selected candidate in the candidateProfessionalList.
    */
-  const handleSelectCandidateProfessional = async (indexCandidate: number) => {
-    const candidate = candidateProfessionalList[indexCandidate];
+  const handleSelectCandidateProfessional = async () => {
     try {
-      setShowModalConfirmCandidate({ b: false, i: -1 });
+      setShowModalConfirmCandidate(false);
       setLoading(true);
 
-      const jobOfferResponse = await goToCandidateProposalPhase(parseInt(id ? id : ""), me.xsrfToken, candidate.id);
+      const candidates: number[] = candidateProposalProfessionalList.map((p: Professional) => p.id);
+
+      const jobOfferResponse = await goToCandidateProposalPhase(parseInt(id ? id : ""), me.xsrfToken, candidates);
       await loadJobOffer(jobOfferResponse);
 
       setLoading(false);
@@ -576,11 +637,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   /**
    * Removes a candidate from the list of professional candidates.
    *
-   * @param {number} indexToRemove - The index of the candidate to be removed from the candidateProfessionalList.
+   * @param {number} idToRemove - The id of the candidate to be removed from the candidateProfessionalList.
    */
-  const handleDeleteCandidateProfessional = (indexToRemove: number) => {
-    const updatedList = candidateProfessionalList.filter((_, index) => index !== indexToRemove);
+  const handleDeleteCandidateProfessional = (idToRemove: number) => {
+    var list = [...candidateProfessionalList];
+    const updatedList = list.filter((c: Professional) => c.id !== idToRemove);
     setCandidateProfessionalList(updatedList);
+    setFilteredCandidateProfessionalList(updatedList);
+
     if (searchName !== "") {
       const list = updatedList.filter((c) => c.information.name.toLowerCase().includes(searchName.toLowerCase()));
       setFilteredCandidateProfessionalList(list);
@@ -643,9 +707,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       />
 
       <ModalConfirmation
-        show={showModalConfirmCandidate.b}
-        handleCancel={() => setShowModalConfirmCandidate({ b: false, i: -1 })}
-        handleConfirm={() => handleSelectCandidateProfessional(showModalConfirmCandidate.i)}
+        show={showModalConfirmCandidate}
+        handleCancel={() => setShowModalConfirmCandidate(false)}
+        handleConfirm={() => handleSelectCandidateProfessional()}
         title="Confirm Candidate"
         body="<strong>Warning:</strong> You are about to accept this professional candidate for the job offer. They will be responsible for completing it. This action can be undone later through <strong>cancellation</strong>. Please <strong>confirm</strong> if you wish to proceed."
         actionType={true}
@@ -653,7 +717,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
       <ModalConfirmation
         show={showModalConfirmApplication}
-        handleCancel={() => setShowModalConfirmApplication(false)}
+        handleCancel={() => {
+          setProfessional(null);
+          setShowModalConfirmApplication(false);
+        }}
         handleConfirm={handleGoToConsolidated}
         title="Confirm Application"
         body="<strong>Notice:</strong> By confirming, this professional candidate will be assigned to work on the job offer. This operation can only be undone through <strong>revocation</strong>. Additionally, all pending applications for other job offers will be <strong>cancelled</strong>. Please <strong>confirm</strong> if you wish to proceed."
@@ -672,7 +739,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       <ModalConfirmation
         show={showModalRevokeApplication}
         handleCancel={() => setShowModalRevokeApplication(false)}
-        handleConfirm={handleGoToSelectionPhase}
+        handleConfirm={async () => {
+          setCandidateProposalProfessionalList([]);
+          handleGoToSelectionPhase();
+        }}
         title="Revoke Application"
         body="<strong>Warning:</strong> By proceeding, you will revoke the professional candidate's acceptance for this job offer, returning them to the <strong>selection phase</strong>. Please <strong>confirm</strong> if you wish to continue with this action."
         actionType={false}
@@ -1116,12 +1186,6 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       </OverlayTrigger>
                       {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && !isEditing && (
                         <>
-                          <OverlayTrigger overlay={<Tooltip id="confirmApplicationButton">Confirm Application</Tooltip>}>
-                            <Button variant="success" className="me-2" onClick={() => setShowModalConfirmApplication(true)}>
-                              <FaCheck className="me-1" />
-                              Confirm
-                            </Button>
-                          </OverlayTrigger>
                           <OverlayTrigger overlay={<Tooltip id="cancelApplicationButton">Cancel Application</Tooltip>}>
                             <Button variant="danger" onClick={() => setShowModalCancelApplication(true)}>
                               <FaTrash className="me-1" />
@@ -1177,11 +1241,130 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               </Row>
             )}
 
+            {/* Proposed Candidates */}
+            {!isEditing && (
+              <Row className="border-top pt-3 mb-3">
+                <Col md={9} className="d-flex align-items-center">
+                  <strong>Proposed Candidates</strong>
+                </Col>
+
+                {jobOffer?.status === JobOfferState.SELECTION_PHASE && me.role === RoleState.OPERATOR && (
+                  <>
+                    {candidateProposalProfessionalList.length > 0 && !loadingCandidateProposalProfessional && (
+                      <Col md={3} className="text-end">
+                        <Button variant="success" onClick={handleSelectCandidateProfessional}>
+                          Confirm
+                        </Button>
+                      </Col>
+                    )}
+                  </>
+                )}
+                {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && (
+                  <Col xs={12} className="mt-2">
+                    <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
+                      <AiOutlineInfoCircle className="me-1" />
+                      To return to the
+                      <strong style={{ marginLeft: "0.25rem" }}>candidate selection phase</strong>, please click the
+                      <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Cancel</strong> button.
+                    </p>
+                  </Col>
+                )}
+
+                <Col md={12} className="mt-3">
+                  {loadingCandidateProposalProfessional && <LoadingSection h={100} />}
+                  {candidateProposalProfessionalList?.length > 0 && !loadingCandidateProposalProfessional && (
+                    <>
+                      <Table striped bordered hover className="align-middle">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>SSN Code</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredCandidateProfessionalList.length === 0 && (
+                            <tr key={0}>
+                              <td>-1</td>
+                              <td>No professional candidates found with this filter.</td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          )}
+                          {candidateProposalProfessionalList
+                            .filter((c: Professional) => c.id !== professional?.id)
+                            .map((candidate, index) => {
+                              return (
+                                <tr key={index}>
+                                  <td>{index + 1}</td>
+                                  <td>{candidate.information.name}</td>
+                                  <td>{candidate.information.surname}</td>
+                                  <td>{candidate.information.ssnCode}</td>
+                                  <td className="d-flex align-items-center justify-content-center text-center">
+                                    {jobOffer?.status === JobOfferState.CONSOLIDATED && (
+                                      <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
+                                        <FaTimesCircle className="me-1" />
+                                        Cancelled
+                                      </Badge>
+                                    )}
+
+                                    <ButtonGroup>
+                                      {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && (
+                                        <>
+                                          <OverlayTrigger overlay={<Tooltip id="confirmApplicationButton">Confirm Proposal</Tooltip>}>
+                                            <Button
+                                              variant="success"
+                                              className="me-2"
+                                              onClick={() => {
+                                                setProfessional(candidate);
+                                                setShowModalConfirmApplication(true);
+                                              }}
+                                            >
+                                              <FaCheck />
+                                            </Button>
+                                          </OverlayTrigger>
+
+                                          <OverlayTrigger overlay={<Tooltip id="deleteCandidateProposalButton">Delete Proposal</Tooltip>}>
+                                            <Button
+                                              variant="danger"
+                                              className="me-2"
+                                              onClick={() => {
+                                              }}
+                                            >
+                                              <FaTrash />
+                                            </Button>
+                                          </OverlayTrigger>
+                                        </>
+                                      )}
+
+                                      <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                        <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                          <FaUser />
+                                        </Button>
+                                      </OverlayTrigger>
+                                    </ButtonGroup>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                        </tbody>
+                      </Table>
+                    </>
+                  )}
+
+                  {candidateProposalProfessionalList?.length === 0 && !loadingCandidateProposalProfessional && <p>No professional candidates.</p>}
+                </Col>
+              </Row>
+            )}
+
             {/* Professional Candidates */}
             {!isEditing && (
               <Row className="border-top pt-3 mb-3">
                 <Col md={9} className="d-flex align-items-center">
-                  <strong>Professional Candidates </strong>
+                  <strong>Professional Candidates</strong>
                 </Col>
                 {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) &&
                   me.role === RoleState.OPERATOR && (
@@ -1338,6 +1521,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                             const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
                             const isPendingApproval = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
                             const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
+                            const isCandidateProposal = candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id);
 
                             return (
                               <tr key={index}>
@@ -1347,75 +1531,109 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                 <td>{candidate.information.ssnCode}</td>
                                 <td className="d-flex align-items-center justify-content-center text-center">
                                   {hasRejected && (
-                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
+                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
                                       <FaTimes className="me-1" />
                                       Rejected
                                     </Badge>
                                   )}
 
                                   {isRevoked && (
-                                    <Badge bg="secondary" className="p-2 d-flex align-items-center justify-content-center">
+                                    <Badge bg="secondary" className="p-2 d-flex align-items-center justify-content-center me-2">
                                       <FaUndoAlt className="me-1" />
                                       Revoked
                                     </Badge>
                                   )}
 
                                   {hasAccepted && (
-                                    <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
+                                    <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center me-2">
                                       <FaThumbsUp className="me-1" />
                                       Accepted
                                     </Badge>
                                   )}
 
                                   {isPendingApproval && (
-                                    <Badge bg="warning" className="p-2 d-flex align-items-center justify-content-center">
+                                    <Badge bg="warning" className="p-2 d-flex align-items-center justify-content-center me-2">
                                       <FaClock className="me-1" />
                                       Pending Approval
                                     </Badge>
                                   )}
 
-                                  {!hasRejected && !hasAccepted && !isPendingApproval && !isRevoked && (
-                                    <ButtonGroup>
-                                      {jobOffer?.status !== JobOfferState.CREATED && (
-                                        <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
-                                          <Button
-                                            variant="success"
-                                            className="me-2"
-                                            onClick={() => setShowModalConfirmCandidate({ b: true, i: index })}
-                                            disabled={
-                                              jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
-                                              isModifyCandidatesList ||
-                                              loadingCandidateProfessional
-                                            }
-                                          >
-                                            <FaCheck />
-                                          </Button>
-                                        </OverlayTrigger>
+                                  {jobOffer?.status === JobOfferState.CONSOLIDATED &&
+                                    !hasRejected &&
+                                    !hasAccepted &&
+                                    !isPendingApproval &&
+                                    !isRevoked && (
+                                      <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
+                                        <FaTimesCircle className="me-1" />
+                                        Cancelled
+                                      </Badge>
+                                    )}
+
+                                  <ButtonGroup>
+                                    {!hasRejected &&
+                                      !hasAccepted &&
+                                      !isPendingApproval &&
+                                      !isRevoked &&
+                                      jobOffer?.status !== JobOfferState.CONSOLIDATED && (
+                                        <>
+                                          {jobOffer?.status !== JobOfferState.CREATED && isCandidateProposal && (
+                                            <OverlayTrigger overlay={<Tooltip id="cancelCandidateButton">Cancel</Tooltip>}>
+                                              <Button
+                                                variant="secondary"
+                                                className="me-2"
+                                                onClick={() => handleRemoveCandidateProposal(candidate)}
+                                                disabled={
+                                                  jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                                  isModifyCandidatesList ||
+                                                  loadingCandidateProfessional
+                                                }
+                                              >
+                                                <FaReply />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
+
+                                          {jobOffer?.status !== JobOfferState.CREATED && !isCandidateProposal && (
+                                            <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
+                                              <Button
+                                                variant="success"
+                                                className="me-2"
+                                                onClick={() => handleAddCandidateProposal(candidate)}
+                                                disabled={
+                                                  jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                                  isModifyCandidatesList ||
+                                                  loadingCandidateProfessional
+                                                }
+                                              >
+                                                <FaCheck />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
+
+                                          <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
+                                            <Button
+                                              variant="danger"
+                                              className="me-2"
+                                              onClick={() => handleDeleteCandidateProfessional(candidate.id)}
+                                              disabled={
+                                                jobOffer?.status === JobOfferState.ABORT ||
+                                                jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
+                                                jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                                jobOffer?.status === JobOfferState.DONE
+                                              }
+                                            >
+                                              <FaTrash />
+                                            </Button>
+                                          </OverlayTrigger>
+                                        </>
                                       )}
 
-                                      <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
-                                        <Button
-                                          variant="danger"
-                                          className="me-2"
-                                          onClick={() => handleDeleteCandidateProfessional(index)}
-                                          disabled={
-                                            jobOffer?.status === JobOfferState.ABORT ||
-                                            jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
-                                            jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                                            jobOffer?.status === JobOfferState.DONE
-                                          }
-                                        >
-                                          <FaTrash />
-                                        </Button>
-                                      </OverlayTrigger>
-
-                                      <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
-                                        <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
-                                          <FaUser />
-                                        </Button>
-                                      </OverlayTrigger>
-                                    </ButtonGroup>
-                                  )}
+                                    <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                      <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                        <FaUser />
+                                      </Button>
+                                    </OverlayTrigger>
+                                  </ButtonGroup>
                                 </td>
                               </tr>
                             );

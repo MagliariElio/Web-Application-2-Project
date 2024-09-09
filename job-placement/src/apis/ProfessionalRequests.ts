@@ -25,7 +25,6 @@ export const fetchProfessional = async (professionalId: number): Promise<Profess
     }
 
     const data = await response.json();
-    console.log("Data from serviceeeeeeee: ", data.jobOfferDTOS);
     return data;
   } catch (error) {
     console.log(error);
