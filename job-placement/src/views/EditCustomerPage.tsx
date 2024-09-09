@@ -12,6 +12,8 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const [loading, setLoading] = useState(false);
+
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [ssnCode, setSsnCode] = useState("");
@@ -31,10 +33,17 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   const errorRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (id === undefined || id === null || id === "" || Number.parseInt(id) < 1) {
+    if (
+      id === undefined ||
+      id === null ||
+      id === "" ||
+      Number.parseInt(id) < 1
+    ) {
       navigate("/not-found");
       return;
     }
+
+    setLoading(true);
 
     fetchCustomer(Number.parseInt(id))
       .then((json: Customer) => {
@@ -46,10 +55,16 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         setEmails(json.information.emailDTOs);
         setTelephones(json.information.telephoneDTOs);
         setAddresses(json.information.addressDTOs);
+
+        setLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         navigate("/not-found");
-        throw new Error(`GET /API/customer/${id} : Network response was not ok`);
+        throw new Error(
+          `GET /API/customer/${id} : Network response was not ok`
+        );
+
+        setLoading(false);
       });
   }, [id]);
 
@@ -93,7 +108,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
     };
 
     updateCustomer(Number.parseInt(id!!), customer, me)
-      .then((res) => {
+      .then(() => {
         navigate("/ui/customers", { state: { success: true } });
       })
       .catch((error) => {
@@ -111,7 +126,13 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
           open={contactModalOpen}
           setOpen={setContactModalOpen}
           contactContainer={
-            contactModalOpen === "email" ? emails : contactModalOpen === "telephone" ? telephones : contactModalOpen === "address" ? addresses : []
+            contactModalOpen === "email"
+              ? emails
+              : contactModalOpen === "telephone"
+              ? telephones
+              : contactModalOpen === "address"
+              ? addresses
+              : []
           }
           setContactContainer={
             contactModalOpen === "email"
@@ -130,253 +151,332 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
           <h3>Edit customer</h3>
         </Col>
         <Col className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1)}>
+          <Button
+            className="d-flex align-items-center secondaryButton"
+            onClick={() => navigate(-1)}
+          >
             <BsXLg size={"1.5em"} />
           </Button>
         </Col>
       </Row>
 
-      <Form onSubmit={handleSubmit}>
-        {errorMessage && (
-          <Row className="justify-content-center" ref={errorRef}>
-            <Col xs={12} md={10} lg={6}>
-              <Alert
-                variant="danger"
-                onClose={() => setErrorMessage("")}
-                className="d-flex mt-3 justify-content-center align-items-center"
-                dismissible
+      {!loading && (
+        <>
+          <Form onSubmit={handleSubmit}>
+            {errorMessage && (
+              <Row className="justify-content-center" ref={errorRef}>
+                <Col xs={12} md={10} lg={6}>
+                  <Alert
+                    variant="danger"
+                    onClose={() => setErrorMessage("")}
+                    className="d-flex mt-3 justify-content-center align-items-center"
+                    dismissible
+                  >
+                    {errorMessage}
+                  </Alert>
+                </Col>
+              </Row>
+            )}
+
+            <Row className="justify-content-center">
+              <Col xs={12} md={6} lg={3} className="mb-4">
+                <Form.Control
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </Col>
+              <Col xs={12} md={6} lg={3} className="mb-4">
+                <Form.Control
+                  placeholder="Surname"
+                  value={surname}
+                  onChange={(e) => setSurname(e.target.value)}
+                  required
+                />
+              </Col>
+            </Row>
+            <Row className="justify-content-center">
+              <Col xs={12} md={6} lg={6} className="mb-4">
+                <Form.Control
+                  placeholder="Ssn code"
+                  value={ssnCode}
+                  required
+                  onChange={(e) => setSsnCode(e.target.value)}
+                />
+              </Col>
+            </Row>
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-4">
+                <Form.Control
+                  as="textarea"
+                  placeholder="Comments"
+                  value={comment}
+                  rows={4}
+                  onChange={(e) => setComment(e.target.value)}
+                  maxLength={255}
+                />
+              </Col>
+            </Row>
+            <Row className="mt-3 justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Row className="align-items-center">
+                  <Col>
+                    <hr />
+                  </Col>
+                  <Col xs="auto">
+                    <h5 className="fw-normal">Emails</h5>
+                  </Col>
+                  <Col>
+                    <hr />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {emails.length === 0 && (
+              <Row className="justify-content-center">
+                <Col xs={12} md={12} lg={6} className="mb-0">
+                  <p>No emails added yet</p>
+                </Col>
+              </Row>
+            )}
+            {emails.length > 0 &&
+              emails.map((email, index) => {
+                return (
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{email.email}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0 fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{email.comment}</p>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setEmails(emails.filter((_e, i) => i !== index));
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
+                    </Col>
+                  </Row>
+                );
+              })}
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("email");
+                  }}
+                >
+                  Add email
+                </Button>
+              </Col>
+            </Row>
+
+            <Row className="mt-3 justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Row className="align-items-center">
+                  <Col>
+                    <hr />
+                  </Col>
+                  <Col xs="auto">
+                    <h5 className="fw-normal">Telephones</h5>
+                  </Col>
+                  <Col>
+                    <hr />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {telephones.length === 0 && (
+              <Row className="justify-content-center">
+                <Col xs={12} md={12} lg={6}>
+                  <p>No phone numbers added yet</p>
+                </Col>
+              </Row>
+            )}
+            {telephones.length > 0 &&
+              telephones.map((telephone, index) => {
+                return (
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{telephone.telephone}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0  fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{telephone.comment}</p>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setTelephones(
+                              telephones.filter((_e, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
+                    </Col>
+                  </Row>
+                );
+              })}
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("telephone");
+                  }}
+                >
+                  Add telephone
+                </Button>
+              </Col>
+            </Row>
+
+            <Row className="mt-3 justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Row className="align-items-center">
+                  <Col>
+                    <hr />
+                  </Col>
+                  <Col xs="auto">
+                    <h5 className="fw-normal">Address</h5>
+                  </Col>
+                  <Col>
+                    <hr />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {addresses.length === 0 && (
+              <Row className="justify-content-center">
+                <Col xs={12} md={12} lg={6} className="mb-0">
+                  <p>No addresses added yet</p>
+                </Col>
+              </Row>
+            )}
+            {addresses.length > 0 &&
+              addresses.map((address, index) => {
+                return (
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0 fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{address.comment}</p>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setAddresses(
+                              addresses.filter((_e, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
+                    </Col>
+                  </Row>
+                );
+              })}
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("address");
+                  }}
+                >
+                  Add address
+                </Button>
+              </Col>
+            </Row>
+
+            <Row className="mt-5 justify-content-center">
+              <Col
+                xs={12}
+                md={12}
+                lg={6}
+                className="d-flex flex-column justify-content-center align-items-center"
               >
-                {errorMessage}
-              </Alert>
-            </Col>
-          </Row>
-        )}
-
-        <Row className="justify-content-center">
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control placeholder="Surname" value={surname} onChange={(e) => setSurname(e.target.value)} required />
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col xs={12} md={6} lg={6} className="mb-4">
-            <Form.Control placeholder="Ssn code" value={ssnCode} required onChange={(e) => setSsnCode(e.target.value)} />
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control
-              as="textarea"
-              placeholder="Comments"
-              value={comment}
-              rows={4}
-              onChange={(e) => setComment(e.target.value)}
-              maxLength={255}
-            />
-          </Col>
-        </Row>
-        <Row className="mt-3 justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Row className="align-items-center">
-              <Col>
-                <hr />
-              </Col>
-              <Col xs="auto">
-                <h5 className="fw-normal">Emails</h5>
-              </Col>
-              <Col>
-                <hr />
+                <Button type="submit" className="primaryButton">
+                  Save
+                </Button>
               </Col>
             </Row>
-          </Col>
-        </Row>
-        {emails.length === 0 && (
-          <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No emails added yet</p>
+          </Form>
+        </>
+      )}
+
+      {loading && (
+        <>
+          <Row className="d-flex flex-row p-0 mb-5 align-items-center">
+            <Col>
+              <h3>Edit professional</h3>
+            </Col>
+            <Col className="d-flex justify-content-end">
+              <Button
+                className="d-flex align-items-center secondaryButton"
+                onClick={() => navigate(-1)}
+              >
+                <BsXLg size={"1.5em"} />
+              </Button>
             </Col>
           </Row>
-        )}
-        {emails.length > 0 &&
-          emails.map((email, index) => {
-            return (
-              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row className="justify-content-center">
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">{email.email}</p>
-                    </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
-                      <p className="text-truncate">{email.comment}</p>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setEmails(emails.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
-                </Col>
-              </Row>
-            );
-          })}
-        <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Button
-              className="secondaryButton w-100"
-              onClick={() => {
-                setContactModalOpen("email");
-              }}
-            >
-              Add email
-            </Button>
-          </Col>
-        </Row>
 
-        <Row className="mt-3 justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Row className="align-items-center">
-              <Col>
-                <hr />
-              </Col>
-              <Col xs="auto">
-                <h5 className="fw-normal">Telephones</h5>
-              </Col>
-              <Col>
-                <hr />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        {telephones.length === 0 && (
           <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6}>
-              <p>No phone numbers added yet</p>
+            <Col xs={12} md={6} lg={6} className="mb-4">
+              <div className="loading-detail-page"></div>
             </Col>
           </Row>
-        )}
-        {telephones.length > 0 &&
-          telephones.map((telephone, index) => {
-            return (
-              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row className="justify-content-center">
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">{telephone.telephone}</p>
-                    </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
-                      <p className="text-truncate">{telephone.comment}</p>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setTelephones(telephones.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
-                </Col>
-              </Row>
-            );
-          })}
-        <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Button
-              className="secondaryButton w-100"
-              onClick={() => {
-                setContactModalOpen("telephone");
-              }}
-            >
-              Add telephone
-            </Button>
-          </Col>
-        </Row>
-
-        <Row className="mt-3 justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Row className="align-items-center">
-              <Col>
-                <hr />
-              </Col>
-              <Col xs="auto">
-                <h5 className="fw-normal">Address</h5>
-              </Col>
-              <Col>
-                <hr />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        {addresses.length === 0 && (
-          <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No addresses added yet</p>
-            </Col>
-          </Row>
-        )}
-        {addresses.length > 0 &&
-          addresses.map((address, index) => {
-            return (
-              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row className="justify-content-center">
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
-                    </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
-                      <p className="text-truncate">{address.comment}</p>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setAddresses(addresses.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
-                </Col>
-              </Row>
-            );
-          })}
-        <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Button
-              className="secondaryButton w-100"
-              onClick={() => {
-                setContactModalOpen("address");
-              }}
-            >
-              Add address
-            </Button>
-          </Col>
-        </Row>
-
-        <Row className="mt-5 justify-content-center">
-          <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
-            <Button type="submit" className="primaryButton">
-              Save
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+        </>
+      )}
     </div>
   );
 }

@@ -16,7 +16,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
   const [comment, setComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const errorRef = useRef<HTMLDivElement | null>(null);
-  
+
   const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
 
   const [emails, setEmails] = useState<any[]>([]);
@@ -52,24 +52,6 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
       return;
     }
 
-    if (addresses.length === 0) {
-      setErrorMessage("You must add at least one address before saving.");
-
-      if (errorRef.current) {
-        errorRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-      return;
-    }
-
-    if (emails.length === 0 && telephones.length === 0) {
-      setErrorMessage("You must add at least one email or phone number before saving.");
-
-      if (errorRef.current) {
-        errorRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-      return;
-    }
-
     const customer = {
       name: name,
       surname: surname,
@@ -82,7 +64,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
     };
 
     createCustomer(customer, me)
-      .then((res) => {
+      .then(() => {
         navigate("/ui/customers", { state: { success: true } });
       })
       .catch((error) => {
@@ -100,7 +82,13 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
           open={contactModalOpen}
           setOpen={setContactModalOpen}
           contactContainer={
-            contactModalOpen === "email" ? emails : contactModalOpen === "telephone" ? telephones : contactModalOpen === "address" ? addresses : []
+            contactModalOpen === "email"
+              ? emails
+              : contactModalOpen === "telephone"
+              ? telephones
+              : contactModalOpen === "address"
+              ? addresses
+              : []
           }
           setContactContainer={
             contactModalOpen === "email"
@@ -119,7 +107,10 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
           <h3>Add New Customer</h3>
         </Col>
         <Col className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1)}>
+          <Button
+            className="d-flex align-items-center secondaryButton"
+            onClick={() => navigate(-1)}
+          >
             <BsXLg size={"1.5em"} />
           </Button>
         </Col>
@@ -143,15 +134,30 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
 
         <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <Form.Control
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control placeholder="Surname" value={surname} onChange={(e) => setSurname(e.target.value)} required />
+            <Form.Control
+              placeholder="Surname"
+              value={surname}
+              onChange={(e) => setSurname(e.target.value)}
+              required
+            />
           </Col>
         </Row>
         <Row className="justify-content-center">
           <Col xs={12} md={6} lg={6} className="mb-4">
-            <Form.Control placeholder="SSN Code" value={ssnCode} required onChange={(e) => setSsnCode(e.target.value)} />
+            <Form.Control
+              placeholder="SSN Code"
+              value={ssnCode}
+              required
+              onChange={(e) => setSsnCode(e.target.value)}
+            />
           </Col>
         </Row>
         <Row className="justify-content-center">
@@ -191,7 +197,10 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         {emails.length > 0 &&
           emails.map((email, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
+              <Row
+                key={index}
+                className="mb-1 d-flex align-items-center justify-content-center"
+              >
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
@@ -207,7 +216,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        setEmails(emails.filter((e, i) => i !== index));
+                        setEmails(emails.filter((_e, i) => i !== index));
                       }}
                     >
                       Remove
@@ -256,13 +265,21 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         {telephones.length > 0 &&
           telephones.map((telephone, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
+              <Row
+                key={index}
+                className="mb-1 d-flex align-items-center justify-content-center"
+              >
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{telephone.telephone}</p>
                     </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
+                    <Col
+                      xs={12}
+                      md={12}
+                      lg={6}
+                      className="mb-0  fs-10 fw-light"
+                    >
                       <p className="text-truncate">{telephone.comment}</p>
                     </Col>
                   </Row>
@@ -272,7 +289,9 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        setTelephones(telephones.filter((e, i) => i !== index));
+                        setTelephones(
+                          telephones.filter((_e, i) => i !== index)
+                        );
                       }}
                     >
                       Remove
@@ -320,7 +339,10 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         {addresses.length > 0 &&
           addresses.map((address, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
+              <Row
+                key={index}
+                className="mb-1 d-flex align-items-center justify-content-center"
+              >
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
@@ -336,7 +358,7 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        setAddresses(addresses.filter((e, i) => i !== index));
+                        setAddresses(addresses.filter((_e, i) => i !== index));
                       }}
                     >
                       Remove
@@ -360,7 +382,12 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
         </Row>
 
         <Row className="mt-5 justify-content-center">
-          <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
+          <Col
+            xs={12}
+            md={12}
+            lg={6}
+            className="d-flex flex-column justify-content-center align-items-center"
+          >
             <Button type="submit" className="primaryButton">
               Save
             </Button>

@@ -3,13 +3,19 @@ import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsX, BsXLg } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
-import { fetchProfessional, updateProfessional } from "../apis/ProfessionalRequests";
+import {
+  fetchProfessional,
+  updateProfessional,
+} from "../apis/ProfessionalRequests";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
 import { LoadingSection } from "../App";
 import { ContactModal } from "./AddProfessionalPage";
-import { fetchContactAddresses, fetchContactEmails, fetchContactTelephones } from "../apis/ContactRequests";
+import {
+  fetchContactAddresses,
+  fetchContactEmails,
+  fetchContactTelephones,
+} from "../apis/ContactRequests";
 
 function EditProfessionalPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -41,7 +47,12 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
   const [dailyRate, setDailyRate] = useState("");
 
   useEffect(() => {
-    if (id === undefined || id === null || id === "" || Number.parseInt(id) < 1) {
+    if (
+      id === undefined ||
+      id === null ||
+      id === "" ||
+      Number.parseInt(id) < 1
+    ) {
       navigate("/not-found");
       return;
     }
@@ -60,26 +71,37 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
         setGeographicalLocation(json.professionalDTO.geographicalLocation);
         setDailyRate(json.professionalDTO.dailyRate);
 
-        fetchContactEmails(json.professionalDTO.information.id).then((emails) => {
-          setEmails(emails);
-        });
+        fetchContactEmails(json.professionalDTO.information.id).then(
+          (emails) => {
+            setEmails(emails);
+          }
+        );
 
-        fetchContactTelephones(json.professionalDTO.information.id).then((telephones) => {
-          setTelephones(telephones);
-        });
+        fetchContactTelephones(json.professionalDTO.information.id).then(
+          (telephones) => {
+            setTelephones(telephones);
+          }
+        );
 
-        fetchContactAddresses(json.professionalDTO.information.id).then((addresses) => {
-          setAddresses(addresses);
-        });
+        fetchContactAddresses(json.professionalDTO.information.id).then(
+          (addresses) => {
+            setAddresses(addresses);
+          }
+        );
 
+        setLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         navigate("/not-found");
-        throw new Error(`GET /API/professional/${id} : Network response was not ok`);
-      });
+        throw new Error(
+          `GET /API/professional/${id} : Network response was not ok`
+        );
 
-    setLoading(false);
+        setLoading(false);
+      });
   }, [id]);
+
+  console.log("loading", loading);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -109,7 +131,9 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
     }
 
     if (geographicalLocation.trim() === "") {
-      setErrorMessage("The geographical location cannot be empty or just spaces.");
+      setErrorMessage(
+        "The geographical location cannot be empty or just spaces."
+      );
       if (errorRef.current) {
         errorRef.current.scrollIntoView({ behavior: "smooth" });
       }
@@ -136,7 +160,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
         category: "PROFESSIONAL",
         emails: emails,
         telephones: telephones,
-        addresses: addresses
+        addresses: addresses,
       },
       skills: skills,
       employmentState: employmentState,
@@ -145,26 +169,33 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
     };
 
     updateProfessional(professional, me)
-      .then((res) => {
+      .then(() => {
         navigate("/ui/professionals", { state: { success: true } });
       })
       .catch((error) => {
         navigate("/ui/professionals", { state: { success: false } });
         console.log("Error during professional post: ", error);
-        throw new Error("POST /API/professionals : Network response was not ok");
+        throw new Error(
+          "POST /API/professionals : Network response was not ok"
+        );
       });
   };
 
   return (
     <div className="add-job-offer-container">
-
-{contactModalOpen != null && (
+      {contactModalOpen != null && (
         <ContactModal
           me={me}
           open={contactModalOpen}
           setOpen={setContactModalOpen}
           contactContainer={
-            contactModalOpen === "email" ? emails : contactModalOpen === "telephone" ? telephones : contactModalOpen === "address" ? addresses : []
+            contactModalOpen === "email"
+              ? emails
+              : contactModalOpen === "telephone"
+              ? telephones
+              : contactModalOpen === "address"
+              ? addresses
+              : []
           }
           setContactContainer={
             contactModalOpen === "email"
@@ -185,7 +216,10 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
               <h3>Edit professional</h3>
             </Col>
             <Col className="d-flex justify-content-end">
-              <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1)}>
+              <Button
+                className="d-flex align-items-center secondaryButton"
+                onClick={() => navigate(-1)}
+              >
                 <BsXLg size={"1.5em"} />
               </Button>
             </Col>
@@ -209,15 +243,30 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
 
             <Row className="justify-content-center">
               <Col xs={12} md={6} lg={3} className="mb-4">
-                <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+                <Form.Control
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
               </Col>
               <Col xs={12} md={6} lg={3} className="mb-4">
-                <Form.Control placeholder="Surname" value={surname} onChange={(e) => setSurname(e.target.value)} required />
+                <Form.Control
+                  placeholder="Surname"
+                  value={surname}
+                  onChange={(e) => setSurname(e.target.value)}
+                  required
+                />
               </Col>
             </Row>
             <Row className="justify-content-center">
               <Col xs={12} md={6} lg={6} className="mb-4">
-                <Form.Control placeholder="SSN Code" value={ssnCode} required onChange={(e) => setSsnCode(e.target.value)} />
+                <Form.Control
+                  placeholder="SSN Code"
+                  value={ssnCode}
+                  required
+                  onChange={(e) => setSsnCode(e.target.value)}
+                />
               </Col>
             </Row>
             <Row className="justify-content-center mb-4">
@@ -290,44 +339,52 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
             {emails.length > 0 &&
               emails.map((email, index) => {
                 return (
-                  <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row className="justify-content-center">
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">{email.email}</p>
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{email.email}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0 fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{email.comment}</p>
+                        </Col>
+                      </Row>
                     </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
-                      <p className="text-truncate">{email.comment}</p>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setEmails(emails.filter((_e, i) => i !== index));
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
                     </Col>
                   </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setEmails(emails.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
-                </Col>
-              </Row>
                 );
               })}
             <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Button
-              className="secondaryButton w-100"
-              onClick={() => {
-                setContactModalOpen("email");
-              }}
-            >
-              Add email
-            </Button>
-          </Col>
-        </Row>
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("email");
+                  }}
+                >
+                  Add email
+                </Button>
+              </Col>
+            </Row>
 
             <Row className="mt-3 justify-content-center">
               <Col xs={12} md={12} lg={6} className="mb-2">
@@ -354,45 +411,55 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
             {telephones.length > 0 &&
               telephones.map((telephone, index) => {
                 return (
-                  <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row className="justify-content-center">
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">{telephone.telephone}</p>
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{telephone.telephone}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0  fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{telephone.comment}</p>
+                        </Col>
+                      </Row>
                     </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
-                      <p className="text-truncate">{telephone.comment}</p>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setTelephones(
+                              telephones.filter((_e, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
                     </Col>
                   </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setTelephones(telephones.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
-                </Col>
-              </Row>
                 );
               })}
-            
+
             <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Button
-              className="secondaryButton w-100"
-              onClick={() => {
-                setContactModalOpen("telephone");
-              }}
-            >
-              Add telephone
-            </Button>
-          </Col>
-        </Row>
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("telephone");
+                  }}
+                >
+                  Add telephone
+                </Button>
+              </Col>
+            </Row>
 
             <Row className="mt-3 justify-content-center">
               <Col xs={12} md={12} lg={6} className="mb-2">
@@ -419,44 +486,54 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
             {addresses.length > 0 &&
               addresses.map((address, index) => {
                 return (
-                  <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row className="justify-content-center">
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0 fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{address.comment}</p>
+                        </Col>
+                      </Row>
                     </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
-                      <p className="text-truncate">{address.comment}</p>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setAddresses(
+                              addresses.filter((_e, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
                     </Col>
                   </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setAddresses(addresses.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
-                </Col>
-              </Row>
                 );
               })}
             <Row className="justify-content-center">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Button
-              className="secondaryButton w-100"
-              onClick={() => {
-                setContactModalOpen("address");
-              }}
-            >
-              Add address
-            </Button>
-          </Col>
-        </Row>
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("address");
+                  }}
+                >
+                  Add address
+                </Button>
+              </Col>
+            </Row>
 
             <Row className="mt-3 justify-content-center">
               <Col xs={12} md={12} lg={6} className="mb-2">
@@ -487,7 +564,11 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                   <Row className="d-flex flex-wrap ps-2">
                     {skills.length > 0 &&
                       skills.map((skill, index) => (
-                        <div key={index} style={{ width: "auto" }} className="text-truncate me-2 tag mb-1">
+                        <div
+                          key={index}
+                          style={{ width: "auto" }}
+                          className="text-truncate me-2 tag mb-1"
+                        >
                           {skill}
 
                           <BsX
@@ -495,7 +576,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                             className="ms-2"
                             style={{ cursor: "pointer" }}
                             onClick={() => {
-                              setSkills(skills.filter((e, i) => i !== index));
+                              setSkills(skills.filter((_e, i) => i !== index));
                             }}
                           />
                         </div>
@@ -507,7 +588,11 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
 
             <Row className="justify-content-center">
               <Col xs={12} md={6} lg={5} className="mb-2">
-                <Form.Control placeholder="New skill" value={singleSkill} onChange={(e) => setSingleSkill(e.target.value)} />
+                <Form.Control
+                  placeholder="New skill"
+                  value={singleSkill}
+                  onChange={(e) => setSingleSkill(e.target.value)}
+                />
               </Col>
               <Col xs={12} md={6} lg={1} className="mb-2">
                 <Button
@@ -520,7 +605,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                       }
                       return;
                     }
-                    
+
                     setSkills([...skills, singleSkill]);
                     setSingleSkill("");
                   }}
@@ -531,7 +616,12 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
             </Row>
 
             <Row className="mt-5 justify-content-center">
-              <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
+              <Col
+                xs={12}
+                md={12}
+                lg={6}
+                className="d-flex flex-column justify-content-center align-items-center"
+              >
                 <Button type="submit" className="primaryButton">
                   Save
                 </Button>
@@ -540,7 +630,29 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
           </Form>
         </div>
       )}
-      {loading && <LoadingSection h={null} />}
+      {loading && (
+        <>
+          <Row className="d-flex flex-row p-0 mb-5 align-items-center">
+            <Col>
+              <h3>Edit professional</h3>
+            </Col>
+            <Col className="d-flex justify-content-end">
+              <Button
+                className="d-flex align-items-center secondaryButton"
+                onClick={() => navigate(-1)}
+              >
+                <BsXLg size={"1.5em"} />
+              </Button>
+            </Col>
+          </Row>
+
+          <Row className="justify-content-center">
+            <Col xs={12} md={6} lg={6} className="mb-4">
+              <div className="loading-detail-page"></div>
+            </Col>
+          </Row>
+        </>
+      )}
     </div>
   );
 }
