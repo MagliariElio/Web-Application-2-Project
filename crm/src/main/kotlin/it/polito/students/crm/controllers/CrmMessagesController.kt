@@ -1,9 +1,6 @@
 package it.polito.students.crm.controllers
 
-import it.polito.students.crm.dtos.CreateMessageDTO
-import it.polito.students.crm.dtos.HistoryDTO
-import it.polito.students.crm.dtos.MessageListDTO
-import it.polito.students.crm.dtos.UpdateMessageDTO
+import it.polito.students.crm.dtos.*
 import it.polito.students.crm.exception_handlers.BadQueryParametersException
 import it.polito.students.crm.exception_handlers.InvalidStateTransitionException
 import it.polito.students.crm.exception_handlers.MessageNotFoundException
@@ -152,7 +149,7 @@ class CrmMessagesController(
             checkPriorityIsValid(message.priority)
             //Save the message
             val messageSaved = messageService.storeMessage(message, senderType)
-            kafkaProducer.sendMessage(KafkaTopics.TOPIC_MESSAGE, messageSaved)
+            kafkaProducer.sendMessage(KafkaTopics.TOPIC_MESSAGE, MessageAnalyticsDTO(null, messageSaved.actualState))
             return ResponseEntity(messageSaved, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
             logger.info("Error: ${e.javaClass} - ${ERROR_MESSAGE_PRIORITY_NOT_FOUND}: ${e.message}")
@@ -230,11 +227,11 @@ class CrmMessagesController(
                     return ResponseEntity(ERROR_MESSAGE_PRIORITY_NOT_FOUND, HttpStatus.BAD_REQUEST)
                 }
             }
-
+            val message = messageService.getMessage(messageID)
             val result = messageService.updateMessage(messageID, state, updateMessageDTO.comment, priority)
-            if(result.actualState == StateOptions.DONE){
-                kafkaProducer.sendCompletedMessage(KafkaTopics.TOPIC_COMPLETED_MESSAGE, result)
-            }
+
+            kafkaProducer.sendMessage(KafkaTopics.TOPIC_MESSAGE, MessageAnalyticsDTO(message.actualState, result.actualState))
+
             return ResponseEntity(result, HttpStatus.OK)
         } catch (e: MessageNotFoundException) {
             logger.info("Message not found: ${e.message}")

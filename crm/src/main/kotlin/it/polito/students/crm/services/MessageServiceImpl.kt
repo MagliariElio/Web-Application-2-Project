@@ -303,7 +303,7 @@ class MessageServiceImpl(
         message.addHistory(historyLine)     // added the new history
 
         val result = messageRepository.save(message)
-        sendEmailNotification(
+        /*sendEmailNotification(
             messageDto.sender,
             "Message status changed!",
             """
@@ -324,7 +324,7 @@ class MessageServiceImpl(
         Your Company Team
         """.trimIndent(),
             null
-        )
+        )*/
 
         return result.toDTO()
     }

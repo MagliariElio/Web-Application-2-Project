@@ -1,40 +1,36 @@
 package com.example.analytics.services
 
+import com.example.analytics.utils.StateOptionsCounters
 import org.springframework.transaction.annotation.Transactional
 
 interface CounterService {
 
     /*
-    Increment the number of total messages received
+    Increment the number of messages
      */
     @Transactional
-    fun incrementTotalMessages()
+    fun incrementMessages(state : String)
+
+    @Transactional
+    fun decrementMessages(state : String)
 
     /*
-    Increment the number of completed messages
+    Return all counters values
+     */
+    fun getMessages(): Map<String, Long>
+
+    /*
+    Increment the number of job offers
      */
     @Transactional
-    fun incrementCompletedMessages()
+    fun incrementJobOffers(state : String)
 
-    /*
-    Return the ratio between completed messages/total messages
-     */
-    fun getMessagesCompletionPercentage(): Double
-
-    /*
-    Increment the number of total job offers received
-     */
     @Transactional
-    fun incrementTotalJobOffers()
+    fun decrementJobOffers(state : String)
+
 
     /*
-    Increment the number of completed job offers
+    Return all counters values
      */
-    @Transactional
-    fun incrementCompletedJobOffers()
-
-    /*
-    Return the ratio between completed job offers/total job offers
-     */
-    fun getJobOffersCompletionPercentage(): Double
+    fun getJobOffers(): Map<String, Long>
 }

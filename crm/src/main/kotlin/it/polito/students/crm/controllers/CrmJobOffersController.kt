@@ -2,6 +2,7 @@ package it.polito.students.crm.controllers
 
 import it.polito.students.crm.dtos.ChangeJobStatusDTO
 import it.polito.students.crm.dtos.CreateJobOfferDTO
+import it.polito.students.crm.dtos.JobOfferAnalyticsDTO
 import it.polito.students.crm.dtos.JobOfferDTO
 import it.polito.students.crm.exception_handlers.*
 import it.polito.students.crm.services.JobOfferService
@@ -138,7 +139,7 @@ class CrmJobOffersController(
             }
 
             val saved = jobOfferService.storeJobOffer(jobOffer)
-            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, saved)
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(null, saved.status))
             return ResponseEntity(saved, HttpStatus.CREATED)
         } catch (e: CustomerNotFoundException) {
             logger.info("CustomerControl: Error with customer: ${e.message}")
@@ -251,11 +252,11 @@ class CrmJobOffersController(
                 return ResponseEntity(mapOf("errors" to errors), HttpStatus.BAD_REQUEST)
             }
 
+            val oldjobOffer = jobOfferService.getJobOfferById(jobOfferId)
             val editedJobOffer =
                 jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
-            if(editedJobOffer.status == JobStatusEnum.DONE){
-                kafkaProducer.sendCompletedJobOffer(KafkaTopics.TOPIC_COMPLETED_JOB_OFFER, editedJobOffer)
-            }
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(oldjobOffer!!.status, editedJobOffer.status))
+
             return ResponseEntity(editedJobOffer, HttpStatus.OK)
 
         } catch (e: IllegalJobStatusTransition) {

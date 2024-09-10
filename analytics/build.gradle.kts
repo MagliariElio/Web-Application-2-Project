@@ -21,7 +21,6 @@ repositories {
 
 dependencies {
     implementation("org.springframework.kafka:spring-kafka")
-    implementation("org.springframework.kafka:spring-kafka")
     implementation("org.apache.kafka:kafka-streams")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")

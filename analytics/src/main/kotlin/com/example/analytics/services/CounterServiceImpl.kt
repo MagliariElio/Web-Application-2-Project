@@ -2,6 +2,8 @@ package com.example.analytics.services
 
 import com.example.analytics.entities.CounterEntity
 import com.example.analytics.repositories.CounterRepository
+import com.example.analytics.utils.JobStatusCounters
+import com.example.analytics.utils.StateOptionsCounters
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -14,50 +16,90 @@ class CounterServiceImpl(
     private val logger = LoggerFactory.getLogger(CounterServiceImpl::class.java)
 
     @Transactional
-    override fun incrementTotalMessages() {
-        val totalCounter = counterRepository.findByType("totalMessages") ?: CounterEntity("totalMessages", 0)
+    override fun incrementMessages(state: String) {
+        val totalCounter = counterRepository.findByType(state) ?: CounterEntity(state, 0)
         totalCounter.count += 1
         counterRepository.save(totalCounter)
     }
 
     @Transactional
-    override fun incrementCompletedMessages() {
-        val completedCounter = counterRepository.findByType("completedMessages") ?: CounterEntity("completedMessages", 0)
-        completedCounter.count += 1
-        counterRepository.save(completedCounter)
+    override fun decrementMessages(state: String) {
+        val totalCounter = counterRepository.findByType(state) ?: CounterEntity(state, 0)
+        totalCounter.count -= 1
+        counterRepository.save(totalCounter)
     }
 
-    override fun getMessagesCompletionPercentage(): Double {
-        val totalCounter = counterRepository.findByType("totalMessages") ?: CounterEntity("totalMessages", 0)
-        val completedCounter = counterRepository.findByType("completedMessages") ?: CounterEntity("completedMessages", 0)
+    override fun getMessages(): Map<String, Long> {
+        // Create a mutable map to store counter name as key and its value as the value
+        val countersMap = mutableMapOf<String, Long>()
 
-        val total = totalCounter.count
-        val completed = completedCounter.count
+        // Retrieve each counter from the repository and add it to the map
+        val totalCounter = counterRepository.findByType(StateOptionsCounters.TOTAL_COUNTER) ?: CounterEntity(StateOptionsCounters.TOTAL_COUNTER, 0)
+        countersMap[StateOptionsCounters.TOTAL_COUNTER] = totalCounter.count
 
-        return if (total == 0L) 0.0 else (completed.toDouble() / total) * 100
+        val receivedCounter = counterRepository.findByType(StateOptionsCounters.RECEIVED_COUNTER) ?: CounterEntity(StateOptionsCounters.RECEIVED_COUNTER, 0)
+        countersMap[StateOptionsCounters.RECEIVED_COUNTER] = receivedCounter.count
+
+        val readCounter = counterRepository.findByType(StateOptionsCounters.READ_COUNTER) ?: CounterEntity(StateOptionsCounters.READ_COUNTER, 0)
+        countersMap[StateOptionsCounters.READ_COUNTER] = readCounter.count
+
+        val discardedCounter = counterRepository.findByType(StateOptionsCounters.DISCARDED_COUNTER) ?: CounterEntity(StateOptionsCounters.DISCARDED_COUNTER, 0)
+        countersMap[StateOptionsCounters.DISCARDED_COUNTER] = discardedCounter.count
+
+        val processingCounter = counterRepository.findByType(StateOptionsCounters.PROCESSING_COUNTER) ?: CounterEntity(StateOptionsCounters.PROCESSING_COUNTER, 0)
+        countersMap[StateOptionsCounters.PROCESSING_COUNTER] = processingCounter.count
+
+        val doneCounter = counterRepository.findByType(StateOptionsCounters.DONE_COUNTER) ?: CounterEntity(StateOptionsCounters.DONE_COUNTER, 0)
+        countersMap[StateOptionsCounters.DONE_COUNTER] = doneCounter.count
+
+        val failedCounter = counterRepository.findByType(StateOptionsCounters.FAILED_COUNTER) ?: CounterEntity(StateOptionsCounters.FAILED_COUNTER, 0)
+        countersMap[StateOptionsCounters.FAILED_COUNTER] = failedCounter.count
+
+        // Return the map as a JSON response
+        return countersMap
     }
 
     @Transactional
-    override fun incrementTotalJobOffers() {
-        val totalCounter = counterRepository.findByType("totalJobOffers") ?: CounterEntity("totalJobOffers", 0)
+    override fun incrementJobOffers(state: String) {
+        val totalCounter = counterRepository.findByType(state) ?: CounterEntity(state, 0)
         totalCounter.count += 1
         counterRepository.save(totalCounter)
     }
 
     @Transactional
-    override fun incrementCompletedJobOffers() {
-        val completedCounter = counterRepository.findByType("completedJobOffers") ?: CounterEntity("completedJobOffers", 0)
-        completedCounter.count += 1
-        counterRepository.save(completedCounter)
+    override fun decrementJobOffers(state: String) {
+        val totalCounter = counterRepository.findByType(state) ?: CounterEntity(state, 0)
+        totalCounter.count -= 1
+        counterRepository.save(totalCounter)
     }
 
-    override fun getJobOffersCompletionPercentage(): Double {
-        val totalCounter = counterRepository.findByType("totalJobOffers") ?: CounterEntity("totalJobOffers", 0)
-        val completedCounter = counterRepository.findByType("completedJobOffers") ?: CounterEntity("completedJobOffers", 0)
+    override fun getJobOffers(): Map<String, Long> {
+        // Create a mutable map to store counter name as key and its value as the value
+        val countersMap = mutableMapOf<String, Long>()
 
-        val total = totalCounter.count
-        val completed = completedCounter.count
+        // Retrieve each counter from the repository and add it to the map
+        val totalCounter = counterRepository.findByType(JobStatusCounters.TOTAL_COUNTER) ?: CounterEntity(StateOptionsCounters.TOTAL_COUNTER, 0)
+        countersMap[JobStatusCounters.TOTAL_COUNTER] = totalCounter.count
 
-        return if (total == 0L) 0.0 else (completed.toDouble() / total) * 100
+        val receivedCounter = counterRepository.findByType(JobStatusCounters.CREATED_COUNTER) ?: CounterEntity(StateOptionsCounters.RECEIVED_COUNTER, 0)
+        countersMap[JobStatusCounters.CREATED_COUNTER] = receivedCounter.count
+
+        val readCounter = counterRepository.findByType(JobStatusCounters.SELECTION_PHASE_COUNTER) ?: CounterEntity(StateOptionsCounters.READ_COUNTER, 0)
+        countersMap[JobStatusCounters.SELECTION_PHASE_COUNTER] = readCounter.count
+
+        val discardedCounter = counterRepository.findByType(JobStatusCounters.CANDIDATE_PROPOSAL_COUNTER) ?: CounterEntity(StateOptionsCounters.DISCARDED_COUNTER, 0)
+        countersMap[JobStatusCounters.CANDIDATE_PROPOSAL_COUNTER] = discardedCounter.count
+
+        val processingCounter = counterRepository.findByType(JobStatusCounters.CONSOLIDATED_COUNTER) ?: CounterEntity(StateOptionsCounters.PROCESSING_COUNTER, 0)
+        countersMap[JobStatusCounters.CONSOLIDATED_COUNTER] = processingCounter.count
+
+        val doneCounter = counterRepository.findByType(JobStatusCounters.DONE_COUNTER) ?: CounterEntity(StateOptionsCounters.DONE_COUNTER, 0)
+        countersMap[JobStatusCounters.DONE_COUNTER] = doneCounter.count
+
+        val failedCounter = counterRepository.findByType(JobStatusCounters.ABORT_COUNTER) ?: CounterEntity(StateOptionsCounters.FAILED_COUNTER, 0)
+        countersMap[JobStatusCounters.ABORT_COUNTER] = failedCounter.count
+
+        // Return the map as a JSON response
+        return countersMap
     }
 }

@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39cbdab1-e826-4e81-87d9-2d228c36d114" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analytics/src/main/kotlin/com/example/analytics/utils/KafkaTopics.kt" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/src/main/kotlin/com/example/analytics/utils/KafkaTopics.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crm/compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/crm/compose.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crm/src/main/kotlin/it/polito/students/crm/controllers/CrmMessagesController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/crm/src/main/kotlin/it/polito/students/crm/controllers/CrmMessagesController.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analytics/src/main/kotlin/com/example/analytics/controllers/AnalyticsController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/src/main/kotlin/com/example/analytics/controllers/AnalyticsController.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +113,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;corretto-21&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/39328/Desktop/Universita/polito/Web App 2/Web-Application-2-Project&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/39328/Desktop/Universita/polito/Web App 2/Web-Application-2-Project/analytics/src/main/kotlin/com/example/analytics/utils&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -135,6 +130,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\39328\Desktop\Universita\polito\Web App 2\Web-Application-2-Project\analytics\src\main\kotlin\com\example\analytics\utils" />
       <recent name="C:\Users\ferra\Desktop\Politecnico\Web applications II\Project\Web-Application-2-Project" />
     </key>
     <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
@@ -301,6 +297,8 @@
       <workItem from="1722947608627" duration="341000" />
       <workItem from="1723043084243" duration="1025000" />
       <workItem from="1724606184690" duration="2711000" />
+      <workItem from="1725718745974" duration="2182000" />
+      <workItem from="1725784855562" duration="615000" />
     </task>
     <servers />
   </component>
