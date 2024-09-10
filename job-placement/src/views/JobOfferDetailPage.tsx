@@ -101,13 +101,29 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [searchSsnCode, setSearchSsnCode] = useState("");
   const [filterByRejected, setFilterByRejected] = useState(false);
   const [filterByRevoked, setFilterByRevoked] = useState(false);
+  const [filterByCancelled, setFilterByCancelled] = useState(false);
+  const [filterByNotSelected, setFilterByNotSelected] = useState(false);
+  const [filterByPendingApproval, setFilterByPendingApproval] = useState(false);
   const resetFilteredCandidateProfessionalList = (candidates: Professional[]) => {
     if (filterByRejected) {
       candidates = candidates.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
     } else if (filterByRevoked) {
       candidates = candidates.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
+    } else if (filterByCancelled) {
+      candidates = candidates.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id));
+    } else if (filterByNotSelected) {
+      candidates = candidates.filter(
+        (candidate) =>
+          !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+          professional?.id !== candidate.id &&
+          !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+      );
+    } else if (filterByPendingApproval) {
+      candidates = candidates.filter(
+        (candidate) =>
+          candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) && jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+      );
     }
-
     setFilteredCandidateProfessionalList(candidates);
     setSearchSkill("");
     setSearchLocation("");
@@ -1298,7 +1314,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     }
                   >
                     <div>
-                      <FaInfoCircle className="text-muted cursor-pointer" />
+                      <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
                     </div>
                   </OverlayTrigger>
                 </Col>
@@ -1394,15 +1410,15 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                       <FaTimesCircle className="me-1 text-danger" /> Cancelled: The application was cancelled.
                                     </p>
                                     <p>
-                                      <FaUserSlash className="me-1" style={{ color: "#FFA500" }} /> Not Selected: The candidate was not selected.
+                                      <FaUserSlash className="me-1" style={{ color: "#FF8C00" }} /> Not Selected: The candidate was not selected.
                                     </p>
                                   </div>
                                 </Tooltip>
                               }
                             >
-                              <div>
-                                Status <FaInfoCircle className="text-muted cursor-pointer" />
-                              </div>
+                              <th>
+                                Status <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
+                              </th>
                             </OverlayTrigger>
                           </tr>
                         </thead>
@@ -1461,8 +1477,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                   </ButtonGroup>
                                 </td>
                                 <td>
-                                  {jobOffer?.status === JobOfferState.CONSOLIDATED && (
-                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
+                                  {(jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                    jobOffer?.status === JobOfferState.DONE ||
+                                    jobOffer?.status === JobOfferState.ABORT) && (
+                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
                                       <FaTimesCircle className="me-1" />
                                       Cancelled
                                     </Badge>
@@ -1498,7 +1516,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     }
                   >
                     <div>
-                      <FaInfoCircle className="text-muted cursor-pointer" />
+                      <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
                     </div>
                   </OverlayTrigger>
                 </Col>
@@ -1577,22 +1595,61 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                         resetFilters={() => {
                           setFilterByRejected(false);
                           setFilterByRevoked(false);
+                          setFilterByCancelled(false);
+                          setFilterByNotSelected(false);
+                          setFilterByPendingApproval(false);
                           setFilteredCandidateProfessionalList(candidateProfessionalList);
                         }}
                         searchSkill={searchSkill}
-                        searchLocation={searchLocation}
                         handleSearchChangeBySkill={(e: string) => {
                           setSearchSkill(e);
                           var list = candidateProfessionalList.filter((c) => c.skills.some((skill) => skill.toLowerCase().includes(e.toLowerCase())));
                           list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                           list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
                           setFilteredCandidateProfessionalList(list);
                         }}
+                        searchLocation={searchLocation}
                         handleSearchChangeByLocation={(e: string) => {
                           setSearchLocation(e);
                           var list = candidateProfessionalList.filter((c) => c.geographicalLocation.toLowerCase().includes(e.toLowerCase()));
                           list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                           list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
                           setFilteredCandidateProfessionalList(list);
                         }}
                         searchName={searchName}
@@ -1601,6 +1658,24 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           var list = candidateProfessionalList.filter((c) => c.information.name.toLowerCase().includes(e.toLowerCase()));
                           list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                           list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
                           setFilteredCandidateProfessionalList(list);
                         }}
                         searchSurname={searchSurname}
@@ -1609,6 +1684,24 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           var list = candidateProfessionalList.filter((c) => c.information.surname.toLowerCase().includes(e.toLowerCase()));
                           list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                           list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
                           setFilteredCandidateProfessionalList(list);
                         }}
                         searchSsnCode={searchSsnCode}
@@ -1617,6 +1710,24 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           var list = candidateProfessionalList.filter((c) => c.information.ssnCode.toLowerCase().includes(e.toLowerCase()));
                           list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
                           list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
                           setFilteredCandidateProfessionalList(list);
                         }}
                         filterByRejected={filterByRejected}
@@ -1629,6 +1740,39 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                         handleFilterByRevoked={(e: boolean) => {
                           setFilterByRevoked(e);
                           const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByCancelled={filterByCancelled}
+                        handleFilterByCancelled={(e: boolean) => {
+                          setFilterByCancelled(e);
+                          const list = candidateProfessionalList.filter((candidate) =>
+                            candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id)
+                          );
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByNotSelected={filterByNotSelected}
+                        handleFilterByNotSelected={(e: boolean) => {
+                          setFilterByNotSelected(e);
+
+                          const list = candidateProfessionalList.filter(
+                            (candidate) =>
+                              !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                              professional?.id !== candidate.id &&
+                              !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                          );
+
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByPendingApproval={filterByPendingApproval}
+                        handleFilterByPendingApproval={(e: boolean) => {
+                          setFilterByPendingApproval(e);
+
+                          const list = candidateProfessionalList.filter(
+                            (candidate) =>
+                              candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                              jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                          );
+
                           setFilteredCandidateProfessionalList(list);
                         }}
                       />
@@ -1663,14 +1807,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                         <FaTimesCircle className="me-1 text-danger" /> Cancelled: The application was cancelled.
                                       </p>
                                       <p>
-                                        <FaUserSlash className="me-1" style={{ color: "#FFA500" }} /> Not Selected: The candidate was not selected.
+                                        <FaUserSlash className="me-1" style={{ color: "#FF8C00" }} /> Not Selected: The candidate was not selected.
                                       </p>
                                     </div>
                                   </Tooltip>
                                 }
                               >
                                 <div>
-                                  Status <FaInfoCircle className="text-muted cursor-pointer" />
+                                  Status <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
                                 </div>
                               </OverlayTrigger>
                             </th>
@@ -1689,17 +1833,26 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           )}
                           {filteredCandidateProfessionalList.map((candidate, index) => {
                             const hasRejected = jobOffer?.candidatesProfessionalRejected.includes(candidate.id);
-                            const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
-                            const isPendingApproval = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
+                            const hasAccepted =
+                              professional?.id === candidate.id &&
+                              (jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                jobOffer?.status === JobOfferState.DONE ||
+                                jobOffer?.status === JobOfferState.ABORT);
+                            const isPendingApproval =
+                              candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                              jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
                             const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
                             const isCancelled =
                               candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
-                              jobOffer?.status === JobOfferState.CONSOLIDATED;
+                              (jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                jobOffer?.status === JobOfferState.DONE ||
+                                jobOffer?.status === JobOfferState.ABORT);
                             const isNotSelected =
                               !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
-                              jobOffer?.status === JobOfferState.CONSOLIDATED &&
                               !isRevoked &&
-                              !hasAccepted;
+                              !hasAccepted &&
+                              jobOffer?.status !== JobOfferState.CREATED &&
+                              jobOffer?.status !== JobOfferState.SELECTION_PHASE;
                             const isCandidateProposal = candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id);
 
                             return (
@@ -1716,7 +1869,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                       !isRevoked &&
                                       jobOffer?.status !== JobOfferState.CONSOLIDATED && (
                                         <>
-                                          {jobOffer?.status !== JobOfferState.CREATED && isCandidateProposal && (
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && isCandidateProposal && (
                                             <OverlayTrigger overlay={<Tooltip id="cancelCandidateButton">Cancel</Tooltip>}>
                                               <Button
                                                 variant="secondary"
@@ -1733,7 +1886,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                             </OverlayTrigger>
                                           )}
 
-                                          {jobOffer?.status !== JobOfferState.CREATED && !isCandidateProposal && (
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && !isCandidateProposal && (
                                             <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
                                               <Button
                                                 variant="success"
@@ -1750,21 +1903,17 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                             </OverlayTrigger>
                                           )}
 
-                                          <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
-                                            <Button
-                                              variant="danger"
-                                              className="me-2"
-                                              onClick={() => handleDeleteCandidateProfessional(candidate.id)}
-                                              disabled={
-                                                jobOffer?.status === JobOfferState.ABORT ||
-                                                jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
-                                                jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                                                jobOffer?.status === JobOfferState.DONE
-                                              }
-                                            >
-                                              <FaTrash />
-                                            </Button>
-                                          </OverlayTrigger>
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
+                                            <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
+                                              <Button
+                                                variant="danger"
+                                                className="me-2"
+                                                onClick={() => handleDeleteCandidateProfessional(candidate.id)}
+                                              >
+                                                <FaTrash />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
                                         </>
                                       )}
 
@@ -1815,7 +1964,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                     <Badge
                                       bg="orange"
                                       className="p-2 d-flex align-items-center justify-content-center me-2"
-                                      style={{ backgroundColor: "#FFA500", color: "#fff" }}
+                                      style={{ backgroundColor: "#FF8C00", color: "#fff" }}
                                     >
                                       <FaUserSlash className="me-1" />
                                       Not Selected
@@ -2138,6 +2287,12 @@ const SearchCandidate: React.FC<{
   handleFilterByRejected: (e: boolean) => void;
   filterByRevoked: boolean;
   handleFilterByRevoked: (e: boolean) => void;
+  filterByCancelled: boolean;
+  handleFilterByCancelled: (e: boolean) => void;
+  filterByNotSelected: boolean;
+  handleFilterByNotSelected: (e: boolean) => void;
+  filterByPendingApproval: boolean;
+  handleFilterByPendingApproval: (e: boolean) => void;
 }> = ({
   resetList,
   resetFilters,
@@ -2155,9 +2310,17 @@ const SearchCandidate: React.FC<{
   handleFilterByRejected,
   filterByRevoked,
   handleFilterByRevoked,
+  filterByCancelled,
+  handleFilterByCancelled,
+  filterByNotSelected,
+  handleFilterByNotSelected,
+  filterByPendingApproval,
+  handleFilterByPendingApproval,
 }) => {
   const [type, setType] = useState<"" | "skill" | "location" | "name" | "surname" | "ssnCode">("");
-  const [filter, setFilter] = useState<"" | "filterByRejection" | "filterByRevokation">("");
+  const [filter, setFilter] = useState<
+    "" | "filterByRejection" | "filterByRevokation" | "filterByCancelled" | "filterByNotSelected" | "filterByPendingApproval"
+  >("");
 
   return (
     <Form className="mb-2">
@@ -2245,19 +2408,36 @@ const SearchCandidate: React.FC<{
               style={{ cursor: "pointer" }}
               value={filter}
               onChange={(e) => {
-                setFilter(e.target.value as "filterByRejection" | "filterByRevokation" | "");
+                setFilter(
+                  e.target.value as
+                    | "filterByRejection"
+                    | "filterByRevokation"
+                    | "filterByCancelled"
+                    | "filterByNotSelected"
+                    | "filterByPendingApproval"
+                    | ""
+                );
                 if (e.target.value === "filterByRejection") {
                   handleFilterByRejected(true);
                 } else if (e.target.value === "filterByRevokation") {
                   handleFilterByRevoked(true);
+                } else if (e.target.value === "filterByCancelled") {
+                  handleFilterByCancelled(true);
+                } else if (e.target.value === "filterByNotSelected") {
+                  handleFilterByNotSelected(true);
+                } else if (e.target.value === "filterByPendingApproval") {
+                  handleFilterByPendingApproval(true);
                 } else {
                   resetFilters();
                 }
               }}
             >
               <option value={""}>Filter By</option>
-              <option value={"filterByRejection"}>Filter By Rejection</option>
-              <option value={"filterByRevokation"}>Filter By Revokation</option>
+              <option value={"filterByRejection"}>Filter by Rejection</option>
+              <option value={"filterByRevokation"}>Filter by Revocation</option>
+              <option value={"filterByCancelled"}>Filter by Cancellation</option>
+              <option value={"filterByNotSelected"}>Filter by Not Selected</option>
+              <option value={"filterByPendingApproval"}>Filter by Pending Approval</option>
             </Form.Select>
           </Col>
         </Row>
