@@ -264,7 +264,7 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                       </Col>
                       <Col md={6} xs={12}>
                         <p className="mb-1">
-                          <strong>Value:</strong> ${joboffer.value}
+                          <strong>Value:</strong> {joboffer.value} €
                         </p>
                       </Col>
                       <Col md={6} xs={12}>

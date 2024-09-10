@@ -108,42 +108,49 @@ function App() {
           <Col className="d-flex flex-column py-4 px-3">
             {loading && <LoadingSection h={null} />}
 
-            {!loading && me?.principal && (
-              <Routes>
-                <Route path="/ui" element={<JobOffersPage me={me} />} />
-                <Route path="/ui/aboutus" element={<AboutUs />} />
-                <Route path="/ui/profile" element={<ProfilePage me={me} />} />
-                <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
-                <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage me={me} /> : <Navigate to="/not-found" />} />
-                <Route
-                  path="/ui/customers/:id/edit"
-                  element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />}
-                />
-                <Route
-                  path="/ui/professionals/:id/edit"
-                  element={me && me.principal !== null ? <EditProfessionalPage me={me} /> : <Navigate to="/not-found" />}
-                />
-                <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
-                <Route
-                  path="/ui/professionals/:id"
-                  element={me && me.principal !== null ? <ProfessionalPage me={me} /> : <Navigate to="/not-found" />}
-                />
-                <Route path="/ui/customers/add" element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />} />
-                <Route
-                  path="/ui/professionals/add"
-                  element={me && me.principal !== null ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />}
-                />
-                <Route
-                  path="/ui/joboffers/add"
-                  element={me && me.principal !== null && me.role === RoleState.OPERATOR ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />}
-                />
-                <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
+            <Routes>
+              <Route path="/ui/aboutus" element={<AboutUs />} />
+              {!loading && !me?.principal && <Route path="*" element={<LoginPrompt />} />}
 
-                <Route path="*" element={<PageNotFound />} />
-              </Routes>
-            )}
+              {!loading && me?.principal && (
+                <>
+                  <Route path="/ui" element={<JobOffersPage me={me} />} />
+                  <Route path="/ui/profile" element={<ProfilePage me={me} />} />
+                  <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
+                  <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage me={me} /> : <Navigate to="/not-found" />} />
+                  <Route
+                    path="/ui/customers/:id/edit"
+                    element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />}
+                  />
+                  <Route
+                    path="/ui/professionals/:id/edit"
+                    element={me && me.principal !== null ? <EditProfessionalPage me={me} /> : <Navigate to="/not-found" />}
+                  />
+                  <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
+                  <Route
+                    path="/ui/professionals/:id"
+                    element={me && me.principal !== null ? <ProfessionalPage me={me} /> : <Navigate to="/not-found" />}
+                  />
+                  <Route
+                    path="/ui/customers/add"
+                    element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />}
+                  />
+                  <Route
+                    path="/ui/professionals/add"
+                    element={me && me.principal !== null ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />}
+                  />
+                  <Route
+                    path="/ui/joboffers/add"
+                    element={
+                      me && me.principal !== null && me.role === RoleState.OPERATOR ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />
+                    }
+                  />
+                  <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
 
-            {!loading && !me?.principal && <LoginPrompt />}
+                  <Route path="*" element={<PageNotFound />} />
+                </>
+              )}
+            </Routes>
           </Col>
         </Col>
       </Row>

@@ -253,11 +253,12 @@ class CrmJobOffersController(
 
             val editedJobOffer =
                 jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
+
             if (editedJobOffer.status == JobStatusEnum.DONE) {
                 kafkaProducer.sendCompletedJobOffer(KafkaTopics.TOPIC_COMPLETED_JOB_OFFER, editedJobOffer)
             }
-            return ResponseEntity(editedJobOffer, HttpStatus.OK)
 
+            return ResponseEntity(editedJobOffer, HttpStatus.OK)
         } catch (e: IllegalJobStatusTransition) {
             logger.info("Problem during jobOffer status editing: invalid status transition")
             return ResponseEntity(mapOf("error" to e.message), HttpStatus.BAD_REQUEST)
