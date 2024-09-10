@@ -124,19 +124,26 @@ export const fetchJobOffers = async (
 export const fetchJobOfferById = async (id: number) => {
   try {
     const response = await fetch(`/crmService/v1/API/joboffers/${id}/value`);
-    
+
     if (!response.ok) {
       let errorMessage = "An error occurred while fetching the job offer.";
 
       try {
-        const message = await response.json();
+        const contentType = response.headers.get("content-type");
 
-        if (message.errors && Array.isArray(message.errors)) {
-          errorMessage = message.errors.join(", ");
-        } else if (message.error) {
-          errorMessage = message.error;
-        } else if (message) {
-          errorMessage = message;
+        if (contentType && contentType.includes("application/json")) {
+          const message = await response.json();
+
+          if (message.errors && Array.isArray(message.errors)) {
+            errorMessage = message.errors.join(", ");
+          } else if (message.error) {
+            errorMessage = message.error;
+          } else if (message) {
+            errorMessage = message;
+          }
+        } else {
+          const textMessage = await response.text();
+          errorMessage = textMessage || "An unknown error occurred.";
         }
       } catch (jsonError) {
         console.error("Failed to parse JSON response:", jsonError);
@@ -250,11 +257,11 @@ export const abortJobOffer = async (jobOfferId: number, xsrfToken: string) => {
   }
 };
 
-export const goToCandidateProposalPhase = async (jobOfferId: number, xsrfToken: string, candidateId: number) => {
+export const goToCandidateProposalPhase = async (jobOfferId: number, xsrfToken: string, candidates: number[]) => {
   try {
     const jobOffer = {
       nextStatus: JobOfferState.CANDIDATE_PROPOSAL,
-      professionalsId: [candidateId],
+      professionalsId: candidates,
     };
 
     const response = await fetch(`/crmService/v1/API/joboffers/${jobOfferId}`, {
@@ -328,7 +335,7 @@ export const goToCondolidated = async (jobOfferId: number, xsrfToken: string, ca
   }
 };
 
-export const cancelCandidation = async (jobOfferId: number, xsrfToken: string, candidatesList: Professional[]) => {
+export const cancelApplication = async (jobOfferId: number, xsrfToken: string, candidatesList: Professional[]) => {
   try {
     const jobOffer = {
       nextStatus: JobOfferState.SELECTION_PHASE,

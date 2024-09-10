@@ -1,6 +1,5 @@
 package it.polito.students.crm.config
 
-import org.slf4j.LoggerFactory
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
@@ -15,7 +14,8 @@ import java.util.stream.Stream
 
 
 @Component
-class JwtAuthConverter(private val properties: JwtAuthConverterProperties) : Converter<Jwt?, AbstractAuthenticationToken?> {
+class JwtAuthConverter(private val properties: JwtAuthConverterProperties) :
+    Converter<Jwt?, AbstractAuthenticationToken?> {
     private val jwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
 
     override fun convert(jwt: Jwt): AbstractAuthenticationToken {

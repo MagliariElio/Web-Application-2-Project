@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Form, Pagination, Row, Toast, ToastContainer } from "react-bootstrap";
+import { Button, ButtonGroup, Col, Form, Pagination, Row, Toast, ToastContainer } from "react-bootstrap";
 import { BsPlus, BsSearch } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
@@ -100,10 +100,43 @@ function CustomersPage() {
       )}
 
       <Row className="d-flex flex-row p-0 mb-1 align-items-center">
-        <Col>
+        <Col md={8}>
           <h3 className="title">Customers</h3>
         </Col>
-        <Col className="d-flex justify-content-end">
+
+        <Col md={2} className="d-flex justify-content-end">
+          <Form.Group controlId="elementsPerPage">
+            <Form.Select
+              style={{ width: "auto" }}
+              name="pageSize"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(parseInt(e.target.value));
+
+                fetchCustomers(0, filters.name, filters.surname, filters.ssnCode, undefined, parseInt(e.target.value))
+                  .then((result) => {
+                    console.log("Customers fetched: ", result);
+                    setCustomers(result);
+                    presentedCustomers = result.content;
+                    setLoading(false);
+                  })
+                  .catch((error) => {
+                    setError(true);
+                    setLoading(false);
+                    console.log(error);
+                    throw new Error("GET /API/customers : Network response was not ok");
+                  });
+              }}
+            >
+              <option value="10">10 customers</option>
+              <option value="20">20 customers</option>
+              <option value="50">50 customers</option>
+              <option value="100">100 customers</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+
+        <Col md={2} className="d-flex justify-content-end">
           <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate("/ui/customers/add")}>
             <BsPlus size={"1.5em"} className="me-1" />
             Add Customer
@@ -119,7 +152,23 @@ function CustomersPage() {
         </Row>
       )}
 
-      {loading && <LoadingSection h={null} />}
+      {loading && (
+        <Row>
+          <Col md={8}>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+          </Col>
+          <Col md={4}>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+          </Col>
+        </Row>
+      )}
 
       {!error && !loading && customers !== null && (
         <Row className="w-100 d-flex justify-content-center">
@@ -138,7 +187,7 @@ function CustomersPage() {
                 </Form.Group>
 
                 <Form.Group controlId="ssnCode" className="mb-3">
-                  <Form.Label>SsN Code</Form.Label>
+                  <Form.Label>SSN Code</Form.Label>
                   <Form.Control type="text" name="ssnCode" value={filters.ssnCode} onChange={handleFilterChange} />
                 </Form.Group>
 
@@ -169,60 +218,66 @@ function CustomersPage() {
                   </Row>
                 </Form.Group>
 
-                <Button
-                  className="primaryButton mb-2"
-                  variant="primary"
-                  onClick={() => {
-                    setLoading(true);
-                    fetchCustomers(0, filters.name, filters.surname, filters.ssnCode)
-                      .then((result) => {
-                        console.log("Customers fetched: ", result);
-                        setCustomers(result);
-                        setLoading(false);
-                      })
-                      .catch((error) => {
-                        setError(true);
-                        setLoading(false);
-                        console.log(error);
-                        throw new Error("GET /API/customers : Network response was not ok");
-                      });
-                  }}
-                >
-                  <BsSearch className="me-1" />
-                  Filter
-                </Button>
+                <ButtonGroup className="d-flex justify-content-center mt-4">
+                  <Col className="text-center">
+                    <Button
+                      className="primaryButton mb-2"
+                      variant="primary"
+                      onClick={() => {
+                        setLoading(true);
+                        fetchCustomers(0, filters.name, filters.surname, filters.ssnCode)
+                          .then((result) => {
+                            console.log("Customers fetched: ", result);
+                            setCustomers(result);
+                            setLoading(false);
+                          })
+                          .catch((error) => {
+                            setError(true);
+                            setLoading(false);
+                            console.log(error);
+                            throw new Error("GET /API/customers : Network response was not ok");
+                          });
+                      }}
+                    >
+                      <BsSearch className="me-1" />
+                      Filter
+                    </Button>
+                  </Col>
 
-                <Button
-                  className="secondaryButton"
-                  variant="primary"
-                  onClick={() => {
-                    setFilters({
-                      name: "",
-                      surname: "",
-                      ssnCode: "",
-                      jobOffersNumberFrom: 0,
-                      jobOffersNumberTo: 10000,
-                    });
-                    fetchCustomers(0)
-                      .then((result) => {
-                        console.log("Customers fetched: ", result);
-                        setCustomers(result);
-                        presentedCustomers = result.content;
-                        setLoading(false);
-                      })
-                      .catch((error) => {
-                        setError(true);
-                        setLoading(false);
-                        console.log(error);
-                        throw new Error("GET /API/customers : Network response was not ok");
-                      });
-                  }}
-                >
-                  Clear Filters
-                </Button>
+                  <Col className="text-center">
+                    <Button
+                      className="secondaryButton"
+                      variant="primary"
+                      onClick={() => {
+                        setFilters({
+                          name: "",
+                          surname: "",
+                          ssnCode: "",
+                          jobOffersNumberFrom: 0,
+                          jobOffersNumberTo: 10000,
+                        });
+                        fetchCustomers(0)
+                          .then((result) => {
+                            console.log("Customers fetched: ", result);
+                            setCustomers(result);
+                            presentedCustomers = result.content;
+                            setLoading(false);
+                          })
+                          .catch((error) => {
+                            setError(true);
+                            setLoading(false);
+                            console.log(error);
+                            throw new Error("GET /API/customers : Network response was not ok");
+                          });
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  </Col>
+                </ButtonGroup>
               </Form>
 
-              <h5 className="mt-5">Sort Customers</h5>
+              <h5 className="mt-3">Sort Customers</h5>
               <Form>
                 <Form.Group controlId="sort" className="mb-3">
                   <Form.Select name="sort" value={sortCriteria} onChange={(e) => setSortCriteria(e.target.value)}>
@@ -326,36 +381,6 @@ function CustomersPage() {
                   />
                 </Pagination>
               </Col>
-            </Row>
-
-            <Row className="w-100 d-flex justify-content-center align-items-center mt-3 justify-self-center">
-              <Form.Select
-                style={{ width: "auto" }}
-                name="pageSize"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(parseInt(e.target.value));
-
-                  fetchCustomers(0, filters.name, filters.surname, filters.ssnCode, undefined, parseInt(e.target.value))
-                    .then((result) => {
-                      console.log("Customers fetched: ", result);
-                      setCustomers(result);
-                      presentedCustomers = result.content;
-                      setLoading(false);
-                    })
-                    .catch((error) => {
-                      setError(true);
-                      setLoading(false);
-                      console.log(error);
-                      throw new Error("GET /API/customers : Network response was not ok");
-                    });
-                }}
-              >
-                <option value="10">10 customers</option>
-                <option value="20">20 customers</option>
-                <option value="50">50 customers</option>
-                <option value="100">100 customers</option>
-              </Form.Select>
             </Row>
           </Col>
         </Row>

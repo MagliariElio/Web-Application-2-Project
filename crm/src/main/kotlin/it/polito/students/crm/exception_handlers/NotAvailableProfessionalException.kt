@@ -1,4 +1,3 @@
 package it.polito.students.crm.exception_handlers
 
-class NotAvailableProfessionalException(message: String) : Exception(message) {
-}
+class NotAvailableProfessionalException(message: String) : Exception(message)

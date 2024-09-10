@@ -1,20 +1,22 @@
-import { useEffect, useState } from "react";
-import { Button, Col, Modal, Row } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Button, Col, Modal, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsPencilSquare, BsTrash, BsX, BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import { createProfessional } from "../apis/ProfessionalRequests";
-import { Professional } from "../interfaces/Professional";
 import {
-  deleteEmail,
+  deleteContactWhatContact,
+  editContactWhatContact,
   fetchAllContactWhatContact,
   postNewWhatContact,
 } from "../apis/ContactRequests";
 import { Email } from "../interfaces/Email";
 import { Telephone } from "../interfaces/Telephone";
 import { Address } from "../interfaces/Address";
+import { toTitleCase } from "../utils/costants";
+import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
+import { LoadingSection } from "../App";
 
 function AddProfessionalPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -27,37 +29,61 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
   const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
 
   const [emails, setEmails] = useState<any[]>([]);
-  const [singleEmailAddress, setSingleEmailAddress] = useState("");
-  const [singleEmailAddressComment, setSingleEmailAddressComment] =
-    useState("");
-  const [removedEmails, setRemovedEmails] = useState<number[]>([]);
-  const [emailError, setEmailError] = useState(false);
 
   const [telephones, setTelephones] = useState<any[]>([]);
-  const [singleTelephoneNumber, setSingleTelephoneNumber] = useState("");
-  const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] =
-    useState("");
-  const [telephoneError, setTelephoneError] = useState(false);
 
   const [addresses, setAddresses] = useState<any[]>([]);
-  const [singleAddress, setSingleAddress] = useState({
-    address: "",
-    city: "",
-    region: "",
-    state: "",
-    comment: "",
-  });
-  const [addressError, setAddressError] = useState(false);
 
   const [skills, setSkills] = useState<string[]>([]);
   const [singleSkill, setSingleSkill] = useState("");
   const [geographicalLocation, setGeographicalLocation] = useState("");
-  const [dailyRate, setDailyRate] = useState(0);
+  const [dailyRate, setDailyRate] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const errorRef = useRef<HTMLDivElement | null>(null);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (name === "" || surname === "" || ssnCode === "") {
+    if (name.trim() === "") {
+      setErrorMessage("The name cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (surname.trim() === "") {
+      setErrorMessage("The surname cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (ssnCode.trim() === "") {
+      setErrorMessage("The SSN Code cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (geographicalLocation.trim() === "") {
+      setErrorMessage(
+        "The geographical location cannot be empty or just spaces."
+      );
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (skills.length === 0) {
+      setErrorMessage("You must add at least one skill before saving.");
+
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
       return;
     }
 
@@ -78,7 +104,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
     };
 
     createProfessional(professional, me)
-      .then((res) => {
+      .then(() => {
         navigate("/ui/professionals", { state: { success: true } });
       })
       .catch((error) => {
@@ -91,7 +117,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
   };
 
   return (
-    <div>
+    <div className="add-job-offer-container">
       {contactModalOpen != null && (
         <ContactModal
           me={me}
@@ -120,7 +146,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
         <Col>
-          <h3>Add new professional</h3>
+          <h3>Add New Professional</h3>
         </Col>
         <Col className="d-flex justify-content-end">
           <Button
@@ -133,7 +159,22 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
       </Row>
 
       <Form onSubmit={handleSubmit}>
-        <Row>
+        {errorMessage && (
+          <Row className="justify-content-center" ref={errorRef}>
+            <Col xs={12} md={10} lg={6}>
+              <Alert
+                variant="danger"
+                onClose={() => setErrorMessage("")}
+                className="d-flex mt-3 justify-content-center align-items-center"
+                dismissible
+              >
+                {errorMessage}
+              </Alert>
+            </Col>
+          </Row>
+        )}
+
+        <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-4">
             <Form.Control
               placeholder="Name"
@@ -151,30 +192,19 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             />
           </Col>
         </Row>
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-4">
+        <Row className="justify-content-center">
+          <Col xs={12} md={6} lg={6} className="mb-4">
             <Form.Control
-              placeholder="Ssn code"
+              placeholder="SSN Code"
               value={ssnCode}
               required
               onChange={(e) => setSsnCode(e.target.value)}
             />
           </Col>
         </Row>
-        <Row>
-          <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control
-              as="textarea"
-              placeholder="Comments"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              maxLength={255}
-            />
-          </Col>
-        </Row>
 
-        <Row>
-          <Col xs={12} md={12} lg={6} className="mb-4">
+        <Row className="justify-content-center mb-4">
+          <Col xs={12} md={12} lg={3}>
             <Form.Control
               placeholder="Geographical location"
               required
@@ -182,23 +212,44 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               onChange={(e) => setGeographicalLocation(e.target.value)}
             />
           </Col>
-        </Row>
 
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Label>Daily rate</Form.Label>
+          <Col xs={12} md={12} lg={3}>
             <Form.Control
-              type="number"
-              step="0.01"
+              type="text"
               placeholder="Daily rate"
               value={dailyRate}
-              onChange={(e) => setDailyRate(parseFloat(e.target.value))}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*\.?\d{0,2}$/.test(value)) {
+                  setDailyRate(value);
+                }
+              }}
+              onBlur={() => {
+                if (dailyRate) {
+                  const formattedValue = parseFloat(dailyRate).toFixed(2);
+                  setDailyRate(formattedValue);
+                }
+              }}
               min={0}
+              required
             />
           </Col>
         </Row>
 
-        <Row className="mt-5">
+        <Row className="justify-content-center">
+          <Col xs={12} md={12} lg={6} className="mb-4">
+            <Form.Control
+              as="textarea"
+              placeholder="Comments"
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              maxLength={255}
+            />
+          </Col>
+        </Row>
+
+        <Row className="mt-3 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -214,18 +265,21 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {emails.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No emails added yet</p>
+              <p>No emails added yet.</p>
             </Col>
           </Row>
         )}
         {emails.length > 0 &&
           emails.map((email, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row
+                key={index}
+                className="mb-1 d-flex align-items-center justify-content-center"
+              >
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{email.email}</p>
                     </Col>
@@ -239,10 +293,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        if (email.id !== undefined) {
-                          setRemovedEmails([...removedEmails, email.id]);
-                        }
-                        setEmails(emails.filter((e, i) => i !== index));
+                        setEmails(emails.filter((_e, i) => i !== index));
                       }}
                     >
                       Remove
@@ -252,7 +303,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
               className="secondaryButton w-100"
@@ -264,15 +315,8 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             </Button>
           </Col>
         </Row>
-        {emailError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">Invalid email address</p>
-            </Col>
-          </Row>
-        )}
 
-        <Row className="mt-5">
+        <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -288,18 +332,21 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {telephones.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No phone numbers added yet</p>
+              <p>No phone numbers added yet.</p>
             </Col>
           </Row>
         )}
         {telephones.length > 0 &&
           telephones.map((telephone, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row
+                key={index}
+                className="mb-1 d-flex align-items-center justify-content-center"
+              >
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{telephone.telephone}</p>
                     </Col>
@@ -318,7 +365,9 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        setTelephones(telephones.filter((e, i) => i !== index));
+                        setTelephones(
+                          telephones.filter((_e, i) => i !== index)
+                        );
                       }}
                     >
                       Remove
@@ -328,57 +377,21 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
-        <Row>
-          <Col xs={12} md={12} lg={2} className="mb-2">
-            <Form.Control
-              placeholder="Telephone number"
-              value={singleTelephoneNumber}
-              onChange={(e) => {
-                setSingleTelephoneNumber(e.target.value);
-                setTelephoneError(false);
-              }}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Telephone number comment"
-              value={singleTelephoneNumberComment}
-              onChange={(e) => setSingleTelephoneNumberComment(e.target.value)}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={1} className="mb-2">
+
+        <Row className="justify-content-center">
+          <Col xs={12} md={12} lg={6} className="mb-2">
             <Button
-              className="secondaryButton w-100 px-0"
+              className="secondaryButton w-100"
               onClick={() => {
-                if (checkValidTelephone(singleTelephoneNumber)) {
-                  setTelephones([
-                    ...telephones,
-                    {
-                      telephone: singleTelephoneNumber,
-                      comment: singleTelephoneNumberComment,
-                    },
-                  ]);
-                  setSingleTelephoneNumber("");
-                  setSingleTelephoneNumberComment("");
-                  setTelephoneError(false);
-                } else {
-                  setTelephoneError(true);
-                }
+                setContactModalOpen("telephone");
               }}
             >
-              Add number
+              Add telephone
             </Button>
           </Col>
         </Row>
-        {telephoneError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">Invalid telephone number</p>
-            </Col>
-          </Row>
-        )}
 
-        <Row className="mt-5">
+        <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -394,22 +407,23 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
         {addresses.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No addresses added yet</p>
+              <p>No addresses added yet.</p>
             </Col>
           </Row>
         )}
         {addresses.length > 0 &&
           addresses.map((address, index) => {
             return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
+              <Row
+                key={index}
+                className="mb-1 d-flex align-items-center justify-content-center"
+              >
                 <Col xs={8} md={6} lg={5}>
-                  <Row>
+                  <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">
-                        {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}
-                      </p>
+                      <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
                     </Col>
                     <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
                       <p className="text-truncate">{address.comment}</p>
@@ -421,7 +435,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        setAddresses(addresses.filter((e, i) => i !== index));
+                        setAddresses(addresses.filter((_e, i) => i !== index));
                       }}
                     >
                       Remove
@@ -431,95 +445,13 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               </Row>
             );
           })}
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Address"
-              value={singleAddress.address}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, address: e.target.value })
-              }
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="City"
-              value={singleAddress.city}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, city: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Region"
-              value={singleAddress.region}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, region: e.target.value })
-              }
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="State"
-              value={singleAddress.state}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, state: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
-        <Row>
+
+        <Row className="justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
-            <Form.Control
-              as="textarea"
-              placeholder="Address comment"
-              value={singleAddress.comment}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, comment: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
-        {addressError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">
-                Address, city, region and state are required
-              </p>
-            </Col>
-          </Row>
-        )}
-        <Row>
-          <Col
-            xs={12}
-            md={12}
-            lg={6}
-            className="mb-2 d-flex justify-content-center"
-          >
             <Button
-              className="secondaryButton"
+              className="secondaryButton w-100"
               onClick={() => {
-                if (
-                  singleAddress.address === "" ||
-                  singleAddress.city === "" ||
-                  singleAddress.region === "" ||
-                  singleAddress.state === ""
-                ) {
-                  setAddressError(true);
-                  return;
-                }
-                setAddresses([...addresses, singleAddress]);
-                setSingleAddress({
-                  address: "",
-                  city: "",
-                  region: "",
-                  state: "",
-                  comment: "",
-                });
-                setAddressError(false);
+                setContactModalOpen("address");
               }}
             >
               Add address
@@ -527,7 +459,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
 
-        <Row className="mt-5">
+        <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="mb-2">
             <Row className="align-items-center">
               <Col>
@@ -544,14 +476,14 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         </Row>
 
         {skills.length === 0 && (
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No skills added yet</p>
+              <p>No skills added yet.</p>
             </Col>
           </Row>
         )}
         {
-          <Row>
+          <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-2">
               <Row className="d-flex flex-wrap ps-2">
                 {skills.length > 0 &&
@@ -568,7 +500,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                         className="ms-2"
                         style={{ cursor: "pointer" }}
                         onClick={() => {
-                          setSkills(skills.filter((e, i) => i !== index));
+                          setSkills(skills.filter((_e, i) => i !== index));
                         }}
                       />
                     </div>
@@ -578,7 +510,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Row>
         }
 
-        <Row>
+        <Row className="justify-content-center">
           <Col xs={12} md={6} lg={5} className="mb-2">
             <Form.Control
               placeholder="New skill"
@@ -590,6 +522,14 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             <Button
               className="secondaryButton w-100"
               onClick={() => {
+                if (singleSkill.trim() === "") {
+                  setErrorMessage("Please enter a skill before adding.");
+                  if (errorRef.current) {
+                    errorRef.current.scrollIntoView({ behavior: "smooth" });
+                  }
+                  return;
+                }
+
                 setSkills([...skills, singleSkill]);
                 setSingleSkill("");
               }}
@@ -599,7 +539,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
 
-        <Row className="mt-5">
+        <Row className="mt-5 justify-content-center">
           <Col
             xs={12}
             md={12}
@@ -607,7 +547,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
             className="d-flex flex-column justify-content-center align-items-center"
           >
             <Button type="submit" className="primaryButton">
-              Save professional
+              Save
             </Button>
           </Col>
         </Row>
@@ -631,11 +571,31 @@ const loadContactContacts = async (
       return [] as Email[] | Telephone[] | Address[];
     }
   }
+  if (whatContact === "telephone") {
+    try {
+      const allTelephones = await fetchAllContactWhatContact("telephone");
+      console.log("All telephones: ", allTelephones);
+      return allTelephones;
+    } catch (err) {
+      console.log("Error fetching telephones: ", err);
+      return [] as Email[] | Telephone[] | Address[];
+    }
+  }
+  if (whatContact === "address") {
+    try {
+      const allAddresses = await fetchAllContactWhatContact("address");
+      console.log("All addresses: ", allAddresses);
+      return allAddresses;
+    } catch (err) {
+      console.log("Error fetching addresses: ", err);
+      return [] as Email[] | Telephone[] | Address[];
+    }
+  }
 
   return [] as Email[] | Telephone[] | Address[];
 };
 
-const ContactModal = ({
+export const ContactModal = ({
   me,
   open,
   setOpen,
@@ -659,55 +619,93 @@ const ContactModal = ({
   const [singleRegion, setSingleRegion] = useState("");
   const [singleState, setSingleState] = useState("");
 
+  const [deleteSelected, setDeleteSelected] = useState<number | null>(null);
+  const [editSelected, setEditSelected] = useState<
+    Email | Telephone | Address | null
+  >(null);
+
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchContacts = async () => {
       if (open !== null) {
+        setLoading(true);
         const cont = await loadContactContacts(open);
         setContacts(cont);
+        setLoading(false);
+        console.log("Fetched whatcontacts: ", cont);
       }
     };
 
     fetchContacts();
   }, [open]);
 
+  useEffect(() => {
+    if (editSelected !== null) {
+      if (open === "email") {
+        setSingleContact((editSelected as Email).email);
+        setSingleContactComment((editSelected as Email).comment);
+      } else if (open === "telephone") {
+        setSingleContact((editSelected as Telephone).telephone);
+        setSingleContactComment((editSelected as Telephone).comment);
+      } else {
+        setSingleContact((editSelected as Address).address);
+        setSingleCity((editSelected as Address).city);
+        setSingleRegion((editSelected as Address).region);
+        setSingleState((editSelected as Address).state);
+        setSingleContactComment((editSelected as Address).comment);
+      }
+    }
+  }, [editSelected?.id]);
+
   return (
     <Modal size="lg" show={open != null} onHide={() => setOpen(null)}>
       <Modal.Header closeButton>
-        <Modal.Title>Add a new {open}</Modal.Title>
+        <Modal.Title>Add New {toTitleCase(open ? open : "")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <small>
-          Click on a {open} to select it or use side buttons to edit and delete
-          them from the {open} book
+          Click on a <strong>{open}</strong> to select it or use side buttons to
+          edit and delete them from the <strong>{open} book</strong>.
         </small>
 
-        {contacts.length === 0 && (
+        {loading && <LoadingSection h={300} />}
+
+        {!loading && contacts.length === 0 && (
           <Row className="mt-2">
             <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No {open}s added yet</p>
+              <p>No {open}s added yet.</p>
             </Col>
           </Row>
         )}
 
-        {contacts.length > 0 &&
+        {!loading &&
+          contacts.length > 0 &&
           contacts
             .filter(
               (contact) => !contactContainer.find((c) => c.id === contact.id)
             )
-            .filter(
-              (contact) =>
-                (open === "email" &&
+            .filter((contact) => {
+              if (editSelected !== null) {
+                return true;
+              }
+              if (open === "email") {
+                return (
                   (contact as Email).email.includes(singleContact) &&
-                  (contact as Email).comment.includes(singleContactComment)) ||
-                (open === "telephone" &&
+                  (contact as Email).comment.includes(singleContactComment)
+                );
+              } else if (open === "telephone") {
+                return (
                   (contact as Telephone).telephone.includes(singleContact) &&
-                  (contact as Telephone).comment.includes(
-                    singleContactComment
-                  )) ||
-                (open === "address" &&
+                  (contact as Telephone).comment.includes(singleContactComment)
+                );
+              } else {
+                return (
                   (contact as Address).address.includes(singleContact) &&
-                  (contact as Address).comment.includes(singleContactComment))
-            )
+                  (contact as Address).comment.includes(singleContactComment)
+                );
+              }
+            })
             .sort((a, b) => {
               if (open === "email") {
                 return (a as Email).email.localeCompare((b as Email).email);
@@ -723,82 +721,169 @@ const ContactModal = ({
             })
             .map((contact, index) => {
               return (
-                <Row
-                  key={index}
-                  className="mb-1 mt-2 ms-1 d-flex align-items-center"
-                >
-                  <Col
-                    xs={12}
-                    md={8}
-                    lg={10}
-                    className="secondaryButton d-flex align-items-center justify-content-between"
-                    onClick={() => {
-                      setContactContainer([...contactContainer, contact]);
-                      setOpen(null);
-                    }}
+                <>
+                  <Row
+                    key={index}
+                    className="mb-1 mt-2 ms-1 d-flex align-items-center"
                   >
-                    <Row className="w-100">
-                      <Col
-                        xs={12}
-                        md={12}
-                        lg={6}
-                        className="my-2  d-flex align-items-center"
-                      >
-                        <p className="text-truncate m-0">
-                          {open === "email"
-                            ? (contact as Email).email
-                            : open === "telephone"
-                            ? (contact as Telephone).telephone
-                            : (contact as Address).address}
+                    <Col
+                      xs={12}
+                      md={8}
+                      lg={10}
+                      className={
+                        "d-flex align-items-center justify-content-between " +
+                        (editSelected?.id === contact.id
+                          ? " secondaryWarningButton "
+                          : "") +
+                        (deleteSelected === contact.id
+                          ? " secondaryDangerButton "
+                          : " secondaryButton ")
+                      }
+                      onClick={() => {
+                        setContactContainer([...contactContainer, contact]);
+                        setOpen(null);
+                      }}
+                    >
+                      <Row className="w-100">
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="my-2  d-flex align-items-center"
+                        >
+                          <p className="text-truncate m-0">
+                            {open === "email"
+                              ? (contact as Email).email
+                              : open === "telephone"
+                              ? (contact as Telephone).telephone
+                              : `${(contact as Address).address}, ${
+                                  (contact as Address).city
+                                }, ${(contact as Address).region}, ${
+                                  (contact as Address).state
+                                }`}
+                          </p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="my-2 fs-10 fw-light d-flex align-items-center"
+                        >
+                          <p className="text-truncate m-0">
+                            {open === "email"
+                              ? (contact as Email).comment
+                              : open === "telephone"
+                              ? (contact as Telephone).comment
+                              : (contact as Address).comment}
+                          </p>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={6} md={2} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryButton w-100 d-flex justify-content-center align-items-center "
+                          onClick={() => {
+                            if (
+                              editSelected === null ||
+                              editSelected?.id !== contact.id
+                            ) {
+                              setEditSelected(contact);
+                            } else {
+                              setEditSelected(null);
+                              setSingleContact("");
+                              setSingleContactComment("");
+                              setSingleCity("");
+                              setSingleRegion("");
+                              setSingleState("");
+                            }
+                          }}
+                        >
+                          {editSelected?.id === contact.id && (
+                            <BsXLg size={20} />
+                          )}
+
+                          {editSelected?.id !== contact.id && (
+                            <BsPencilSquare size={20} />
+                          )}
+                        </Button>
+                      </Col>
+                    </Col>
+                    <Col xs={6} md={2} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
+                          onClick={() => {
+                            if (contact.id !== undefined) {
+                              setDeleteSelected(contact.id);
+                            }
+                          }}
+                        >
+                          <BsTrash size={20} />
+                        </Button>
+                      </Col>
+                    </Col>
+                  </Row>
+                  {deleteSelected === contact.id && (
+                    <Row className="mt-2 ms-2 d-flex align-items-center">
+                      <Col xs={12} md={12} lg={6} className="mb-0">
+                        <p className="text-danger my-auto">
+                          Are you sure you want to delete this {open}?
+                        </p>
+                        <p className="text-danger my-auto">
+                          It will be also removed from all contacts using it
                         </p>
                       </Col>
-                      <Col
-                        xs={12}
-                        md={12}
-                        lg={6}
-                        className="my-2 fs-10 fw-light d-flex align-items-center"
-                      >
-                        <p className="text-truncate m-0">
-                          {open === "email"
-                            ? (contact as Email).comment
-                            : open === "telephone"
-                            ? (contact as Telephone).comment
-                            : (contact as Address).comment}
-                        </p>
+                      <Col xs={6} md={2} lg={1}>
+                        <Col className="mb-0">
+                          <Button
+                            className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
+                            onClick={() => {
+                              if (contact.id !== undefined) {
+                                deleteContactWhatContact(
+                                  open!!,
+                                  contact.id.toString(),
+                                  me
+                                ).then(() => {
+                                  setContacts(
+                                    (prevContacts) =>
+                                      prevContacts.filter(
+                                        (e) => e.id !== contact.id
+                                      ) as Email[] | Telephone[] | Address[]
+                                  );
+
+                                  setDeleteSelected(null);
+                                });
+                              }
+                            }}
+                          >
+                            Yes
+                          </Button>
+                        </Col>
+                      </Col>
+                      <Col xs={6} md={2} lg={1}>
+                        <Col className="mb-0">
+                          <Button
+                            className="secondaryButton w-100 d-flex justify-content-center align-items-center "
+                            onClick={() => {
+                              setDeleteSelected(null);
+                            }}
+                          >
+                            No
+                          </Button>
+                        </Col>
                       </Col>
                     </Row>
-                  </Col>
-                  <Col xs={6} md={2} lg={1}>
-                    <Col className="mb-0">
-                      <Button
-                        className="secondaryButton w-100 d-flex justify-content-center align-items-center "
-                        onClick={() => {
-                          // setContacts(contacts.filter((e, i) => i !== index));
-                        }}
-                      >
-                        <BsPencilSquare size={20} />
-                      </Button>
-                    </Col>
-                  </Col>
-                  <Col xs={6} md={2} lg={1}>
-                    <Col className="mb-0">
-                      <Button
-                        className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
-                        onClick={() => {
-                          // setContacts(contacts.filter((e, i) => i !== index));
-                        }}
-                      >
-                        <BsTrash size={20} />
-                      </Button>
-                    </Col>
-                  </Col>
-                </Row>
+                  )}
+                </>
               );
             })}
 
         <Form className="mt-4">
           <small className="mb-1 ms-1">
-            Use fields to search or create an email
+            {editSelected === null
+              ? `Use fields to search or create a new ${open}`
+              : `Edit the ${open} below`}
           </small>
           <Row className="d-flex align-items-center">
             <Col xs={12} md={12} lg={6} className="">
@@ -816,40 +901,38 @@ const ContactModal = ({
                 }
               />
             </Col>
-            {
-              open === "address" && (
-                <>
-                  <Col xs={12} md={12} lg={6} className="">
-                    <Form.Control
-                      value={singleCity}
-                      onChange={(e) => {
-                        setSingleCity(e.target.value);
-                      }}
-                      placeholder="City"
-                    />
-                  </Col>
-                  <Col xs={12} md={12} lg={6} className="">
-                    <Form.Control
-                      value={singleRegion}
-                      onChange={(e) => {
-                        setSingleRegion(e.target.value);
-                      }}
-                      placeholder="Region"
-                    />
-                  </Col>
-                  <Col xs={12} md={12} lg={6} className="">
-                    <Form.Control
-                      value={singleState}
-                      onChange={(e) => {
-                        setSingleState(e.target.value);
-                      }}
-                      placeholder="State"
-                    />
-                  </Col>
-                </>
-              )
-            }
-            <Col xs={12} md={12} lg={3} className="">
+            {open === "address" && (
+              <>
+                <Col xs={12} md={12} lg={6} className="">
+                  <Form.Control
+                    value={singleCity}
+                    onChange={(e) => {
+                      setSingleCity(e.target.value);
+                    }}
+                    placeholder="City"
+                  />
+                </Col>
+                <Col xs={12} md={12} lg={6} className="my-2">
+                  <Form.Control
+                    value={singleRegion}
+                    onChange={(e) => {
+                      setSingleRegion(e.target.value);
+                    }}
+                    placeholder="Region"
+                  />
+                </Col>
+                <Col xs={12} md={12} lg={6} className="">
+                  <Form.Control
+                    value={singleState}
+                    onChange={(e) => {
+                      setSingleState(e.target.value);
+                    }}
+                    placeholder="State"
+                  />
+                </Col>
+              </>
+            )}
+            <Col xs={12} md={12} lg={open === "address" ? 9 : 3} className="">
               <Form.Control
                 value={singleContactComment}
                 onChange={(e) => {
@@ -873,49 +956,112 @@ const ContactModal = ({
               <Button
                 disabled={
                   (open === "email" &&
-                    (singleContact.length === 0 ||
+                    (singleContact.trim() === "" ||
+                      !checkValidEmail(singleContact) ||
                       contactContainer.some(
                         (c): c is Email =>
                           "email" in c && c.email === singleContact
                       ))) ||
                   (open === "telephone" &&
-                    (singleContact.length === 0 ||
+                    (singleContact.trim() === "" ||
+                      !checkValidTelephone(singleContact) ||
                       contactContainer.some(
                         (c): c is Telephone =>
                           "telephone" in c && c.telephone === singleContact
                       ))) ||
                   (open === "address" &&
-                    (singleContact.length === 0 ||
+                    (singleContact.trim() === "" ||
+                      singleCity.trim() === "" ||
+                      singleRegion.trim() === "" ||
+                      singleState.trim() === "" ||
                       contactContainer.some(
                         (c): c is Address =>
-                          "address" in c && c.address === singleContact
+                          "address" in c &&
+                          (c.address === singleContact ||
+                            c.city === singleCity ||
+                            c.region === singleRegion ||
+                            c.state === singleState)
                       )))
                 }
                 className="primaryButton"
                 onClick={() => {
-                  postNewWhatContact(
-                    open!!,
-                    open === "email"
-                      ? {createEmailDTO: { email: singleContact, comment: singleContactComment }}
-                      : open === "telephone"
-                      ? {createTelephoneDTO: { telephone: singleContact, comment: singleContactComment }}
-                          
-                      : {createAddressDTO: { address: singleContact, city: singleCity, region: singleRegion, state: singleState, comment: singleContactComment }},
-                    me
-                  )
-                  .then((res) => {
-
-
-                  setContactContainer([...contactContainer, res]);
-                  setOpen(null);
-
-                  })
-
-                }
-
-                }
+                  if (editSelected === null) {
+                    postNewWhatContact(
+                      open!!,
+                      open === "email"
+                        ? {
+                            createEmailDTO: {
+                              email: singleContact,
+                              comment: singleContactComment,
+                            },
+                          }
+                        : open === "telephone"
+                        ? {
+                            createTelephoneDTO: {
+                              telephone: singleContact,
+                              comment: singleContactComment,
+                            },
+                          }
+                        : {
+                            createAddressDTO: {
+                              address: singleContact,
+                              city: singleCity,
+                              region: singleRegion,
+                              state: singleState,
+                              comment: singleContactComment,
+                            },
+                          },
+                      me
+                    ).then((res) => {
+                      setContactContainer([...contactContainer, res]);
+                      setOpen(null);
+                    });
+                  } else {
+                    editContactWhatContact(
+                      open!!,
+                      editSelected.id.toString(),
+                      open === "email"
+                        ? {
+                            createEmailDTO: {
+                              email: singleContact,
+                              comment: singleContactComment,
+                            },
+                          }
+                        : open === "telephone"
+                        ? {
+                            createTelephoneDTO: {
+                              telephone: singleContact,
+                              comment: singleContactComment,
+                            },
+                          }
+                        : {
+                            createAddressDTO: {
+                              address: singleContact,
+                              city: singleCity,
+                              region: singleRegion,
+                              state: singleState,
+                              comment: singleContactComment,
+                            },
+                          },
+                      me
+                    ).then((res) => {
+                      setContacts(
+                        (prevContacts) =>
+                          prevContacts.map((c) =>
+                            c.id === editSelected.id ? res : c
+                          ) as Email[] | Telephone[] | Address[]
+                      );
+                      setSingleContact("");
+                      setSingleCity("");
+                      setSingleRegion("");
+                      setSingleState("");
+                      setSingleContactComment("");
+                      setEditSelected(null);
+                    });
+                  }
+                }}
               >
-                Create {open}
+                {editSelected === null ? `Create new ${open}` : `Save changes`}
               </Button>
             </Col>
           </Row>
@@ -924,41 +1070,3 @@ const ContactModal = ({
     </Modal>
   );
 };
-
-/*
-
-<Col xs={12} md={12} lg={2} className="mb-2">
-                    <Form.Control
-                        placeholder="Email address"
-                        value={singleEmailAddress}
-                        onChange={(e) => {setSingleEmailAddress(e.target.value); setEmailError(false);}}
-                    />
-                </Col>
-                <Col xs={12} md={12} lg={3} className="mb-2">
-                    <Form.Control
-                        placeholder="Email address comment"
-                        value={singleEmailAddressComment}
-                        onChange={(e) => setSingleEmailAddressComment(e.target.value)}
-                    />
-                </Col>
-
-
-
-
-
-
-
-                if(checkValidEmail(singleEmailAddress)) {
-                            setEmails([...emails, {email: singleEmailAddress, comment: singleEmailAddressComment}]);
-                            setSingleEmailAddress('');
-                            setSingleEmailAddressComment('');
-                            setEmailError(false);
-                        }
-                        else {
-                            setEmailError(true);
-                        }
-
-
-
-
-                */

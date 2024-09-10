@@ -2,7 +2,6 @@ package it.polito.students.crm.services
 
 import it.polito.students.crm.dtos.*
 import it.polito.students.crm.entities.Contact
-import it.polito.students.crm.entities.Professional
 import it.polito.students.crm.utils.EmploymentStateEnum
 import it.polito.students.crm.utils.ProfessionalEnumFields
 import org.springframework.data.domain.PageImpl

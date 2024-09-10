@@ -1046,7 +1046,9 @@ class CrmProfessionalsControllerUnitTest(
 
         professionalDto.employmentState = employmentState
 
-        every { professionalService.storeProfessional(createProfessional, employmentState) } throws Exception(errorMessage)
+        every { professionalService.storeProfessional(createProfessional, employmentState) } throws Exception(
+            errorMessage
+        )
 
         val requestBody = ObjectMapper().writeValueAsString(createProfessional)
 
@@ -1098,7 +1100,9 @@ class CrmProfessionalsControllerUnitTest(
         val professionalID = 1L
         val errorMessage = "ProfessionalService: Professional with id=$professionalID not found!"
 
-        every { professionalService.deleteProfessional(professionalID) } throws ProfessionalNotFoundException(errorMessage)
+        every { professionalService.deleteProfessional(professionalID) } throws ProfessionalNotFoundException(
+            errorMessage
+        )
 
         mockMvc.perform(
             delete("/API/professionals/${professionalID}")

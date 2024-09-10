@@ -3,7 +3,6 @@ package it.polito.students.crm.utils
 import it.polito.students.crm.dtos.CustomerDTO
 import it.polito.students.crm.entities.*
 import it.polito.students.crm.repositories.JobOfferRepository
-import jakarta.persistence.*
 import org.springframework.stereotype.Component
 
 @Component

@@ -26,7 +26,7 @@ class Professional {
         joinColumns = [JoinColumn(name = "professional_id")],
         inverseJoinColumns = [JoinColumn(name = "job_offer_id")]
     )
-    val jobOffers: MutableSet<JobOffer> = mutableSetOf()
+    var jobOffers: MutableSet<JobOffer> = mutableSetOf()
 
     var deleted = false
 

@@ -15,5 +15,5 @@ export interface CreateProfessional{
     },
     skills: string[],
     geographicalLocation: string,
-    dailyRate: number,
+    dailyRate: string,
 }

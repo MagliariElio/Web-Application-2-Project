@@ -5,7 +5,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import it.polito.students.crm.CrmApplication
 import it.polito.students.crm.dtos.CreateJobOfferDTO
-import it.polito.students.crm.dtos.CustomerDTO
 import it.polito.students.crm.dtos.toDTO
 import it.polito.students.crm.entities.Contact
 import it.polito.students.crm.entities.Customer
@@ -13,18 +12,10 @@ import it.polito.students.crm.entities.JobOffer
 import it.polito.students.crm.entities.Professional
 import it.polito.students.crm.exception_handlers.CustomerNotFoundException
 import it.polito.students.crm.exception_handlers.NotFoundJobOfferException
-import it.polito.students.crm.exception_handlers.ProfessionalNotFoundException
 import it.polito.students.crm.repositories.*
 import it.polito.students.crm.services.*
-
-import it.polito.students.crm.utils.CategoryOptions
-import it.polito.students.crm.utils.EmploymentStateEnum
-import it.polito.students.crm.utils.Factory
-import it.polito.students.crm.utils.Factory.Companion.copy
-import it.polito.students.crm.utils.JobStatusEnum
 import it.polito.students.crm.utils.*
-import it.polito.students.crm.utils.Factory.Companion.toEntity
-
+import it.polito.students.crm.utils.Factory.Companion.copy
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -37,20 +28,22 @@ import java.util.*
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 class CrmJobOffersServiceUnitTest {
-    private final val customerRepository: CustomerRepository = mockk()
-    private final val contactRepository: ContactRepository = mockk()
-    private final val addressRepository: AddressRepository = mockk()
-    private final val emailRepository: EmailRepository = mockk()
-    private final val telephoneRepository: TelephoneRepository = mockk()
-    private final val jobOfferRepository: JobOfferRepository = mockk()
-    private final val professionalRepository: ProfessionalRepository = mockk()
-    private final val factory = Factory(jobOfferRepository)
+    private val customerRepository: CustomerRepository = mockk()
+    private val contactRepository: ContactRepository = mockk()
+    private val addressRepository: AddressRepository = mockk()
+    private val emailRepository: EmailRepository = mockk()
+    private val telephoneRepository: TelephoneRepository = mockk()
+    private val jobOfferRepository: JobOfferRepository = mockk()
+    private val professionalRepository: ProfessionalRepository = mockk()
+    private val factory = Factory(jobOfferRepository)
 
     val contactService = ContactServiceImpl(contactRepository, emailRepository, telephoneRepository, addressRepository)
 
-    val customerService = CustomerServiceImpl(customerRepository, contactService, contactRepository, jobOfferRepository, factory)
+    val customerService =
+        CustomerServiceImpl(customerRepository, contactService, contactRepository, jobOfferRepository, factory)
 
-    val professionalService = ProfessionalServiceImpl(professionalRepository, jobOfferRepository, contactRepository, contactService)
+    val professionalService =
+        ProfessionalServiceImpl(professionalRepository, jobOfferRepository, contactRepository, contactService)
 
     val jobOfferService = JobOfferServiceImpl(jobOfferRepository, customerService, professionalRepository, factory)
 
@@ -101,7 +94,7 @@ class CrmJobOffersServiceUnitTest {
             dailyRate = 450.0
         }
     )
-    final val customerList = listOf(
+    val customerList = listOf(
         Customer().apply {
             this.id = 1
             information = Contact().apply {
@@ -185,7 +178,6 @@ class CrmJobOffersServiceUnitTest {
     )
 
 
-
     /**
      * GET JOB OFFER VALUE TEST CASES (used in the GET /API/joboffers/{jobOfferId}/value)
      *
@@ -228,7 +220,6 @@ class CrmJobOffersServiceUnitTest {
         verify(exactly = 1) { jobOfferRepository.findById(jobOffer.id) }
         Assertions.assertEquals(null, result)
     }
-
 
 
     /**

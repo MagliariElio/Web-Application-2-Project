@@ -6,5 +6,6 @@ data class UpdateProfessionalDTO(
     var skills: List<String>,
     var employmentState: String,
     var geographicalLocation: String,
-    var dailyRate: Double
+    var dailyRate: Double,
+
 )

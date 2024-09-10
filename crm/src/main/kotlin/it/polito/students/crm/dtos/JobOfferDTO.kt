@@ -18,8 +18,10 @@ data class JobOfferDTO(
     var note: String,
     var customerId: Long,
     var professionalId: Long?,
-    var candidateProfessionalIds: List<Long>,
-    var candidatesProfessionalRefused: List<Long>, // lista dei candidati che hanno rifiutato
+    var candidateProfessionalIds: List<Long>,   // lista dei candidati che sono stati selezionati nella fase di selezione
+    var candidatesProposalProfessional: List<Long>, // lista dei candidati che sono stati selezionati nella fase di candidate proposal
+    var candidatesProfessionalRejected: List<Long>, // lista dei candidati che hanno rifiutato la candidatura
+    var candidatesProfessionalRevoked: List<Long>, // lista dei candidati che hanno rifiutato la candidatura dopo aver accettato
 )
 
 fun JobOffer.toDTO(): JobOfferDTO = JobOfferDTO(
@@ -38,5 +40,7 @@ fun JobOffer.toDTO(): JobOfferDTO = JobOfferDTO(
     this.customer.id,
     this.professional?.id,
     this.candidateProfessionals.map { it.id },
-    this.candidatesProfessionalRefused
+    this.candidatesProposalProfessional,
+    this.candidatesProfessionalRejected,
+    this.candidatesProfessionalRevoked
 )

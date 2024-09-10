@@ -894,7 +894,8 @@ class CrmCustomerControllerIntegrationTest : IntegrationTest() {
         var customerJson = mapper.readTree(resultPost.response.contentAsString)
 
         var emails = CrmApplicationTests.createEmailDTOListFromString(customerJson["information"]["emailDTOs"])
-        var telephones = CrmApplicationTests.createTelephoneDTOListFromString(customerJson["information"]["telephoneDTOs"])
+        var telephones =
+            CrmApplicationTests.createTelephoneDTOListFromString(customerJson["information"]["telephoneDTOs"])
 
         emails.forEach { email ->
             val resultEmail = createCustomer.emails?.first { it.email == email.email }
@@ -1005,7 +1006,7 @@ class CrmCustomerControllerIntegrationTest : IntegrationTest() {
             Assertions.assertEquals(address.comment, resultAddress?.comment)
         }
 
-            Assertions.assertEquals(true, customerJson["information"]["telephoneDTOs"].isEmpty)
+        Assertions.assertEquals(true, customerJson["information"]["telephoneDTOs"].isEmpty)
 
         // Extracting ID from the response content
         val responseContent = resultPost.response.contentAsString

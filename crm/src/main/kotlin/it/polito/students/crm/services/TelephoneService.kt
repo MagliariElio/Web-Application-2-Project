@@ -2,7 +2,6 @@ package it.polito.students.crm.services
 
 import it.polito.students.crm.dtos.CreateTelephoneDTO
 import it.polito.students.crm.dtos.TelephoneDTO
-import org.springframework.http.ResponseEntity
 
 interface TelephoneService {
     /**
@@ -54,4 +53,33 @@ interface TelephoneService {
      * @return - all telepones
      */
     fun getAllTelephones(): List<TelephoneDTO>
+
+
+    /**
+     * add a new telephone to book
+     *
+     * @param telephone
+     * @param comment
+     * @return - new telephone
+     */
+    fun storeNewTelephone(telephone: String, comment: String?): TelephoneDTO
+
+    /**
+     * Delete a Telephone in database
+     *
+     * @param telephoneId
+     * @return -
+     */
+    fun deleteTelephone(telephoneId: Long)
+
+    /**
+     * edit an exisiting telephone to book
+     *
+     * @param telephoneId
+     * @param telephone
+     * @param comment
+     * @return - new telephone
+     */
+    fun editTelephone(telephoneId: Long, telephone: String, comment: String?): TelephoneDTO
+
 }

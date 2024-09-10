@@ -10,7 +10,6 @@ import it.polito.students.crm.repositories.*
 import it.polito.students.crm.utils.*
 import it.polito.students.crm.utils.Factory.Companion.toEntity
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -51,11 +50,34 @@ class CustomerServiceImpl(
         // Applica ulteriori filtri basati sui campi
         filterMap.entries.forEach { filter ->
             filteredList = when (filter.key) {
-                ContactEnumFields.NAME -> filteredList.filter { it.information.contactDTO.name.contains(filter.value, ignoreCase = true) }
-                ContactEnumFields.SURNAME -> filteredList.filter { it.information.contactDTO.surname.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.NAME -> filteredList.filter {
+                    it.information.contactDTO.name.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
+
+                ContactEnumFields.SURNAME -> filteredList.filter {
+                    it.information.contactDTO.surname.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
+
                 ContactEnumFields.CATEGORY -> filteredList.filter { it.information.contactDTO.category == CategoryOptions.CUSTOMER }
-                ContactEnumFields.SSN_CODE -> filteredList.filter { it.information.contactDTO.ssnCode.contains(filter.value, ignoreCase = true) }
-                ContactEnumFields.COMMENT -> filteredList.filter { it.information.contactDTO.comment.contains(filter.value, ignoreCase = true) }
+                ContactEnumFields.SSN_CODE -> filteredList.filter {
+                    it.information.contactDTO.ssnCode.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
+
+                ContactEnumFields.COMMENT -> filteredList.filter {
+                    it.information.contactDTO.comment.contains(
+                        filter.value,
+                        ignoreCase = true
+                    )
+                }
             }
         }
 
@@ -112,7 +134,7 @@ class CustomerServiceImpl(
         return customerRepository.save(customer).toDTO()
     }
 
-    override fun updateCustomerDetails(customerID: Long, newContactDetails: CreateContactDTO): CustomerDTO {
+    override fun updateCustomerDetails(customerID: Long, newContactDetails: UpdateContactDTO): CustomerDTO {
         val customer = getCustomer(customerID).toEntity(factory)
         val prev_contact = contactService.getContact(customer.information.id)        // if not found it raises an exception
 
@@ -120,87 +142,9 @@ class CustomerServiceImpl(
             throw InvalidUpdateException(ErrorsPage.INVALID_UPDATE_CUSTOMER)
         }
 
-        // Create a new Contact
-        val contact = Contact().apply {
-            name = newContactDetails.name
-            surname = newContactDetails.surname
-            ssnCode = newContactDetails.ssnCode ?: ""
-            this.category = CategoryOptions.CUSTOMER
-            comment = newContactDetails.comment ?: ""
-        }
+        contactService.updateContact(newContactDetails, CategoryOptions.CUSTOMER)
 
-// If inserted add email
-        if (newContactDetails.emails != null) {
-            // Read from a list of emails and add to contact
-            newContactDetails.emails?.forEach { e: CreateEmailDTO ->
-                // Check if email is already stored in DB
-                val existedEmail = emailRepository.findByEmail(e.email)
-                if (existedEmail != null) {
-                    contact.addEmail(existedEmail)
-                } else {
-                    val email = Email().apply {
-                        email = e.email
-                        comment = e.comment ?: ""
-                    }
-                    emailRepository.save(email) // Save the email first
-                    contact.addEmail(email)
-                }
-            }
-        }
-
-// If inserted add telephone
-        if (newContactDetails.telephones != null) {
-            // Read from a list of telephones and add to contact
-            newContactDetails.telephones?.forEach { t: CreateTelephoneDTO ->
-                // Check if telephone is already stored in DB
-                val existedTelephone = telephoneRepository.findByTelephone(t.telephone)
-                if (existedTelephone != null) {
-                    contact.addTelephone(existedTelephone)
-                } else {
-                    val telephone = Telephone().apply {
-                        telephone = t.telephone
-                        comment = t.comment ?: ""
-                    }
-                    telephoneRepository.save(telephone) // Save the telephone first
-                    contact.addTelephone(telephone)
-                }
-            }
-        }
-
-// If inserted add address
-        if (newContactDetails.addresses != null) {
-            // Read from a list of addresses and add to contact
-            newContactDetails.addresses?.forEach {
-                // Check if an address has been already stored
-                val existedAddress: Address? = addressRepository
-                    .findByAddressIgnoreCaseAndCityIgnoreCaseAndRegionIgnoreCaseAndStateIgnoreCase(
-                        it.address!!,
-                        it.city!!,
-                        it.region!!,
-                        it.state!!
-                    )
-                if (existedAddress != null) {
-                    contact.addAddress(existedAddress)
-                } else {
-                    // Create a new Address
-                    val address = Address().apply {
-                        state = it.state ?: ""
-                        region = it.region ?: ""
-                        city = it.city ?: ""
-                        address = it.address ?: ""
-                        comment = it.comment ?: ""
-                    }
-                    addressRepository.save(address) // Save the address first
-                    contact.addAddress(address)
-                }
-            }
-        }
-
-// Save contact in the database
-        val contactSaved = contactRepository.save(contact) // Ensure the contact is saved
-
-        customer.information = contactSaved
-        return customerRepository.save(customer).toDTO()
+        return customerRepository.findById(customerID).get().toDTO()
 
     }
 
@@ -217,7 +161,7 @@ class CustomerServiceImpl(
         // Delete all Job Offers linked to the customer
         jobOfferList.forEach {
             it.deleted = true
-            if(it.professional?.employmentState == EmploymentStateEnum.EMPLOYED) {
+            if (it.professional?.employmentState == EmploymentStateEnum.EMPLOYED) {
                 it.professional!!.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
             }
             jobOfferRepository.save(it)

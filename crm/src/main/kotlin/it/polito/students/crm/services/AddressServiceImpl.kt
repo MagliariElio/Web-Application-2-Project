@@ -12,6 +12,7 @@ import it.polito.students.crm.exception_handlers.InvalidContactDetailsException
 import it.polito.students.crm.repositories.AddressRepository
 import it.polito.students.crm.repositories.ContactRepository
 import it.polito.students.crm.utils.ErrorsPage.Companion.ADDRESS_REQUIRED_ERROR
+import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
@@ -143,5 +144,70 @@ class AddressServiceImpl(
 
     override fun getAllAddresses(): List<AddressDTO> {
         return addressRepository.findAll().map { it.toDTO() }
+    }
+
+    override fun storeNewAddress(
+        address: String?,
+        city: String?,
+        region: String?,
+        state: String?,
+        comment: String?
+    ): AddressDTO {
+        val newAddress = Address().apply {
+            this.state = state ?: ""
+            this.region = region ?: ""
+            this.city = city ?: ""
+            this.address = address ?: ""
+            this.comment = comment ?: ""
+        }
+        val addressSaved = addressRepository.save(newAddress)
+
+        return addressSaved.toDTO()
+    }
+
+    override fun deleteAddress(addressId: Long) {
+        val optionalAddress = addressRepository.findById(addressId)
+
+        if (optionalAddress.isPresent) {
+            val address = optionalAddress.get()
+
+            address.contacts.forEach { contact ->
+                contact.addresses.removeIf { addr -> addr.id == addressId }
+            }
+
+            address.contacts.clear()
+
+            addressRepository.delete(address)
+        } else {
+            throw EntityNotFoundException("Indirizzo con ID $addressId non trovato.")
+        }
+    }
+
+    override fun editAddress(
+        addressId: Long,
+        address: String?,
+        city: String?,
+        region: String?,
+        state: String?,
+        comment: String?
+    ): AddressDTO {
+        val optionalAddress = addressRepository.findById(addressId)
+
+        if (optionalAddress.isPresent) {
+            val addressEntity = optionalAddress.get()
+
+            addressEntity.address = address ?: ""
+            addressEntity.city = city ?: ""
+            addressEntity.region = region ?: ""
+            addressEntity.state = state ?: ""
+            addressEntity.comment = comment ?: ""
+
+            addressRepository.save(addressEntity)
+
+            return addressEntity.toDTO()
+
+        } else {
+            throw EntityNotFoundException("Indirizzo con ID $addressId non trovato.")
+        }
     }
 }

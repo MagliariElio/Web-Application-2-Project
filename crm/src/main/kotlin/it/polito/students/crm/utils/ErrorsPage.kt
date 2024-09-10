@@ -124,7 +124,8 @@ class ErrorsPage {
         const val SORT_DIRECTION_JOB_OFFER_INVALID =
             "Invalid sortDirection value. Allowed values are 'asc' or 'desc'."
 
-        const val STATUS_INVALID = "Invalid status value. Accepted values are CREATED, SELECTION_PHASE, CANDIDATE_PROPOSAL, CONSOLIDATED, DONE, or ABORT."
+        const val STATUS_INVALID =
+            "Invalid status value. Accepted values are CREATED, SELECTION_PHASE, CANDIDATE_PROPOSAL, CONSOLIDATED, DONE, or ABORT."
 
         const val JOBSTATUSGROUP_INVALID =
             "The value provided for the jobStatusGroup field is invalid. Possible values: [OPEN, ACCEPTED, ABORTED]."

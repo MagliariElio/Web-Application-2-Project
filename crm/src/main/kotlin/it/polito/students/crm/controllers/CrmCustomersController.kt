@@ -1,6 +1,7 @@
 package it.polito.students.crm.controllers
 
 import it.polito.students.crm.dtos.CreateContactDTO
+import it.polito.students.crm.dtos.UpdateContactDTO
 import it.polito.students.crm.exception_handlers.ContactNotFoundException
 import it.polito.students.crm.exception_handlers.CustomerNotFoundException
 import it.polito.students.crm.exception_handlers.InvalidUpdateException
@@ -17,8 +18,6 @@ import org.apache.coyote.BadRequestException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -134,7 +133,7 @@ class CrmCustomersController(private val customerService: CustomerService) {
         @RequestBody requestBody: Map<String, Long>
     ): ResponseEntity<out Any> {
         try {
-            val contactID = requestBody["contactID"] as? Long ?: return ResponseEntity.badRequest()
+            val contactID = requestBody["contactID"] ?: return ResponseEntity.badRequest()
                 .body(mapOf("error" to CONTACT_ID_NOT_SPECIFIED_ERROR))
 
             if (customerID < 0 || contactID < 0) {
@@ -164,31 +163,31 @@ class CrmCustomersController(private val customerService: CustomerService) {
     @PatchMapping("/{customerID}/contactDetails", "/{customerID}/contactDetails/")
     fun updateContactDetails(
         @PathVariable customerID: Long,
-        @RequestBody newContactDetails: CreateContactDTO
+        @RequestBody newContactDetails: UpdateContactDTO
     ): ResponseEntity<out Any> {
 
         try {
-            if (newContactDetails.name.isBlank() || newContactDetails.surname.isBlank()) {
+            if (newContactDetails.name.isNullOrBlank() || newContactDetails.surname.isNullOrBlank()) {
                 throw BadRequestException(ErrorsPage.NAME_SURNAME_ERROR)
             }
             //Check validity List of emails, telephones and addresses
-            if (newContactDetails.emails != null && newContactDetails.emails!!.isNotEmpty()) {
-                newContactDetails.emails?.forEach {
+            if (newContactDetails.emails.isNotEmpty()) {
+                newContactDetails.emails.forEach {
                     if (!isValidEmail(it.email)) {
                         throw BadRequestException(ErrorsPage.EMAILS_NOT_VALID)
                     }
                 }
             }
-            if (newContactDetails.addresses != null && newContactDetails.addresses!!.isNotEmpty()) {
-                newContactDetails.addresses?.forEach {
-                    if (!isValidAddress(it)) {
+            if (newContactDetails.addresses.isNotEmpty()) {
+                newContactDetails.addresses.forEach {
+                    if (!(!(it.city.isNullOrBlank() || it.address.isNullOrBlank() || it.region.isNullOrBlank() || it.state.isNullOrBlank()))) {
                         throw BadRequestException(ErrorsPage.ADDRESSES_NOT_VALID)
                     }
                 }
             }
-            if (newContactDetails.telephones != null && newContactDetails.telephones!!.isNotEmpty()) {
+            if (newContactDetails.telephones.isNotEmpty()) {
                 //If a telephone number is not valid throws an exception
-                newContactDetails.telephones?.forEach {
+                newContactDetails.telephones.forEach {
                     if (!isValidPhone(it.telephone)) {
                         throw BadRequestException(ErrorsPage.TELEPHONES_NOT_VALID)
                     }

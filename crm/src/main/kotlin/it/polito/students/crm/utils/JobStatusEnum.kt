@@ -39,7 +39,7 @@ fun statusRequiresProfessionalId(status: JobStatusEnum): Boolean {
     return when (status) {
         JobStatusEnum.CREATED -> false
         JobStatusEnum.SELECTION_PHASE -> true
-        JobStatusEnum.CANDIDATE_PROPOSAL -> true
+        JobStatusEnum.CANDIDATE_PROPOSAL -> false
         JobStatusEnum.CONSOLIDATED -> true
         JobStatusEnum.DONE -> true
         JobStatusEnum.ABORT -> false

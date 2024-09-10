@@ -10,21 +10,20 @@ import it.polito.students.crm.repositories.JobOfferRepository
 import it.polito.students.crm.repositories.ProfessionalRepository
 import it.polito.students.crm.utils.*
 import jakarta.transaction.Transactional
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
-import org.hamcrest.Matchers.equalTo
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.test.annotation.DirtiesContext
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
-
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,6 +56,7 @@ class CrmJobOfferControllerTests {
             registry.add("spring.datasource.password", postgres::getPassword)
         }
     }
+
     @Autowired
     lateinit var jobOfferRepository: JobOfferRepository
 
@@ -178,9 +178,9 @@ class CrmJobOfferControllerTests {
 
     @Transactional
     @Test
-    fun getAllJobs(){
+    fun getAllJobs() {
         //save all joboffes of the list
-        jobOfferList.forEach{
+        jobOfferList.forEach {
             jobOfferRepository.save(it)
         }
 
@@ -193,7 +193,7 @@ class CrmJobOfferControllerTests {
 
 
     @Test
-    fun storeJobOffer(){
+    fun storeJobOffer() {
         val jobOffer = CreateJobOfferDTO(
             requiredSkills = listOf("Skill1", "Skill2"),
             duration = 30,
@@ -248,7 +248,7 @@ class CrmJobOfferControllerTests {
     }
 
     @Test
-    fun storeJobOffer_CustomerNotFound(){
+    fun storeJobOffer_CustomerNotFound() {
         val jobOffer = CreateJobOfferDTO(
             requiredSkills = listOf("Skill1", "Skill2"),
             duration = 30,
@@ -270,7 +270,7 @@ class CrmJobOfferControllerTests {
 
 
     @Test
-    fun deleteJobOffer(){
+    fun deleteJobOffer() {
         val jobOffer = jobOfferList[0]
 
         val customer = Customer().apply {
@@ -317,7 +317,7 @@ class CrmJobOfferControllerTests {
     }
 
     @Test
-    fun deleteJobOffer_NotFound(){
+    fun deleteJobOffer_NotFound() {
         //save the new customer
         given()
             .delete("/API/joboffers/1")
@@ -327,9 +327,8 @@ class CrmJobOfferControllerTests {
     }
 
 
-
     @Test
-    fun changeJobOfferStatus(){
+    fun changeJobOfferStatus() {
         val jobOffer = jobOfferList[0]
 
         val customer = Customer().apply {
@@ -402,7 +401,8 @@ class CrmJobOfferControllerTests {
         professionalRepository.save(professional)
 
 
-        val changeJobStatus = ChangeJobStatusDTO(nextStatus = JobStatusEnum.SELECTION_PHASE.name, note = "", professionalsId = listOf(1))
+        val changeJobStatus =
+            ChangeJobStatusDTO(nextStatus = JobStatusEnum.SELECTION_PHASE.name, note = "", professionalsId = listOf(1))
 
         val requestBody = ObjectMapper().writeValueAsString(changeJobStatus)
 
@@ -415,7 +415,7 @@ class CrmJobOfferControllerTests {
     }
 
     @Test
-    fun changeJobOfferStatus_RequiredProfessional(){
+    fun changeJobOfferStatus_RequiredProfessional() {
         val jobOffer = jobOfferList[0]
 
         val customer = Customer().apply {
@@ -488,7 +488,8 @@ class CrmJobOfferControllerTests {
         professionalRepository.save(professional)
 
 
-        val changeJobStatus = ChangeJobStatusDTO(nextStatus = JobStatusEnum.SELECTION_PHASE.name, note = "", professionalsId = listOf())
+        val changeJobStatus =
+            ChangeJobStatusDTO(nextStatus = JobStatusEnum.SELECTION_PHASE.name, note = "", professionalsId = listOf())
 
         val requestBody = ObjectMapper().writeValueAsString(changeJobStatus)
 
@@ -501,7 +502,7 @@ class CrmJobOfferControllerTests {
     }
 
     @Test
-    fun changeJobOfferStatus_IllegaljobStatus(){
+    fun changeJobOfferStatus_IllegaljobStatus() {
         val jobOffer = jobOfferList[0]
 
         val customer = Customer().apply {
@@ -574,7 +575,11 @@ class CrmJobOfferControllerTests {
         professionalRepository.save(professional)
 
 
-        val changeJobStatus = ChangeJobStatusDTO(nextStatus = JobStatusEnum.CANDIDATE_PROPOSAL.name, note = "", professionalsId = listOf(1))
+        val changeJobStatus = ChangeJobStatusDTO(
+            nextStatus = JobStatusEnum.CANDIDATE_PROPOSAL.name,
+            note = "",
+            professionalsId = listOf(1)
+        )
 
         val requestBody = ObjectMapper().writeValueAsString(changeJobStatus)
 
@@ -587,7 +592,7 @@ class CrmJobOfferControllerTests {
     }
 
     @Test
-    fun changeJobOfferStatus_ProfessionalnotFound(){
+    fun changeJobOfferStatus_ProfessionalnotFound() {
         val jobOffer = jobOfferList[0]
 
         val customer = Customer().apply {
@@ -660,7 +665,8 @@ class CrmJobOfferControllerTests {
         professionalRepository.save(professional)
 
 
-        val changeJobStatus = ChangeJobStatusDTO(nextStatus = JobStatusEnum.SELECTION_PHASE.name, note = "", professionalsId = listOf(5))
+        val changeJobStatus =
+            ChangeJobStatusDTO(nextStatus = JobStatusEnum.SELECTION_PHASE.name, note = "", professionalsId = listOf(5))
 
         val requestBody = ObjectMapper().writeValueAsString(changeJobStatus)
 
@@ -673,7 +679,7 @@ class CrmJobOfferControllerTests {
     }
 
     @Test
-    fun getJobValue(){
+    fun getJobValue() {
         val jobOffer = jobOfferList[0]
 
         val customer = Customer().apply {
@@ -719,7 +725,7 @@ class CrmJobOfferControllerTests {
     }
 
     @Test
-    fun getJobValue_NotFound(){
+    fun getJobValue_NotFound() {
         given()
             .contentType(ContentType.JSON)
             .get("/API/joboffers/1/value")

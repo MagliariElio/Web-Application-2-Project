@@ -13,6 +13,7 @@ import it.polito.students.crm.repositories.ContactRepository
 import it.polito.students.crm.repositories.EmailRepository
 import it.polito.students.crm.utils.CategoryOptions
 import it.polito.students.crm.utils.ErrorsPage.Companion.MAIL_REQUIRED_ERROR
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -169,7 +170,21 @@ class EmailServiceImpl(
     }
 
     override fun deleteEmail(emailId: Long) {
-        emailRepository.deleteById(emailId)
+        val optionalEmail = emailRepository.findById(emailId)
+
+        if (optionalEmail.isPresent) {
+            val email = optionalEmail.get()
+
+            email.contacts.forEach { contact ->
+                contact.emails.removeIf { em -> em.id == emailId }
+            }
+
+            email.contacts.clear()
+
+            emailRepository.delete(email)
+        } else {
+            throw EntityNotFoundException("Email con ID $emailId non trovata.")
+        }
     }
 
     override fun storeNewEmail(email: String, comment: String?): EmailDTO {
@@ -180,6 +195,24 @@ class EmailServiceImpl(
         }
 
         return emailRepository.save(newEmail).toDTO()
+    }
+
+    override fun editEmail(emailId: Long, email: String, comment: String?): EmailDTO {
+        val optionalEmail = emailRepository.findById(emailId)
+
+        if (optionalEmail.isPresent) {
+            val emailEntity = optionalEmail.get()
+
+            emailEntity.email = email
+            emailEntity.comment = comment ?: ""
+
+            emailRepository.save(emailEntity)
+
+            return emailEntity.toDTO()
+
+        } else {
+            throw EntityNotFoundException("Email con ID $emailId non trovata.")
+        }
     }
 
 }

@@ -2,9 +2,6 @@ package it.polito.students.crm.integration.service
 
 import it.polito.students.crm.dtos.*
 import it.polito.students.crm.entities.Contact
-import it.polito.students.crm.exception_handlers.ContactNotFoundException
-import it.polito.students.crm.exception_handlers.CustomerNotFoundException
-import it.polito.students.crm.exception_handlers.InvalidUpdateException
 import it.polito.students.crm.exception_handlers.ProfessionalNotFoundException
 import it.polito.students.crm.integration.IntegrationTest
 import it.polito.students.crm.repositories.*
@@ -504,7 +501,8 @@ class CrmProfessionalServiceIntegrationTest : IntegrationTest() {
     fun patchProfessional_goodCase() {
         val createProfessional = createProfessionalDtoList[0]
 
-        var professional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        var professional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         val updateProfessional = UpdateProfessionalDTO(
             id = professional.id,
@@ -541,7 +539,8 @@ class CrmProfessionalServiceIntegrationTest : IntegrationTest() {
     fun patchProfessional_ProfessionalNotFound() {
         val createProfessional = createProfessionalDtoList[0]
 
-        var professional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        var professional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         val updateProfessional = UpdateProfessionalDTO(
             id = 100,
@@ -578,7 +577,7 @@ class CrmProfessionalServiceIntegrationTest : IntegrationTest() {
      * POST /API/PROFESSIONAL
      */
     @Test
-    fun postProfessional_goodCase(){
+    fun postProfessional_goodCase() {
         val professional = createProfessionalDtoList[0]
 
         val result = professionalService.storeProfessional(professional, EmploymentStateEnum.AVAILABLE_FOR_WORK)

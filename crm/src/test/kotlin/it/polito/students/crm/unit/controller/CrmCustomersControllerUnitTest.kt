@@ -8,7 +8,6 @@ import it.polito.students.crm.dtos.*
 import it.polito.students.crm.entities.*
 import it.polito.students.crm.exception_handlers.ContactNotFoundException
 import it.polito.students.crm.exception_handlers.CustomerNotFoundException
-import it.polito.students.crm.exception_handlers.ProfessionalNotFoundException
 import it.polito.students.crm.services.*
 import it.polito.students.crm.utils.CategoryOptions
 import it.polito.students.crm.utils.ErrorsPage

@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class JobOfferServiceImpl(
@@ -71,7 +72,7 @@ class JobOfferServiceImpl(
         }
 
         if (location != null) {
-            list = list.filter { it.location.equals(location, ignoreCase = true) }
+            list = list.filter { it.location.contains(location, ignoreCase = true) }
         }
 
         if (workMode != null) {
@@ -194,10 +195,20 @@ class JobOfferServiceImpl(
             throw NotFoundJobOfferException(ErrorsPage.JOB_OFFER_NOT_FOUND_ERROR)
         }
 
-        var updateProfessionalsId =
-            false   // controlla che se avviene un aggiornamento della lista candidati, il check sullo stato non sia un problema
-        if (professionalsId != null && !oldJobOffer.candidateProfessionals.none { professionalsId.contains(it.id) }) {
-            updateProfessionalsId = true
+        var updateProfessionalsId = false
+
+        // controlla che se avviene un aggiornamento della lista candidati, il check sullo stato non sia un problema
+        if (professionalsId != null) {         //&& oldJobOffer.candidateProfessionals.none { professionalsId.contains(it.id) }) {
+            val listId = oldJobOffer.candidateProfessionals.map { it.id }
+            updateProfessionalsId =
+                listId.size != professionalsId.size || !listId.containsAll(professionalsId) || !professionalsId.containsAll(listId)
+        }
+
+        // controlla che se è stato rimosso un candidato dalla lista dei candidati proposti durante la CANDIDATE_PROPOSAL
+        if (oldStatus == JobStatusEnum.CANDIDATE_PROPOSAL && professionalsId != null) {
+            val listId = oldJobOffer.candidatesProposalProfessional
+            updateProfessionalsId =
+                listId.size != professionalsId.size || !listId.containsAll(professionalsId) || !professionalsId.containsAll(listId)
         }
 
         if (!updateProfessionalsId && !checkStatusTransition(oldJobOffer.status, nextStatus)) {
@@ -207,7 +218,6 @@ class JobOfferServiceImpl(
         if (statusRequiresProfessionalId(nextStatus) && professionalsId.isNullOrEmpty()) {
             throw RequiredProfessionalIdException(ErrorsPage.REQUIRED_PROFESSIONAL_ID)
         }
-
 
         when (nextStatus) {
             JobStatusEnum.SELECTION_PHASE -> {
@@ -247,10 +257,21 @@ class JobOfferServiceImpl(
                 }
 
                 if (oldStatus == JobStatusEnum.CANDIDATE_PROPOSAL) {
+                    oldJobOffer.candidatesProposalProfessional = mutableListOf()
+
                     oldJobOffer.professional?.let { professional ->
                         val professionalId = professional.id
-                        if (!oldJobOffer.candidatesProfessionalRefused.contains(professionalId)) {
-                            oldJobOffer.candidatesProfessionalRefused.add(professionalId)
+                        if (!oldJobOffer.candidatesProfessionalRejected.contains(professionalId)) {
+                            oldJobOffer.candidatesProfessionalRejected.add(professionalId)
+                        }
+                    }
+                } else if (oldStatus == JobStatusEnum.CONSOLIDATED) {
+                    oldJobOffer.candidatesProposalProfessional = mutableListOf()
+
+                    oldJobOffer.professional?.let { professional ->
+                        val professionalId = professional.id
+                        if (!oldJobOffer.candidatesProfessionalRejected.contains(professionalId)) {
+                            oldJobOffer.candidatesProfessionalRevoked.add(professionalId)
                         }
                     }
                 }
@@ -264,36 +285,54 @@ class JobOfferServiceImpl(
             JobStatusEnum.CANDIDATE_PROPOSAL -> {
                 oldJobOffer.status = nextStatus
 
-                if (professionalsId!!.size > 1) {
-                    throw InconsistentProfessionalStatusTransitionException("Only one professional can be the final proposal")
+                // Rimozione dei precedenti candidate professional per l'aggiornamento con quelli nuovi
+                oldJobOffer.candidatesProposalProfessional.forEach { candidateProfessional ->
+                    val professionalProposal = professionalRepository.findById(candidateProfessional).getOrNull()
+                    if (professionalProposal != null) {
+                        oldJobOffer.candidateProfessionals.remove(professionalProposal)
+                        professionalProposal.jobOffers.remove(oldJobOffer)
+                        professionalRepository.save(professionalProposal)
+                    }
                 }
+
+                /*if (professionalsId!!.size > 1) {
+                    throw InconsistentProfessionalStatusTransitionException("Only one professional can be the final proposal")
+                }*/
+
                 var professional: Professional? = null
 
-                val professionalOptional: Optional<Professional> = professionalRepository.findById(professionalsId[0])
-                try {
+                professionalsId?.forEach { p ->
+                    val professionalOptional: Optional<Professional> = professionalRepository.findById(p)
                     professional = professionalOptional.get()
+
                     if (professional!!.deleted) {
-                        throw ProfessionalNotFoundException("Professional not found")
+                        println("deleted")
+                        throw ProfessionalNotFoundException("Professional ${professional?.information?.surname} ${professional?.information?.name} not found!")
+                    }
+
+                    if (professional!!.employmentState == EmploymentStateEnum.EMPLOYED || professional!!.employmentState == EmploymentStateEnum.NOT_AVAILABLE) {
+                        throw NotAvailableProfessionalException("This professional (${professional?.information?.surname} ${professional?.information?.name}) cannot start a job now!")
+                    }
+
+                    if (!updateProfessionalsId && oldJobOffer.candidateProfessionals.find { it.id == professional!!.id } == null) {
+                        throw InconsistentProfessionalStatusTransitionException("This professional (${professional?.information?.surname} ${professional?.information?.name}) was not in the list of candidates!")
                     }
 
                     professional!!.jobOffers.add(oldJobOffer)
-
                     professionalRepository.save(professional!!)
-                } catch (e: Exception) {
-                    throw ProfessionalNotFoundException("Professional not found")
                 }
 
-                if (professional!!.employmentState == EmploymentStateEnum.EMPLOYED || professional!!.employmentState == EmploymentStateEnum.NOT_AVAILABLE) {
-                    throw NotAvailableProfessionalException("This professional cannot start a job now")
-                }
-                if (oldJobOffer.candidateProfessionals.find { it.id == professional!!.id } == null) {
-                    throw InconsistentProfessionalStatusTransitionException("This professional was not in the list of candidates")
-                }
+                //oldJobOffer.professional = professional!!
+                //oldJobOffer.value = oldJobOffer.duration * professional!!.dailyRate * profitMargin
+                oldJobOffer.candidatesProposalProfessional = professionalsId?.toMutableList() ?: mutableListOf()
 
-                oldJobOffer.professional = professional!!
-                oldJobOffer.value = oldJobOffer.duration * professional!!.dailyRate * profitMargin
                 if (note != null) oldJobOffer.note = note
                 oldJobOffer.oldStatus = JobStatusEnum.SELECTION_PHASE
+
+                if (oldJobOffer.candidatesProposalProfessional.isEmpty()) {
+                    oldJobOffer.oldStatus = JobStatusEnum.CREATED
+                    oldJobOffer.status = JobStatusEnum.SELECTION_PHASE
+                }
             }
 
             JobStatusEnum.CONSOLIDATED -> {
@@ -311,20 +350,39 @@ class JobOfferServiceImpl(
                         throw ProfessionalNotFoundException("Professional not found")
                     }
 
-                    professional!!.jobOffers.add(oldJobOffer)
+                    if (professional!!.employmentState == EmploymentStateEnum.EMPLOYED || professional!!.employmentState == EmploymentStateEnum.NOT_AVAILABLE) {
+                        throw NotAvailableProfessionalException("This professional cannot start a job now")
+                    }
 
+                    if (!oldJobOffer.candidatesProposalProfessional.contains(professionalsId[0]) || oldJobOffer.candidateProfessionals.none { it.id == professionalsId[0] }) {
+                        throw InconsistentProfessionalStatusTransitionException("This professional is not the one that passed the candidate proposal step")
+                    }
+
+                    // se viene scelto per questa job offer, in tutte le altre in pending non viene più selezionato
+                    professional?.jobOffers?.forEach {
+                        if (it.id != oldJobOffer.id && it.professional?.id == professional?.id) {
+                            it.oldStatus = JobStatusEnum.CREATED
+                            it.status = JobStatusEnum.SELECTION_PHASE
+                            it.professional = null
+                            it.value = 0.0
+
+                            if (it.candidateProfessionals.isEmpty()) {
+                                it.oldStatus = JobStatusEnum.CREATED
+                                it.status = JobStatusEnum.CREATED
+                            }
+                        }
+                    }
+
+                    oldJobOffer.professional = professional!!
+                    oldJobOffer.value = oldJobOffer.duration * professional!!.dailyRate * profitMargin
+                    oldJobOffer.candidatesProposalProfessional.remove(professional?.id)
+
+                    professional!!.jobOffers.add(oldJobOffer)
                     professionalRepository.save(professional!!)
                 } catch (e: Exception) {
                     throw ProfessionalNotFoundException("Professional not found")
                 }
 
-                if (professional!!.employmentState == EmploymentStateEnum.EMPLOYED || professional!!.employmentState == EmploymentStateEnum.NOT_AVAILABLE) {
-                    throw NotAvailableProfessionalException("This professional cannot start a job now")
-                }
-
-                if (professionalsId[0] != oldJobOffer.professional!!.id) {
-                    throw InconsistentProfessionalStatusTransitionException("This professional is not the one that passed the candidate proposal step")
-                }
                 oldJobOffer.professional!!.employmentState = EmploymentStateEnum.EMPLOYED
                 oldJobOffer.professional!!.jobOffers.add(oldJobOffer)
                 if (note != null) oldJobOffer.note = note

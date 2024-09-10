@@ -10,7 +10,6 @@ import it.polito.students.crm.entities.Professional
 import it.polito.students.crm.exception_handlers.ProfessionalNotFoundException
 import it.polito.students.crm.repositories.*
 import it.polito.students.crm.services.ContactServiceImpl
-import it.polito.students.crm.services.ProfessionalService
 import it.polito.students.crm.services.ProfessionalServiceImpl
 import it.polito.students.crm.utils.CategoryOptions
 import it.polito.students.crm.utils.EmploymentStateEnum
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -34,18 +32,20 @@ import java.util.*
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 class CrmProfessionalsServiceUnitTest {
-    private final val customerRepository: CustomerRepository = mockk()
-    private final val contactRepository: ContactRepository = mockk()
-    private final val addressRepository: AddressRepository = mockk()
-    private final val emailRepository: EmailRepository = mockk()
-    private final val telephoneRepository: TelephoneRepository = mockk()
-    private final val jobOfferRepository: JobOfferRepository = mockk()
-    private final val professionalRepository: ProfessionalRepository = mockk()
-    private final val factory = Factory(jobOfferRepository)
+    private val customerRepository: CustomerRepository = mockk()
+    private val contactRepository: ContactRepository = mockk()
+    private val addressRepository: AddressRepository = mockk()
+    private val emailRepository: EmailRepository = mockk()
+    private val telephoneRepository: TelephoneRepository = mockk()
+    private val jobOfferRepository: JobOfferRepository = mockk()
+    private val professionalRepository: ProfessionalRepository = mockk()
+    private val factory = Factory(jobOfferRepository)
 
-    final val contactService = ContactServiceImpl(contactRepository, emailRepository, telephoneRepository, addressRepository)
+    val contactService =
+        ContactServiceImpl(contactRepository, emailRepository, telephoneRepository, addressRepository)
 
-    val professionalService = ProfessionalServiceImpl(professionalRepository, jobOfferRepository, contactRepository, contactService)
+    val professionalService =
+        ProfessionalServiceImpl(professionalRepository, jobOfferRepository, contactRepository, contactService)
 
     val professionalsList = listOf(
         Professional().apply {
@@ -154,7 +154,6 @@ class CrmProfessionalsServiceUnitTest {
         geographicalLocation = updatedProfessionalDTO.geographicalLocation
         dailyRate = updatedProfessionalDTO.dailyRate
     }
-
 
 
     val createProfessional = CreateProfessionalDTO(
@@ -429,10 +428,18 @@ class CrmProfessionalsServiceUnitTest {
         every { professionalRepository.findById(updateProfessionalDTO.id) } returns Optional.empty()
         every { professionalRepository.save(any()) } returns updatedProfessional
 
-        val result = assertThrows<ProfessionalNotFoundException> { professionalService.updateProfessional(updateProfessionalDTO, contact) }
+        val result = assertThrows<ProfessionalNotFoundException> {
+            professionalService.updateProfessional(
+                updateProfessionalDTO,
+                contact
+            )
+        }
 
         verify(exactly = 0) { professionalRepository.save(any()) }
-        Assertions.assertEquals("The professional with id equal to ${updateProfessionalDTO.id} was not found!", result.message)
+        Assertions.assertEquals(
+            "The professional with id equal to ${updateProfessionalDTO.id} was not found!",
+            result.message
+        )
     }
 
     /**
@@ -474,7 +481,9 @@ class CrmProfessionalsServiceUnitTest {
         professionalBeforeStore.deleted = false
         professionalNextStore.deleted = true
 
-        every { professionalRepository.findById(professionalBeforeStore.id) } returns Optional.of(professionalBeforeStore)
+        every { professionalRepository.findById(professionalBeforeStore.id) } returns Optional.of(
+            professionalBeforeStore
+        )
         every { professionalRepository.save(professionalBeforeStore) } answers { professionalNextStore }
 
         professionalService.deleteProfessional(professionalBeforeStore.id)

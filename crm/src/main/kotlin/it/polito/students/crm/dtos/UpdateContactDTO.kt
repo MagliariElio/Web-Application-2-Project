@@ -11,4 +11,7 @@ data class UpdateContactDTO(
     var ssnCode: String?,
     var category: String?,
     var comment: String?,
+    var emails: List<EmailDTO>,
+    var telephones: List<TelephoneDTO>,
+    var addresses: List<AddressDTO>
 )

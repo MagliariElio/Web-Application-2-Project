@@ -258,7 +258,6 @@ class CrmJobOffersController(
             kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(oldjobOffer!!.status, editedJobOffer.status))
 
             return ResponseEntity(editedJobOffer, HttpStatus.OK)
-
         } catch (e: IllegalJobStatusTransition) {
             logger.info("Problem during jobOffer status editing: invalid status transition")
             return ResponseEntity(mapOf("error" to e.message), HttpStatus.BAD_REQUEST)

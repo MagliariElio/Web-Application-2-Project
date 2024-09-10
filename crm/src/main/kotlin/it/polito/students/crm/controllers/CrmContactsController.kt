@@ -27,12 +27,12 @@ import it.polito.students.crm.utils.ErrorsPage.Companion.REQUESTED_BAD_FORMATTED
 import it.polito.students.crm.utils.ErrorsPage.Companion.TELEPHONES_BAD_FORMATTED
 import it.polito.students.crm.utils.ErrorsPage.Companion.TELEPHONES_NOT_VALID
 import it.polito.students.crm.utils.ErrorsPage.Companion.TELEPHONE_BAD_FORMATTED
+import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.apache.coyote.BadRequestException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -267,7 +267,7 @@ class CrmContactsController(
 
             when (wc) {
                 WhatContactOptions.EMAIL -> {
-                    val savedTelephone = telephoneService.getTelephoneList(contactID)
+                    val savedTelephone = emailService.getEmailList(contactID)
                     return ResponseEntity(savedTelephone, HttpStatus.OK)
                 }
 
@@ -474,8 +474,7 @@ class CrmContactsController(
             }
 
             return ResponseEntity(result, HttpStatus.OK)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             logger.info("Server internal error: ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -485,7 +484,7 @@ class CrmContactsController(
     fun postNewWhatContact(
         @PathVariable whatContact: String,
         @RequestBody createWhatContactDTO: CreateWhatContactDTO
-    ) : ResponseEntity<Any> {
+    ): ResponseEntity<Any> {
         try {
             val contactType = WhatContactOptions.valueOf(whatContact.uppercase())
 
@@ -506,37 +505,147 @@ class CrmContactsController(
                         throw BadRequestException(ADDRESSES_NOT_VALID)
 
 
-                    } else {
-                        throw BadRequestException(ADDRESSES_BAD_FORMATTED)
                     }
                 }
 
 
                 WhatContactOptions.TELEPHONE -> {
 
-                    if (createWhatContactDTO.createAddressDTO == null || !isValidPhone(createWhatContactDTO.createTelephoneDTO!!.telephone)) {
+                    if (createWhatContactDTO.createTelephoneDTO == null || !isValidPhone(createWhatContactDTO.createTelephoneDTO!!.telephone)) {
                         throw BadRequestException(TELEPHONES_NOT_VALID)
-                    } else {
-                        throw BadRequestException(TELEPHONES_BAD_FORMATTED)
                     }
                 }
-                // Se il body non è ben formattato qui non ci arriva mai
-                else -> throw BadRequestException(REQUESTED_BAD_FORMATTED)
             }
 
             val result = when (contactType) {
-                WhatContactOptions.EMAIL -> emailService.storeNewEmail(createWhatContactDTO.createEmailDTO!!.email, createWhatContactDTO.createEmailDTO!!.comment)
-                WhatContactOptions.ADDRESS -> addressService
-                WhatContactOptions.TELEPHONE -> telephoneService
+                WhatContactOptions.EMAIL -> emailService.storeNewEmail(
+                    createWhatContactDTO.createEmailDTO!!.email,
+                    createWhatContactDTO.createEmailDTO!!.comment
+                )
+
+                WhatContactOptions.ADDRESS -> addressService.storeNewAddress(
+                    createWhatContactDTO.createAddressDTO!!.address,
+                    createWhatContactDTO.createAddressDTO!!.city,
+                    createWhatContactDTO.createAddressDTO!!.region,
+                    createWhatContactDTO.createAddressDTO!!.state,
+                    createWhatContactDTO.createAddressDTO!!.comment
+                )
+
+                WhatContactOptions.TELEPHONE -> telephoneService.storeNewTelephone(
+                    createWhatContactDTO.createTelephoneDTO!!.telephone,
+                    createWhatContactDTO.createTelephoneDTO!!.comment
+                )
             }
 
             return ResponseEntity(result, HttpStatus.OK)
-        }
-        catch (e: BadRequestException) {
+        } catch (e: BadRequestException) {
             logger.info("Failed to insert a new $whatContact detail. Details: Body not well formatted")
             return ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        } catch (e: Exception) {
+            logger.info("Server internal error: ${e.message}")
+            return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        catch (e: Exception) {
+    }
+
+    @DeleteMapping("/whatContact/{whatContact}/{id}")
+    fun deleteWhatContact(
+        @PathVariable whatContact: String,
+        @PathVariable id: Long
+    ): ResponseEntity<Any> {
+        try {
+            val contactType = WhatContactOptions.valueOf(whatContact.uppercase())
+
+            val wc = checkWhatContactIsValid(whatContact)
+
+            if (id < 0) {
+                return ResponseEntity.badRequest().body(mapOf("error" to CONTACT_ID_AND_DETAIL_ID_ERROR))
+            }
+
+            val result = when (contactType) {
+                WhatContactOptions.EMAIL -> emailService.deleteEmail(id)
+                WhatContactOptions.ADDRESS -> addressService.deleteAddress(id)
+                WhatContactOptions.TELEPHONE -> telephoneService.deleteTelephone(id)
+            }
+
+            return ResponseEntity(mapOf("result" to "Delete operation succesfully completed"), HttpStatus.OK)
+        } catch (e: IllegalArgumentException) {
+            logger.info("Illegal argument exception: ${e.message}")
+            return ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        } catch (e: EntityNotFoundException) {
+            logger.info("Entity not found: ${e.message}")
+            return ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        } catch (e: Exception) {
+            logger.info("Server internal error: ${e.message}")
+            return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @PutMapping("/whatContact/{whatContact}/{id}")
+    fun editWhatContact(
+        @PathVariable whatContact: String,
+        @PathVariable id: Long,
+        @RequestBody editWhatContactDTO: CreateWhatContactDTO
+    ): ResponseEntity<Any> {
+        try {
+            val contactType = WhatContactOptions.valueOf(whatContact.uppercase())
+
+            val wc = checkWhatContactIsValid(whatContact)
+
+            when (wc) {
+                WhatContactOptions.EMAIL -> {
+
+                    if (editWhatContactDTO.createEmailDTO == null || !isValidEmail(editWhatContactDTO.createEmailDTO!!.email)) {
+                        throw BadRequestException(EMAILS_NOT_VALID)
+
+                    }
+                }
+
+                WhatContactOptions.ADDRESS -> {
+
+                    if (editWhatContactDTO.createAddressDTO == null || !isValidAddress(editWhatContactDTO.createAddressDTO!!)) {
+                        throw BadRequestException(ADDRESSES_NOT_VALID)
+
+
+                    }
+                }
+
+
+                WhatContactOptions.TELEPHONE -> {
+
+                    if (editWhatContactDTO.createTelephoneDTO == null || !isValidPhone(editWhatContactDTO.createTelephoneDTO!!.telephone)) {
+                        throw BadRequestException(TELEPHONES_NOT_VALID)
+                    }
+                }
+            }
+
+            val result = when (contactType) {
+                WhatContactOptions.EMAIL -> emailService.editEmail(
+                    id,
+                    editWhatContactDTO.createEmailDTO!!.email,
+                    editWhatContactDTO.createEmailDTO!!.comment
+                )
+
+                WhatContactOptions.ADDRESS -> addressService.editAddress(
+                    id,
+                    editWhatContactDTO.createAddressDTO!!.address,
+                    editWhatContactDTO.createAddressDTO!!.city,
+                    editWhatContactDTO.createAddressDTO!!.region,
+                    editWhatContactDTO.createAddressDTO!!.state,
+                    editWhatContactDTO.createAddressDTO!!.comment
+                )
+
+                WhatContactOptions.TELEPHONE -> telephoneService.editTelephone(
+                    id,
+                    editWhatContactDTO.createTelephoneDTO!!.telephone,
+                    editWhatContactDTO.createTelephoneDTO!!.comment
+                )
+            }
+
+            return ResponseEntity(result, HttpStatus.OK)
+        } catch (e: BadRequestException) {
+            logger.info("Failed to insert a new $whatContact detail. Details: Body not well formatted")
+            return ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        } catch (e: Exception) {
             logger.info("Server internal error: ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal server error!"), HttpStatus.INTERNAL_SERVER_ERROR)
         }

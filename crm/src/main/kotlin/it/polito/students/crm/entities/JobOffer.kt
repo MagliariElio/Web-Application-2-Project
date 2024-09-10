@@ -38,10 +38,20 @@ class JobOffer {
     var professional: Professional? = null
 
     @ManyToMany(mappedBy = "jobOffers", fetch = FetchType.EAGER)
-    var candidateProfessionals: MutableList<Professional> = mutableListOf()
+    var candidateProfessionals: MutableList<Professional> =
+        mutableListOf() // lista dei candidati che sono stati selezionati nella fase di selezione
 
     @ElementCollection
-    var candidatesProfessionalRefused: MutableList<Long>  = mutableListOf() // lista dei candidati che hanno rifiutato
+    var candidatesProposalProfessional: MutableList<Long> =
+        mutableListOf() // lista dei candidati che sono stati selezionati nella fase di candidate proposal
+
+    @ElementCollection
+    var candidatesProfessionalRejected: MutableList<Long> =
+        mutableListOf() // lista dei candidati che hanno rifiutato la candidatura
+
+    @ElementCollection
+    var candidatesProfessionalRevoked: MutableList<Long> =
+        mutableListOf() // lista dei candidati che hanno rifiutato la candidatura dopo aver accettato
 
     var deleted = false
 }

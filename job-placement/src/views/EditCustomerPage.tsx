@@ -1,43 +1,36 @@
-import { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { MeInterface } from "../interfaces/MeInterface";
 import { Customer } from "../interfaces/Customer";
 import { fetchCustomer, updateCustomer } from "../apis/CustomerRequests";
+import { ContactModal } from "./AddProfessionalPage";
 
 function EditCustomerPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [ssnCode, setSsnCode] = useState("");
   const [comment, setComment] = useState("");
 
+  const [constactId, setContactId] = useState<number | null>(null);
+
+  const [contactModalOpen, setContactModalOpen] = useState<string | null>(null);
+
   const [emails, setEmails] = useState<any[]>([]);
-  const [singleEmailAddress, setSingleEmailAddress] = useState("");
-  const [singleEmailAddressComment, setSingleEmailAddressComment] =
-    useState("");
-  const [emailError, setEmailError] = useState(false);
 
   const [telephones, setTelephones] = useState<any[]>([]);
-  const [singleTelephoneNumber, setSingleTelephoneNumber] = useState("");
-  const [singleTelephoneNumberComment, setSingleTelephoneNumberComment] =
-    useState("");
-  const [telephoneError, setTelephoneError] = useState(false);
 
   const [addresses, setAddresses] = useState<any[]>([]);
-  const [singleAddress, setSingleAddress] = useState({
-    address: "",
-    city: "",
-    region: "",
-    state: "",
-    comment: "",
-  });
-  const [addressError, setAddressError] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const errorRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (
@@ -50,8 +43,11 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
       return;
     }
 
+    setLoading(true);
+
     fetchCustomer(Number.parseInt(id))
       .then((json: Customer) => {
+        setContactId(json.information.contactDTO.id);
         setName(json.information.contactDTO.name);
         setSurname(json.information.contactDTO.surname);
         setSsnCode(json.information.contactDTO.ssnCode);
@@ -59,23 +55,48 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         setEmails(json.information.emailDTOs);
         setTelephones(json.information.telephoneDTOs);
         setAddresses(json.information.addressDTOs);
+
+        setLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         navigate("/not-found");
         throw new Error(
           `GET /API/customer/${id} : Network response was not ok`
         );
+
+        setLoading(false);
       });
   }, [id]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (name === "" || surname === "" || ssnCode === "") {
+    if (name.trim() === "") {
+      setErrorMessage("The name cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (surname.trim() === "") {
+      setErrorMessage("The surname cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (ssnCode.trim() === "") {
+      setErrorMessage("The SSN Code cannot be empty or just spaces.");
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
       return;
     }
 
     const customer = {
+      id: constactId,
       name: name,
       surname: surname,
       ssnCode: ssnCode,
@@ -87,7 +108,7 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
     };
 
     updateCustomer(Number.parseInt(id!!), customer, me)
-      .then((res) => {
+      .then(() => {
         navigate("/ui/customers", { state: { success: true } });
       })
       .catch((error) => {
@@ -98,7 +119,33 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
   };
 
   return (
-    <div>
+    <div className="add-job-offer-container">
+      {contactModalOpen != null && (
+        <ContactModal
+          me={me}
+          open={contactModalOpen}
+          setOpen={setContactModalOpen}
+          contactContainer={
+            contactModalOpen === "email"
+              ? emails
+              : contactModalOpen === "telephone"
+              ? telephones
+              : contactModalOpen === "address"
+              ? addresses
+              : []
+          }
+          setContactContainer={
+            contactModalOpen === "email"
+              ? setEmails
+              : contactModalOpen === "telephone"
+              ? setTelephones
+              : contactModalOpen === "address"
+              ? setAddresses
+              : []
+          }
+        />
+      )}
+
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
         <Col>
           <h3>Edit customer</h3>
@@ -113,415 +160,323 @@ function EditCustomerPage({ me }: { me: MeInterface }) {
         </Col>
       </Row>
 
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Surname"
-              value={surname}
-              onChange={(e) => setSurname(e.target.value)}
-              required
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Ssn code"
-              value={ssnCode}
-              required
-              onChange={(e) => setSsnCode(e.target.value)}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={12} lg={6} className="mb-4">
-            <Form.Control
-              as="textarea"
-              placeholder="Comments"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              maxLength={255}
-            />
-          </Col>
-        </Row>
-        <Row className="mt-5">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Row className="align-items-center">
-              <Col>
-                <hr />
-              </Col>
-              <Col xs="auto">
-                <h5 className="fw-normal">Emails</h5>
-              </Col>
-              <Col>
-                <hr />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        {emails.length === 0 && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No emails added yet</p>
-            </Col>
-          </Row>
-        )}
-        {emails.length > 0 &&
-          emails.map((email, index) => {
-            return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row>
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">{email.email}</p>
-                    </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
-                      <p className="text-truncate">{email.comment}</p>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setEmails(emails.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
+      {!loading && (
+        <>
+          <Form onSubmit={handleSubmit}>
+            {errorMessage && (
+              <Row className="justify-content-center" ref={errorRef}>
+                <Col xs={12} md={10} lg={6}>
+                  <Alert
+                    variant="danger"
+                    onClose={() => setErrorMessage("")}
+                    className="d-flex mt-3 justify-content-center align-items-center"
+                    dismissible
+                  >
+                    {errorMessage}
+                  </Alert>
                 </Col>
               </Row>
-            );
-          })}
-        <Row>
-          <Col xs={12} md={12} lg={2} className="mb-2">
-            <Form.Control
-              placeholder="Email address"
-              value={singleEmailAddress}
-              onChange={(e) => {
-                setSingleEmailAddress(e.target.value);
-                setEmailError(false);
-              }}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Email address comment"
-              value={singleEmailAddressComment}
-              onChange={(e) => setSingleEmailAddressComment(e.target.value)}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={1} className="mb-2">
-            <Button
-              className="secondaryButton w-100"
-              onClick={() => {
-                if (checkValidEmail(singleEmailAddress)) {
-                  setEmails([
-                    ...emails,
-                    {
-                      email: singleEmailAddress,
-                      comment: singleEmailAddressComment,
-                    },
-                  ]);
-                  setSingleEmailAddress("");
-                  setSingleEmailAddressComment("");
-                  setEmailError(false);
-                } else {
-                  setEmailError(true);
-                }
-              }}
-            >
-              Add email
-            </Button>
-          </Col>
-        </Row>
-        {emailError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">Invalid email address</p>
-            </Col>
-          </Row>
-        )}
+            )}
 
-        <Row className="mt-5">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Row className="align-items-center">
-              <Col>
-                <hr />
+            <Row className="justify-content-center">
+              <Col xs={12} md={6} lg={3} className="mb-4">
+                <Form.Control
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
               </Col>
-              <Col xs="auto">
-                <h5 className="fw-normal">Telephones</h5>
-              </Col>
-              <Col>
-                <hr />
+              <Col xs={12} md={6} lg={3} className="mb-4">
+                <Form.Control
+                  placeholder="Surname"
+                  value={surname}
+                  onChange={(e) => setSurname(e.target.value)}
+                  required
+                />
               </Col>
             </Row>
-          </Col>
-        </Row>
-        {telephones.length === 0 && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No phone numbers added yet</p>
-            </Col>
-          </Row>
-        )}
-        {telephones.length > 0 &&
-          telephones.map((telephone, index) => {
-            return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row>
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">{telephone.telephone}</p>
-                    </Col>
-                    <Col
-                      xs={12}
-                      md={12}
-                      lg={6}
-                      className="mb-0  fs-10 fw-light"
-                    >
-                      <p className="text-truncate">{telephone.comment}</p>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setTelephones(telephones.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
-                </Col>
-              </Row>
-            );
-          })}
-        <Row>
-          <Col xs={12} md={12} lg={2} className="mb-2">
-            <Form.Control
-              placeholder="Telephone number"
-              value={singleTelephoneNumber}
-              onChange={(e) => {
-                setSingleTelephoneNumber(e.target.value);
-                setTelephoneError(false);
-              }}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Telephone number comment"
-              value={singleTelephoneNumberComment}
-              onChange={(e) => setSingleTelephoneNumberComment(e.target.value)}
-            />
-          </Col>
-          <Col xs={12} md={12} lg={1} className="mb-2">
-            <Button
-              className="secondaryButton w-100 px-0"
-              onClick={() => {
-                if (checkValidTelephone(singleTelephoneNumber)) {
-                  setTelephones([
-                    ...telephones,
-                    {
-                      telephone: singleTelephoneNumber,
-                      comment: singleTelephoneNumberComment,
-                    },
-                  ]);
-                  setSingleTelephoneNumber("");
-                  setSingleTelephoneNumberComment("");
-                  setTelephoneError(false);
-                } else {
-                  setTelephoneError(true);
-                }
-              }}
-            >
-              Add number
-            </Button>
-          </Col>
-        </Row>
-        {telephoneError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">Invalid telephone number</p>
-            </Col>
-          </Row>
-        )}
-
-        <Row className="mt-5">
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Row className="align-items-center">
-              <Col>
-                <hr />
-              </Col>
-              <Col xs="auto">
-                <h5 className="fw-normal">Address</h5>
-              </Col>
-              <Col>
-                <hr />
+            <Row className="justify-content-center">
+              <Col xs={12} md={6} lg={6} className="mb-4">
+                <Form.Control
+                  placeholder="Ssn code"
+                  value={ssnCode}
+                  required
+                  onChange={(e) => setSsnCode(e.target.value)}
+                />
               </Col>
             </Row>
-          </Col>
-        </Row>
-        {addresses.length === 0 && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No addresses added yet</p>
-            </Col>
-          </Row>
-        )}
-        {addresses.length > 0 &&
-          addresses.map((address, index) => {
-            return (
-              <Row key={index} className="mb-1 d-flex align-items-center">
-                <Col xs={8} md={6} lg={5}>
-                  <Row>
-                    <Col xs={12} md={12} lg={6} className="mb-0">
-                      <p className="text-truncate">
-                        {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}
-                      </p>
-                    </Col>
-                    <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
-                      <p className="text-truncate">{address.comment}</p>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col xs={4} md={6} lg={1}>
-                  <Col className="mb-0">
-                    <Button
-                      className="secondaryDangerButton w-100"
-                      onClick={() => {
-                        setAddresses(addresses.filter((e, i) => i !== index));
-                      }}
-                    >
-                      Remove
-                    </Button>
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-4">
+                <Form.Control
+                  as="textarea"
+                  placeholder="Comments"
+                  value={comment}
+                  rows={4}
+                  onChange={(e) => setComment(e.target.value)}
+                  maxLength={255}
+                />
+              </Col>
+            </Row>
+            <Row className="mt-3 justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Row className="align-items-center">
+                  <Col>
+                    <hr />
                   </Col>
+                  <Col xs="auto">
+                    <h5 className="fw-normal">Emails</h5>
+                  </Col>
+                  <Col>
+                    <hr />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {emails.length === 0 && (
+              <Row className="justify-content-center">
+                <Col xs={12} md={12} lg={6} className="mb-0">
+                  <p>No emails added yet</p>
                 </Col>
               </Row>
-            );
-          })}
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Address"
-              value={singleAddress.address}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, address: e.target.value })
-              }
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="City"
-              value={singleAddress.city}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, city: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="Region"
-              value={singleAddress.region}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, region: e.target.value })
-              }
-            />
-          </Col>
-          <Col xs={12} md={6} lg={3} className="mb-2">
-            <Form.Control
-              placeholder="State"
-              value={singleAddress.state}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, state: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12} md={12} lg={6} className="mb-2">
-            <Form.Control
-              as="textarea"
-              placeholder="Address comment"
-              value={singleAddress.comment}
-              onChange={(e) =>
-                setSingleAddress({ ...singleAddress, comment: e.target.value })
-              }
-            />
-          </Col>
-        </Row>
-        {addressError && (
-          <Row>
-            <Col xs={12} md={12} lg={6} className="mb-4">
-              <p className="text-danger">
-                Address, city, region and state are required
-              </p>
+            )}
+            {emails.length > 0 &&
+              emails.map((email, index) => {
+                return (
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{email.email}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0 fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{email.comment}</p>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setEmails(emails.filter((_e, i) => i !== index));
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
+                    </Col>
+                  </Row>
+                );
+              })}
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("email");
+                  }}
+                >
+                  Add email
+                </Button>
+              </Col>
+            </Row>
+
+            <Row className="mt-3 justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Row className="align-items-center">
+                  <Col>
+                    <hr />
+                  </Col>
+                  <Col xs="auto">
+                    <h5 className="fw-normal">Telephones</h5>
+                  </Col>
+                  <Col>
+                    <hr />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {telephones.length === 0 && (
+              <Row className="justify-content-center">
+                <Col xs={12} md={12} lg={6}>
+                  <p>No phone numbers added yet</p>
+                </Col>
+              </Row>
+            )}
+            {telephones.length > 0 &&
+              telephones.map((telephone, index) => {
+                return (
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{telephone.telephone}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0  fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{telephone.comment}</p>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setTelephones(
+                              telephones.filter((_e, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
+                    </Col>
+                  </Row>
+                );
+              })}
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("telephone");
+                  }}
+                >
+                  Add telephone
+                </Button>
+              </Col>
+            </Row>
+
+            <Row className="mt-3 justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Row className="align-items-center">
+                  <Col>
+                    <hr />
+                  </Col>
+                  <Col xs="auto">
+                    <h5 className="fw-normal">Address</h5>
+                  </Col>
+                  <Col>
+                    <hr />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {addresses.length === 0 && (
+              <Row className="justify-content-center">
+                <Col xs={12} md={12} lg={6} className="mb-0">
+                  <p>No addresses added yet</p>
+                </Col>
+              </Row>
+            )}
+            {addresses.length > 0 &&
+              addresses.map((address, index) => {
+                return (
+                  <Row
+                    key={index}
+                    className="mb-1 d-flex align-items-center justify-content-center"
+                  >
+                    <Col xs={8} md={6} lg={5}>
+                      <Row className="justify-content-center">
+                        <Col xs={12} md={12} lg={6} className="mb-0">
+                          <p className="text-truncate">{`${address.address}, ${address.city}, ${address.region}, ${address.state}`}</p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="mb-0 fs-10 fw-light"
+                        >
+                          <p className="text-truncate">{address.comment}</p>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs={4} md={6} lg={1}>
+                      <Col className="mb-0">
+                        <Button
+                          className="secondaryDangerButton w-100"
+                          onClick={() => {
+                            setAddresses(
+                              addresses.filter((_e, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Col>
+                    </Col>
+                  </Row>
+                );
+              })}
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={6} className="mb-2">
+                <Button
+                  className="secondaryButton w-100"
+                  onClick={() => {
+                    setContactModalOpen("address");
+                  }}
+                >
+                  Add address
+                </Button>
+              </Col>
+            </Row>
+
+            <Row className="mt-5 justify-content-center">
+              <Col
+                xs={12}
+                md={12}
+                lg={6}
+                className="d-flex flex-column justify-content-center align-items-center"
+              >
+                <Button type="submit" className="primaryButton">
+                  Save
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </>
+      )}
+
+      {loading && (
+        <>
+          <Row className="d-flex flex-row p-0 mb-5 align-items-center">
+            <Col>
+              <h3>Edit professional</h3>
+            </Col>
+            <Col className="d-flex justify-content-end">
+              <Button
+                className="d-flex align-items-center secondaryButton"
+                onClick={() => navigate(-1)}
+              >
+                <BsXLg size={"1.5em"} />
+              </Button>
             </Col>
           </Row>
-        )}
-        <Row>
-          <Col
-            xs={12}
-            md={12}
-            lg={6}
-            className="mb-2 d-flex justify-content-center"
-          >
-            <Button
-              className="secondaryButton"
-              onClick={() => {
-                if (
-                  singleAddress.address === "" ||
-                  singleAddress.city === "" ||
-                  singleAddress.region === "" ||
-                  singleAddress.state === ""
-                ) {
-                  setAddressError(true);
-                  return;
-                }
-                setAddresses([...addresses, singleAddress]);
-                setSingleAddress({
-                  address: "",
-                  city: "",
-                  region: "",
-                  state: "",
-                  comment: "",
-                });
-                setAddressError(false);
-              }}
-            >
-              Add address
-            </Button>
-          </Col>
-        </Row>
 
-        <Row className="mt-5">
-          <Col
-            xs={12}
-            md={12}
-            lg={6}
-            className="d-flex flex-column justify-content-center align-items-center"
-          >
-            <Button type="submit" className="primaryButton">
-              Save customer
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+          <Row className="justify-content-center">
+            <Col xs={12} md={6} lg={6} className="mb-4">
+              <div className="loading-detail-page"></div>
+            </Col>
+          </Row>
+        </>
+      )}
     </div>
   );
 }

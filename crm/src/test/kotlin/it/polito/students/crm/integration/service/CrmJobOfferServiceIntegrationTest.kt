@@ -18,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
-import java.util.NoSuchElementException
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -85,7 +84,7 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
         CustomerServiceImpl(customerRepository, contactService, contactRepository, jobOfferRepository, factory)
     }
 
-    private val professionalService : ProfessionalServiceImpl by lazy {
+    private val professionalService: ProfessionalServiceImpl by lazy {
         ProfessionalServiceImpl(professionalRepository, jobOfferRepository, contactRepository, contactService)
     }
 
@@ -340,15 +339,21 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             dailyRate = 3.0
         )
 
-        val newProfessional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        val newProfessional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         //CHANGE STATUS TO ADD A PROFESSIONAL
         jobOfferService.changeJobOfferStatus(newJob.id, JobStatusEnum.SELECTION_PHASE, listOf(newProfessional.id), null)
-        jobOfferService.changeJobOfferStatus(newJob.id, JobStatusEnum.CANDIDATE_PROPOSAL, listOf(newProfessional.id), null)
+        jobOfferService.changeJobOfferStatus(
+            newJob.id,
+            JobStatusEnum.CANDIDATE_PROPOSAL,
+            listOf(newProfessional.id),
+            null
+        )
 
         val savedjob = jobOfferService.getJobOfferById(newJob.id)
 
-        if(savedjob != null){
+        if (savedjob != null) {
             val jobOfferDTO = JobOfferDTO(
                 id = savedjob.id,
                 status = JobStatusEnum.CANDIDATE_PROPOSAL,
@@ -368,7 +373,7 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             assert(savedjob.note == jobOfferDTO.note)
             assert(savedjob.customerId == jobOfferDTO.customerId)
             assert(savedjob.professionalId == jobOfferDTO.professionalId)
-        }else{
+        } else {
             assert(savedjob != null) //Always false, if it reaches here test has to fail
         }
     }
@@ -510,15 +515,21 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             dailyRate = 3.0
         )
 
-        val newProfessional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        val newProfessional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         //CHANGE STATUS TO ADD A PROFESSIONAL
         jobOfferService.changeJobOfferStatus(newJob.id, JobStatusEnum.SELECTION_PHASE, listOf(newProfessional.id), null)
-        jobOfferService.changeJobOfferStatus(newJob.id, JobStatusEnum.CANDIDATE_PROPOSAL, listOf(newProfessional.id), null)
+        jobOfferService.changeJobOfferStatus(
+            newJob.id,
+            JobStatusEnum.CANDIDATE_PROPOSAL,
+            listOf(newProfessional.id),
+            null
+        )
 
         val savedjob = jobOfferService.getJobOfferById(newJob.id)
 
-        if(savedjob != null){
+        if (savedjob != null) {
             val jobOfferDTO = JobOfferDTO(
                 id = savedjob.id,
                 status = JobStatusEnum.CANDIDATE_PROPOSAL,
@@ -538,7 +549,7 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             assert(savedjob.note == jobOfferDTO.note)
             assert(savedjob.customerId == jobOfferDTO.customerId)
             assert(savedjob.professionalId == jobOfferDTO.professionalId)
-        }else{
+        } else {
             assert(savedjob != null) //Always false, if it reaches here test has to fail
         }
     }
@@ -582,7 +593,8 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             dailyRate = 3.0
         )
 
-        val newProfessional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        val newProfessional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         assertThrows<NoSuchElementException> {
             jobOfferService.changeJobOfferStatus(1, JobStatusEnum.SELECTION_PHASE, listOf(newProfessional.id), null)
@@ -669,7 +681,8 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             dailyRate = 3.0
         )
 
-        val newProfessional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        val newProfessional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         //CHANGE STATUS TO ADD A PROFESSIONAL
         assertThrows<NotFoundJobOfferException> {
@@ -755,7 +768,8 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             dailyRate = 3.0
         )
 
-        val newProfessional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        val newProfessional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         //CHANGE STATUS TO ADD A PROFESSIONAL
         assertThrows<IllegalJobStatusTransition> {
@@ -841,7 +855,8 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             dailyRate = 3.0
         )
 
-        val newProfessional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        val newProfessional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         //CHANGE STATUS TO ADD A PROFESSIONAL
         assertThrows<RequiredProfessionalIdException> {
@@ -927,7 +942,8 @@ class CrmJobOfferServiceIntegrationTest : IntegrationTest() {
             dailyRate = 3.0
         )
 
-        val newProfessional = professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+        val newProfessional =
+            professionalService.storeProfessional(createProfessional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
 
         //CHANGE STATUS TO ADD A PROFESSIONAL
         assertThrows<ProfessionalNotFoundException> {

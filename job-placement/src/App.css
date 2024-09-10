@@ -442,6 +442,196 @@ button.primaryButton:hover {
 }
 /* End JobOfferDetailPage */
 
+/* Customer Page */
+.borderedSection {
+  background-color: #f0f4f8;
+  border-radius: 8px;
+  border: 1px solid #cbd2d9;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.borderedSection:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.borderedSection h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #004085;
+  margin-bottom: 8px;
+}
+
+.borderedSection h4 span {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.borderedSection p {
+  color: #343a40;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.borderedSection .fs-6 {
+  font-size: 0.875rem;
+}
+
+.borderedSection h6 {
+  font-size: 1.1rem;
+  color: #004085;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.borderedSection small {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.text-center {
+  font-size: 1rem;
+  color: #495057;
+}
+
+.borderedSection .text-center:hover {
+  text-decoration: underline;
+  color: #004085;
+}
+
+.borderedSection .cursor-pointer {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.borderedSection .fs-6.text-muted p {
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.borderedSection .justify-content-center {
+  margin-top: 15px;
+}
+
+.borderedSection .show-details {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  color: #6c757d;
+}
+
+.borderedSection .show-details:hover {
+  color: #004085;
+  transition: color 0.2s ease;
+}
+
+.borderedSection .show-details p {
+  margin-left: 8px;
+  margin-bottom: 0;
+  font-size: 1rem;
+}
+/* End Customer Page */
+
+/* PageNotFound */
+.page-not-found {
+  background-color: #e1e8f0;
+}
+
+.icon-container {
+  margin-bottom: 30px;
+  animation: bounce 2s infinite;
+}
+
+.icon-404 {
+  font-size: 80px;
+  color: #dc3545;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+/* End PageNotFound */
+
+/* Login Prompt */
+.icon-container {
+  margin-bottom: 30px;
+  animation: bounce 2s infinite;
+}
+
+.icon-login {
+  font-size: 60px;
+  color: #007bff; /* Icona di login in blu */
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+/* End Login Prompt */
+
+/* About Us */
+.about-text {
+  max-width: 850px;
+  width: 100%;
+  margin: 0 auto;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.icon-container {
+  animation: bounce 2s infinite;
+}
+
+.icon-about {
+  font-size: 80px;
+  color: #007bff;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+/* End About Us */
+
 .no-gutters {
   margin-right: 0;
   margin-left: 0;
@@ -549,6 +739,22 @@ button.primaryButton:hover {
   color: #f8f9fa !important;
 }
 
+.secondaryWarningButton {
+  background-color: #f8f9fa !important;
+  color: #ffc107 !important;
+  border: 2px solid #ffc107 !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease !important;
+  font-size: 18px !important;
+}
+
+.secondaryWarningButton:hover {
+  box-shadow: 0 5px 10px #ffc1077a;
+  background-color: #ffc107 !important;
+  color: #f8f9fa !important;
+}
+
 .tag {
   background-color: #566bc0;
   color: white;
@@ -593,4 +799,31 @@ button.primaryButton:hover {
 
 .custom-pagination .page-item.disabled .page-link {
   color: #6c757d; /* Colore del testo per gli elementi disabilitati */
+}
+
+.loading-card {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  height: 100px;
+  margin-bottom: 1rem;
+}
+
+.loading-detail-page {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  height: 100vh;
+  margin-bottom: 1rem;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

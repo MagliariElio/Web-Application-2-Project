@@ -333,7 +333,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
         <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
             <Button type="submit" className="primaryButton">
-              Save Job Offer
+              Save
             </Button>
           </Col>
         </Row>

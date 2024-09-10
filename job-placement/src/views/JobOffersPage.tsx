@@ -1,16 +1,16 @@
-import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert, Pagination } from "react-bootstrap";
+import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert, Pagination, ButtonGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useRef, useState } from "react";
-import { BsPlus } from "react-icons/bs";
+import { BsPlus, BsSearch } from "react-icons/bs";
 import { PagedResponse } from "../interfaces/PagedResponse.ts";
 import { useLocation, useNavigate } from "react-router-dom";
 import { JobOffer } from "../interfaces/JobOffer.ts";
-import { contractTypeList, JobOfferState, toTitleCase, workModeList } from "../utils/costants.ts";
+import { contractTypeList, JobOfferState, RoleState, toTitleCase, workModeList } from "../utils/costants.ts";
 import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
-import { LoadingSection } from "../App.tsx";
 import { Filters } from "../interfaces/Filters.ts";
+import { MeInterface } from "../interfaces/MeInterface.ts";
 
-const JobOffersPage = () => {
+const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   const navigate = useNavigate();
 
   const [jobOffers, setJobOffers] = useState<PagedResponse<JobOffer> | null>(null);
@@ -35,6 +35,41 @@ const JobOffersPage = () => {
     sortDirection: "",
   });
 
+  const loadJobOffers = async (page: number) => {
+    try {
+      setLoading(true);
+      const result = await fetchJobOffers(
+        page,
+        filters.elementsPerPage,
+        filters.sortBy,
+        filters.sortDirection,
+        filters.contractType,
+        filters.location,
+        filters.status,
+        filters.workMode
+      );
+      setJobOffers(result);
+      setTotalPages(result.totalPages);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    setLoading(false);
+  };
+
+  const handleFilterClick = () => {
+    loadJobOffers(currentPage);
+  };
+
   useEffect(() => {
     if (success != null) {
       setShowAlert(true);
@@ -43,47 +78,8 @@ const JobOffersPage = () => {
       }, 3000);
     }
 
-    const loadJobOffers = async (page: number) => {
-      try {
-        const result = await fetchJobOffers(
-          page,
-          filters.elementsPerPage,
-          filters.sortBy,
-          filters.sortDirection,
-          filters.contractType,
-          filters.location,
-          filters.status,
-          filters.workMode
-        );
-        setJobOffers(result);
-        setTotalPages(result.totalPages);
-        setLoading(false);
-      } catch (error) {
-        if (error instanceof Error) {
-          setErrorMessage(error.message);
-        } else {
-          setErrorMessage("An unexpected error occurred");
-        }
-
-        // Scroll to error message when it appears
-        if (errorRef.current) {
-          errorRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-      }
-    };
-
     loadJobOffers(currentPage);
-  }, [
-    success,
-    currentPage,
-    filters.elementsPerPage,
-    filters.sortBy,
-    filters.sortDirection,
-    filters.contractType,
-    filters.location,
-    filters.status,
-    filters.workMode,
-  ]);
+  }, [success, currentPage, filters.elementsPerPage, filters.sortBy, filters.sortDirection]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -98,16 +94,6 @@ const JobOffersPage = () => {
     if (pageNumber < 0) pageNumber = 0;
     setCurrentPage(pageNumber);
   };
-
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-        <div className="spinner-border" role="status">
-          <span className="sr-only"></span>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <Container fluid>
@@ -194,12 +180,14 @@ const JobOffersPage = () => {
             </Form.Select>
           </Form.Group>
         </Col>
-        <Col md={2} className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/joboffers/add")}>
-            <BsPlus size={"1.5em"} className="me-1" />
-            Add Job Offer
-          </Button>
-        </Col>
+        {me.role === RoleState.OPERATOR && (
+          <Col md={2} className="d-flex justify-content-end">
+            <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/joboffers/add")}>
+              <BsPlus size={"1.5em"} className="me-1" />
+              Add Job Offer
+            </Button>
+          </Col>
+        )}
       </Row>
 
       {errorMessage && (
@@ -212,7 +200,23 @@ const JobOffersPage = () => {
         </Row>
       )}
 
-      {loading && <LoadingSection h={null} />}
+      {loading && (
+        <Row>
+          <Col md={8}>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+          </Col>
+          <Col md={4}>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+            <div className="loading-card"></div>
+          </Col>
+        </Row>
+      )}
 
       {!loading && jobOffers !== null && (
         <>
@@ -255,12 +259,12 @@ const JobOffersPage = () => {
                       </Col>
                       <Col md={6} xs={12}>
                         <p className="mb-1">
-                          <strong>Duration:</strong> {joboffer.duration} days
+                          <strong>Duration:</strong> {joboffer.duration} {joboffer.duration === 1 ? "day" : "days"}
                         </p>
                       </Col>
                       <Col md={6} xs={12}>
                         <p className="mb-1">
-                          <strong>Value:</strong> ${joboffer.value}
+                          <strong>Value:</strong> {joboffer.value} €
                         </p>
                       </Col>
                       <Col md={6} xs={12}>
@@ -320,23 +324,33 @@ const JobOffersPage = () => {
                     </Form.Control>
                   </Form.Group>
 
-                  <Button
-                    className="secondaryButton"
-                    variant="primary"
-                    onClick={() =>
-                      setFilters({
-                        contractType: "",
-                        location: "",
-                        workMode: "",
-                        status: "",
-                        elementsPerPage: filters.elementsPerPage,
-                        sortBy: "duration",
-                        sortDirection: "asc",
-                      })
-                    }
-                  >
-                    Clear Filters
-                  </Button>
+                  <ButtonGroup className="d-flex justify-content-center mt-4">
+                    <Col className="text-center">
+                      <Button className="primaryButton" variant="primary" onClick={handleFilterClick}>
+                        <BsSearch className="me-1" />
+                        Filter
+                      </Button>
+                    </Col>
+                    <Col className="text-center">
+                      <Button
+                        className="secondaryButton"
+                        variant="primary"
+                        onClick={() =>
+                          setFilters({
+                            contractType: "",
+                            location: "",
+                            workMode: "",
+                            status: "",
+                            elementsPerPage: filters.elementsPerPage,
+                            sortBy: "",
+                            sortDirection: "",
+                          })
+                        }
+                      >
+                        Clear Filters
+                      </Button>
+                    </Col>
+                  </ButtonGroup>
                 </Form>
               </div>
             </Col>

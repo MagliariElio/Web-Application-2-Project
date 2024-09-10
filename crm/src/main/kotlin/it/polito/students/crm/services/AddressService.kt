@@ -46,4 +46,45 @@ interface AddressService {
      * @return - all addresses
      */
     fun getAllAddresses(): List<AddressDTO>
+
+    /**
+     * add a new address to address book
+     *
+     * @param address
+     * @param city
+     * @param region
+     * @param state
+     * @param comment
+     * @return - the new address
+     */
+    fun storeNewAddress(address: String?, city: String?, region: String?, state: String?, comment: String?): AddressDTO
+
+    /**
+     * edit an existing address to address book
+     *
+     * @param addressId
+     * @param address
+     * @param city
+     * @param region
+     * @param state
+     * @param comment
+     * @return - the new address
+     */
+    fun editAddress(
+        addressId: Long,
+        address: String?,
+        city: String?,
+        region: String?,
+        state: String?,
+        comment: String?
+    ): AddressDTO
+
+
+    /**
+     * Delete an Address in database
+     *
+     * @param addressId
+     * @return -
+     */
+    fun deleteAddress(addressId: Long)
 }

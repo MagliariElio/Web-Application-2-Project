@@ -13,6 +13,7 @@ import it.polito.students.crm.repositories.ContactRepository
 import it.polito.students.crm.repositories.TelephoneRepository
 import it.polito.students.crm.utils.CategoryOptions
 import it.polito.students.crm.utils.ErrorsPage.Companion.TELEPHONE_REQUIRED_ERROR
+import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
@@ -157,5 +158,51 @@ class TelephoneServiceImpl(
 
     override fun getAllTelephones(): List<TelephoneDTO> {
         return telephoneRepository.findAll().map { it.toDTO() }
+    }
+
+    override fun storeNewTelephone(telephone: String, comment: String?): TelephoneDTO {
+        val newTelephone = Telephone().apply {
+            this.telephone = telephone.lowercase()
+            this.comment = comment ?: ""
+        }
+
+        return telephoneRepository.save(newTelephone).toDTO()
+    }
+
+    override fun deleteTelephone(telephoneId: Long) {
+        val optionalTelephone = telephoneRepository.findById(telephoneId)
+
+        if (optionalTelephone.isPresent) {
+            val telephone = optionalTelephone.get()
+
+            telephone.contacts.forEach { contact ->
+                contact.telephones.removeIf { tel -> tel.id == telephoneId }
+            }
+
+            telephone.contacts.clear()
+
+            telephoneRepository.delete(telephone)
+        } else {
+            throw EntityNotFoundException("Telefono con ID $telephoneId non trovato.")
+        }
+    }
+
+    override fun editTelephone(telephoneId: Long, telephone: String, comment: String?): TelephoneDTO {
+        val optionalTelephone = telephoneRepository.findById(telephoneId)
+
+        if (optionalTelephone.isPresent) {
+            val telephoneEntity = optionalTelephone.get()
+
+            telephoneEntity.telephone = telephone
+            telephoneEntity.comment = comment ?: ""
+
+            telephoneRepository.save(telephoneEntity)
+
+            return telephoneEntity.toDTO()
+
+
+        } else {
+            throw EntityNotFoundException("Telefono con ID $telephoneId non trovato.")
+        }
     }
 }

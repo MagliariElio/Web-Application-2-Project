@@ -11,7 +11,7 @@ import java.util.regex.Pattern
  *  @throws IllegalArgumentException if priority cannot be converted in PriorityOptions
  */
 @Throws
-public fun checkCategoryIsValid(categoryIn: String): CategoryOptions {
+fun checkCategoryIsValid(categoryIn: String): CategoryOptions {
     try {
         val category = CategoryOptions.valueOf(categoryIn.uppercase())
         return category
@@ -20,20 +20,20 @@ public fun checkCategoryIsValid(categoryIn: String): CategoryOptions {
     }
 }
 
-public fun isValidEmail(email: String): Boolean {
+fun isValidEmail(email: String): Boolean {
     val mailRegex = getEmailRegex()
     val m: Pattern = Pattern.compile(mailRegex)
     val mail = m.matcher(email).matches()
     return mail
 }
 
-public fun isValidPhone(phone: String): Boolean {
+fun isValidPhone(phone: String): Boolean {
     val phoneRegex = getPhoneRegex()
     val p: Pattern = Pattern.compile(phoneRegex)
     val tel = p.matcher(phone).matches()
     return tel
 }
 
-public fun isValidAddress(a: CreateAddressDTO): Boolean {
+fun isValidAddress(a: CreateAddressDTO): Boolean {
     return !(a.city.isNullOrBlank() || a.address.isNullOrBlank() || a.region.isNullOrBlank() || a.state.isNullOrBlank())
 }

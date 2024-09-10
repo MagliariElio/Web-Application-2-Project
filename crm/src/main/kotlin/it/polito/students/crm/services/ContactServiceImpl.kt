@@ -147,39 +147,74 @@ class ContactServiceImpl(
     }
 
     override fun updateContact(contactDto: UpdateContactDTO, categoryParam: CategoryOptions): ContactDTO {
-        val contactDb = getContact(contactDto.id)
-        //Create a contact Entity from Db Contact
-        val contact = Contact().apply {
-            id = contactDb.id
-            name = contactDb.name
-            surname = contactDb.surname
-            ssnCode = contactDb.ssnCode
-            category = contactDb.category
-            comment = contactDb.comment
+        val contact = getContact(contactDto.id)
+
+        contactDto.name?.let { contact.name = it }
+        contactDto.surname?.let { contact.surname = it }
+        contactDto.ssnCode?.let { contact.ssnCode = it }
+        contactDto.category?.let { contact.category = categoryParam }
+        contactDto.comment?.let { contact.comment = it }
+
+        val updatedEmails = contactDto.emails.mapNotNull { emailDTO ->
+            emailRepository.findById(emailDTO.id).orElse(null)
+        }.toSet()
+
+        val emailsToRemove = contact.emails.filterNot { updatedEmails.contains(it) }.toSet()
+        val emailsToAdd = updatedEmails.filterNot { contact.emails.contains(it) }.toSet()
+
+        emailsToRemove.forEach { email ->
+            email.contacts.remove(contact)
+            emailRepository.save(email)
         }
 
-        if (contactDto.name != null) {
-
-            contact.name = contactDto.name!!
+        emailsToAdd.forEach { email ->
+            email.contacts.add(contact)
+            emailRepository.save(email)
         }
 
-        if (contactDto.surname != null) {
-            contact.surname = contactDto.surname!!
+        contact.emails.removeAll(emailsToRemove)
+        contact.emails.addAll(emailsToAdd)
+
+        val updatedTelephones = contactDto.telephones.mapNotNull { telephoneDTO ->
+            telephoneRepository.findById(telephoneDTO.id).orElse(null)
+        }.toSet()
+
+        val telephonesToRemove = contact.telephones.filterNot { updatedTelephones.contains(it) }.toSet()
+        val telephonesToAdd = updatedTelephones.filterNot { contact.telephones.contains(it) }.toSet()
+
+        telephonesToRemove.forEach { telephone ->
+            telephone.contacts.remove(contact)
+            telephoneRepository.save(telephone)
         }
 
-        if (contactDto.ssnCode != null) {
-            contact.ssnCode = contactDto.ssnCode!!
+        telephonesToAdd.forEach { telephone ->
+            telephone.contacts.add(contact)
+            telephoneRepository.save(telephone)
         }
 
-        if (contactDto.category != null) {
-            contact.category = categoryParam
+        contact.telephones.removeAll(telephonesToRemove)
+        contact.telephones.addAll(telephonesToAdd)
+
+        val updatedAddresses = contactDto.addresses.mapNotNull { addressDTO ->
+            addressRepository.findById(addressDTO.id).orElse(null)
+        }.toSet()
+
+        val addressesToRemove = contact.addresses.filterNot { updatedAddresses.contains(it) }.toSet()
+        val addressesToAdd = updatedAddresses.filterNot { contact.addresses.contains(it) }.toSet()
+
+        addressesToRemove.forEach { address ->
+            address.contacts.remove(contact)
+            addressRepository.save(address)
         }
 
-        if (contactDto.comment != null) {
-            contact.comment = contactDto.comment!!
+        addressesToAdd.forEach { address ->
+            address.contacts.add(contact)
+            addressRepository.save(address)
         }
 
-        //Update the contact in db
+        contact.addresses.removeAll(addressesToRemove)
+        contact.addresses.addAll(addressesToAdd)
+
         val contactSaved = contactRepository.save(contact).toDTO()
         return contactSaved
     }

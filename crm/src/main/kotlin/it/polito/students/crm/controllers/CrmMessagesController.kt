@@ -21,22 +21,15 @@ import it.polito.students.crm.utils.ErrorsPage.Companion.SENDER_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.SENDER_MISSING_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.SORT_BY_AND_STATE_REQUEST_PARAMETERS_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.SUBJECT_MISSING_ERROR
-import org.mockito.kotlin.any
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.http.*
-import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.kafka.annotation.KafkaListeners
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.stereotype.Service
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.multipart.MultipartFile
 import java.util.regex.Pattern
 
 @RestController
@@ -58,7 +51,7 @@ class CrmMessagesController(
             "authorities" to authorities?.map { it.authority }
         )
     }
-    
+
     @GetMapping("/", "")
     fun getMessages(
         @RequestParam page: Int = 0,
@@ -195,7 +188,6 @@ class CrmMessagesController(
             return ResponseEntity("Error: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
-
 
 
     @PatchMapping("/{messageID}", "/{messageID}/")
