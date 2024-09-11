@@ -43,7 +43,9 @@ class CrmProfessionalsController(
         @RequestParam(defaultValue = "10", required = false) pageSize: Int,
         @RequestParam(required = false) skill: String?,
         @RequestParam(required = false) location: String?,
-        @RequestParam(required = false) employmentState: String?
+        @RequestParam(required = false) employmentState: String?,
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) surname: String?
     ): ResponseEntity<Any> {
         if (pageNumber < 0 || pageSize < 0) {
             return ResponseEntity("The page number and the page size cannot be negative!", HttpStatus.BAD_REQUEST)
@@ -51,14 +53,20 @@ class CrmProfessionalsController(
 
         try {
             val filter = HashMap<ProfessionalEnumFields, String>().apply {
-                if (skill != null && skill.isNotBlank()) {
+                if (!skill.isNullOrBlank()) {
                     put(ProfessionalEnumFields.SKILL, skill)
                 }
-                if (location != null && location.isNotBlank()) {
+                if (!location.isNullOrBlank()) {
                     put(ProfessionalEnumFields.LOCATION, location)
                 }
-                if (employmentState != null && employmentState.isNotBlank()) {
+                if (!employmentState.isNullOrBlank()) {
                     put(ProfessionalEnumFields.EMPLOYMENT_STATE, employmentState)
+                }
+                if (!name.isNullOrBlank()) {
+                    put(ProfessionalEnumFields.NAME, name)
+                }
+                if (!surname.isNullOrBlank()) {
+                    put(ProfessionalEnumFields.SURNAME, surname)
                 }
             }
 

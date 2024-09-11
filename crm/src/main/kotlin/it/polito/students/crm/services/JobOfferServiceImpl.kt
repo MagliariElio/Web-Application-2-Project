@@ -288,10 +288,11 @@ class JobOfferServiceImpl(
                             !oldJobOffer.candidatesProfessionalRejected.contains(professionalProposal.id)
                         ) {
                             oldJobOffer.candidatesProfessionalRejected.add(professionalProposal.id)
+                        } else {
+                            professionalProposal.jobOffers.remove(oldJobOffer)
                         }
 
-                        oldJobOffer.candidateProfessionals.remove(professionalProposal)
-                        professionalProposal.jobOffers.remove(oldJobOffer)
+                        //oldJobOffer.candidateProfessionals.remove(professionalProposal)
                         professionalRepository.save(professionalProposal)
                     }
                 }
@@ -303,7 +304,6 @@ class JobOfferServiceImpl(
                     professional = professionalOptional.get()
 
                     if (professional!!.deleted) {
-                        println("deleted")
                         throw ProfessionalNotFoundException("Professional ${professional?.information?.surname} ${professional?.information?.name} not found!")
                     }
 

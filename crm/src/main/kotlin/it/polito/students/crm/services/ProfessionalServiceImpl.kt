@@ -53,6 +53,14 @@ class ProfessionalServiceImpl(
                 ProfessionalEnumFields.EMPLOYMENT_STATE -> filteredList.filter {
                     it.employmentState.name.contains(filter.value, ignoreCase = true)
                 }
+
+                ProfessionalEnumFields.NAME -> filteredList.filter {
+                    it.information.name.contains(filter.value, ignoreCase = true)
+                }
+
+                ProfessionalEnumFields.SURNAME -> filteredList.filter {
+                    it.information.surname.contains(filter.value, ignoreCase = true)
+                }
             }
         }
 
