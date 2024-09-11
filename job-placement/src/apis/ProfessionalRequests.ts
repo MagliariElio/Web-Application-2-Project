@@ -37,11 +37,13 @@ export const fetchProfessionals = async (
   pageSize: number = 10,
   skill: string = "",
   location: string = "",
-  employmentState: string = ""
+  employmentState: string = "",
+  name: string = "",
+  surname: string = ""
 ): Promise<PagedResponse<Professional>> => {
   try {
     const response = await fetch(
-      `/crmService/v1/API/professionals?pageNumber=${page}&pageSize=${pageSize}&skill=${skill}&location=${location}&employmentState=${employmentState}`
+      `/crmService/v1/API/professionals?pageNumber=${page}&pageSize=${pageSize}&skill=${skill}&location=${location}&employmentState=${employmentState}&name=${name}&surname=${surname}`
     );
 
     if (!response.ok) {

@@ -201,14 +201,18 @@ class JobOfferServiceImpl(
         if (professionalsId != null) {         //&& oldJobOffer.candidateProfessionals.none { professionalsId.contains(it.id) }) {
             val listId = oldJobOffer.candidateProfessionals.map { it.id }
             updateProfessionalsId =
-                listId.size != professionalsId.size || !listId.containsAll(professionalsId) || !professionalsId.containsAll(listId)
+                listId.size != professionalsId.size || !listId.containsAll(professionalsId) || !professionalsId.containsAll(
+                    listId
+                )
         }
 
         // controlla che se è stato rimosso un candidato dalla lista dei candidati proposti durante la CANDIDATE_PROPOSAL
         if (oldStatus == JobStatusEnum.CANDIDATE_PROPOSAL && professionalsId != null) {
             val listId = oldJobOffer.candidatesProposalProfessional
             updateProfessionalsId =
-                listId.size != professionalsId.size || !listId.containsAll(professionalsId) || !professionalsId.containsAll(listId)
+                listId.size != professionalsId.size || !listId.containsAll(professionalsId) || !professionalsId.containsAll(
+                    listId
+                )
         }
 
         if (!updateProfessionalsId && !checkStatusTransition(oldJobOffer.status, nextStatus)) {
@@ -244,7 +248,6 @@ class JobOfferServiceImpl(
 
 
                     } catch (e: Exception) {
-                        println(e.message)
                         throw ProfessionalNotFoundException("Professional not found")
                     }
 
@@ -256,16 +259,7 @@ class JobOfferServiceImpl(
                     oldJobOffer.professional?.jobOffers?.remove(oldJobOffer)
                 }
 
-                if (oldStatus == JobStatusEnum.CANDIDATE_PROPOSAL) {
-                    oldJobOffer.candidatesProposalProfessional = mutableListOf()
-
-                    oldJobOffer.professional?.let { professional ->
-                        val professionalId = professional.id
-                        if (!oldJobOffer.candidatesProfessionalRejected.contains(professionalId)) {
-                            oldJobOffer.candidatesProfessionalRejected.add(professionalId)
-                        }
-                    }
-                } else if (oldStatus == JobStatusEnum.CONSOLIDATED) {
+                if (oldStatus == JobStatusEnum.CONSOLIDATED) {
                     oldJobOffer.candidatesProposalProfessional = mutableListOf()
 
                     oldJobOffer.professional?.let { professional ->
@@ -289,15 +283,19 @@ class JobOfferServiceImpl(
                 oldJobOffer.candidatesProposalProfessional.forEach { candidateProfessional ->
                     val professionalProposal = professionalRepository.findById(candidateProfessional).getOrNull()
                     if (professionalProposal != null) {
-                        oldJobOffer.candidateProfessionals.remove(professionalProposal)
-                        professionalProposal.jobOffers.remove(oldJobOffer)
+                        // se il professional non è all'interno della lista inviata allora è stato eliminato, quindi rejected
+                        if (professionalsId?.contains(professionalProposal.id) == false &&
+                            !oldJobOffer.candidatesProfessionalRejected.contains(professionalProposal.id)
+                        ) {
+                            oldJobOffer.candidatesProfessionalRejected.add(professionalProposal.id)
+                        } else {
+                            professionalProposal.jobOffers.remove(oldJobOffer)
+                        }
+
+                        //oldJobOffer.candidateProfessionals.remove(professionalProposal)
                         professionalRepository.save(professionalProposal)
                     }
                 }
-
-                /*if (professionalsId!!.size > 1) {
-                    throw InconsistentProfessionalStatusTransitionException("Only one professional can be the final proposal")
-                }*/
 
                 var professional: Professional? = null
 
@@ -306,7 +304,6 @@ class JobOfferServiceImpl(
                     professional = professionalOptional.get()
 
                     if (professional!!.deleted) {
-                        println("deleted")
                         throw ProfessionalNotFoundException("Professional ${professional?.information?.surname} ${professional?.information?.name} not found!")
                     }
 

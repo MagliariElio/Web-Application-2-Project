@@ -3,6 +3,7 @@ import { Container, Row, Col, Button, Alert, Form, Modal, Table, Pagination, But
 import { JobOffer } from "../interfaces/JobOffer";
 import { useParams, useNavigate } from "react-router-dom";
 import {
+  FaBan,
   FaCheck,
   FaCheckCircle,
   FaCircle,
@@ -61,6 +62,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [candidateProposalProfessionalList, setCandidateProposalProfessionalList] = useState<Professional[]>([]);
 
   const [filteredCandidateProfessionalList, setFilteredCandidateProfessionalList] = useState<Professional[]>([]);
+  const [filteredCandidateProposalProfessionalList, setFilteredCandidateProposalProfessionalList] = useState<Professional[]>([]);
   const [loadingCandidateProfessional, setLoadingCandidateProfessional] = useState(true);
   const [loadingCandidateProposalProfessional, setLoadingCandidateProposalProfessional] = useState(false);
 
@@ -101,13 +103,34 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [searchSsnCode, setSearchSsnCode] = useState("");
   const [filterByRejected, setFilterByRejected] = useState(false);
   const [filterByRevoked, setFilterByRevoked] = useState(false);
+  const [filterByCancelled, setFilterByCancelled] = useState(false);
+  const [filterByNotSelected, setFilterByNotSelected] = useState(false);
+  const [filterByPendingApproval, setFilterByPendingApproval] = useState(false);
+  const [searchProposalSkill, setSearchProposalSkill] = useState("");
+  const [searchProposalLocation, setSearchProposalLocation] = useState("");
+  const [searchProposalName, setSearchProposalName] = useState("");
+  const [searchProposalSurname, setSearchProposalSurname] = useState("");
+  const [searchProposalSsnCode, setSearchProposalSsnCode] = useState("");
   const resetFilteredCandidateProfessionalList = (candidates: Professional[]) => {
     if (filterByRejected) {
       candidates = candidates.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
     } else if (filterByRevoked) {
       candidates = candidates.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
+    } else if (filterByCancelled) {
+      candidates = candidates.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id));
+    } else if (filterByNotSelected) {
+      candidates = candidates.filter(
+        (candidate) =>
+          !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+          professional?.id !== candidate.id &&
+          !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+      );
+    } else if (filterByPendingApproval) {
+      candidates = candidates.filter(
+        (candidate) =>
+          candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) && jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+      );
     }
-
     setFilteredCandidateProfessionalList(candidates);
     setSearchSkill("");
     setSearchLocation("");
@@ -115,9 +138,17 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     setSearchSurname("");
     setSearchSsnCode("");
   };
-  const handleAddCandidate = (professional: Professional) => {
-    var list: Professional[] = candidateProfessionalList;
-    list.push(professional);
+  const resetFilteredCandidateProposalProfessionalList = (candidates: Professional[]) => {
+    setFilteredCandidateProposalProfessionalList(candidates);
+    setSearchProposalSkill("");
+    setSearchProposalLocation("");
+    setSearchProposalName("");
+    setSearchProposalSurname("");
+    setSearchProposalSsnCode("");
+  };
+  const handleAddCandidate = (professionals: Professional[]) => {
+    var list: Professional[] = [...candidateProfessionalList];
+    professionals.forEach((p) => list.push(p));
     setCandidateProfessionalList(list);
     resetFilteredCandidateProfessionalList(list);
   };
@@ -135,15 +166,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
 
     setCandidateProposalProfessionalList(list);
-    //resetFilteredCandidateProfessionalList(list);
+    resetFilteredCandidateProposalProfessionalList(list);
   };
   const handleRemoveCandidateProposal = (idProfessional: number) => {
     var list = [...candidateProposalProfessionalList];
 
     list = list.filter((c: Professional) => c.id !== idProfessional);
     setCandidateProposalProfessionalList(list);
-
-    //resetFilteredCandidateProfessionalList(list);
+    resetFilteredCandidateProposalProfessionalList(list);
   };
 
   // Boolean Confirm Action through a Modal
@@ -152,7 +182,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [showModalConfirmCandidates, setShowModalConfirmCandidates] = useState(false);
   const [showModalConfirmApplication, setShowModalConfirmApplication] = useState(false);
   const [showModalCancellAllApplications, setShowModalCancellAllApplications] = useState(false);
-  const [showModalCancelApplication, setShowModalCancelApplication] = useState<{ b: boolean; c: number | null }>({ b: false, c: null });
+  const [showModalCancelApplication, setShowModalCancelApplication] = useState<{ b: boolean; c: Professional | null }>({ b: false, c: null });
   const [showModalRevokeApplication, setShowModalRevokeApplication] = useState(false);
 
   const errorRef = useRef<HTMLDivElement | null>(null);
@@ -196,7 +226,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     try {
       setLoadingCandidateProposalProfessional(true);
       setCandidateProposalProfessionalList([]);
-      //resetFilteredCandidateProfessionalList([]);
+      resetFilteredCandidateProposalProfessionalList([]);
 
       const resultList: ProfessionalWithAssociatedData[] = await Promise.all(
         candidateList.map(async (id) => {
@@ -206,7 +236,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       );
 
       setCandidateProposalProfessionalList(resultList.map((p) => p.professionalDTO));
-      //resetFilteredCandidateProfessionalList(resultList.map((p) => p.professionalDTO));
+      resetFilteredCandidateProposalProfessionalList(resultList.map((p) => p.professionalDTO));
       setLoadingCandidateProposalProfessional(false);
     } catch (error) {
       if (error instanceof Error) {
@@ -222,7 +252,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
       setLoadingCandidateProposalProfessional(false);
       setCandidateProposalProfessionalList([]);
-      //resetFilteredCandidateProfessionalList([]);
+      resetFilteredCandidateProposalProfessionalList([]);
     }
   };
 
@@ -251,8 +281,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         setProfessional(resultProfessional.professionalDTO);
       }
 
-      loadCandidateProposalProfessionals(result?.candidatesProposalProfessional); // carica i candidati nella fase di candidate proposal
       loadCandidateProfessionals(result?.candidateProfessionalIds); // carica i candidati nella fase di selezione
+      loadCandidateProposalProfessionals(result?.candidatesProposalProfessional); // carica i candidati nella fase di candidate proposal
 
       setLoading(false);
     } catch (error) {
@@ -498,7 +528,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       var list = [...candidateProposalProfessionalList];
 
       if (showModalCancelApplication.b) {
-        list = list.filter((c: Professional) => c.id !== showModalCancelApplication.c);
+        const cancelCandidateId = showModalCancelApplication?.c ? showModalCancelApplication?.c.id : -1;
+        list = list.filter((c: Professional) => c.id !== cancelCandidateId);
         setShowModalCancelApplication({ b: false, c: null });
       }
 
@@ -521,13 +552,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
       var list = [...candidateProfessionalList];
       list = list.filter((c: Professional) => jobOfferResponse.candidateProfessionalIds.includes(c.id));
       setCandidateProfessionalList(list);
+      setFilteredCandidateProfessionalList(list);
       setLoadingCandidateProfessional(false);
 
       // aggiorna la lista dei proposed candidates
       var list = [...candidateProposalProfessionalList];
       list = list.filter((c: Professional) => jobOfferResponse.candidatesProposalProfessional.includes(c.id));
       setCandidateProposalProfessionalList(list);
-
+      setFilteredCandidateProposalProfessionalList(list);
       setLoadingCandidateProposalProfessional(false);
     } catch (error) {
       if (error instanceof Error) {
@@ -758,7 +790,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         handleConfirm={handleGoToConsolidated}
         title="Confirm Application"
         body="<strong>Notice:</strong> By confirming, this professional candidate will be assigned to work on the job offer. This operation can only be undone through <strong>revocation</strong>. Additionally, all pending applications for other job offers will be <strong>cancelled</strong>. Please <strong>confirm</strong> if you wish to proceed."
-        name={`${professional?.information.surname} ${professional?.information.name}`}
+        name={`${professional?.information.name} ${professional?.information.surname}`}
         actionType={true}
       />
 
@@ -768,7 +800,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         handleConfirm={handleSelectCandidateProfessional}
         title="Cancel Application"
         body="<strong>Notice:</strong> By proceeding, you will cancel this professional candidate's application. The job offer will return to the <strong>selection phase</strong> only if no other candidates are currently proposed. Please <strong>confirm</strong> if you wish to continue with this action."
-        name={null}
+        name={`${showModalCancelApplication.c?.information.name} ${showModalCancelApplication.c?.information.surname}`}
         actionType={false}
       />
 
@@ -1020,7 +1052,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               <Col md={6}>
                 {!isEditing ? (
                   <div>
-                    <FaMoneyBillWave className="mr-2" /> <strong>Value: </strong>${jobOffer?.value}
+                    <FaMoneyBillWave className="mr-2" /> <strong>Value: </strong>
+                    {jobOffer?.value} €
                   </div>
                 ) : (
                   <Form.Group as={Row} controlId="value" className="d-flex align-items-center">
@@ -1234,7 +1267,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           Profile
                         </Button>
                       </OverlayTrigger>
-                      {jobOffer?.status === JobOfferState.CONSOLIDATED && !isEditing && (
+                      {jobOffer?.status === JobOfferState.CONSOLIDATED && me.role === RoleState.OPERATOR && !isEditing && (
                         <OverlayTrigger overlay={<Tooltip id="revokeApplicationButton">Revoke Acceptance</Tooltip>}>
                           <Button variant="danger" onClick={() => setShowModalRevokeApplication(true)}>
                             <FaTrash className="me-1" />
@@ -1244,13 +1277,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       )}
                     </Col>
 
-                    {jobOffer?.status === JobOfferState.CONSOLIDATED && (
+                    {jobOffer?.status === JobOfferState.CONSOLIDATED && me.role === RoleState.OPERATOR && (
                       <Col xs={12} className="mt-2">
                         <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
                           <AiOutlineInfoCircle className="me-1" />
                           To return to the
                           <strong style={{ marginLeft: "0.25rem" }}>candidate selection phase</strong>, please click the
-                          <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Cancel</strong> button.
+                          <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Revoke</strong> button.
                         </p>
                       </Col>
                     )}
@@ -1281,6 +1314,539 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               </Row>
             )}
 
+            {/* Professional Candidates */}
+            {!isEditing && (
+              <Row className="border-top pt-3 mb-3">
+                <Col md={9} className="d-flex align-items-center">
+                  <strong className="me-2">Professional Candidates</strong>
+
+                  <OverlayTrigger
+                    placement="right"
+                    overlay={
+                      <Tooltip id="info-tooltip">
+                        This section is dedicated to gathering all the professional candidates (representing potential candidates) for this job offer.
+                        Here, you can confirm one or more candidates to propose them for this job offer. If you no longer want a candidate to appear
+                        in this list, you can remove them using the designated button.
+                      </Tooltip>
+                    }
+                  >
+                    <div>
+                      <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
+                    </div>
+                  </OverlayTrigger>
+                </Col>
+
+                {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) &&
+                  me.role === RoleState.OPERATOR && (
+                    <>
+                      <Col md={2} className="text-end">
+                        <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
+                          Add Candidate
+                        </Button>
+                      </Col>
+                      {isModifyCandidatesList && !loadingCandidateProfessional && (
+                        <Col md={1} className="text-end">
+                          {/* Si attiva quando si aggiunge un nuovo professional candidato */}
+                          <Button variant="success" onClick={handleGoToSelectionPhase}>
+                            Confirm
+                          </Button>
+                        </Col>
+                      )}
+                    </>
+                  )}
+
+                {jobOffer?.status === JobOfferState.SELECTION_PHASE && me.role === RoleState.OPERATOR && (
+                  <Col md={12} className="mt-2">
+                    <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
+                      <AiOutlineInfoCircle className="me-1" /> Please select{" "}
+                      <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>one or more candidates</strong> to propose them for this job
+                      offer.
+                    </p>
+                  </Col>
+                )}
+
+                <Col md={12} className="mt-4">
+                  <div className="d-flex justify-content-between align-items-center px-4">
+                    <Col className="d-flex align-items-center">
+                      <FaUsers className="me-2 text-primary" />
+                      <span>Potential candidates:</span>
+                      <strong className="ms-2">{filteredCandidateProfessionalList.length}</strong>
+                    </Col>
+                    <Col className="d-flex align-items-center">
+                      <FaBan className="me-2 text-danger" />
+                      <span>Candidates whose position was cancelled:</span>
+                      <strong className="ms-2">
+                        {
+                          filteredCandidateProfessionalList.filter(
+                            (candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) && professional != null
+                          ).length
+                        }
+                      </strong>
+                    </Col>
+                    <Col className="d-flex align-items-center">
+                      <FaUndoAlt className="me-2 text-secondary" />
+                      <span>Candidates who revoked acceptance:</span>
+                      <strong className="ms-2">
+                        {
+                          filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRevoked.includes(candidate.id))
+                            .length
+                        }
+                      </strong>
+                    </Col>
+                  </div>
+                </Col>
+
+                <Col md={12} className="mt-2">
+                  <div className="d-flex justify-content-between align-items-center px-4">
+                    <Col className="d-flex align-items-center">
+                      <FaClock className="me-2 text-warning" />
+                      <span>Candidates pending approval:</span>
+                      <strong className="ms-2">
+                        {
+                          filteredCandidateProfessionalList.filter(
+                            (candidate) =>
+                              candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                              jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                          ).length
+                        }
+                      </strong>
+                    </Col>
+                    <Col className="d-flex align-items-center">
+                      <FaTimes className="me-2 text-danger" />
+                      <span>Candidates who have rejected position:</span>
+                      <strong className="ms-2">
+                        {
+                          filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRejected.includes(candidate.id))
+                            .length
+                        }
+                      </strong>
+                    </Col>
+                    <Col className="d-flex align-items-center">
+                      <FaUserSlash className="me-2" style={{ color: "#FF8C00" }} />
+                      <span>Candidates not selected:</span>
+                      <strong className="ms-2">
+                        {
+                          filteredCandidateProfessionalList.filter(
+                            (candidate) =>
+                              !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                              professional?.id !== candidate.id &&
+                              !jobOffer?.candidatesProfessionalRejected.includes(candidate.id) &&
+                              !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                          ).length
+                        }
+                      </strong>
+                    </Col>
+                  </div>
+                </Col>
+
+                <Col md={12} className="mt-3">
+                  {loadingCandidateProfessional && <LoadingSection h={100} />}
+                  {showProfessionalCandidateModal && !loadingCandidateProfessional && (
+                    <CandidateProfessionalModal
+                      show={showProfessionalCandidateModal}
+                      alreadyExistentCandidates={candidateProfessionalList}
+                      handleClose={handleCloseProfessionalCandidateModal}
+                      onSelectProfessionals={handleAddCandidate}
+                    />
+                  )}
+                  {candidateProfessionalList?.length > 0 && !loadingCandidateProfessional && (
+                    <>
+                      <SearchCandidate
+                        resetList={() => resetFilteredCandidateProfessionalList(candidateProfessionalList)}
+                        resetFilters={() => {
+                          setFilterByRejected(false);
+                          setFilterByRevoked(false);
+                          setFilterByCancelled(false);
+                          setFilterByNotSelected(false);
+                          setFilterByPendingApproval(false);
+                          setFilteredCandidateProfessionalList(candidateProfessionalList);
+                        }}
+                        searchSkill={searchSkill}
+                        handleSearchChangeBySkill={(e: string) => {
+                          setSearchSkill(e);
+                          var list = candidateProfessionalList.filter((c) => c.skills.some((skill) => skill.toLowerCase().includes(e.toLowerCase())));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        searchLocation={searchLocation}
+                        handleSearchChangeByLocation={(e: string) => {
+                          setSearchLocation(e);
+                          var list = candidateProfessionalList.filter((c) => c.geographicalLocation.toLowerCase().includes(e.toLowerCase()));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        searchName={searchName}
+                        handleSearchChangeByName={(e: string) => {
+                          setSearchName(e);
+                          var list = candidateProfessionalList.filter((c) => c.information.name.toLowerCase().includes(e.toLowerCase()));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        searchSurname={searchSurname}
+                        handleSearchChangeBySurname={(e: string) => {
+                          setSearchSurname(e);
+                          var list = candidateProfessionalList.filter((c) => c.information.surname.toLowerCase().includes(e.toLowerCase()));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        searchSsnCode={searchSsnCode}
+                        handleSearchChangeBySsnCode={(e: string) => {
+                          setSearchSsnCode(e);
+                          var list = candidateProfessionalList.filter((c) => c.information.ssnCode.toLowerCase().includes(e.toLowerCase()));
+                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
+                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
+                          list = filterByCancelled
+                            ? list.filter((candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id))
+                            : list;
+                          list = filterByNotSelected
+                            ? list.filter(
+                                (candidate) =>
+                                  !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                                  professional?.id !== candidate.id &&
+                                  !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                              )
+                            : list;
+                          list = filterByPendingApproval
+                            ? list.filter(
+                                (candidate) =>
+                                  candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                                  jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                              )
+                            : list;
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByRejected={filterByRejected}
+                        handleFilterByRejected={(e: boolean) => {
+                          setFilterByRejected(e);
+                          const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByRevoked={filterByRevoked}
+                        handleFilterByRevoked={(e: boolean) => {
+                          setFilterByRevoked(e);
+                          const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByCancelled={filterByCancelled}
+                        handleFilterByCancelled={(e: boolean) => {
+                          setFilterByCancelled(e);
+                          const list = candidateProfessionalList.filter((candidate) =>
+                            candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id)
+                          );
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByNotSelected={filterByNotSelected}
+                        handleFilterByNotSelected={(e: boolean) => {
+                          setFilterByNotSelected(e);
+
+                          const list = candidateProfessionalList.filter(
+                            (candidate) =>
+                              !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                              professional?.id !== candidate.id &&
+                              !jobOffer?.candidatesProfessionalRevoked.includes(candidate.id)
+                          );
+
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                        filterByPendingApproval={filterByPendingApproval}
+                        handleFilterByPendingApproval={(e: boolean) => {
+                          setFilterByPendingApproval(e);
+
+                          const list = candidateProfessionalList.filter(
+                            (candidate) =>
+                              candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                              jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL
+                          );
+
+                          setFilteredCandidateProfessionalList(list);
+                        }}
+                      />
+
+                      <Table striped bordered hover className="align-middle">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>SSN Code</th>
+                            <th>Actions</th>
+                            <th>
+                              <OverlayTrigger
+                                placement="top"
+                                overlay={
+                                  <Tooltip id="legendToolTip">
+                                    <div className="p-2">
+                                      <p>
+                                        <FaTimes className="me-1 text-danger" /> Rejected: The application was rejected.
+                                      </p>
+                                      <p>
+                                        <FaUndoAlt className="me-1 text-secondary" /> Revoked: The application was revoked.
+                                      </p>
+                                      <p>
+                                        <FaThumbsUp className="me-1 text-success" /> Accepted: The application was accepted.
+                                      </p>
+                                      <p>
+                                        <FaClock className="me-1 text-warning" /> Pending Approval: Awaiting approval.
+                                      </p>
+                                      <p>
+                                        <FaBan className="me-1 text-danger" /> Cancelled: The application was cancelled.
+                                      </p>
+                                      <p>
+                                        <FaUserSlash className="me-1" style={{ color: "#FF8C00" }} /> Not Selected: The candidate was not selected.
+                                      </p>
+                                    </div>
+                                  </Tooltip>
+                                }
+                              >
+                                <div>
+                                  Status <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
+                                </div>
+                              </OverlayTrigger>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredCandidateProfessionalList.length === 0 && (
+                            <tr key={0}>
+                              <td>-1</td>
+                              <td>No professional candidates found with this filter.</td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          )}
+                          {filteredCandidateProfessionalList.map((candidate, index) => {
+                            const hasRejected = jobOffer?.candidatesProfessionalRejected.includes(candidate.id);
+                            const hasAccepted =
+                              professional?.id === candidate.id &&
+                              (jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                jobOffer?.status === JobOfferState.DONE ||
+                                jobOffer?.status === JobOfferState.ABORT);
+                            const isPendingApproval =
+                              candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                              jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
+                            const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
+                            const isCancelled =
+                              candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                              (jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                jobOffer?.status === JobOfferState.DONE ||
+                                jobOffer?.status === JobOfferState.ABORT);
+                            const isNotSelected =
+                              !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                              !isRevoked &&
+                              !hasAccepted &&
+                              !hasRejected &&
+                              jobOffer?.status !== JobOfferState.CREATED &&
+                              jobOffer?.status !== JobOfferState.SELECTION_PHASE;
+                            const isCandidateProposal = candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id);
+
+                            return (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{candidate.information.name}</td>
+                                <td>{candidate.information.surname}</td>
+                                <td>{candidate.information.ssnCode}</td>
+                                <td className="d-flex align-items-center justify-content-center text-center">
+                                  <ButtonGroup>
+                                    {!hasRejected &&
+                                      !hasAccepted &&
+                                      !isPendingApproval &&
+                                      !isRevoked &&
+                                      me.role === RoleState.OPERATOR &&
+                                      jobOffer?.status !== JobOfferState.CONSOLIDATED && (
+                                        <>
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && isCandidateProposal && (
+                                            <OverlayTrigger overlay={<Tooltip id="cancelCandidateButton">Cancel</Tooltip>}>
+                                              <Button
+                                                variant="secondary"
+                                                className="me-2"
+                                                onClick={() => handleRemoveCandidateProposal(candidate.id)}
+                                                disabled={
+                                                  jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                                  isModifyCandidatesList ||
+                                                  loadingCandidateProfessional
+                                                }
+                                              >
+                                                <FaReply />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
+
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && !isCandidateProposal && (
+                                            <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
+                                              <Button
+                                                variant="success"
+                                                className="me-2"
+                                                onClick={() => handleAddCandidateProposal(candidate)}
+                                                disabled={
+                                                  jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                                  isModifyCandidatesList ||
+                                                  loadingCandidateProfessional
+                                                }
+                                              >
+                                                <FaCheck />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
+
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
+                                            <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
+                                              <Button
+                                                variant="danger"
+                                                className="me-2"
+                                                onClick={() => handleDeleteCandidateProfessional(candidate.id)}
+                                              >
+                                                <FaTrash />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
+                                        </>
+                                      )}
+
+                                    <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                      <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                        <FaUser />
+                                      </Button>
+                                    </OverlayTrigger>
+                                  </ButtonGroup>
+                                </td>
+                                <td>
+                                  {hasRejected && (
+                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaTimes className="me-1" />
+                                      Rejected
+                                    </Badge>
+                                  )}
+
+                                  {isRevoked && (
+                                    <Badge bg="secondary" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaUndoAlt className="me-1" />
+                                      Revoked
+                                    </Badge>
+                                  )}
+
+                                  {hasAccepted && (
+                                    <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaThumbsUp className="me-1" />
+                                      Accepted
+                                    </Badge>
+                                  )}
+
+                                  {isPendingApproval && (
+                                    <Badge bg="warning" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaClock className="me-1" />
+                                      Pending Approval
+                                    </Badge>
+                                  )}
+
+                                  {isCancelled && (
+                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
+                                      <FaBan className="me-1" />
+                                      Cancelled
+                                    </Badge>
+                                  )}
+
+                                  {isNotSelected && (
+                                    <Badge
+                                      bg="orange"
+                                      className="p-2 d-flex align-items-center justify-content-center me-2"
+                                      style={{ backgroundColor: "#FF8C00", color: "#fff" }}
+                                    >
+                                      <FaUserSlash className="me-1" />
+                                      Not Selected
+                                    </Badge>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </Table>
+                    </>
+                  )}
+
+                  {candidateProfessionalList?.length === 0 && !loadingCandidateProfessional && <p className="mt-3">No professional candidates.</p>}
+                </Col>
+              </Row>
+            )}
+
             {/* Proposed Candidates */}
             {!isEditing && !(candidateProposalProfessionalList.length === 0 && jobOffer?.status === JobOfferState.CONSOLIDATED) && (
               <Row className="border-top pt-3 mb-3">
@@ -1298,7 +1864,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     }
                   >
                     <div>
-                      <FaInfoCircle className="text-muted cursor-pointer" />
+                      <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
                     </div>
                   </OverlayTrigger>
                 </Col>
@@ -1351,13 +1917,26 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   </Col>
                 )}
 
-                <Col md={12} className="mt-2">
+                <Col md={12} className="mt-4">
                   <div className="d-flex justify-content-between align-items-center px-4">
-                    <div className="d-flex align-items-center">
+                    <Col className="d-flex align-items-center">
                       <FaUsers className="me-2 text-primary" />
                       <span>Potential candidates:</span>
-                      <strong className="ms-2">{candidateProposalProfessionalList.length}</strong>
-                    </div>
+                      <strong className="ms-2">{filteredCandidateProposalProfessionalList.length}</strong>
+                    </Col>
+
+                    <Col className="d-flex align-items-center">
+                      <FaBan className="me-2 text-danger" />
+                      <span>Candidates whose position was cancelled:</span>
+                      <strong className="ms-2">
+                        {
+                          filteredCandidateProposalProfessionalList.filter(
+                            (candidate) => candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) && professional != null
+                          ).length
+                        }
+                      </strong>
+                    </Col>
+                    <Col></Col>
                   </div>
                 </Col>
 
@@ -1365,6 +1944,53 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   {loadingCandidateProposalProfessional && <LoadingSection h={100} />}
                   {candidateProposalProfessionalList?.length > 0 && !loadingCandidateProposalProfessional && (
                     <>
+                      <SearchCandidate
+                        resetList={() => resetFilteredCandidateProposalProfessionalList(candidateProposalProfessionalList)}
+                        resetFilters={() => {}}
+                        searchSkill={searchProposalSkill}
+                        handleSearchChangeBySkill={(e: string) => {
+                          setSearchProposalSkill(e);
+                          var list = candidateProposalProfessionalList.filter((c) =>
+                            c.skills.some((skill) => skill.toLowerCase().includes(e.toLowerCase()))
+                          );
+                          setFilteredCandidateProposalProfessionalList(list);
+                        }}
+                        searchLocation={searchProposalLocation}
+                        handleSearchChangeByLocation={(e: string) => {
+                          setSearchProposalLocation(e);
+                          var list = candidateProposalProfessionalList.filter((c) => c.geographicalLocation.toLowerCase().includes(e.toLowerCase()));
+                          setFilteredCandidateProposalProfessionalList(list);
+                        }}
+                        searchName={searchProposalName}
+                        handleSearchChangeByName={(e: string) => {
+                          setSearchProposalName(e);
+                          var list = candidateProposalProfessionalList.filter((c) => c.information.name.toLowerCase().includes(e.toLowerCase()));
+                          setFilteredCandidateProposalProfessionalList(list);
+                        }}
+                        searchSurname={searchProposalSurname}
+                        handleSearchChangeBySurname={(e: string) => {
+                          setSearchProposalSurname(e);
+                          var list = candidateProposalProfessionalList.filter((c) => c.information.surname.toLowerCase().includes(e.toLowerCase()));
+                          setFilteredCandidateProposalProfessionalList(list);
+                        }}
+                        searchSsnCode={searchProposalSsnCode}
+                        handleSearchChangeBySsnCode={(e: string) => {
+                          setSearchProposalSsnCode(e);
+                          var list = candidateProposalProfessionalList.filter((c) => c.information.ssnCode.toLowerCase().includes(e.toLowerCase()));
+                          setFilteredCandidateProposalProfessionalList(list);
+                        }}
+                        filterByRejected={null}
+                        handleFilterByRejected={() => {}}
+                        filterByRevoked={null}
+                        handleFilterByRevoked={() => {}}
+                        filterByCancelled={null}
+                        handleFilterByCancelled={() => {}}
+                        filterByNotSelected={null}
+                        handleFilterByNotSelected={() => {}}
+                        filterByPendingApproval={null}
+                        handleFilterByPendingApproval={() => {}}
+                      />
+
                       <Table striped bordered hover className="align-middle">
                         <thead>
                           <tr>
@@ -1391,23 +2017,23 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                       <FaClock className="me-1 text-warning" /> Pending Approval: Awaiting approval.
                                     </p>
                                     <p>
-                                      <FaTimesCircle className="me-1 text-danger" /> Cancelled: The application was cancelled.
+                                      <FaBan className="me-1 text-danger" /> Cancelled: The application was cancelled.
                                     </p>
                                     <p>
-                                      <FaUserSlash className="me-1" style={{ color: "#FFA500" }} /> Not Selected: The candidate was not selected.
+                                      <FaUserSlash className="me-1" style={{ color: "#FF8C00" }} /> Not Selected: The candidate was not selected.
                                     </p>
                                   </div>
                                 </Tooltip>
                               }
                             >
-                              <div>
-                                Status <FaInfoCircle className="text-muted cursor-pointer" />
-                              </div>
+                              <th>
+                                Status <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
+                              </th>
                             </OverlayTrigger>
                           </tr>
                         </thead>
                         <tbody>
-                          {filteredCandidateProfessionalList.length === 0 && (
+                          {filteredCandidateProposalProfessionalList.length === 0 && (
                             <tr key={0}>
                               <td>-1</td>
                               <td>No professional candidates found with this filter.</td>
@@ -1417,7 +2043,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                               <td></td>
                             </tr>
                           )}
-                          {candidateProposalProfessionalList.map((candidate, index) => {
+                          {filteredCandidateProposalProfessionalList.map((candidate, index) => {
                             return (
                               <tr key={index}>
                                 <td>{index + 1}</td>
@@ -1426,7 +2052,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                 <td>{candidate.information.ssnCode}</td>
                                 <td className="d-flex align-items-center justify-content-center text-center">
                                   <ButtonGroup>
-                                    {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && (
+                                    {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && me.role === RoleState.OPERATOR && (
                                       <>
                                         <OverlayTrigger overlay={<Tooltip id="confirmApplicationButton">Confirm Proposal</Tooltip>}>
                                           <Button
@@ -1441,15 +2067,17 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                           </Button>
                                         </OverlayTrigger>
 
-                                        <OverlayTrigger overlay={<Tooltip id="deleteCandidateProposalButton">Delete Proposal</Tooltip>}>
-                                          <Button
-                                            variant="danger"
-                                            className="me-2"
-                                            onClick={() => setShowModalCancelApplication({ b: true, c: candidate.id })}
-                                          >
-                                            <FaTrash />
-                                          </Button>
-                                        </OverlayTrigger>
+                                        {me.role === RoleState.OPERATOR && (
+                                          <OverlayTrigger overlay={<Tooltip id="deleteCandidateProposalButton">Delete Proposal</Tooltip>}>
+                                            <Button
+                                              variant="danger"
+                                              className="me-2"
+                                              onClick={() => setShowModalCancelApplication({ b: true, c: candidate })}
+                                            >
+                                              <FaTrash />
+                                            </Button>
+                                          </OverlayTrigger>
+                                        )}
                                       </>
                                     )}
 
@@ -1461,364 +2089,12 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                   </ButtonGroup>
                                 </td>
                                 <td>
-                                  {jobOffer?.status === JobOfferState.CONSOLIDATED && (
-                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
-                                      <FaTimesCircle className="me-1" />
-                                      Cancelled
-                                    </Badge>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </Table>
-                    </>
-                  )}
-
-                  {candidateProposalProfessionalList?.length === 0 && !loadingCandidateProposalProfessional && <p>No professional candidates.</p>}
-                </Col>
-              </Row>
-            )}
-
-            {/* Professional Candidates */}
-            {!isEditing && (
-              <Row className="border-top pt-3 mb-3">
-                <Col md={9} className="d-flex align-items-center">
-                  <strong className="me-2">Professional Candidates</strong>
-
-                  <OverlayTrigger
-                    placement="right"
-                    overlay={
-                      <Tooltip id="info-tooltip">
-                        This section is dedicated to gathering all the professional candidates (representing potential candidates) for this job offer.
-                        Here, you can confirm one or more candidates to propose them for this job offer. If you no longer want a candidate to appear
-                        in this list, you can remove them using the designated button.
-                      </Tooltip>
-                    }
-                  >
-                    <div>
-                      <FaInfoCircle className="text-muted cursor-pointer" />
-                    </div>
-                  </OverlayTrigger>
-                </Col>
-
-                {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) &&
-                  me.role === RoleState.OPERATOR && (
-                    <>
-                      <Col md={2} className="text-end">
-                        <Button variant="primary" onClick={handleOpenProfessionalCandidateModal}>
-                          Add Candidate
-                        </Button>
-                      </Col>
-                      {isModifyCandidatesList && !loadingCandidateProfessional && (
-                        <Col md={1} className="text-end">
-                          {/* Si attiva quando si aggiunge un nuovo professional candidato */}
-                          <Button variant="success" onClick={handleGoToSelectionPhase}>
-                            Confirm
-                          </Button>
-                        </Col>
-                      )}
-                    </>
-                  )}
-
-                {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
-                  <Col md={12} className="mt-2">
-                    <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
-                      <AiOutlineInfoCircle className="me-1" /> Please select one or more candidates to propose them for this job offer.
-                    </p>
-                  </Col>
-                )}
-
-                <Col md={12} className="mt-2">
-                  <div className="d-flex justify-content-between align-items-center px-4">
-                    <div className="d-flex align-items-center">
-                      <FaUsers className="me-2 text-primary" />
-                      <span>Potential candidates:</span>
-                      <strong className="ms-2">{filteredCandidateProfessionalList.length}</strong>
-                    </div>
-                    <div className="d-flex align-items-center">
-                      <FaTimes className="me-2 text-danger" />
-                      <span>Candidates who have rejected position:</span>
-                      <strong className="ms-2">
-                        {
-                          filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRejected.includes(candidate.id))
-                            .length
-                        }
-                      </strong>
-                    </div>
-                    <div className="d-flex align-items-center">
-                      <FaUndoAlt className="me-2 text-danger" />
-                      <span>Candidates who revoked acceptance:</span>
-                      <strong className="ms-2">
-                        {
-                          filteredCandidateProfessionalList.filter((candidate) => jobOffer?.candidatesProfessionalRevoked.includes(candidate.id))
-                            .length
-                        }
-                      </strong>
-                    </div>
-                  </div>
-                </Col>
-
-                <Col md={12} className="mt-3">
-                  {loadingCandidateProfessional && <LoadingSection h={100} />}
-                  {showProfessionalCandidateModal && !loadingCandidateProfessional && (
-                    <CandidateProfessionalModal
-                      show={showProfessionalCandidateModal}
-                      alreadyExistentCandidates={candidateProfessionalList}
-                      handleClose={handleCloseProfessionalCandidateModal}
-                      onSelectProfessional={handleAddCandidate}
-                    />
-                  )}
-                  {candidateProfessionalList?.length > 0 && !loadingCandidateProfessional && (
-                    <>
-                      <SearchCandidate
-                        resetList={() => resetFilteredCandidateProfessionalList(candidateProfessionalList)}
-                        resetFilters={() => {
-                          setFilterByRejected(false);
-                          setFilterByRevoked(false);
-                          setFilteredCandidateProfessionalList(candidateProfessionalList);
-                        }}
-                        searchSkill={searchSkill}
-                        searchLocation={searchLocation}
-                        handleSearchChangeBySkill={(e: string) => {
-                          setSearchSkill(e);
-                          var list = candidateProfessionalList.filter((c) => c.skills.some((skill) => skill.toLowerCase().includes(e.toLowerCase())));
-                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                          setFilteredCandidateProfessionalList(list);
-                        }}
-                        handleSearchChangeByLocation={(e: string) => {
-                          setSearchLocation(e);
-                          var list = candidateProfessionalList.filter((c) => c.geographicalLocation.toLowerCase().includes(e.toLowerCase()));
-                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                          setFilteredCandidateProfessionalList(list);
-                        }}
-                        searchName={searchName}
-                        handleSearchChangeByName={(e: string) => {
-                          setSearchName(e);
-                          var list = candidateProfessionalList.filter((c) => c.information.name.toLowerCase().includes(e.toLowerCase()));
-                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                          setFilteredCandidateProfessionalList(list);
-                        }}
-                        searchSurname={searchSurname}
-                        handleSearchChangeBySurname={(e: string) => {
-                          setSearchSurname(e);
-                          var list = candidateProfessionalList.filter((c) => c.information.surname.toLowerCase().includes(e.toLowerCase()));
-                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                          setFilteredCandidateProfessionalList(list);
-                        }}
-                        searchSsnCode={searchSsnCode}
-                        handleSearchChangeBySsnCode={(e: string) => {
-                          setSearchSsnCode(e);
-                          var list = candidateProfessionalList.filter((c) => c.information.ssnCode.toLowerCase().includes(e.toLowerCase()));
-                          list = filterByRejected ? list.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id)) : list;
-                          list = filterByRevoked ? list.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id)) : list;
-                          setFilteredCandidateProfessionalList(list);
-                        }}
-                        filterByRejected={filterByRejected}
-                        handleFilterByRejected={(e: boolean) => {
-                          setFilterByRejected(e);
-                          const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRejected.includes(c.id));
-                          setFilteredCandidateProfessionalList(list);
-                        }}
-                        filterByRevoked={filterByRevoked}
-                        handleFilterByRevoked={(e: boolean) => {
-                          setFilterByRevoked(e);
-                          const list = candidateProfessionalList.filter((c) => jobOffer?.candidatesProfessionalRevoked.includes(c.id));
-                          setFilteredCandidateProfessionalList(list);
-                        }}
-                      />
-
-                      <Table striped bordered hover className="align-middle">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Surname</th>
-                            <th>SSN Code</th>
-                            <th>Actions</th>
-                            <th>
-                              <OverlayTrigger
-                                placement="top"
-                                overlay={
-                                  <Tooltip id="legendToolTip">
-                                    <div className="p-2">
-                                      <p>
-                                        <FaTimes className="me-1 text-danger" /> Rejected: The application was rejected.
-                                      </p>
-                                      <p>
-                                        <FaUndoAlt className="me-1 text-secondary" /> Revoked: The application was revoked.
-                                      </p>
-                                      <p>
-                                        <FaThumbsUp className="me-1 text-success" /> Accepted: The application was accepted.
-                                      </p>
-                                      <p>
-                                        <FaClock className="me-1 text-warning" /> Pending Approval: Awaiting approval.
-                                      </p>
-                                      <p>
-                                        <FaTimesCircle className="me-1 text-danger" /> Cancelled: The application was cancelled.
-                                      </p>
-                                      <p>
-                                        <FaUserSlash className="me-1" style={{ color: "#FFA500" }} /> Not Selected: The candidate was not selected.
-                                      </p>
-                                    </div>
-                                  </Tooltip>
-                                }
-                              >
-                                <div>
-                                  Status <FaInfoCircle className="text-muted cursor-pointer" />
-                                </div>
-                              </OverlayTrigger>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredCandidateProfessionalList.length === 0 && (
-                            <tr key={0}>
-                              <td>-1</td>
-                              <td>No professional candidates found with this filter.</td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                          )}
-                          {filteredCandidateProfessionalList.map((candidate, index) => {
-                            const hasRejected = jobOffer?.candidatesProfessionalRejected.includes(candidate.id);
-                            const hasAccepted = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CONSOLIDATED;
-                            const isPendingApproval = professional?.id === candidate.id && jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
-                            const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
-                            const isCancelled =
-                              candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
-                              jobOffer?.status === JobOfferState.CONSOLIDATED;
-                            const isNotSelected =
-                              !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
-                              jobOffer?.status === JobOfferState.CONSOLIDATED &&
-                              !isRevoked &&
-                              !hasAccepted;
-                            const isCandidateProposal = candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id);
-
-                            return (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{candidate.information.name}</td>
-                                <td>{candidate.information.surname}</td>
-                                <td>{candidate.information.ssnCode}</td>
-                                <td className="d-flex align-items-center justify-content-center text-center">
-                                  <ButtonGroup>
-                                    {!hasRejected &&
-                                      !hasAccepted &&
-                                      !isPendingApproval &&
-                                      !isRevoked &&
-                                      jobOffer?.status !== JobOfferState.CONSOLIDATED && (
-                                        <>
-                                          {jobOffer?.status !== JobOfferState.CREATED && isCandidateProposal && (
-                                            <OverlayTrigger overlay={<Tooltip id="cancelCandidateButton">Cancel</Tooltip>}>
-                                              <Button
-                                                variant="secondary"
-                                                className="me-2"
-                                                onClick={() => handleRemoveCandidateProposal(candidate.id)}
-                                                disabled={
-                                                  jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
-                                                  isModifyCandidatesList ||
-                                                  loadingCandidateProfessional
-                                                }
-                                              >
-                                                <FaReply />
-                                              </Button>
-                                            </OverlayTrigger>
-                                          )}
-
-                                          {jobOffer?.status !== JobOfferState.CREATED && !isCandidateProposal && (
-                                            <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
-                                              <Button
-                                                variant="success"
-                                                className="me-2"
-                                                onClick={() => handleAddCandidateProposal(candidate)}
-                                                disabled={
-                                                  jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
-                                                  isModifyCandidatesList ||
-                                                  loadingCandidateProfessional
-                                                }
-                                              >
-                                                <FaCheck />
-                                              </Button>
-                                            </OverlayTrigger>
-                                          )}
-
-                                          <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
-                                            <Button
-                                              variant="danger"
-                                              className="me-2"
-                                              onClick={() => handleDeleteCandidateProfessional(candidate.id)}
-                                              disabled={
-                                                jobOffer?.status === JobOfferState.ABORT ||
-                                                jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL ||
-                                                jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                                                jobOffer?.status === JobOfferState.DONE
-                                              }
-                                            >
-                                              <FaTrash />
-                                            </Button>
-                                          </OverlayTrigger>
-                                        </>
-                                      )}
-
-                                    <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
-                                      <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
-                                        <FaUser />
-                                      </Button>
-                                    </OverlayTrigger>
-                                  </ButtonGroup>
-                                </td>
-                                <td>
-                                  {hasRejected && (
+                                  {(jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                    jobOffer?.status === JobOfferState.DONE ||
+                                    jobOffer?.status === JobOfferState.ABORT) && (
                                     <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
-                                      <FaTimes className="me-1" />
-                                      Rejected
-                                    </Badge>
-                                  )}
-
-                                  {isRevoked && (
-                                    <Badge bg="secondary" className="p-2 d-flex align-items-center justify-content-center">
-                                      <FaUndoAlt className="me-1" />
-                                      Revoked
-                                    </Badge>
-                                  )}
-
-                                  {hasAccepted && (
-                                    <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
-                                      <FaThumbsUp className="me-1" />
-                                      Accepted
-                                    </Badge>
-                                  )}
-
-                                  {isPendingApproval && (
-                                    <Badge bg="warning" className="p-2 d-flex align-items-center justify-content-center">
-                                      <FaClock className="me-1" />
-                                      Pending Approval
-                                    </Badge>
-                                  )}
-
-                                  {isCancelled && (
-                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
-                                      <FaTimesCircle className="me-1" />
+                                      <FaBan className="me-1" />
                                       Cancelled
-                                    </Badge>
-                                  )}
-
-                                  {isNotSelected && (
-                                    <Badge
-                                      bg="orange"
-                                      className="p-2 d-flex align-items-center justify-content-center me-2"
-                                      style={{ backgroundColor: "#FFA500", color: "#fff" }}
-                                    >
-                                      <FaUserSlash className="me-1" />
-                                      Not Selected
                                     </Badge>
                                   )}
                                 </td>
@@ -1830,7 +2106,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     </>
                   )}
 
-                  {candidateProfessionalList?.length === 0 && !loadingCandidateProfessional && <p>No professional candidates.</p>}
+                  {candidateProposalProfessionalList?.length === 0 && !loadingCandidateProposalProfessional && (
+                    <p className="mt-3">No professional candidates.</p>
+                  )}
                 </Col>
               </Row>
             )}
@@ -1922,12 +2200,16 @@ const CandidateProfessionalModal: React.FC<{
   show: boolean;
   handleClose: () => void;
   alreadyExistentCandidates: Professional[];
-  onSelectProfessional: (selected: Professional) => void;
-}> = ({ show, handleClose, alreadyExistentCandidates, onSelectProfessional }) => {
+  onSelectProfessionals: (selected: Professional[]) => void;
+}> = ({ show, handleClose, alreadyExistentCandidates, onSelectProfessionals }) => {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [searchSkill, setSkill] = useState("");
+  const [selectedProfessionals, setSelectedProfessionals] = useState<Professional[]>([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchSurname, setSearchSurname] = useState("");
+  const [searchSkill, setSearchSkill] = useState("");
   const [searchLocation, setSearchLocation] = useState("");
   const [searchEmploymentState, setSearchEmploymentState] = useState<EmploymentStateEnum>(EmploymentStateEnum.AVAILABLE_FOR_WORK);
+
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -1938,7 +2220,7 @@ const CandidateProfessionalModal: React.FC<{
     const loadProfessionals = async () => {
       try {
         setLoading(true);
-        const result: any = await fetchProfessionals(currentPage, 10, searchSkill, searchLocation, searchEmploymentState);
+        const result: any = await fetchProfessionals(currentPage, 10, searchSkill, searchLocation, searchEmploymentState, searchName, searchSurname);
 
         const existingCandidateIds = new Set(alreadyExistentCandidates.map((p) => p.id));
         result.content = result.content.filter((p: Professional) => !existingCandidateIds.has(p.id)); // filtraggio dei candidati già presenti
@@ -1955,10 +2237,18 @@ const CandidateProfessionalModal: React.FC<{
     if (show) {
       loadProfessionals();
     }
-  }, [show, currentPage, searchSkill, searchLocation, searchEmploymentState]);
+  }, [show, currentPage, searchName, searchSurname, searchSkill, searchLocation, searchEmploymentState]);
+
+  const handleSearchChangeByName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchName(event.target.value);
+  };
+
+  const handleSearchChangeBySurname = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchSurname(event.target.value);
+  };
 
   const handleSearchChangeBySkill = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSkill(event.target.value);
+    setSearchSkill(event.target.value);
   };
 
   const handleSearchChangeByLocation = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -1969,36 +2259,47 @@ const CandidateProfessionalModal: React.FC<{
     setSearchEmploymentState(event.target.value as EmploymentStateEnum);
   };
 
-  const handleProfessionalSelect = (professional: Professional) => {
-    onSelectProfessional(professional);
+  const handleProfessionalSelect = (professionals: Professional[]) => {
+    onSelectProfessionals(professionals);
     handleClose();
   };
 
-  const handlePageChange = (page: number) => {
-    if (page !== currentPage) {
-      setCurrentPage(page);
-    }
+  const handleProfessionalClick = (professional: Professional) => {
+    setSelectedProfessionals((prevSelected) => {
+      if (!prevSelected.some((p) => p.id === professional.id)) {
+        return [...prevSelected, professional];
+      }
+      return prevSelected;
+    });
   };
 
-  const getPaginationItems = () => {
-    let pages = [];
-    if (currentPage > 0) {
-      pages.push(currentPage - 1);
-    }
-    pages.push(currentPage);
-    if (currentPage < totalPages) {
-      pages.push(currentPage + 1);
-    }
-    return pages;
+  const changePage = (pageNumber: number) => {
+    if (pageNumber >= totalPages) pageNumber = totalPages - 1;
+    if (pageNumber < 0) pageNumber = 0;
+    setCurrentPage(pageNumber);
   };
 
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title className="fw-bold">Select Professional</Modal.Title>
+        <Modal.Title className="fw-bold">Select Professionals</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form.Group controlId="search">
+          <Row>
+            <Col xs={12} sm={6}>
+              <Form.Control type="text" className="mb-2" placeholder="Search by name" value={searchName} onChange={handleSearchChangeByName} />
+            </Col>
+            <Col xs={12} sm={6}>
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by surname"
+                value={searchSurname}
+                onChange={handleSearchChangeBySurname}
+              />
+            </Col>
+          </Row>
           <Row>
             <Col xs={12} sm={6}>
               <Form.Control type="text" className="mb-2" placeholder="Search by skill" value={searchSkill} onChange={handleSearchChangeBySkill} />
@@ -2038,6 +2339,7 @@ const CandidateProfessionalModal: React.FC<{
             <Table hover>
               <thead>
                 <tr>
+                  <th></th>
                   <th>Name</th>
                   <th>Surname</th>
                   <th>SSN Code</th>
@@ -2046,7 +2348,7 @@ const CandidateProfessionalModal: React.FC<{
               <tbody>
                 {professionals.length === 0 && (
                   <tr>
-                    <td colSpan={3}>
+                    <td colSpan={4}>
                       <div className="d-flex justify-content-center align-items-center" style={{ height: "150px" }}>
                         <span className="text-muted fw-bold">No Professional Found!</span>
                       </div>
@@ -2056,31 +2358,56 @@ const CandidateProfessionalModal: React.FC<{
                 {professionals.map((professional) => (
                   <tr
                     key={professional.information.id}
-                    onClick={() => handleProfessionalSelect(professional)}
                     style={{
                       cursor: "pointer",
                     }}
                   >
-                    <td>{professional.information.name}</td>
-                    <td>{professional.information.surname}</td>
-                    <td>{professional.information.ssnCode}</td>
+                    <td>
+                      <Form.Check
+                        type="checkbox"
+                        checked={selectedProfessionals.some((p) => p.id === professional.id)}
+                        onChange={() => handleProfessionalClick(professional)}
+                      />
+                    </td>
+                    <td onClick={() => handleProfessionalClick(professional)}>{professional.information.name}</td>
+                    <td onClick={() => handleProfessionalClick(professional)}>{professional.information.surname}</td>
+                    <td onClick={() => handleProfessionalClick(professional)}>{professional.information.ssnCode}</td>
                   </tr>
                 ))}
               </tbody>
             </Table>
-            <Pagination className="justify-content-center">
-              {getPaginationItems().map((page) => (
-                <Pagination.Item key={page} active={page === currentPage} onClick={() => handlePageChange(page)}>
-                  {page}
-                </Pagination.Item>
-              ))}
-            </Pagination>
+            {/* Pagination */}
+            <Row>
+              <Col className="d-flex justify-content-center mt-4 custom-pagination">
+                <Pagination>
+                  <Pagination.First onClick={() => changePage(0)} disabled={currentPage === 0} />
+                  <Pagination.Prev onClick={() => changePage(currentPage - 1)} disabled={currentPage === 0} />
+
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
+                    const startPage = Math.max(Math.min(currentPage - 2, totalPages - 5), 0);
+                    const actualPage = startPage + index;
+
+                    return (
+                      <Pagination.Item key={actualPage} active={actualPage === currentPage} onClick={() => changePage(actualPage)}>
+                        {actualPage + 1}
+                      </Pagination.Item>
+                    );
+                  })}
+
+                  <Pagination.Next onClick={() => changePage(currentPage + 1)} disabled={currentPage + 1 === totalPages} />
+                  <Pagination.Last onClick={() => changePage(totalPages - 1)} disabled={currentPage + 1 === totalPages} />
+                </Pagination>
+              </Col>
+            </Row>
           </>
         )}
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+      <Modal.Footer className="justify-content-between">
+        <Button variant="secondary" className="ms-5" onClick={handleClose}>
           Close
+        </Button>
+        <Button variant="success" className="me-5" onClick={() => handleProfessionalSelect(selectedProfessionals)}>
+          Select
         </Button>
       </Modal.Footer>
     </Modal>
@@ -2134,10 +2461,16 @@ const SearchCandidate: React.FC<{
   handleSearchChangeBySurname: (e: string) => void;
   searchSsnCode: string;
   handleSearchChangeBySsnCode: (e: string) => void;
-  filterByRejected: boolean;
+  filterByRejected: boolean | null;
   handleFilterByRejected: (e: boolean) => void;
-  filterByRevoked: boolean;
+  filterByRevoked: boolean | null;
   handleFilterByRevoked: (e: boolean) => void;
+  filterByCancelled: boolean | null;
+  handleFilterByCancelled: (e: boolean) => void;
+  filterByNotSelected: boolean | null;
+  handleFilterByNotSelected: (e: boolean) => void;
+  filterByPendingApproval: boolean | null;
+  handleFilterByPendingApproval: (e: boolean) => void;
 }> = ({
   resetList,
   resetFilters,
@@ -2155,9 +2488,17 @@ const SearchCandidate: React.FC<{
   handleFilterByRejected,
   filterByRevoked,
   handleFilterByRevoked,
+  filterByCancelled,
+  handleFilterByCancelled,
+  filterByNotSelected,
+  handleFilterByNotSelected,
+  filterByPendingApproval,
+  handleFilterByPendingApproval,
 }) => {
   const [type, setType] = useState<"" | "skill" | "location" | "name" | "surname" | "ssnCode">("");
-  const [filter, setFilter] = useState<"" | "filterByRejection" | "filterByRevokation">("");
+  const [filter, setFilter] = useState<
+    "" | "filterByRejection" | "filterByRevokation" | "filterByCancelled" | "filterByNotSelected" | "filterByPendingApproval"
+  >("");
 
   return (
     <Form className="mb-2">
@@ -2239,27 +2580,50 @@ const SearchCandidate: React.FC<{
               />
             </Col>
           )}
-          <Col xs={12} sm={2} className="text-end">
-            <Form.Select
-              name="filterType"
-              style={{ cursor: "pointer" }}
-              value={filter}
-              onChange={(e) => {
-                setFilter(e.target.value as "filterByRejection" | "filterByRevokation" | "");
-                if (e.target.value === "filterByRejection") {
-                  handleFilterByRejected(true);
-                } else if (e.target.value === "filterByRevokation") {
-                  handleFilterByRevoked(true);
-                } else {
-                  resetFilters();
-                }
-              }}
-            >
-              <option value={""}>Filter By</option>
-              <option value={"filterByRejection"}>Filter By Rejection</option>
-              <option value={"filterByRevokation"}>Filter By Revokation</option>
-            </Form.Select>
-          </Col>
+          {filterByRejected != null &&
+            filterByRevoked != null &&
+            filterByCancelled != null &&
+            filterByNotSelected != null &&
+            filterByPendingApproval != null && (
+              <Col xs={12} sm={2} className="text-end">
+                <Form.Select
+                  name="filterType"
+                  style={{ cursor: "pointer" }}
+                  value={filter}
+                  onChange={(e) => {
+                    setFilter(
+                      e.target.value as
+                        | "filterByRejection"
+                        | "filterByRevokation"
+                        | "filterByCancelled"
+                        | "filterByNotSelected"
+                        | "filterByPendingApproval"
+                        | ""
+                    );
+                    if (e.target.value === "filterByRejection") {
+                      handleFilterByRejected(true);
+                    } else if (e.target.value === "filterByRevokation") {
+                      handleFilterByRevoked(true);
+                    } else if (e.target.value === "filterByCancelled") {
+                      handleFilterByCancelled(true);
+                    } else if (e.target.value === "filterByNotSelected") {
+                      handleFilterByNotSelected(true);
+                    } else if (e.target.value === "filterByPendingApproval") {
+                      handleFilterByPendingApproval(true);
+                    } else {
+                      resetFilters();
+                    }
+                  }}
+                >
+                  <option value={""}>Filter By</option>
+                  <option value={"filterByRejection"}>Filter by Rejection</option>
+                  <option value={"filterByRevokation"}>Filter by Revocation</option>
+                  <option value={"filterByCancelled"}>Filter by Cancellation</option>
+                  <option value={"filterByNotSelected"}>Filter by Not Selected</option>
+                  <option value={"filterByPendingApproval"}>Filter by Pending Approval</option>
+                </Form.Select>
+              </Col>
+            )}
         </Row>
       </Form.Group>
     </Form>
