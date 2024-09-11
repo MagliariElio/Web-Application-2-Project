@@ -20,6 +20,11 @@ interface CounterService {
     fun getMessages(): Map<String, Long>
 
     /*
+    Return all counters values for completed messages divided per month that year
+     */
+    fun getCompletedMessagesPerMonth(year: Long): Map<String, Long>
+
+    /*
     Increment the number of job offers
      */
     @Transactional
@@ -33,4 +38,9 @@ interface CounterService {
     Return all counters values
      */
     fun getJobOffers(): Map<String, Long>
+
+    /*
+    Return all counters values for completed job offers divided per month that year
+     */
+    fun getCompletedJobOfferPerMonth(year: Long): Map<String, Long>
 }

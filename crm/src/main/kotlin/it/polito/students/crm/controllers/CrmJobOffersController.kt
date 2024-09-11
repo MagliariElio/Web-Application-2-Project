@@ -16,6 +16,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.NoSuchElementException
 
 @RestController
 @RequestMapping("/API/joboffers")
@@ -24,6 +28,7 @@ class CrmJobOffersController(
     private val kafkaProducer: KafkaProducerService
 ) {
     private val logger = LoggerFactory.getLogger(CrmContactsController::class.java)
+    private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
 
     @GetMapping("", "/")
     fun getAllJobOffers(
@@ -139,7 +144,7 @@ class CrmJobOffersController(
             }
 
             val saved = jobOfferService.storeJobOffer(jobOffer)
-            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(null, saved.status))
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(null, saved.status, LocalDate.now().format(formatter).lowercase()))
             return ResponseEntity(saved, HttpStatus.CREATED)
         } catch (e: CustomerNotFoundException) {
             logger.info("CustomerControl: Error with customer: ${e.message}")
@@ -255,7 +260,7 @@ class CrmJobOffersController(
             val oldjobOffer = jobOfferService.getJobOfferById(jobOfferId)
             val editedJobOffer =
                 jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
-            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(oldjobOffer!!.status, editedJobOffer.status))
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(oldjobOffer!!.status, editedJobOffer.status, LocalDate.now().format(formatter).lowercase()))
 
             return ResponseEntity(editedJobOffer, HttpStatus.OK)
         } catch (e: IllegalJobStatusTransition) {

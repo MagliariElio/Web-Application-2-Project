@@ -27,6 +27,7 @@ class KafkaConsumerService (
             // Access properties from the map and convert them to StateOptions enums
             val previousStateString = messageMap["previousState"] as? String
             val actualStateString = messageMap["actualState"] as? String
+            val date = messageMap["date"] as? String
 
             val previousState = previousStateString?.let { StateOptions.valueOf(it) }
             val actualState = actualStateString?.let { StateOptions.valueOf(it) }
@@ -84,6 +85,7 @@ class KafkaConsumerService (
 
                 StateOptions.DONE -> {
                     counterService.incrementMessages(StateOptionsCounters.DONE_COUNTER)
+                    counterService.incrementMessages(date + "CompletedMessageCounter")
                 }
 
                 StateOptions.FAILED -> {
@@ -113,6 +115,7 @@ class KafkaConsumerService (
             // Access properties from the map and convert them to StateOptions enums
             val previousStateString = messageMap["previousState"] as? String
             val actualStateString = messageMap["actualState"] as? String
+            val date = messageMap["date"] as? String
 
             val previousState = previousStateString?.let { JobStatusEnum.valueOf(it) }
             val actualState = actualStateString?.let { JobStatusEnum.valueOf(it) }
@@ -170,6 +173,7 @@ class KafkaConsumerService (
 
                 JobStatusEnum.DONE -> {
                     counterService.incrementMessages(JobStatusCounters.DONE_COUNTER)
+                    counterService.incrementMessages(date + "CompletedJobOfferCounter")
                 }
 
                 JobStatusEnum.ABORT -> {

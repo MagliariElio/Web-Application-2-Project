@@ -7,7 +7,7 @@ import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
 import JobOffersPage from "./views/JobOffersPage.tsx";
-import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsGearFill } from "react-icons/bs";
+import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsGearFill, BsPieChartFill  } from "react-icons/bs";
 import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
 import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
@@ -24,6 +24,7 @@ import EditProfessionalPage from "./views/EditProfessionalPage.tsx";
 import { runCustomerTests, runJobOfferTests, runProfessionalTests } from "./testing/TestRunner.ts";
 import { FaSignInAlt, FaUsers } from "react-icons/fa";
 import AboutUs from "./views/AboutUs.tsx";
+import AnalyticsPage from "./views/AnalyticsPage.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -146,6 +147,7 @@ function App() {
                     }
                   />
                   <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
+                  <Route path="/ui/analytics" element={me && me.principal !== null && (me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) ? <AnalyticsPage me={me} /> : <Navigate to="/not-found" /> } /> 
 
                   <Route path="*" element={<PageNotFound />} />
                 </>
@@ -217,6 +219,15 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
             >
               <BsBriefcaseFill className={opened ? "me-2" : ""} />
               {opened && "Professionals"}
+            </Nav.Link>
+            <Nav.Link
+              className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
+              onClick={() => {
+                if (location.pathname !== "/ui/analytics") navigate("/ui/analytics");
+              }}
+            >
+              <BsPieChartFill  className={opened ? "me-2" : ""} />
+              {opened && "Analytics"}
             </Nav.Link>
           </>
         )}

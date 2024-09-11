@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.kafka.config.StreamsBuilderFactoryBean
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -25,7 +26,7 @@ class AnalyticsController(
     private val logger = LoggerFactory.getLogger(AnalyticsController::class.java)
 
     @GetMapping("/messages")
-    fun getCompletedMessagesRatio() : ResponseEntity<Any> {
+    fun getMessagesStates() : ResponseEntity<Any> {
         try {
             var response = counterService.getMessages()
 
@@ -36,14 +37,42 @@ class AnalyticsController(
         }
     }
 
+    @GetMapping("/messages/{year}")
+    fun getCompletedMessagesPerMonth(
+        @PathVariable year: Long
+    ) : ResponseEntity<Any> {
+        try {
+            var response = counterService.getCompletedMessagesPerMonth(year)
+
+            return ResponseEntity.ok(response)
+        } catch (e: Exception) {
+            logger.info("Error retrieving completed messages ratio ${e.message}")
+            return ResponseEntity("Error: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
     @GetMapping("/jobOffers")
-    fun getCompletedJobOffersRatio() : ResponseEntity<Any> {
+    fun getJobOffersStates() : ResponseEntity<Any> {
         try {
             var response = counterService.getJobOffers()
 
             return ResponseEntity.ok(response)
         } catch (e: Exception) {
             logger.info("Error retrieving completed job offers ratio ${e.message}")
+            return ResponseEntity("Error: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @GetMapping("/jobOffers/{year}")
+    fun getCompletedJobOffersPerMonth(
+        @PathVariable year: Long
+    ) : ResponseEntity<Any> {
+        try {
+            var response = counterService.getCompletedJobOfferPerMonth(year)
+
+            return ResponseEntity.ok(response)
+        } catch (e: Exception) {
+            logger.info("Error retrieving completed messages ratio ${e.message}")
             return ResponseEntity("Error: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }

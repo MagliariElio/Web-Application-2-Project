@@ -30,6 +30,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 import java.util.regex.Pattern
 
 @RestController
@@ -39,6 +42,7 @@ class CrmMessagesController(
     private val kafkaProducer: KafkaProducerService
 ) {
     private val logger = LoggerFactory.getLogger(CrmMessagesController::class.java)
+    private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
 
     // TODO: aggiunto per testare la route
     @GetMapping("/auth")
@@ -142,7 +146,7 @@ class CrmMessagesController(
             checkPriorityIsValid(message.priority)
             //Save the message
             val messageSaved = messageService.storeMessage(message, senderType)
-            kafkaProducer.sendMessage(KafkaTopics.TOPIC_MESSAGE, MessageAnalyticsDTO(null, messageSaved.actualState))
+            kafkaProducer.sendMessage(KafkaTopics.TOPIC_MESSAGE, MessageAnalyticsDTO(null, messageSaved.actualState, LocalDate.now().format(formatter).lowercase()))
             return ResponseEntity(messageSaved, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
             logger.info("Error: ${e.javaClass} - ${ERROR_MESSAGE_PRIORITY_NOT_FOUND}: ${e.message}")
@@ -222,7 +226,7 @@ class CrmMessagesController(
             val message = messageService.getMessage(messageID)
             val result = messageService.updateMessage(messageID, state, updateMessageDTO.comment, priority)
 
-            kafkaProducer.sendMessage(KafkaTopics.TOPIC_MESSAGE, MessageAnalyticsDTO(message.actualState, result.actualState))
+            kafkaProducer.sendMessage(KafkaTopics.TOPIC_MESSAGE, MessageAnalyticsDTO(message.actualState, result.actualState, LocalDate.now().format(formatter).lowercase()))
 
             return ResponseEntity(result, HttpStatus.OK)
         } catch (e: MessageNotFoundException) {

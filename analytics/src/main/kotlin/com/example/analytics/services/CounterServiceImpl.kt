@@ -4,7 +4,6 @@ import com.example.analytics.entities.CounterEntity
 import com.example.analytics.repositories.CounterRepository
 import com.example.analytics.utils.JobStatusCounters
 import com.example.analytics.utils.StateOptionsCounters
-import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -59,6 +58,18 @@ class CounterServiceImpl(
         return countersMap
     }
 
+    override fun getCompletedMessagesPerMonth(year: Long): Map<String, Long> {
+        var monthMap = mutableMapOf<String, Long>()
+        val months = arrayOf("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december")
+
+        for (month in months) {
+           val counter = counterRepository.findByType(month + year + "CompletedMessageCounter") ?: CounterEntity(month + year + "CompletedMessageCounter", 0)
+            monthMap[month] = counter.count
+        }
+
+        return monthMap
+    }
+
     @Transactional
     override fun incrementJobOffers(state: String) {
         val totalCounter = counterRepository.findByType(state) ?: CounterEntity(state, 0)
@@ -101,5 +112,17 @@ class CounterServiceImpl(
 
         // Return the map as a JSON response
         return countersMap
+    }
+
+    override fun getCompletedJobOfferPerMonth(year: Long): Map<String, Long> {
+        var monthMap = mutableMapOf<String, Long>()
+        val months = arrayOf("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december")
+
+        for (month in months) {
+            val counter = counterRepository.findByType(month + year + "CompletedJobOfferCounter") ?: CounterEntity(month + year + "CompletedJobOfferCounter", 0)
+            monthMap[month] = counter.count
+        }
+
+        return monthMap
     }
 }
