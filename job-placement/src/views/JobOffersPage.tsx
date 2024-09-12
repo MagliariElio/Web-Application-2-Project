@@ -9,6 +9,23 @@ import { contractTypeList, JobOfferState, RoleState, toTitleCase, workModeList }
 import { fetchJobOffers } from "../apis/JobOfferRequests.ts";
 import { Filters } from "../interfaces/Filters.ts";
 import { MeInterface } from "../interfaces/MeInterface.ts";
+import { convertLocalDateTimeToDate } from "../utils/checkers.ts";
+import {
+  FaBuilding,
+  FaCalendarAlt,
+  FaCheck,
+  FaCheckCircle,
+  FaClock,
+  FaEnvelope,
+  FaExchangeAlt,
+  FaLaptopHouse,
+  FaMapMarkerAlt,
+  FaMoneyBillWave,
+  FaPencilAlt,
+  FaTimesCircle,
+  FaUserTie,
+} from "react-icons/fa";
+import { FaListCheck } from "react-icons/fa6";
 
 const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   const navigate = useNavigate();
@@ -238,42 +255,7 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                     className="job-offer-item mb-4 p-3"
                     onClick={() => navigate(`/ui/joboffers/${joboffer.id}`, { state: { jobOfferSelected: joboffer } })}
                   >
-                    <Row className="align-items-center">
-                      <Col xs={12} className="mb-2">
-                        <h5 className="job-title">{joboffer.name}</h5>
-                      </Col>
-                      <Col md={6} xs={12}>
-                        <p className="mb-1">
-                          <strong>Contract Type:</strong> {joboffer.contractType}
-                        </p>
-                      </Col>
-                      <Col md={6} xs={12}>
-                        <p className="mb-1">
-                          <strong>Location:</strong> {joboffer.location}
-                        </p>
-                      </Col>
-                      <Col md={6} xs={12}>
-                        <p className="mb-1">
-                          <strong>Work Mode:</strong> {joboffer.workMode}
-                        </p>
-                      </Col>
-                      <Col md={6} xs={12}>
-                        <p className="mb-1">
-                          <strong>Duration:</strong> {joboffer.duration} {joboffer.duration === 1 ? "day" : "days"}
-                        </p>
-                      </Col>
-                      <Col md={6} xs={12}>
-                        <p className="mb-1">
-                          <strong>Value:</strong> {joboffer.value} €
-                        </p>
-                      </Col>
-                      <Col md={6} xs={12}>
-                        <p className="mb-0">
-                          <strong>Status:</strong>{" "}
-                          <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
-                        </p>
-                      </Col>
-                    </Row>
+                    <JobOfferCard joboffer={joboffer} />
                   </div>
                 ))
               )}
@@ -382,6 +364,83 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
         </>
       )}
     </Container>
+  );
+};
+
+export const JobOfferCard: React.FC<{ joboffer: JobOffer }> = ({ joboffer }) => {
+  return (
+    <div>
+      <Row className="align-items-center mb-2">
+        <Col xs={12}>
+          <h5 className="job-title">{joboffer.name}</h5>
+        </Col>
+      </Row>
+      <Row className="d-flex align-items-center">
+        <Col md={4} xs={12}>
+          <p>
+            <FaUserTie className="me-1" /> <strong>Contract Type: </strong>
+            {joboffer.contractType}
+          </p>
+        </Col>
+        <Col md={4} xs={12}>
+          <p>
+            <FaMapMarkerAlt className="me-1" /> <strong>Location: </strong>
+            {joboffer.location}
+          </p>
+        </Col>
+        <Col md={4} xs={12} className="d-flex align-items-center">
+          <p>
+            <FaClock className="me-1" /> <strong className="me-1">Creation Time: </strong>
+            {convertLocalDateTimeToDate(joboffer?.creationTime).toLocaleDateString()}
+          </p>
+        </Col>
+      </Row>
+      <Row className="d-flex align-items-center">
+        <Col md={4} xs={12}>
+          <p>
+            {joboffer?.workMode === "Remote" && <FaLaptopHouse className="me-2" />}
+            {joboffer?.workMode === "Hybrid" && <FaBuilding className="me-2" />}
+            {joboffer?.workMode === "In-Person" && <FaExchangeAlt className="me-2" />}
+            <strong className="me-1">Work Mode:</strong>
+            {joboffer.workMode}
+          </p>
+        </Col>
+        <Col md={4} xs={12}>
+          <p>
+            <FaClock className="me-1" /> <strong>Duration: </strong>
+            {joboffer.duration} {joboffer.duration === 1 ? "day" : "days"}
+          </p>
+        </Col>
+        {joboffer?.endTime && (
+          <Col md={4} xs={12} className="d-flex align-items-center">
+            <p>
+              <FaCalendarAlt className="me-2" /> <strong className="me-1">End Time: </strong>
+              {convertLocalDateTimeToDate(joboffer?.endTime).toLocaleDateString()}
+            </p>
+          </Col>
+        )}
+      </Row>
+      <Row className="d-flex align-items-center">
+        <Col md={4} xs={12}>
+          <p>
+            <FaMoneyBillWave className="me-1" /> <strong>Value: </strong>
+            {joboffer.value} €
+          </p>
+        </Col>
+        <Col md={4} xs={12}>
+          <p>
+            {joboffer?.status === JobOfferState.CREATED && <FaPencilAlt className="me-2" />}
+            {joboffer?.status === JobOfferState.SELECTION_PHASE && <FaListCheck className="me-2" />}
+            {joboffer?.status === JobOfferState.CANDIDATE_PROPOSAL && <FaEnvelope className="me-2" />}
+            {joboffer?.status === JobOfferState.CONSOLIDATED && <FaCheck className="me-2" />}
+            {joboffer?.status === JobOfferState.DONE && <FaCheckCircle className="me-2" />}
+            {joboffer?.status === JobOfferState.ABORT && <FaTimesCircle className="me-2" />}
+            <strong className="me-1">Status: </strong>
+            <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
+          </p>
+        </Col>
+      </Row>
+    </div>
   );
 };
 

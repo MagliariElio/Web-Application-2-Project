@@ -7,6 +7,7 @@ import { MeInterface } from "../interfaces/MeInterface";
 import { deleteCustomer, fetchCustomer } from "../apis/CustomerRequests";
 import { toTitleCase } from "../utils/costants";
 import { LoadingSection } from "../App";
+import { JobOfferCard } from "./JobOffersPage";
 
 function CustomerPage({ me }: { me: MeInterface }) {
   // Estrai l'ID dall'URL
@@ -76,7 +77,8 @@ function CustomerPage({ me }: { me: MeInterface }) {
         </Modal.Header>
         <Modal.Body>
           <p style={{ color: "#856404", fontSize: "1rem", backgroundColor: "#fff3cd", padding: "10px", borderRadius: "5px" }}>
-            <strong>Warning:</strong> Are you certain you wish to permanently delete this customer? This action cannot be undone. All associated <strong>job offers</strong> will also be <strong>irreversibly removed</strong>, if present.
+            <strong>Warning:</strong> Are you certain you wish to permanently delete this customer? This action cannot be undone. All associated{" "}
+            <strong>job offers</strong> will also be <strong>irreversibly removed</strong>, if present.
           </p>
           <p className="text-center fs-3 fw-semibold">{`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname}?`} </p>
         </Modal.Body>
@@ -273,42 +275,7 @@ function CustomerPage({ me }: { me: MeInterface }) {
               })
             }
           >
-            <Row className="align-items-center">
-              <Col xs={12} className="mb-2">
-                <h5 className="job-title">{joboffer.name}</h5>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Contract Type:</strong> {joboffer.contractType}
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Location:</strong> {joboffer.location}
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Work Mode:</strong> {joboffer.workMode}
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Duration:</strong> {joboffer.duration} days
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Value:</strong> ${joboffer.value}
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-0">
-                  <strong>Status:</strong>{" "}
-                  <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
-                </p>
-              </Col>
-            </Row>
+            <JobOfferCard joboffer={joboffer} />
           </div>
         ))}
     </div>

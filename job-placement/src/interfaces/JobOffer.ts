@@ -5,6 +5,8 @@ export interface JobOffer{
     contractType: string,
     location: string,
     workMode: string,
+    creationTime: number[], 
+    endTime: number[],
     oldStatus: string,
     status: string,
     requiredSkills: string[],
