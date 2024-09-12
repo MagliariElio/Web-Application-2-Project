@@ -1,0 +1,50 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/log/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: gateway-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: gateway
+          __path__: /var/log/gateway/*.log
+
+  - job_name: document-store-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: document-store
+          __path__: /var/log/document-store/*.log
+
+  - job_name: crm-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: crm
+          __path__: /var/log/crm/*.log
+
+  - job_name: comunication-manager-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: comunication-manager
+          __path__: /var/log/comunication-manager/*.log
+
+  - job_name: analytics-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: analytics
+          __path__: /var/log/analytics/*.log

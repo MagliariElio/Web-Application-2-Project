@@ -77,6 +77,7 @@ class SecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
                 it.requestMatchers(HttpMethod.DELETE, "/API/professionals/{professionalID}")
                     .hasAnyAuthority(Roles.ROLE_OPERATOR)
 
+                it.requestMatchers("/actuator/**").permitAll()
                 it.anyRequest().authenticated()
             }
             .oauth2ResourceServer {

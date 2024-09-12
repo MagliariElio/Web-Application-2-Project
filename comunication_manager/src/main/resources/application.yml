@@ -19,7 +19,7 @@ gmail:
   client-email: groupg04.polito@gmail.com
   client-id: 535682431083-4kepur0t0uld14g3c0getmkkc6h0o3nd.apps.googleusercontent.com
   client-secret: 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
-  refresh-token: 1//04As6IzCW5Z1nCgYIARAAGAQSNwF-L9IrSVSnhDBsE4KSQXF-qwrJqCuJ1fpQVX6B8LerTppgk66joPPxw5_LWI5UsfOURASOWLo
+  refresh-token: 1//04YenrURvPoK-CgYIARAAGAQSNwF-L9Ir_lUHra0FbY6jNeysjizSt36MAnv724kOT0Jk2uxisBDQB5kmO7B5ifcgCgyi6UkIlWk
 
 camel:
   component:
@@ -33,6 +33,26 @@ camel:
       client-id: ${gmail.client-id}
       client-secret: ${gmail.client-secret}
       refresh-token: ${gmail.refresh-token}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  file:
+    path: /var/log/comunication-manager
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
 
 server:
   port: 8083

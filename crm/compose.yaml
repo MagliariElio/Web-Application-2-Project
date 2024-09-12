@@ -42,7 +42,7 @@ services:
       - postgres
     environment:
       CONNECT_BOOTSTRAP_SERVERS: kafka:29092
-      CONNECT_REST_PORT: 8083
+      CONNECT_REST_PORT: 8085
       CONNECT_GROUP_ID: "connect1"
       CONNECT_CONFIG_STORAGE_TOPIC: "connect1_config"
       CONNECT_OFFSET_STORAGE_TOPIC: "connect1_offset"
@@ -59,7 +59,7 @@ services:
     volumes:
       - ./connectors:/etc/kafka-connect/jars/
     ports:
-      - "8083:8083"
+      - "8085:8083"
     networks:
       - kfk-net
     command:

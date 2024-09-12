@@ -23,5 +23,25 @@ spring:
         jwt:
           issuer-uri: http://localhost:9090/realms/job-connect
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  file:
+    path: /var/log/crm
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+
 server:
   port: 8082
