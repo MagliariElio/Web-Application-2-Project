@@ -72,8 +72,12 @@ spring:
               - roles
 
 logging:
+  file:
+    path: /var/log/gateway
   level:
-    org.springframework.security: DEBUG
+    root: INFO
+    org.springframework.web: DEBUG
+
 
 server:
   port: 8080

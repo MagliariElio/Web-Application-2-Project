@@ -24,6 +24,10 @@ dependencies {
     implementation("org.springframework.security:spring-security-oauth2-jose")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("com.github.loki4j:loki-logback-appender:1.4.0")
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.1.4")
     implementation("org.springframework.boot:spring-boot-starter-web:3.1.4")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

@@ -4,13 +4,19 @@ import { JobOffer } from "../interfaces/JobOffer";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FaBan,
+  FaBuilding,
+  FaCalendarAlt,
   FaCheck,
   FaCheckCircle,
   FaCircle,
   FaClock,
+  FaEnvelope,
+  FaExchangeAlt,
   FaInfoCircle,
+  FaLaptopHouse,
   FaMapMarkerAlt,
   FaMoneyBillWave,
+  FaPencilAlt,
   FaReply,
   FaThumbsUp,
   FaTimes,
@@ -38,7 +44,6 @@ import { fetchProfessional, fetchProfessionals } from "../apis/ProfessionalReque
 import { Professional } from "../interfaces/Professional";
 import {
   abortJobOffer,
-  cancelApplication,
   deleteJobOfferById,
   doneJobOffer,
   fetchJobOfferById,
@@ -51,6 +56,8 @@ import { LoadingSection } from "../App";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import { convertLocalDateTimeToDate } from "../utils/checkers";
+import { FaListCheck } from "react-icons/fa6";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -617,46 +624,6 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   };
 
   /**
-   * Cancels the candidation process for the job offer.
-   * Only available if the job offer is currently in the "candidate proposal" state.
-   * Displays an error message if the operation fails or if the state is not appropriate.
-   */
-  const handleCancelApplication = async () => {
-    setShowModalCancelApplication({ b: false, c: null });
-
-    if (jobOffer?.status !== JobOfferState.CANDIDATE_PROPOSAL) {
-      setErrorMessage("This action is not available in this moment.");
-      if (errorRef.current) {
-        errorRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const jobOfferResponse = await cancelApplication(parseInt(id ? id : ""), me.xsrfToken, candidateProfessionalList);
-
-      await loadJobOffer(jobOfferResponse);
-
-      setErrorMessage("");
-      setLoading(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("An unexpected error occurred");
-      }
-
-      setLoading(false);
-
-      // Scroll to error message when it appears
-      if (errorRef.current) {
-        errorRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
-  /**
    * Completes the job offer process if the current state allows it.
    * Displays an error message if the operation fails or if the state is not appropriate.
    */
@@ -956,7 +923,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               <Col md={6}>
                 {!isEditing ? (
                   <div>
-                    <FaUserTie className="mr-2" /> <strong>Contract Type: </strong>
+                    <FaUserTie className="me-1" /> <strong>Contract Type: </strong>
                     {jobOffer?.contractType}
                   </div>
                 ) : (
@@ -985,7 +952,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               <Col md={6}>
                 {!isEditing ? (
                   <div>
-                    <FaMapMarkerAlt className="mr-2" /> <strong>Location: </strong>
+                    <FaMapMarkerAlt className="me-1" /> <strong>Location: </strong>
                     {jobOffer?.location}
                   </div>
                 ) : (
@@ -1014,7 +981,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
               <Col md={6}>
                 {!isEditing ? (
                   <div>
-                    <FaClock className="mr-2" /> <strong>Duration: </strong>
+                    <FaClock className="me-1" /> <strong>Duration: </strong>
                     {jobOffer?.duration} {jobOffer?.duration === 1 ? "day" : "days"}
                   </div>
                 ) : (
@@ -1049,10 +1016,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   </Form.Group>
                 )}
               </Col>
-              <Col md={6}>
+              <Col md={3}>
                 {!isEditing ? (
                   <div>
-                    <FaMoneyBillWave className="mr-2" /> <strong>Value: </strong>
+                    <FaMoneyBillWave className="me-1" /> <strong>Value: </strong>
                     {jobOffer?.value} €
                   </div>
                 ) : (
@@ -1066,14 +1033,22 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   </Form.Group>
                 )}
               </Col>
+              <Col md={3} className="d-flex align-items-center">
+                  <FaClock className="me-2" /> <strong className="me-1">Creation Time: </strong>
+                  {convertLocalDateTimeToDate(jobOffer?.creationTime).toLocaleDateString()}{" "}
+                  {convertLocalDateTimeToDate(jobOffer?.creationTime).toLocaleTimeString()}
+              </Col>
             </Row>
 
             {/* Work Mode and Status */}
             <Row className="border-top pt-3 mb-3">
               <Col md={6}>
                 {!isEditing ? (
-                  <div>
-                    <strong>Work Mode: </strong>
+                  <div className="d-flex align-items-center">
+                    {jobOffer?.workMode === "Remote" && <FaLaptopHouse className="me-1" />}
+                    {jobOffer?.workMode === "Hybrid" && <FaBuilding className="me-1" />}
+                    {jobOffer?.workMode === "In-Person" && <FaExchangeAlt className="me-1" />}
+                    <strong className="me-1">Work Mode:</strong>
                     {jobOffer?.workMode}
                   </div>
                 ) : (
@@ -1099,10 +1074,16 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   </Form.Group>
                 )}
               </Col>
-              <Col md={6}>
+              <Col md={3}>
                 {!isEditing ? (
-                  <div>
-                    <strong>Status: </strong>
+                  <div className="d-flex align-items-center">
+                    {jobOffer?.status === JobOfferState.CREATED && <FaPencilAlt className="me-2" />}
+                    {jobOffer?.status === JobOfferState.SELECTION_PHASE && <FaListCheck className="me-2" />}
+                    {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && <FaEnvelope className="me-2" />}
+                    {jobOffer?.status === JobOfferState.CONSOLIDATED && <FaCheck className="me-2" />}
+                    {jobOffer?.status === JobOfferState.DONE && <FaCheckCircle className="me-2" />}
+                    {jobOffer?.status === JobOfferState.ABORT && <FaTimesCircle className="me-2" />}
+                    <strong className="me-1">Status: </strong>
                     {toTitleCase(jobOffer?.status || JobOfferState.CREATED)}
                   </div>
                 ) : (
@@ -1116,6 +1097,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   </Form.Group>
                 )}
               </Col>
+              {jobOffer?.endTime && !isEditing && (
+                <Col md={3} className="d-flex align-items-center">
+                  <FaCalendarAlt className="me-2" /> <strong className="me-1">End Time: </strong>
+                  {convertLocalDateTimeToDate(jobOffer?.endTime).toLocaleDateString()}{" "}
+                  {convertLocalDateTimeToDate(jobOffer?.endTime).toLocaleTimeString()}
+                </Col>
+              )}
             </Row>
 
             {/* Required Skills */}

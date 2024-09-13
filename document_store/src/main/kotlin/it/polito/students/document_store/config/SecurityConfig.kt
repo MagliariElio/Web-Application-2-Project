@@ -24,6 +24,7 @@ class SecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
                 it.requestMatchers(HttpMethod.DELETE, "/API/documents/{metadataId}").hasAnyAuthority(Roles.ROLE_OPERATOR)
 
                 //it.requestMatchers("/API/documents/auth").hasAuthority(Roles.ROLE_GUEST)
+                it.requestMatchers("/actuator/**").permitAll()
                 it.requestMatchers("/API/documents/auth/public").permitAll()
                 it.anyRequest().authenticated()
             }

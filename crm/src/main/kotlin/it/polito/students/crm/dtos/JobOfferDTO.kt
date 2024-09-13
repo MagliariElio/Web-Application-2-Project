@@ -2,6 +2,7 @@ package it.polito.students.crm.dtos
 
 import it.polito.students.crm.entities.JobOffer
 import it.polito.students.crm.utils.JobStatusEnum
+import java.time.LocalDateTime
 
 data class JobOfferDTO(
     var id: Long,
@@ -10,6 +11,8 @@ data class JobOfferDTO(
     var contractType: String,
     var location: String,
     var workMode: String,
+    val creationTime: LocalDateTime,
+    val endTime: LocalDateTime?,
     var oldStatus: JobStatusEnum,
     var status: JobStatusEnum,
     var requiredSkills: List<String>,
@@ -31,6 +34,8 @@ fun JobOffer.toDTO(): JobOfferDTO = JobOfferDTO(
     this.contractType,
     this.location,
     this.workMode,
+    this.creationTime,
+    this.endTime,
     this.oldStatus,
     this.status,
     this.requiredSkills,

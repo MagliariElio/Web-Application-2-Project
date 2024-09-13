@@ -17,6 +17,7 @@ class SecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
         return http
             .authorizeHttpRequests {
                 it.requestMatchers(HttpMethod.POST, "/API/emails").hasAnyAuthority(Roles.ROLE_OPERATOR)
+                it.requestMatchers("/actuator/**").permitAll()
 
                 //it.requestMatchers("/API/emails/auth").hasAuthority(Roles.ROLE_GUEST)
                 it.anyRequest().authenticated()

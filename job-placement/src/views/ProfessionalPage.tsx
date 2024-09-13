@@ -6,6 +6,7 @@ import { MeInterface } from "../interfaces/MeInterface";
 import { employmentStateToText, toTitleCase } from "../utils/costants";
 import { deleteProfessional, fetchProfessional } from "../apis/ProfessionalRequests";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
+import { JobOfferCard } from "./JobOffersPage";
 
 function ProfessionalPage({ me }: { me: MeInterface }) {
   // Estrai l'ID dall'URL
@@ -75,9 +76,9 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
         </Modal.Header>
         <Modal.Body>
           <p style={{ color: "#856404", fontSize: "1rem", backgroundColor: "#fff3cd", padding: "10px", borderRadius: "5px" }}>
-            <strong>Warning:</strong> Are you sure you want to <strong>permanently delete</strong> this professional record? This action is <strong>irreversible</strong> and
-            will delete all <strong>associated job applications</strong>, including <strong>pending</strong> and <strong>accepted</strong> ones.
-            Linked job offers will revert to the <strong>selection phase</strong>.
+            <strong>Warning:</strong> Are you sure you want to <strong>permanently delete</strong> this professional record? This action is{" "}
+            <strong>irreversible</strong> and will delete all <strong>associated job applications</strong>, including <strong>pending</strong> and{" "}
+            <strong>accepted</strong> ones. Linked job offers will revert to the <strong>selection phase</strong>.
           </p>
 
           <p className="text-center fs-3 fw-semibold">
@@ -254,42 +255,7 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
               })
             }
           >
-            <Row className="align-items-center">
-              <Col xs={12} className="mb-2">
-                <h5 className="job-title">{joboffer.name}</h5>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Contract Type:</strong> {joboffer.contractType}
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Location:</strong> {joboffer.location}
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Work Mode:</strong> {joboffer.workMode}
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Duration:</strong> {joboffer.duration} days
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-1">
-                  <strong>Value:</strong> ${joboffer.value}
-                </p>
-              </Col>
-              <Col md={6} xs={12}>
-                <p className="mb-0">
-                  <strong>Status:</strong>{" "}
-                  <span className={`status ${joboffer.status.toLowerCase()}`}>{toTitleCase(joboffer.status).toLocaleUpperCase()}</span>
-                </p>
-              </Col>
-            </Row>
+            <JobOfferCard joboffer={joboffer} />
           </div>
         ))}
     </div>
@@ -297,70 +263,3 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
 }
 
 export default ProfessionalPage;
-
-/*
-
-
-<Col xs={12} md={6} lg={4}>
-                  <Row className="d-flex flex-column mt-3">
-                    <Row className="d-flex">
-                      <h6 className="p-0 m-0">Emails</h6>
-                    </Row>
-                    {professional?..map((email, index) => (
-                      <Row key={index} className="d-flex">
-                        <p className="p-0 m-0 fs-6">{email.email} </p>
-                        <small className="m-0 p-0">{email.comment}</small>
-                      </Row>
-                    ))}
-                    {professional?..length === 0 && (
-                      <Row className="d-flex">
-                        <p className="p-0 m-0 fs-6">No emails found</p>
-                      </Row>
-                    )}
-                  </Row>
-                </Col>
-
-                <Col xs={12} md={6} lg={4}>
-                  <Row className="d-flex flex-column mt-3">
-                    <Row className="d-flex">
-                      <h6 className="p-0 m-0">Phones</h6>
-                    </Row>
-                    {customer?.information.telephoneDTOs.map((phone, index) => (
-                      <Row key={index} className="d-flex">
-                        <p className="p-0 m-0 fs-6">{phone.telephone} </p>
-                        <small className="m-0 p-0">{phone.comment}</small>
-                      </Row>
-                    ))}
-                    {customer?.information.telephoneDTOs.length === 0 && (
-                      <Row className="d-flex">
-                        <p className="p-0 m-0 fs-6">No phones found</p>
-                      </Row>
-                    )}
-                  </Row>
-                </Col>
-
-                <Col xs={12} md={6} lg={4}>
-                  <Row className="d-flex flex-column mt-3">
-                    <Row className="d-flex">
-                      <h6 className="p-0 m-0">Addresses</h6>
-                    </Row>
-                    {customer?.information.addressDTOs.map((address, index) => (
-                      <Row key={index} className="d-flex">
-                        <p className="p-0 m-0 fs-6">
-                          {" "}
-                          {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}{" "}
-                        </p>
-                        <small className="m-0 p-0">{address.comment}</small>
-                      </Row>
-                    ))}
-                    {customer?.information.addressDTOs.length === 0 && (
-                      <Row className="d-flex">
-                        <p className="p-0 m-0 fs-6">No addresses found</p>
-                      </Row>
-                    )}
-                  </Row>
-                </Col>
-
-
-
-                */

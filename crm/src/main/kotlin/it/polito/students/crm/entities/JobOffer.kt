@@ -2,6 +2,7 @@ package it.polito.students.crm.entities
 
 import it.polito.students.crm.utils.JobStatusEnum
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 class JobOffer {
@@ -21,6 +22,9 @@ class JobOffer {
 
     var oldStatus: JobStatusEnum = JobStatusEnum.CREATED    // traccia lo stato precedente a status
     var status: JobStatusEnum = JobStatusEnum.CREATED
+
+    var creationTime: LocalDateTime = LocalDateTime.now()
+    var endTime: LocalDateTime? = null                      // in caso di abort, done o eliminazione
 
     @ElementCollection(fetch = FetchType.EAGER)
     lateinit var requiredSkills: List<String>

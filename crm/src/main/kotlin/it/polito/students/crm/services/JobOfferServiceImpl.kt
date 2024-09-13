@@ -125,6 +125,8 @@ class JobOfferServiceImpl(
             contractType = jobOfferDto.contractType
             location = jobOfferDto.location
             workMode = jobOfferDto.workMode
+            creationTime = LocalDateTime.now()
+            endTime = null
             status = JobStatusEnum.CREATED
             requiredSkills = jobOfferDto.requiredSkills
             duration = jobOfferDto.duration
@@ -173,6 +175,7 @@ class JobOfferServiceImpl(
         val jobOfferData = jobOffer.get()
 
         jobOfferData.deleted = true
+        jobOfferData.endTime = LocalDateTime.now()
         val professional = jobOfferData.professional
         professional?.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
 
@@ -428,6 +431,7 @@ class JobOfferServiceImpl(
                 oldJobOffer.professional?.let { professionalRepository.save(it) }
                 //oldJobOffer.professional = null
                 //oldJobOffer.value = 0.0
+                oldJobOffer.endTime = LocalDateTime.now()
                 if (note != null) oldJobOffer.note = note
                 oldJobOffer.oldStatus = JobStatusEnum.CONSOLIDATED
             }
@@ -437,6 +441,7 @@ class JobOfferServiceImpl(
                 oldJobOffer.professional?.employmentState = EmploymentStateEnum.UNEMPLOYED
                 oldJobOffer.professional?.let { professionalRepository.save(it) }
                 oldJobOffer.oldStatus = oldStatus
+                oldJobOffer.endTime = LocalDateTime.now()
                 if (note != null) oldJobOffer.note = note
             }
 
