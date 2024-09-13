@@ -95,6 +95,7 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
     
           console.log("Completed messages per month fetched: ", messagesPerMonthData);
           console.log("Completed job offers per month fetched: ", jobOffersPerMonthData);
+          console.log("JobOffers created: " + jobOfferAnalytics.createdJobOffers)
         } catch (error) {
           console.error("Error:", error);
           setLoading(false); // Stop loading if error
@@ -108,66 +109,6 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
     
       fetchAllData(); // Invoke the async function
     }, []); 
-    
-    /*useEffect(() => {
-      setLoading(true)
-      fetchMessagesAnalytics()
-      .then((json) => {
-        setMessagesAnalytics(json);
-      })
-      .catch((error) => {
-        navigate("/not-found");
-        setLoading(false);
-        console.error("Error:", error);
-      });
-    }, [])
-
-    useEffect(() => {
-        fetchJobOffersAnalytics()
-        .then((json) => {
-          setJobOfferAnalytics(json);
-        })
-        .catch((error) => {
-          navigate("/not-found");
-          setLoading(false);
-          console.error("Error:", error);
-        });
-      }, [])
-
-    useEffect(() => {
-      fetchMessagesPerMonthAnalytics(yearToDisplay)
-      .then((result) => {
-        console.log("Completed messages per month fetched: " + result)
-        setCompletedMessagesPerMonth(result)
-        console.log(completedMessagesPerMonth)
-      })
-      .catch((error) => {
-        setLoading(false)
-        setError(true);
-        console.log(error);
-        throw new Error(
-          "Network response was not ok"
-      );
-      })
-    }, [])
-
-    useEffect(() => {
-      fetchJobOffersPerMonthAnalytics(yearToDisplay)
-      .then((result) => {
-        console.log("Completed job offers per month fetched: " + result)
-        setCompletedMessagesPerMonth(result)
-        console.log(completedMessagesPerMonth)
-        setLoading(false)
-      })
-      .catch((error) => {
-        setLoading(false)
-        setError(true);
-        console.log(error);
-        throw new Error(
-          "Network response was not ok"
-      );
-      })
-    }, [])*/
 
     return(
     <div className="w-100">

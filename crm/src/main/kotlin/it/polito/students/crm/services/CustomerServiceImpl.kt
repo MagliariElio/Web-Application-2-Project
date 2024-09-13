@@ -15,6 +15,10 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.HashMap
 
 @Service
 class CustomerServiceImpl(
@@ -25,9 +29,11 @@ class CustomerServiceImpl(
     private val emailRepository: EmailRepository,
     private val telephoneRepository: TelephoneRepository,
     private val addressRepository: AddressRepository,
-    private val factory: Factory
+    private val factory: Factory,
+    private val kafkaProducer: KafkaProducerService
 ) : CustomerService {
     private val logger = LoggerFactory.getLogger(CrmCustomersController::class.java)
+    private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
 
     override fun getAllCustomers(
         pageNumber: Int,
@@ -165,6 +171,7 @@ class CustomerServiceImpl(
                 it.professional!!.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
             }
             jobOfferRepository.save(it)
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(it.status, null, LocalDate.now().format(formatter).lowercase()))
         }
     }
 

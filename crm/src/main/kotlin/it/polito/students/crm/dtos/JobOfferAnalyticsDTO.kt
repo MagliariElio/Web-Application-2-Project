@@ -5,6 +5,6 @@ import it.polito.students.crm.utils.StateOptions
 
 data class JobOfferAnalyticsDTO (
     var previousState: JobStatusEnum?,
-    var actualState: JobStatusEnum,
+    var actualState: JobStatusEnum?,
     var date: String
 )
