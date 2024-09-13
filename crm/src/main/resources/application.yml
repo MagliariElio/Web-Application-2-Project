@@ -38,7 +38,7 @@ management:
 
 logging:
   file:
-    path: /var/log/crm
+    path: ./../logs/crm
   level:
     root: INFO
     org.springframework.web: DEBUG

@@ -73,7 +73,7 @@ spring:
 
 logging:
   file:
-    path: /var/log/gateway
+    path: ./../logs/gateway
   level:
     root: INFO
     org.springframework.web: DEBUG
