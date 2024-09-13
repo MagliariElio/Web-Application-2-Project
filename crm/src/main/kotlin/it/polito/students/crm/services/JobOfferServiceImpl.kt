@@ -1,6 +1,7 @@
 package it.polito.students.crm.services
 
 import it.polito.students.crm.dtos.CreateJobOfferDTO
+import it.polito.students.crm.dtos.JobOfferAnalyticsDTO
 import it.polito.students.crm.dtos.JobOfferDTO
 import it.polito.students.crm.dtos.toDTO
 import it.polito.students.crm.entities.JobOffer
@@ -14,6 +15,8 @@ import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -22,10 +25,13 @@ class JobOfferServiceImpl(
     private val jobOfferRepository: JobOfferRepository,
     private val customerService: CustomerService,
     private val professionalRepository: ProfessionalRepository,
-    private val factory: Factory
+    private val factory: Factory,
+    private val kafkaProducer: KafkaProducerService
 ) : JobOfferService {
 
     private val profitMargin: Int = 10
+    private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
+
 
     override fun getAllJobOffers(
         page: Int,
@@ -171,6 +177,7 @@ class JobOfferServiceImpl(
         professional?.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
 
         jobOfferRepository.save(jobOfferData)
+        kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(jobOfferData.status, null, LocalDate.now().format(formatter).lowercase()))
         professional?.let { professionalRepository.save(it) }
     }
 

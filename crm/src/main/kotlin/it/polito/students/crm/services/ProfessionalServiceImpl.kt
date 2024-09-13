@@ -7,24 +7,27 @@ import it.polito.students.crm.exception_handlers.ProfessionalNotFoundException
 import it.polito.students.crm.repositories.ContactRepository
 import it.polito.students.crm.repositories.JobOfferRepository
 import it.polito.students.crm.repositories.ProfessionalRepository
-import it.polito.students.crm.utils.CategoryOptions
-import it.polito.students.crm.utils.EmploymentStateEnum
-import it.polito.students.crm.utils.JobStatusEnum
-import it.polito.students.crm.utils.ProfessionalEnumFields
+import it.polito.students.crm.utils.*
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.HashMap
 
 @Service
 class ProfessionalServiceImpl(
     private val professionalRepository: ProfessionalRepository,
     private val jobOfferRepository: JobOfferRepository,
     private val contactRepository: ContactRepository,
-    private val contactService: ContactService
+    private val contactService: ContactService,
+    private val kafkaProducer: KafkaProducerService
 ) : ProfessionalService {
     private val logger = LoggerFactory.getLogger(ProfessionalServiceImpl::class.java)
+    private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
 
     override fun getAllProfessionals(
         pageNumber: Int,
@@ -149,12 +152,13 @@ class ProfessionalServiceImpl(
                 }
 
                 if (jobOffer.candidateProfessionals.isEmpty()) {
-                    jobOffer.oldStatus = JobStatusEnum.CREATED
+                    jobOffer.oldStatus = JobStatusEnum.SELECTION_PHASE
                     jobOffer.status = JobStatusEnum.CREATED
                     jobOffer.value = 0.0
                 }
 
                 jobOfferRepository.save(jobOffer)
+                kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(jobOffer.oldStatus, jobOffer.status, LocalDate.now().format(formatter).lowercase()))
                 professionalSaved.jobOffers.removeIf { it.id == jobOffer.id }
             }
 

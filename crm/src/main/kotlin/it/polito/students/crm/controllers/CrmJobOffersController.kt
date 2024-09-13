@@ -258,8 +258,7 @@ class CrmJobOffersController(
             }
 
             val oldjobOffer = jobOfferService.getJobOfferById(jobOfferId)
-            val editedJobOffer =
-                jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
+            val editedJobOffer = jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
             kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(oldjobOffer!!.status, editedJobOffer.status, LocalDate.now().format(formatter).lowercase()))
 
             return ResponseEntity(editedJobOffer, HttpStatus.OK)
