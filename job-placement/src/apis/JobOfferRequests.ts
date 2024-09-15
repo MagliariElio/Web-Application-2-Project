@@ -1,5 +1,4 @@
 import { JobOffer } from "../interfaces/JobOffer";
-import { Professional } from "../interfaces/Professional";
 import { JobOfferState } from "../utils/costants";
 
 export const submitJobOffer = async (jobOffer: any, xsrfToken: string) => {
@@ -370,6 +369,39 @@ export const doneJobOffer = async (jobOfferId: number, xsrfToken: string, candid
     return data;
   } catch (error) {
     console.error("Error in cancelCandidation:", error);
+    throw error;
+  }
+};
+
+export const generateJobOffer = async (prompt: string, xsrfToken: string) => {
+  try {
+    const response = await fetch("/crmService/v1/API/joboffers/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-Token": xsrfToken,
+      },
+      body: JSON.stringify(prompt),
+    });
+
+    if (!response.ok) {
+      let errorMessage = "An error occurred while generating the job offer. Try later, please.";
+
+      try {
+        const message = await response.json();
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.log(error);
     throw error;
   }
 };

@@ -310,4 +310,40 @@ class CrmJobOffersController(
             return ResponseEntity(mapOf("error" to "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
+
+    @PostMapping("/generate", "/generate/")
+    fun getGenerateJobOffer(
+        @RequestBody prompt: String,
+    ): ResponseEntity<Any> {
+        if (prompt.isEmpty()) {
+            logger.info(ErrorsPage.EMPTY_PROMPT_ERROR)
+            return ResponseEntity(ErrorsPage.EMPTY_PROMPT_ERROR, HttpStatus.BAD_REQUEST)
+        }
+
+        try {
+            val jobOffer = jobOfferService.getGenerateJobOffer(prompt)
+            return ResponseEntity(jobOffer, HttpStatus.OK)
+        } catch (e: Exception) {
+            logger.info("Error: Internal server error, ${e.message}")
+            return ResponseEntity(mapOf("error" to "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @PostMapping("/skills/generate", "/skills/generate/")
+    fun getGenerateSkillsJobOffer(
+        @RequestBody prompt: String,
+    ): ResponseEntity<Any> {
+        if (prompt.isEmpty()) {
+            logger.info(ErrorsPage.EMPTY_PROMPT_ERROR)
+            return ResponseEntity(ErrorsPage.EMPTY_PROMPT_ERROR, HttpStatus.BAD_REQUEST)
+        }
+
+        try {
+            val jobOffer = jobOfferService.getGenerateSkills(prompt)
+            return ResponseEntity(jobOffer, HttpStatus.OK)
+        } catch (e: Exception) {
+            logger.info("Error: Internal server error, ${e.message}")
+            return ResponseEntity(mapOf("error" to "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
 }

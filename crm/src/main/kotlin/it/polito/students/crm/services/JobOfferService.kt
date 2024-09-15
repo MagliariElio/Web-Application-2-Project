@@ -5,6 +5,7 @@ import it.polito.students.crm.dtos.JobOfferDTO
 import it.polito.students.crm.utils.JobStatusEnum
 import it.polito.students.crm.utils.JobStatusGroupEnum
 import org.springframework.data.domain.PageImpl
+import reactor.core.publisher.Mono
 
 interface JobOfferService {
 
@@ -92,4 +93,28 @@ interface JobOfferService {
      * @return Value of related jobOfferId it is retrieved only if job offer is bound to a professional
      */
     fun getJobOfferById(jobOfferId: Long): JobOfferDTO?
+
+    /**
+     * Generates a job offer based on the provided prompt.
+     *
+     * This function takes in a prompt (a description of the job or any relevant information)
+     * and generates a `CreateJobOfferDTO` object that contains the fields of a job offer,
+     * such as the title, description, contract type, location, work mode, required skills,
+     * duration, and additional notes.
+     *
+     * @param prompt A string containing the job description or relevant information.
+     * @return A `CreateJobOfferDTO` object populated with the generated job offer fields.
+     */
+    fun getGenerateJobOffer(prompt: String): CreateJobOfferDTO
+
+    /**
+     * Generates a list of required skills based on the provided prompt.
+     *
+     * This function takes in a prompt (a description)
+     * and returns a list of strings representing the skills.
+     *
+     * @param prompt A string containing the description or relevant information.
+     * @return A list of strings representing the required skills.
+     */
+    fun getGenerateSkills(prompt: String): List<String>
 }

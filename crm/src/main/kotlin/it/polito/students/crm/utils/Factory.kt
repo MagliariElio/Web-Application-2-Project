@@ -1,5 +1,7 @@
 package it.polito.students.crm.utils
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import it.polito.students.crm.dtos.CreateJobOfferDTO
 import it.polito.students.crm.dtos.CustomerDTO
 import it.polito.students.crm.entities.*
 import it.polito.students.crm.repositories.JobOfferRepository
@@ -84,6 +86,34 @@ class Factory(private val jobOfferRepository: JobOfferRepository) {
 
             professional.addJobOffers(this@copy.jobOffers)
             return professional
+        }
+
+        fun convertJsonToCreateJobOfferDTO(json: String): CreateJobOfferDTO {
+            val objectMapper = jacksonObjectMapper()
+
+            val jsonNode = objectMapper.readTree(json)
+
+            val name = jsonNode["name"].asText()
+            val description = jsonNode["description"].asText()
+            val contractType = jsonNode["contractType"].asText()
+            val location = jsonNode["location"].asText()
+            val workMode = jsonNode["workMode"].asText()
+            val requiredSkills = jsonNode["requiredSkills"].map { it.asText() }
+            val duration = jsonNode["duration"].asLong()
+            val note = jsonNode["note"].asText()
+            val customerId = 0L
+
+            return CreateJobOfferDTO(
+                name = name,
+                description = description,
+                contractType = contractType,
+                location = location,
+                workMode = workMode,
+                requiredSkills = requiredSkills,
+                duration = duration,
+                note = note,
+                customerId = customerId
+            )
         }
     }
 
