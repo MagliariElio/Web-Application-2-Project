@@ -17,6 +17,7 @@ import it.polito.students.crm.utils.*
 import it.polito.students.crm.utils.Factory.Companion.convertJsonToCreateJobOfferDTO
 import it.polito.students.crm.utils.Factory.Companion.toEntity
 import jakarta.transaction.Transactional
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -42,6 +43,7 @@ class JobOfferServiceImpl(
     private val kafkaProducer: KafkaProducerService,
 ) : JobOfferService {
 
+    private val logger = LoggerFactory.getLogger(JobOfferServiceImpl::class.java)
     private val profitMargin: Int = 10
     private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
     private val restTemplate = RestTemplate()
@@ -530,6 +532,8 @@ class JobOfferServiceImpl(
             restTemplate.exchange(apiUrl, HttpMethod.POST, entity, String::class.java)
         val objectMapper = jacksonObjectMapper()
 
+        logger.info(response.body)
+
         val responseBody = response.body ?: "{}"
         val responseJson = objectMapper.readTree(responseBody)
         val content = responseJson["choices"]?.get(0)?.get("message")?.get("content")?.asText() ?: "{}"
@@ -569,6 +573,8 @@ class JobOfferServiceImpl(
         val response: ResponseEntity<String> =
             restTemplate.exchange(apiUrl, HttpMethod.POST, entity, String::class.java)
 
+        logger.info(response.body)
+
         val gson = Gson()
         val responseBody = response.body ?: "{}"
         val responseJson = gson.fromJson(responseBody, Map::class.java)
@@ -582,8 +588,13 @@ class JobOfferServiceImpl(
         reader.isLenient = true
 
         val skillsListType = object : TypeToken<List<String>>() {}.type
-        val skillsList: List<String> = gson.fromJson(reader, skillsListType)
 
-        return skillsList.toMutableList()
+        return try {
+            val skillsList: List<String> = gson.fromJson(reader, skillsListType)
+            skillsList.toMutableList()
+        } catch (e: Exception) {
+            logger.warn("Content is not a valid list, returning as plain string.")
+            throw IllegalArgumentException(content)
+        }
     }
 }

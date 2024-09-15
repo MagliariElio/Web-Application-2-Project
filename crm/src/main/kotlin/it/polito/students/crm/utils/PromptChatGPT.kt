@@ -25,12 +25,13 @@ fun generatePromptChatGPTSkills(descriptionUser: String): String {
     val sanitizedDescription = sanitizeAndValidateInput(descriptionUser)
 
     return ("Given the following job description from the user, identify and generate a list of relevant skills required for this job. " +
-            "   The skills should be based on the details provided by the user, including specific job requirements, responsibilities, " +
-            "   and qualifications. Ensure each skill is concise and does not exceed 50 characters in length. " +
-            "   Return only the list of skills as a JSON array of strings. " +
-            "   The list should contain no more than 50 skills. " +
-            "   User Description: $sanitizedDescription." +
-            "   Return format: [\"Skill 1\", \"Skill 2\", \"Skill 3\", ...] (max 50 skills, each skill <= 50 characters)")
+            "The skills should be based on the details provided by the user, including specific job requirements, responsibilities, " +
+            "and qualifications. Ensure each skill is concise and does not exceed 50 characters in length. " +
+            "Return only the list of skills as a JSON array of strings. " +
+            "The list should contain no more than 50 skills. " +
+            "User Description: $sanitizedDescription." +
+            "Return format: ['Skill 1', 'Skill 2', 'Skill 3', ...] (max 50 skills, each skill <= 50 characters) " +
+            "If you are unable to extract skills, generate a random list of appropriate skills. Return only the list of strings, and nothing else.")
 }
 
 fun sanitizeAndValidateInput(descriptionUser: String): String {
@@ -39,7 +40,8 @@ fun sanitizeAndValidateInput(descriptionUser: String): String {
 
     // Step 2: Rimozione caratteri potenzialmente pericolosi
     sanitizedDescription = sanitizedDescription
-        .replace("\\", "")
+        .replace("\"", " ")
+        .replace("\\", " ")
         .replace("\n", " ")
         .replace("\t", " ")
         .replace(Regex("[^\\p{Print}]"), "")
