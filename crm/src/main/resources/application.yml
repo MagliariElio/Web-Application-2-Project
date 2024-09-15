@@ -49,5 +49,10 @@ api:
     key: "Bearer e1as3WOyj3E8GBp0lSBKey8UOo5CNyJL"
     model: "jamba-1.5-large"
 
+org:
+  owasp:
+    esapi:
+      resources: src/main/resources
+
 server:
   port: 8082

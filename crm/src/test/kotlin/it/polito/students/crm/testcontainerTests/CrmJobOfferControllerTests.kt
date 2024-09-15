@@ -3,12 +3,15 @@ package it.polito.students.crm.testcontainerTests
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
-import it.polito.students.crm.dtos.*
+import it.polito.students.crm.dtos.ChangeJobStatusDTO
+import it.polito.students.crm.dtos.CreateJobOfferDTO
 import it.polito.students.crm.entities.*
 import it.polito.students.crm.repositories.CustomerRepository
 import it.polito.students.crm.repositories.JobOfferRepository
 import it.polito.students.crm.repositories.ProfessionalRepository
-import it.polito.students.crm.utils.*
+import it.polito.students.crm.utils.CategoryOptions
+import it.polito.students.crm.utils.ErrorsPage
+import it.polito.students.crm.utils.JobStatusEnum
 import jakarta.transaction.Transactional
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.AfterAll

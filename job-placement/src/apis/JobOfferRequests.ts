@@ -240,6 +240,10 @@ export const abortJobOffer = async (jobOfferId: number, xsrfToken: string) => {
         const message = await response.json();
         if (message.errors && Array.isArray(message.errors)) {
           errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
+        } else if (message) {
+          errorMessage = message;
         }
       } catch (jsonError) {
         console.error("Failed to parse JSON response:", jsonError);
@@ -279,6 +283,10 @@ export const goToCandidateProposalPhase = async (jobOfferId: number, xsrfToken: 
         const message = await response.json();
         if (message.errors && Array.isArray(message.errors)) {
           errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
+        } else if (message) {
+          errorMessage = message;
         }
       } catch (jsonError) {
         console.error("Failed to parse JSON response:", jsonError);
@@ -318,6 +326,10 @@ export const goToCondolidated = async (jobOfferId: number, xsrfToken: string, ca
         const message = await response.json();
         if (message.errors && Array.isArray(message.errors)) {
           errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
+        } else if (message) {
+          errorMessage = message;
         }
       } catch (jsonError) {
         console.error("Failed to parse JSON response:", jsonError);
@@ -357,6 +369,10 @@ export const doneJobOffer = async (jobOfferId: number, xsrfToken: string, candid
         const message = await response.json();
         if (message.errors && Array.isArray(message.errors)) {
           errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
+        } else if (message) {
+          errorMessage = message;
         }
       } catch (jsonError) {
         console.error("Failed to parse JSON response:", jsonError);
@@ -385,12 +401,53 @@ export const generateJobOffer = async (prompt: string, xsrfToken: string) => {
     });
 
     if (!response.ok) {
-      let errorMessage = "An error occurred while generating the job offer. Try later, please.";
+      let errorMessage = "An error occurred while generating the job offer. Please, try later.";
 
       try {
         const message = await response.json();
         if (message.errors && Array.isArray(message.errors)) {
           errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
+        } else if (message) {
+          errorMessage = message;
+        }
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const generateSkillsAPI = async (prompt: string, xsrfToken: string) => {
+  try {
+    const response = await fetch("/crmService/v1/API/joboffers/skills/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-Token": xsrfToken,
+      },
+      body: JSON.stringify(prompt),
+    });
+
+    if (!response.ok) {
+      let errorMessage = "An error occurred while generating the skills. Please, try later.";
+
+      try {
+        const message = await response.json();
+        if (message.errors && Array.isArray(message.errors)) {
+          errorMessage = message.errors.join(", ");
+        } else if (message.error) {
+          errorMessage = message.error;
+        } else if (message) {
+          errorMessage = message;
         }
       } catch (jsonError) {
         console.error("Failed to parse JSON response:", jsonError);

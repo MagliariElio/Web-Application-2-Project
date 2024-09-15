@@ -386,7 +386,7 @@ class CrmProfessionalsServiceUnitTest {
         val result = professionalService.getProfessional(professional.id)
 
         verify(exactly = 1) { professionalRepository.findById(professional.id) }
-        Assertions.assertEquals(professionalDTO, result)
+        assertEquals(professionalDTO, result)
     }
 
     @Test
@@ -400,7 +400,7 @@ class CrmProfessionalsServiceUnitTest {
         }
 
         verify(exactly = 1) { professionalRepository.findById(professional.id) }
-        Assertions.assertEquals(
+        assertEquals(
             "The professional with id equal to ${professional.id} was not found!",
             exception.message
         )
@@ -420,7 +420,7 @@ class CrmProfessionalsServiceUnitTest {
 
 
         verify(exactly = 1) { professionalRepository.save(any()) }
-        Assertions.assertEquals(updatedProfessional.toDTO(), result)
+        assertEquals(updatedProfessional.toDTO(), result)
     }
 
     @Test
@@ -436,7 +436,7 @@ class CrmProfessionalsServiceUnitTest {
         }
 
         verify(exactly = 0) { professionalRepository.save(any()) }
-        Assertions.assertEquals(
+        assertEquals(
             "The professional with id equal to ${updateProfessionalDTO.id} was not found!",
             result.message
         )

@@ -13,9 +13,15 @@ import it.polito.students.crm.entities.Professional
 import it.polito.students.crm.exception_handlers.CustomerNotFoundException
 import it.polito.students.crm.exception_handlers.NotFoundJobOfferException
 import it.polito.students.crm.repositories.*
-import it.polito.students.crm.services.*
-import it.polito.students.crm.utils.*
+import it.polito.students.crm.services.ContactServiceImpl
+import it.polito.students.crm.services.CustomerServiceImpl
+import it.polito.students.crm.services.JobOfferServiceImpl
+import it.polito.students.crm.services.ProfessionalServiceImpl
+import it.polito.students.crm.utils.CategoryOptions
+import it.polito.students.crm.utils.EmploymentStateEnum
+import it.polito.students.crm.utils.Factory
 import it.polito.students.crm.utils.Factory.Companion.copy
+import it.polito.students.crm.utils.JobStatusEnum
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -194,7 +200,7 @@ class CrmJobOffersServiceUnitTest {
         val result = jobOfferService.getJobOfferById(jobOffer.id)
 
         verify(exactly = 1) { jobOfferRepository.findById(jobOffer.id) }
-        Assertions.assertEquals(jobOffer.toDTO(), result)
+        assertEquals(jobOffer.toDTO(), result)
     }
 
     @Test
@@ -206,7 +212,7 @@ class CrmJobOffersServiceUnitTest {
         val exception = assertThrows<NotFoundJobOfferException> { jobOfferService.getJobOfferById(jobOfferId) }
 
         verify(exactly = 1) { jobOfferRepository.findById(jobOfferId) }
-        Assertions.assertEquals("JobOffer id not found!", exception.message)
+        assertEquals("JobOffer id not found!", exception.message)
     }
 
     @Test
@@ -218,7 +224,7 @@ class CrmJobOffersServiceUnitTest {
         val result = jobOfferService.getJobOfferById(jobOffer.id)
 
         verify(exactly = 1) { jobOfferRepository.findById(jobOffer.id) }
-        Assertions.assertEquals(null, result)
+        assertEquals(null, result)
     }
 
 
@@ -241,7 +247,7 @@ class CrmJobOffersServiceUnitTest {
         val result = jobOfferService.storeJobOffer(createjobOffer)
 
         verify(exactly = 1) { jobOfferRepository.save(any()) }
-        Assertions.assertEquals(mockSavedJobOffer.toDTO(), result)
+        assertEquals(mockSavedJobOffer.toDTO(), result)
     }
 
 

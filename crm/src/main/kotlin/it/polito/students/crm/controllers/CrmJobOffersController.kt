@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.NoSuchElementException
 
 @RestController
 @RequestMapping("/API/joboffers")
@@ -144,7 +143,10 @@ class CrmJobOffersController(
             }
 
             val saved = jobOfferService.storeJobOffer(jobOffer)
-            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(null, saved.status, LocalDate.now().format(formatter).lowercase()))
+            kafkaProducer.sendJobOffer(
+                KafkaTopics.TOPIC_JOB_OFFER,
+                JobOfferAnalyticsDTO(null, saved.status, LocalDate.now().format(formatter).lowercase())
+            )
             return ResponseEntity(saved, HttpStatus.CREATED)
         } catch (e: CustomerNotFoundException) {
             logger.info("CustomerControl: Error with customer: ${e.message}")
@@ -258,8 +260,16 @@ class CrmJobOffersController(
             }
 
             val oldjobOffer = jobOfferService.getJobOfferById(jobOfferId)
-            val editedJobOffer = jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
-            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(oldjobOffer!!.status, editedJobOffer.status, LocalDate.now().format(formatter).lowercase()))
+            val editedJobOffer =
+                jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
+            kafkaProducer.sendJobOffer(
+                KafkaTopics.TOPIC_JOB_OFFER,
+                JobOfferAnalyticsDTO(
+                    oldjobOffer!!.status,
+                    editedJobOffer.status,
+                    LocalDate.now().format(formatter).lowercase()
+                )
+            )
 
             return ResponseEntity(editedJobOffer, HttpStatus.OK)
         } catch (e: IllegalJobStatusTransition) {
@@ -323,6 +333,9 @@ class CrmJobOffersController(
         try {
             val jobOffer = jobOfferService.getGenerateJobOffer(prompt)
             return ResponseEntity(jobOffer, HttpStatus.OK)
+        } catch (e: IllegalArgumentException) {
+            logger.info("Problem during job offer generation: dangerous description (${e.message})")
+            return ResponseEntity(mapOf("error" to e.message), HttpStatus.BAD_REQUEST)
         } catch (e: Exception) {
             logger.info("Error: Internal server error, ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)
@@ -341,6 +354,9 @@ class CrmJobOffersController(
         try {
             val jobOffer = jobOfferService.getGenerateSkills(prompt)
             return ResponseEntity(jobOffer, HttpStatus.OK)
+        } catch (e: IllegalArgumentException) {
+            logger.info("Problem during skills generation: dangerous description (${e.message})")
+            return ResponseEntity(mapOf("error" to e.message), HttpStatus.BAD_REQUEST)
         } catch (e: Exception) {
             logger.info("Error: Internal server error, ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)

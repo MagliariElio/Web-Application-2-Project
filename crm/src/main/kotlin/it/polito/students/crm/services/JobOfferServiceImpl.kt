@@ -3,6 +3,7 @@ package it.polito.students.crm.services
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
 import it.polito.students.crm.dtos.CreateJobOfferDTO
 import it.polito.students.crm.dtos.JobOfferAnalyticsDTO
 import it.polito.students.crm.dtos.JobOfferDTO
@@ -16,7 +17,6 @@ import it.polito.students.crm.utils.*
 import it.polito.students.crm.utils.Factory.Companion.convertJsonToCreateJobOfferDTO
 import it.polito.students.crm.utils.Factory.Companion.toEntity
 import jakarta.transaction.Transactional
-import org.springframework.asm.TypeReference
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -26,6 +26,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import java.io.StringReader
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -508,9 +509,10 @@ class JobOfferServiceImpl(
                 "model": "$model",
                 "messages": [
                     {
-                    "role": "user",
-                    "content": "$finalPrompt"
-                }],
+                        "role": "user",
+                        "content": "$finalPrompt"
+                    }
+                ],
                 "documents":[],
                 "tools":[],
                 "n": 1,
@@ -547,9 +549,10 @@ class JobOfferServiceImpl(
                 "model": "$model",
                 "messages": [
                     {
-                    "role": "user",
-                    "content": "$finalPrompt"
-                }],
+                        "role": "user",
+                        "content": "$finalPrompt"
+                    }
+                ],
                 "documents":[],
                 "tools":[],
                 "n": 1,
@@ -572,10 +575,14 @@ class JobOfferServiceImpl(
 
         val choices = responseJson["choices"] as? List<Map<String, Any>>
         val message = choices?.firstOrNull()?.get("message") as? Map<String, Any>
-        val content = message?.get("content") as? String ?: "[]"
+        var content = message?.get("content") as? String ?: "[]"
+
+        content = content.trim().removePrefix("```json").removeSuffix("```").trim()
+        val reader = JsonReader(StringReader(content))
+        reader.isLenient = true
 
         val skillsListType = object : TypeToken<List<String>>() {}.type
-        val skillsList: List<String> = gson.fromJson(content, skillsListType)
+        val skillsList: List<String> = gson.fromJson(reader, skillsListType)
 
         return skillsList.toMutableList()
     }

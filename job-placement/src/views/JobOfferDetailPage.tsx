@@ -15,6 +15,7 @@ import {
   FaInfoCircle,
   FaLaptopHouse,
   FaMapMarkerAlt,
+  FaMicrochip,
   FaMoneyBillWave,
   FaPencilAlt,
   FaReply,
@@ -47,6 +48,7 @@ import {
   deleteJobOfferById,
   doneJobOffer,
   fetchJobOfferById,
+  generateSkillsAPI,
   goToCandidateProposalPhase,
   goToCondolidated,
   goToSelectionPhase,
@@ -58,6 +60,7 @@ import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAs
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import { convertLocalDateTimeToDate } from "../utils/checkers";
 import { FaListCheck } from "react-icons/fa6";
+import { DescriptionGenerateAIModal } from "./AddJobOfferPage";
 
 const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const { id } = useParams<{ id: string }>();
@@ -191,6 +194,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
   const [showModalCancellAllApplications, setShowModalCancellAllApplications] = useState(false);
   const [showModalCancelApplication, setShowModalCancelApplication] = useState<{ b: boolean; c: Professional | null }>({ b: false, c: null });
   const [showModalRevokeApplication, setShowModalRevokeApplication] = useState(false);
+
+  const [showGenerateSkillsModal, setShowGenerateSkillsModal] = useState(false);
+  const [generationSkills, setGenerationSkills] = useState(false);
 
   const errorRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -698,6 +704,39 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
     }
   };
 
+  const generateSkills = async (description: string) => {
+    try {
+      setGenerationSkills(true);
+      setShowGenerateSkillsModal(false);
+      const response = await generateSkillsAPI(description, me.xsrfToken);
+
+      const newSkills: string[] = jobOffer?.requiredSkills ? [...jobOffer?.requiredSkills] : [];
+      response.forEach((r: string) => newSkills.push(r));
+      setFormDataJobOffer(
+        (prevData) =>
+          ({
+            ...prevData,
+            requiredSkills: [...newSkills],
+          } as JobOffer)
+      );
+
+      setGenerationSkills(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      setGenerationSkills(false);
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   if (error) {
     return (
       <Container className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
@@ -795,6 +834,16 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
         body="<strong>Warning:</strong> By proceeding, you will revoke the professional candidate's acceptance for this job offer, returning them to the <strong>selection phase</strong>. Please <strong>confirm</strong> if you wish to continue with this action."
         name={null}
         actionType={false}
+      />
+
+      <DescriptionGenerateAIModal
+        name={"Generate Skills with the AI"}
+        placeholderValue={"Enter a detailed job offer description to generate the required skills"}
+        suggestion_1={"Be specific in the job description to get accurate skills."}
+        suggestion_2={"For example: <i>Generate required skills for a Senior Python Developer with experience in AI and Machine Learning.</i>"}
+        show={showGenerateSkillsModal}
+        handleClose={() => setShowGenerateSkillsModal(false)}
+        onSubmit={generateSkills}
       />
 
       <Row className="justify-content-center align-items-center">
@@ -1034,9 +1083,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 )}
               </Col>
               <Col md={3} className="d-flex align-items-center">
-                  <FaClock className="me-2" /> <strong className="me-1">Creation Time: </strong>
-                  {convertLocalDateTimeToDate(jobOffer?.creationTime).toLocaleDateString()}{" "}
-                  {convertLocalDateTimeToDate(jobOffer?.creationTime).toLocaleTimeString()}
+                <FaClock className="me-2" /> <strong className="me-1">Creation Time: </strong>
+                {convertLocalDateTimeToDate(jobOffer?.creationTime).toLocaleDateString()}{" "}
+                {convertLocalDateTimeToDate(jobOffer?.creationTime).toLocaleTimeString()}
               </Col>
             </Row>
 
@@ -1109,52 +1158,72 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
             {/* Required Skills */}
             <Row className="border-top pt-4">
               <Col>
-                <Form.Group as={Row} controlId="status" className="d-flex align-items-center">
+                <Form.Group as={Row} controlId="requiredSkills" className="d-flex align-items-center">
                   <Form.Label column xs={12} sm={2} className="mb-0 fw-bold">
-                    Required Skills
+                    <Row className="ms-3">Required Skills</Row>
+                    {isEditing && (
+                      <Row className="mt-3">
+                        <Button
+                          className="mt-2 d-flex align-items-center ms-3 secondaryButton"
+                          style={{ maxWidth: "150px" }}
+                          onClick={() => setShowGenerateSkillsModal(true)}
+                        >
+                          <FaMicrochip style={{ marginRight: "5px" }} />
+                          Generate Skills with AI
+                        </Button>
+                      </Row>
+                    )}
                   </Form.Label>
 
-                  {formDataJobOffer?.requiredSkills.length === 0 ? (
-                    <Col xs={12} className="text-center">
-                      <p className="text-muted">No required skill added yet</p>
-                    </Col>
-                  ) : (
-                    <Col xs={12} sm={10}>
-                      <ul className="list-unstyled d-flex flex-wrap">
-                        {formDataJobOffer?.requiredSkills.map((skill, index) => (
-                          <li key={index} className="skill-item mb-3 d-flex justify-content-between align-items-center">
-                            <span className="skill-text">{skill}</span>
-                            {isEditing && (
-                              <OverlayTrigger overlay={<Tooltip id="deleteRequiredSkillButton">Delete</Tooltip>}>
-                                <Button
-                                  variant="danger"
-                                  size="sm"
-                                  onClick={() => {
-                                    setFormDataJobOffer(
-                                      (prevData) =>
-                                        ({
-                                          ...prevData,
-                                          requiredSkills: prevData?.requiredSkills.filter((_, i) => i !== index),
-                                        } as JobOffer)
-                                    );
-                                  }}
-                                >
-                                  <FaTrash />
-                                </Button>
-                              </OverlayTrigger>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </Col>
+                  {generationSkills && <LoadingSection h={200} />}
+
+                  {!generationSkills && (
+                    <>
+                      {formDataJobOffer?.requiredSkills.length === 0 ? (
+                        <Col xs={12} className="text-center">
+                          <p className="text-muted">No required skill added yet</p>
+                        </Col>
+                      ) : (
+                        <Col xs={12} sm={10}>
+                          <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+                            <ul className="list-unstyled d-flex flex-wrap">
+                              {formDataJobOffer?.requiredSkills.map((skill, index) => (
+                                <li key={index} className="skill-item mb-3 d-flex justify-content-between align-items-center">
+                                  <span className="skill-text">{skill}</span>
+                                  {isEditing && (
+                                    <OverlayTrigger overlay={<Tooltip id="deleteRequiredSkillButton">Delete</Tooltip>}>
+                                      <Button
+                                        variant="danger"
+                                        size="sm"
+                                        onClick={() => {
+                                          setFormDataJobOffer(
+                                            (prevData) =>
+                                              ({
+                                                ...prevData,
+                                                requiredSkills: prevData?.requiredSkills.filter((_, i) => i !== index),
+                                              } as JobOffer)
+                                          );
+                                        }}
+                                      >
+                                        <FaTrash />
+                                      </Button>
+                                    </OverlayTrigger>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </Col>
+                      )}
+                    </>
                   )}
                 </Form.Group>
               </Col>
             </Row>
 
             {/* Add Skill */}
-            {isEditing && (
-              <Row className="mb-3 justify-content-end">
+            {isEditing && !generationSkills && (
+              <Row className="mb-3 justify-content-end mt-2">
                 <Col xs={12} md={8} lg={6}>
                   <Form.Control
                     placeholder="Add a skill"

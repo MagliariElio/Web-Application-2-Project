@@ -4,11 +4,12 @@ import Form from "react-bootstrap/Form";
 import { BsXLg } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
-import { contractTypeList, toTitleCase, workModeList } from "../utils/costants";
+import { contractTypeList, RoleState, toTitleCase, workModeList } from "../utils/costants";
 import { Customer } from "../interfaces/Customer";
 import { fetchCustomers } from "../apis/CustomerRequests";
-import { generateJobOffer, submitJobOffer } from "../apis/JobOfferRequests";
+import { generateJobOffer, generateSkillsAPI, submitJobOffer } from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
+import { FaBookOpen, FaBrain, FaMicrochip, FaPlus, FaProjectDiagram, FaRobot, FaTrashAlt } from "react-icons/fa";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -29,6 +30,9 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
   const [requiredSkills, setRequiredSkills] = useState<any[]>([]);
   const [singleRequiredSkill, setSingleRequiredSkill] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [showGenerateSkillsModal, setShowGenerateSkillsModal] = useState(false);
+  const [generationSkills, setGenerationSkills] = useState(false);
 
   // Customer Selection
   const [showSelectCustomerModal, setShowSelectCustomerModal] = useState(false);
@@ -52,8 +56,6 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
       setLoading(true);
       setShowGenerateJobOfferModal(false);
       const response = await generateJobOffer(description, me.xsrfToken);
-
-      console.log(response);
 
       setName(response.name);
       setDescription(response.description);
@@ -176,24 +178,67 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
     }
   };
 
+  const generateSkills = async (description: string) => {
+    try {
+      setGenerationSkills(true);
+      setShowGenerateSkillsModal(false);
+      const response = await generateSkillsAPI(description, me.xsrfToken);
+
+      const newSkills: string[] = [...requiredSkills];
+      response.forEach((r: string) => newSkills.push(r));
+      setRequiredSkills(newSkills);
+
+      setGenerationSkills(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      setGenerationSkills(false);
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <div className="add-job-offer-container">
-
-      <DescriptionGenerateJobOfferModal
+      <DescriptionGenerateAIModal
+        name={"Generate Job Offer with the AI"}
+        placeholderValue={"Enter a brief and detailed description of the job offer"}
+        suggestion_1={"Try to be as precise as possible when describing the job offer details."}
+        suggestion_2={"For example: <i>Generate a job offer for a Java developer with Spring skills and microservices.</i>"}
         show={showGenerateJobOfferModal}
         handleClose={() => setShowGenerateJobOfferModal(false)}
         onSubmit={generateJobOfferFields}
+      />
+
+      <DescriptionGenerateAIModal
+        name={"Generate Skills with the AI"}
+        placeholderValue={"Enter a detailed job offer description to generate the required skills"}
+        suggestion_1={"Be specific in the job description to get accurate skills."}
+        suggestion_2={"For example: <i>Generate required skills for a Senior Python Developer with experience in AI and Machine Learning.</i>"}
+        show={showGenerateSkillsModal}
+        handleClose={() => setShowGenerateSkillsModal(false)}
+        onSubmit={generateSkills}
       />
 
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
         <Col sm={7}>
           <h3>Add New Job Offer</h3>
         </Col>
-        <Col sm={4} className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center secondaryButton" onClick={() => setShowGenerateJobOfferModal(true)}>
-            Generate Job Offer
-          </Button>
-        </Col>
+        {me.role === RoleState.OPERATOR && (
+          <Col sm={4} className="d-flex justify-content-end">
+            <Button className="d-flex align-items-center secondaryButton" onClick={() => setShowGenerateJobOfferModal(true)}>
+              <FaMicrochip style={{ marginRight: "8px" }} />
+              Generate Job Offer with AI
+            </Button>
+          </Col>
+        )}
         <Col sm={1} className="d-flex justify-content-end">
           <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate("/ui")}>
             <BsXLg size={"1.5em"} />
@@ -338,7 +383,8 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                 </Col>
               </Row>
 
-              {requiredSkills.length === 0 && (
+              {generationSkills && <LoadingSection h={200} />}
+              {requiredSkills.length === 0 && !generationSkills && (
                 <Row className="justify-content-center mt-3">
                   <Col xs={12} className="text-center">
                     <p className="text-muted">No required skill added yet.</p>
@@ -347,6 +393,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
               )}
 
               {requiredSkills.length > 0 &&
+                !generationSkills &&
                 requiredSkills.map((requiredSkill, index) => (
                   <Row key={index} className="mt-3 d-flex align-items-center justify-content-between">
                     <Col xs={8} md={8} lg={10}>
@@ -364,8 +411,8 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                   </Row>
                 ))}
 
-              <Row className="mt-4 justify-content-center">
-                <Col xs={12} md={8} lg={6}>
+              <Row className="mt-3 justify-content-center">
+                <Col xs={12} md={8} lg={10}>
                   <Form.Control
                     placeholder="Add a skill"
                     value={singleRequiredSkill}
@@ -375,12 +422,35 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                     className="mb-2"
                   />
                 </Col>
-                <Col xs={12} md={4} lg={3} className="text-end">
-                  <OverlayTrigger overlay={<Tooltip id="addSkillButton">Add Skill</Tooltip>}>
-                    <Button variant="primary" onClick={handleAddSkill}>
-                      Add Skill
-                    </Button>
-                  </OverlayTrigger>
+              </Row>
+
+              <Row className="mt-2 justify-content-center">
+                <Col xs={12} md={8} lg={8} className="d-flex justify-content-center">
+                  <Button
+                    className="secondaryButton mb-2 d-flex align-items-center me-2"
+                    onClick={() => setShowGenerateSkillsModal(true)}
+                    disabled={requiredSkills.length > 100}
+                  >
+                    <FaMicrochip style={{ marginRight: "5px" }} />
+                    Generate Skills with AI
+                  </Button>
+                  <Button
+                    className="secondaryDangerButton mb-2 d-flex align-items-center me-2"
+                    onClick={() => setRequiredSkills([])}
+                    disabled={requiredSkills.length === 0}
+                  >
+                    <FaTrashAlt style={{ marginRight: "5px" }} />
+                    Clear
+                  </Button>
+                  <Button
+                    className="secondaryButton mb-2 d-flex align-items-center"
+                    variant="primary"
+                    onClick={handleAddSkill}
+                    disabled={singleRequiredSkill.trim() === ""}
+                  >
+                    <FaPlus style={{ marginRight: "5px" }} />
+                    Add Skill
+                  </Button>
                 </Col>
               </Row>
             </Col>
@@ -402,12 +472,12 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                   setRequiredSkills([]);
                 }}
               >
-                Clear
+                Clear Job Offer
               </Button>
             </Col>
             <Col xs={12} md={12} lg={3} className="d-flex flex-column justify-content-start align-items-center">
               <Button type="submit" className="primaryButton">
-                Save
+                Save Job Offer
               </Button>
             </Col>
           </Row>
@@ -599,11 +669,15 @@ const CustomerSelectModal: React.FC<{
   );
 };
 
-const DescriptionGenerateJobOfferModal: React.FC<{
+export const DescriptionGenerateAIModal: React.FC<{
+  name: string;
+  placeholderValue: string;
+  suggestion_1: string;
+  suggestion_2: string;
   show: boolean;
   handleClose: () => void;
   onSubmit: (description: string) => void;
-}> = ({ show, handleClose, onSubmit }) => {
+}> = ({ name, placeholderValue, suggestion_1, suggestion_2, show, handleClose, onSubmit }) => {
   const [description, setDescription] = useState<string>("");
 
   const handleSubmit = () => {
@@ -616,7 +690,7 @@ const DescriptionGenerateJobOfferModal: React.FC<{
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title className="fw-bold">Enter Job Offer Description</Modal.Title>
+        <Modal.Title className="fw-bold">{name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -624,15 +698,14 @@ const DescriptionGenerateJobOfferModal: React.FC<{
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Enter a brief and detailed description of the job offer"
+              placeholder={placeholderValue}
               value={description}
+              maxLength={255}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <Form.Text className="text-muted">Try to be as precise as possible when describing the job offer details.</Form.Text>
+            <Form.Text className="text-muted">{suggestion_1}</Form.Text>
             <br />
-            <Form.Text className="text-muted">
-              For example: <i>Generate a job offer for a Java developer with Spring skills and microservices.</i>
-            </Form.Text>
+            <Form.Text className="text-muted" dangerouslySetInnerHTML={{ __html: suggestion_2 }} />
           </Form.Group>
         </Form>
       </Modal.Body>

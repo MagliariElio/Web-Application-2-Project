@@ -5,7 +5,6 @@ import it.polito.students.crm.dtos.JobOfferDTO
 import it.polito.students.crm.utils.JobStatusEnum
 import it.polito.students.crm.utils.JobStatusGroupEnum
 import org.springframework.data.domain.PageImpl
-import reactor.core.publisher.Mono
 
 interface JobOfferService {
 

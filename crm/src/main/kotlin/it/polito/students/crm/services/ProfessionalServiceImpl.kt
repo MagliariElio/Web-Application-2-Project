@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.HashMap
 
 @Service
 class ProfessionalServiceImpl(
@@ -158,7 +157,14 @@ class ProfessionalServiceImpl(
                 }
 
                 jobOfferRepository.save(jobOffer)
-                kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(jobOffer.oldStatus, jobOffer.status, LocalDate.now().format(formatter).lowercase()))
+                kafkaProducer.sendJobOffer(
+                    KafkaTopics.TOPIC_JOB_OFFER,
+                    JobOfferAnalyticsDTO(
+                        jobOffer.oldStatus,
+                        jobOffer.status,
+                        LocalDate.now().format(formatter).lowercase()
+                    )
+                )
                 professionalSaved.jobOffers.removeIf { it.id == jobOffer.id }
             }
 
