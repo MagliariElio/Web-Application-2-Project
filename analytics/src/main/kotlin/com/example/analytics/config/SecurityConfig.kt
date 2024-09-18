@@ -33,7 +33,7 @@ class SecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
                 it.requestMatchers(HttpMethod.GET, "/API/analytics/professionals")
                     .hasAnyAuthority(Roles.ROLE_MANAGER, Roles.ROLE_OPERATOR)
 
-                //it.requestMatchers("/actuator/**").permitAll()
+                it.requestMatchers("/actuator/**").permitAll()
                 it.anyRequest().authenticated()
             }
             .oauth2ResourceServer {
