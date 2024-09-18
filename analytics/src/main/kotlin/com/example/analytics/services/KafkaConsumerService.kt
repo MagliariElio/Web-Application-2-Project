@@ -7,6 +7,9 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.Duration
 
 @Service
 class KafkaConsumerService (
@@ -116,9 +119,18 @@ class KafkaConsumerService (
             val previousStateString = messageMap["previousState"] as? String
             val actualStateString = messageMap["actualState"] as? String
             val date = messageMap["date"] as? String
+            val creationDateString = messageMap["creationTime"] as? String
+            val endDateString = messageMap["endTime"] as? String
 
             val previousState = previousStateString?.let { JobStatusEnum.valueOf(it) }
             val actualState = actualStateString?.let { JobStatusEnum.valueOf(it) }
+
+            // Use ISO_LOCAL_DATE_TIME to handle nanoseconds in the date-time string
+            val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+            // Convert creationTime and endTime to LocalDateTime
+            val creationTime = creationDateString?.let { LocalDateTime.parse(it, formatter) }
+            val endTime = endDateString?.let { LocalDateTime.parse(it, formatter) }
 
             logger.info("Previous State: $previousState")
             logger.info("Actual State: $actualState")
@@ -173,7 +185,11 @@ class KafkaConsumerService (
 
                 JobStatusEnum.DONE -> {
                     counterService.incrementMessages(JobStatusCounters.DONE_COUNTER)
-                    counterService.incrementMessages(date + "CompletedJobOfferCounter")
+                    if (creationTime != null && endTime != null) {
+                        val elapsedMinutes = Duration.between(creationTime, endTime).toMinutes()
+                        counterService.incrementMessages("CompletedJobOffersForAvarage")
+                        counterService.updateCompletedJobOfferAvarageValue(elapsedMinutes)
+                    }
                 }
 
                 JobStatusEnum.ABORT -> {
@@ -188,5 +204,93 @@ class KafkaConsumerService (
         } catch (e: Exception) {
             logger.error("Failed to parse the message JSON: ${e.message}", e)
         }
+    }
+
+    @KafkaListener(topics = [KafkaTopics.TOPIC_JOB_OFFER_CT_WM], groupId = "cm-to-crm-email-message-group")
+    fun consumeNewJobOfferCtWm(jobOfferJson: String) {
+        logger.info("Received a job offer:")
+        logger.info(jobOfferJson)
+
+        try{
+            val messageMap: Map<String, Any?> = objectMapper.readValue(jobOfferJson)
+
+            // Access properties from the map and convert them to StateOptions enums
+            val contractType = messageMap["contractType"] as? String
+            val workMode = messageMap["workMode"] as? String
+
+            counterService.incrementMessages(contractType + "counter")
+            counterService.incrementMessages(workMode + "counter")
+        } catch (e: Exception){
+            logger.error("Failed to parse the message JSON: ${e.message}", e)
+        }
+    }
+
+        @KafkaListener(topics = [KafkaTopics.TOPIC_PROFESSIONAL], groupId = "cm-to-crm-email-message-group")
+    fun consumeNewProfessional(professionalJson: String) {
+        logger.info("Received a professional:")
+        logger.info(professionalJson)
+
+        try {
+            // Parse JSON into a Map<String, Any>
+            val messageMap: Map<String, Any?> = objectMapper.readValue(professionalJson)
+
+            // Access properties from the map and convert them to StateOptions enums
+            val previousStateString = messageMap["previousState"] as? String
+            val actualStateString = messageMap["actualState"] as? String
+
+            val previousState = previousStateString?.let { EmploymentStateEnum.valueOf(it) }
+            val actualState = actualStateString?.let { EmploymentStateEnum.valueOf(it) }
+
+            logger.info("Previous State: $previousState")
+            logger.info("Actual State: $actualState")
+
+            when (previousState) {
+                EmploymentStateEnum.EMPLOYED -> {
+                    counterService.decrementMessages(EmploymentStateCounters.EMPLOYED_COUNTER)
+                }
+
+                EmploymentStateEnum.UNEMPLOYED -> {
+                    counterService.decrementMessages(EmploymentStateCounters.UNEMPLOYED_COUNTER)
+                }
+
+                EmploymentStateEnum.AVAILABLE_FOR_WORK -> {
+                    counterService.decrementMessages(EmploymentStateCounters.AVAILABLE_FOR_WORK_COUNTER)
+                }
+
+                EmploymentStateEnum.NOT_AVAILABLE -> {
+                    counterService.decrementMessages(EmploymentStateCounters.NOT_AVAILABLE_COUNTER)
+                }
+
+                null -> {
+                    //nothing to do
+                }
+            }
+
+            when (actualState) {
+                EmploymentStateEnum.EMPLOYED -> {
+                    counterService.incrementMessages(EmploymentStateCounters.EMPLOYED_COUNTER)
+                }
+
+                EmploymentStateEnum.UNEMPLOYED -> {
+                    counterService.incrementMessages(EmploymentStateCounters.UNEMPLOYED_COUNTER)
+                }
+
+                EmploymentStateEnum.AVAILABLE_FOR_WORK -> {
+                    counterService.incrementMessages(EmploymentStateCounters.AVAILABLE_FOR_WORK_COUNTER)
+                }
+
+                EmploymentStateEnum.NOT_AVAILABLE -> {
+                    counterService.incrementMessages(EmploymentStateCounters.NOT_AVAILABLE_COUNTER)
+                }
+
+                null -> {
+                    //nothing to do
+                }
+            }
+
+        } catch (e: Exception) {
+            logger.error("Failed to parse the message JSON: ${e.message}", e)
+        }
+
     }
 }

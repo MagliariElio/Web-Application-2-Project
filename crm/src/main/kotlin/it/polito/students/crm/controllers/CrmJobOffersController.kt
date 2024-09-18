@@ -1,9 +1,6 @@
 package it.polito.students.crm.controllers
 
-import it.polito.students.crm.dtos.ChangeJobStatusDTO
-import it.polito.students.crm.dtos.CreateJobOfferDTO
-import it.polito.students.crm.dtos.JobOfferAnalyticsDTO
-import it.polito.students.crm.dtos.JobOfferDTO
+import it.polito.students.crm.dtos.*
 import it.polito.students.crm.exception_handlers.*
 import it.polito.students.crm.services.JobOfferService
 import it.polito.students.crm.services.KafkaProducerService
@@ -144,7 +141,8 @@ class CrmJobOffersController(
             }
 
             val saved = jobOfferService.storeJobOffer(jobOffer)
-            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(null, saved.status, LocalDate.now().format(formatter).lowercase()))
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(null, saved.status, LocalDate.now().format(formatter).lowercase(), saved.creationTime, saved.endTime))
+            kafkaProducer.sendJobOfferCtWm(KafkaTopics.TOPIC_JOB_OFFER_CT_WM, AnalyticsJobOfferDTO(jobOffer.contractType, jobOffer.workMode))
             return ResponseEntity(saved, HttpStatus.CREATED)
         } catch (e: CustomerNotFoundException) {
             logger.info("CustomerControl: Error with customer: ${e.message}")
@@ -259,7 +257,7 @@ class CrmJobOffersController(
 
             val oldjobOffer = jobOfferService.getJobOfferById(jobOfferId)
             val editedJobOffer = jobOfferService.changeJobOfferStatus(jobOfferId, nextStatusEnum!!, professionalsId, note)
-            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(oldjobOffer!!.status, editedJobOffer.status, LocalDate.now().format(formatter).lowercase()))
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(oldjobOffer!!.status, editedJobOffer.status, LocalDate.now().format(formatter).lowercase(), editedJobOffer.creationTime, editedJobOffer.endTime))
 
             return ResponseEntity(editedJobOffer, HttpStatus.OK)
         } catch (e: IllegalJobStatusTransition) {

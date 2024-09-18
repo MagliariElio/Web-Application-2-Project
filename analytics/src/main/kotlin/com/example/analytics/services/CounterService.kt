@@ -43,4 +43,6 @@ interface CounterService {
     Return all counters values for completed job offers divided per month that year
      */
     fun getCompletedJobOfferPerMonth(year: Long): Map<String, Long>
+    fun updateCompletedJobOfferAvarageValue(newValue: Long)
+    fun getProfessionals(): Map<String, Long>
 }

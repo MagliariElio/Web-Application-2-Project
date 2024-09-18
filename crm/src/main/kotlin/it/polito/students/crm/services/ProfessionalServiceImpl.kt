@@ -158,7 +158,7 @@ class ProfessionalServiceImpl(
                 }
 
                 jobOfferRepository.save(jobOffer)
-                kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(jobOffer.oldStatus, jobOffer.status, LocalDate.now().format(formatter).lowercase()))
+                kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(jobOffer.oldStatus, jobOffer.status, LocalDate.now().format(formatter).lowercase(), jobOffer.creationTime, jobOffer.endTime))
                 professionalSaved.jobOffers.removeIf { it.id == jobOffer.id }
             }
 

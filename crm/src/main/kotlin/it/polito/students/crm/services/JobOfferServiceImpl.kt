@@ -1,9 +1,6 @@
 package it.polito.students.crm.services
 
-import it.polito.students.crm.dtos.CreateJobOfferDTO
-import it.polito.students.crm.dtos.JobOfferAnalyticsDTO
-import it.polito.students.crm.dtos.JobOfferDTO
-import it.polito.students.crm.dtos.toDTO
+import it.polito.students.crm.dtos.*
 import it.polito.students.crm.entities.JobOffer
 import it.polito.students.crm.entities.Professional
 import it.polito.students.crm.exception_handlers.*
@@ -16,6 +13,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
@@ -177,11 +175,15 @@ class JobOfferServiceImpl(
         jobOfferData.deleted = true
         jobOfferData.endTime = LocalDateTime.now()
         val professional = jobOfferData.professional
+        val oldState = professional?.employmentState
         professional?.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
 
         jobOfferRepository.save(jobOfferData)
-        kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(jobOfferData.status, null, LocalDate.now().format(formatter).lowercase()))
-        professional?.let { professionalRepository.save(it) }
+        kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(jobOfferData.status, null, LocalDate.now().format(formatter).lowercase(), jobOfferData.creationTime, jobOfferData.endTime))
+        professional?.let {
+            professionalRepository.save(it)
+            kafkaProducer.sendProfessional(KafkaTopics.TOPIC_PROFESSIONAL, ProfessionalAnalyticsDTO(oldState, it.employmentState))
+        }
     }
 
 
@@ -233,6 +235,7 @@ class JobOfferServiceImpl(
             throw RequiredProfessionalIdException(ErrorsPage.REQUIRED_PROFESSIONAL_ID)
         }
 
+        var oldState : EmploymentStateEnum? = null
         when (nextStatus) {
             JobStatusEnum.SELECTION_PHASE -> {
                 oldJobOffer.status = nextStatus
@@ -263,6 +266,7 @@ class JobOfferServiceImpl(
 
                     professional!!
                 }.toMutableList()
+                oldState = oldJobOffer.professional?.employmentState
                 oldJobOffer.professional?.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
 
                 if (!oldJobOffer.candidateProfessionals.contains(oldJobOffer.professional)) {
@@ -390,6 +394,7 @@ class JobOfferServiceImpl(
                     throw ProfessionalNotFoundException("Professional not found")
                 }
 
+                oldState = oldJobOffer.professional!!.employmentState
                 oldJobOffer.professional!!.employmentState = EmploymentStateEnum.EMPLOYED
                 oldJobOffer.professional!!.jobOffers.add(oldJobOffer)
                 if (note != null) oldJobOffer.note = note
@@ -426,9 +431,12 @@ class JobOfferServiceImpl(
                     throw InconsistentProfessionalStatusTransitionException("This professional is not the one that was consolidated")
                 }
 
-                oldJobOffer.professional!!.employmentState = EmploymentStateEnum.UNEMPLOYED
+                oldState = oldJobOffer.professional!!.employmentState
+                oldJobOffer.professional!!.employmentState = EmploymentStateEnum.EMPLOYED
                 oldJobOffer.professional?.jobOffers?.remove(oldJobOffer)
-                oldJobOffer.professional?.let { professionalRepository.save(it) }
+                oldJobOffer.professional?.let {
+                    professionalRepository.save(it)
+                }
                 //oldJobOffer.professional = null
                 //oldJobOffer.value = 0.0
                 oldJobOffer.endTime = LocalDateTime.now()
@@ -437,9 +445,12 @@ class JobOfferServiceImpl(
             }
 
             JobStatusEnum.ABORT -> {
+                oldState = oldJobOffer.professional!!.employmentState
                 oldJobOffer.status = nextStatus
                 oldJobOffer.professional?.employmentState = EmploymentStateEnum.UNEMPLOYED
-                oldJobOffer.professional?.let { professionalRepository.save(it) }
+                oldJobOffer.professional?.let {
+                    professionalRepository.save(it)
+                }
                 oldJobOffer.oldStatus = oldStatus
                 oldJobOffer.endTime = LocalDateTime.now()
                 if (note != null) oldJobOffer.note = note
@@ -448,7 +459,10 @@ class JobOfferServiceImpl(
             else -> throw IllegalJobStatusTransition("Cannot enter Create status, illegal!")
         }
 
-        oldJobOffer.professional?.let { professionalRepository.save(it) }
+        oldJobOffer.professional?.let {
+            professionalRepository.save(it)
+            kafkaProducer.sendProfessional(KafkaTopics.TOPIC_PROFESSIONAL, ProfessionalAnalyticsDTO(oldState, it.employmentState))
+        }
         oldJobOffer.candidateProfessionals.forEach { professionalRepository.save(it) }
         val newJobOffer = jobOfferRepository.save(oldJobOffer)
 

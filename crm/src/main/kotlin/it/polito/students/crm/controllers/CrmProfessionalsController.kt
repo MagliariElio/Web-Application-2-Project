@@ -2,10 +2,12 @@ package it.polito.students.crm.controllers
 
 import it.polito.students.crm.dtos.CreateAddressDTO
 import it.polito.students.crm.dtos.CreateProfessionalDTO
+import it.polito.students.crm.dtos.ProfessionalAnalyticsDTO
 import it.polito.students.crm.dtos.UpdateProfessionalDTO
 import it.polito.students.crm.exception_handlers.ContactNotFoundException
 import it.polito.students.crm.exception_handlers.ProfessionalNotFoundException
 import it.polito.students.crm.services.ContactService
+import it.polito.students.crm.services.KafkaProducerService
 import it.polito.students.crm.services.ProfessionalService
 import it.polito.students.crm.utils.*
 import it.polito.students.crm.utils.ErrorsPage.Companion.INTERNAL_SERVER_ERROR_MESSAGE
@@ -22,7 +24,8 @@ import java.util.regex.Pattern
 @RequestMapping("/API/professionals")
 class CrmProfessionalsController(
     private val professionalService: ProfessionalService,
-    private val contactService: ContactService
+    private val contactService: ContactService,
+    private val kafkaProducer: KafkaProducerService
 ) {
     private val logger = LoggerFactory.getLogger(CrmProfessionalsController::class.java)
 
@@ -183,6 +186,7 @@ class CrmProfessionalsController(
 
             val savedProfessional =
                 professionalService.storeProfessional(professional, EmploymentStateEnum.AVAILABLE_FOR_WORK)
+            kafkaProducer.sendProfessional(KafkaTopics.TOPIC_PROFESSIONAL, ProfessionalAnalyticsDTO(null, savedProfessional.employmentState))
             return ResponseEntity(savedProfessional, HttpStatus.CREATED)
         } catch (e: BadRequestException) {
             logger.info("Error: ${e.message}")
@@ -288,8 +292,10 @@ class CrmProfessionalsController(
             //Get the modified contact
             val contact = contactService.getContact(professionalDto.information.id)
 
+            val currentProfessional = professionalService.getProfessional(professionalID)
             val professionalModified = professionalService.updateProfessional(professionalDto, contact)
 
+            kafkaProducer.sendProfessional(KafkaTopics.TOPIC_PROFESSIONAL, ProfessionalAnalyticsDTO(currentProfessional.professionalDTO.employmentState, professionalModified.employmentState))
             return ResponseEntity(professionalModified, HttpStatus.OK)
 
         } catch (e: IllegalArgumentException) {

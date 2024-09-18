@@ -1,7 +1,7 @@
 import { Col, Row, Form } from "react-bootstrap";
 import { MeInterface } from "../interfaces/MeInterface";
 import { useEffect, useState } from "react";
-import { fetchJobOffersAnalytics, fetchJobOffersPerMonthAnalytics, fetchMessagesAnalytics, fetchMessagesPerMonthAnalytics } from "../apis/AnalyticsRequests";
+import { fetchJobOffersAnalytics, fetchJobOffersPerMonthAnalytics, fetchMessagesAnalytics, fetchMessagesPerMonthAnalytics, fetchProfessionalsAnalytics } from "../apis/AnalyticsRequests";
 import { MessageAnalytics } from "../interfaces/MessageAnalytics";
 import { useNavigate } from "react-router-dom";
 import { PieChart } from '@mui/x-charts/PieChart';
@@ -9,6 +9,8 @@ import { JobOfferAnalytics } from "../interfaces/JobOfferAnalytics";
 import Box from '@mui/material/Box';
 import { BarChart } from "@mui/x-charts";
 import { MessagesPerMonth } from "../interfaces/MessagesPerMonth";
+import { ProfessionalAnalytics } from "../interfaces/ProfessionalAnalytics";
+import { RoleState } from "../utils/costants";
 
 const AnalyticsPage = ({ me }: { me: MeInterface }) => {
     const navigate = useNavigate();
@@ -50,7 +52,15 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
       candidateProposalJobOffers: 0,
       consolidatedJobOffers: 0,
       doneJobOffers: 0,
-      abortJobOffers: 0
+      abortJobOffers: 0,
+      fullTimeCouner: 0,
+      partTimeCounter: 0,
+      contractCounter:0,
+      freelanceCounter: 0,
+      remoteCounter: 0,
+      hybridCounter: 0,
+      inPersonCounter: 0,
+      AvarageJobOfferCompletionTime: 0
     });
 
     const [completedJobOffersPerMonth, setCompletedJobOffersPerMonth] = useState<MessagesPerMonth>({
@@ -67,6 +77,13 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
       november: 0,
       december: 0
     })
+
+    const [professionalAnalytics, setProfessionalAnalytics] = useState<ProfessionalAnalytics>({
+      employedProfessional: 0,
+      unemployedProfessional: 0,
+      availableForWorkProfessional: 0,
+      notAvailableProfessional: 0
+    });
       
 
     useEffect(() => {
@@ -79,12 +96,14 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
             messagesAnalyticsData,
             jobOfferAnalyticsData,
             messagesPerMonthData,
-            jobOffersPerMonthData
+            jobOffersPerMonthData, 
+            professionalAnalyticsData
           ] = await Promise.all([
-            fetchMessagesAnalytics(),
-            fetchJobOffersAnalytics(),
-            fetchMessagesPerMonthAnalytics(yearToDisplay),
-            fetchJobOffersPerMonthAnalytics(yearToDisplayJobOffers)
+            fetchMessagesAnalytics(me),
+            fetchJobOffersAnalytics(me),
+            fetchMessagesPerMonthAnalytics(yearToDisplay, me),
+            fetchJobOffersPerMonthAnalytics(yearToDisplayJobOffers, me),
+            fetchProfessionalsAnalytics(me)
           ]);
     
           // Set the responses to state
@@ -92,6 +111,7 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
           setJobOfferAnalytics(jobOfferAnalyticsData);
           setCompletedMessagesPerMonth(messagesPerMonthData);
           setCompletedJobOffersPerMonth(jobOffersPerMonthData);
+          setProfessionalAnalytics(professionalAnalyticsData);
     
           console.log("Completed messages per month fetched: ", messagesPerMonthData);
           console.log("Completed job offers per month fetched: ", jobOffersPerMonthData);
@@ -107,11 +127,42 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
         }
       };
     
-      fetchAllData(); // Invoke the async function
+      if(me.role !== RoleState.GUEST){
+        fetchAllData(); // Invoke the async function
+      }
+      
     }, []); 
 
+    function formatDuration(minutes: number): string {
+      const days = Math.floor(minutes / (24 * 60));  // 1 day = 24 * 60 minutes
+      const hours = Math.floor((minutes % (24 * 60)) / 60);  // remainder from days to hours
+      const mins = minutes % 60;  // remainder from hours to minutes
+  
+      let result = '';
+  
+      if (days > 0) {
+          result += `${days} day${days > 1 ? 's' : ''} `;
+      }
+  
+      if (hours > 0) {
+          result += `${hours} hour${hours > 1 ? 's' : ''} `;
+      }
+  
+      result += `${mins} minute${mins !== 1 ? 's' : ''}`;
+  
+      return result.trim();  // Remove trailing spaces if any
+    }
+
     return(
-    <div className="w-100">
+    <>
+    {me.role === RoleState.GUEST && <div className="w-100">
+        <Row className="w-100">
+          <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
+            <h5>Only manager and operators can access this content</h5>
+          </Col>
+        </Row>
+      </div>}
+    {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && <div className="w-100">
       <Row className="d-flex flex-row p-0 mb-3 align-items-center">
         <Col md={9}>
           <h3 className="title">Analytics</h3>
@@ -128,6 +179,7 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
             >
               <option value="messages">Messages</option>
               <option value="job offers">Job offers</option>
+              <option value="professionals">Professionals</option>
             </Form.Select>
           </Form.Group>
         </Col>
@@ -191,7 +243,7 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                       onChange={(e) => {
                         setYearToDisplay(parseInt(e.target.value))
 
-                        fetchMessagesPerMonthAnalytics(parseInt(e.target.value))
+                        fetchMessagesPerMonthAnalytics(parseInt(e.target.value), me)
                         .then((result) => {
                           console.log("Completed messages per month fetched: " + result)
                           setCompletedMessagesPerMonth(result)
@@ -243,6 +295,12 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
         {dataToDisplay === "job offers" && 
         <>
         <Row>
+          <h5>Total number of job offers: {jobOfferAnalytics.totalJobOffers}</h5>
+        </Row>
+        <Row>
+          <h5>Avarage completition time for completed job offers: {formatDuration(jobOfferAnalytics.AvarageJobOfferCompletionTime)}</h5>
+        </Row>
+        <Row>
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
             <Box flexGrow={1}>
               <h5>Number of job offers in the different states</h5>
@@ -279,7 +337,7 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                       onChange={(e) => {
                         setYearToDisplayJobOffers(parseInt(e.target.value))
 
-                        fetchJobOffersPerMonthAnalytics(parseInt(e.target.value))
+                        fetchJobOffersPerMonthAnalytics(parseInt(e.target.value), me)
                         .then((result) => {
                           console.log("Completed job offers per month fetched: " + result)
                           setCompletedJobOffersPerMonth(result)
@@ -324,13 +382,76 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                 height={200}
               />
             </Box>            
-          </Col>        
+          </Col> 
+          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
+            <Box flexGrow={1}>
+              <h5>Number of job offers with differnt contract types</h5>
+              <PieChart
+                series={[
+                  {
+                    data: [
+                      { id: 0, value: jobOfferAnalytics.fullTimeCouner, label: 'Full time' },
+                      { id: 1, value: jobOfferAnalytics.partTimeCounter, label: 'Partr time' },
+                      { id: 2, value: jobOfferAnalytics.contractCounter, label: 'Contract' },
+                      { id: 3, value: jobOfferAnalytics.freelanceCounter, label: 'Freelance' }
+                    ],
+                  },
+                ]}
+                width={500}
+                height={200}
+              />
+            </Box>            
+          </Col>
+          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
+            <Box flexGrow={1}>
+              <h5>Number of job offers with differet working mode</h5>
+              <PieChart
+                series={[
+                  {
+                    data: [
+                      { id: 0, value: jobOfferAnalytics.remoteCounter, label: 'Remote' },
+                      { id: 1, value: jobOfferAnalytics.hybridCounter, label: 'Hybrid' },
+                      { id: 2, value: jobOfferAnalytics.inPersonCounter, label: 'In-Person' },
+                    ],
+                  },
+                ]}
+                width={500}
+                height={200}
+              />
+            </Box>            
+          </Col>       
+        </Row>
+        </>
+        }
+        {dataToDisplay === "professionals" && 
+        <>
+        <Row>
+          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
+            <Box flexGrow={1}>
+              <h5>Number of professionals in the different states</h5>
+              <PieChart
+                series={[
+                  {
+                    data: [
+                      { id: 0, value: professionalAnalytics.employedProfessional, label: 'Employed' },
+                      { id: 1, value: professionalAnalytics.unemployedProfessional, label: 'Unemployed' },
+                      { id: 2, value: professionalAnalytics.availableForWorkProfessional, label: 'Available for work' },
+                      { id: 3, value: professionalAnalytics.notAvailableProfessional, label: 'Unavailable for work' },
+                    ],
+                  },
+                ]}
+                width={500}
+                height={200}
+              />
+            </Box>            
+          </Col>       
         </Row>
         </>
         }
         </>
       )}
-    </div>
+    </div>}
+    </>
     )
 }
 

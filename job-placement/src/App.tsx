@@ -147,7 +147,7 @@ function App() {
                     }
                   />
                   <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
-                  <Route path="/ui/analytics" element={me && me.principal !== null && (me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) ? <AnalyticsPage me={me} /> : <Navigate to="/not-found" /> } /> 
+                  <Route path="/ui/analytics" element={me && me.principal !== null ? <AnalyticsPage me={me} /> : <Navigate to="/not-found" /> } /> 
 
                   <Route path="*" element={<PageNotFound />} />
                 </>

@@ -44,4 +44,34 @@ class KafkaProducerService(
             }
         }
     }
+
+    fun sendJobOfferCtWm(topic: String, jobOffer: AnalyticsJobOfferDTO) {
+        val jobOfferJson = objectMapper.writeValueAsString(jobOffer)
+        val result = ProducerRecord<String, String>(topic, jobOfferJson)
+
+        kafkaTemplate.execute { producer ->
+            producer.send(result) { metadata, exception ->
+                if (exception != null) {
+                    logger.error("Unable to send job offer=[$jobOfferJson] due to : ${exception.message}")
+                } else {
+                    logger.info("Sent job offer=[$jobOfferJson] with offset=[${metadata.offset()}]")
+                }
+            }
+        }
+    }
+
+    fun sendProfessional(topic: String, professional: ProfessionalAnalyticsDTO) {
+        val professionalJson = objectMapper.writeValueAsString(professional)
+        val result = ProducerRecord<String, String>(topic, professionalJson)
+
+        kafkaTemplate.execute { producer ->
+            producer.send(result) { metadata, exception ->
+                if (exception != null) {
+                    logger.error("Unable to send professional=[$professionalJson] due to : ${exception.message}")
+                } else {
+                    logger.info("Sent professional=[$professionalJson] with offset=[${metadata.offset()}]")
+                }
+            }
+        }
+    }
 }

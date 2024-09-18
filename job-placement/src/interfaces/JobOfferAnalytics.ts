@@ -6,4 +6,12 @@ export interface JobOfferAnalytics {
     consolidatedJobOffers: number;
     doneJobOffers: number;
     abortJobOffers: number;
+    fullTimeCouner: number;
+    partTimeCounter: number;
+    contractCounter: number;
+    freelanceCounter: number;
+    remoteCounter: number;
+    hybridCounter: number;
+    inPersonCounter: number;
+    AvarageJobOfferCompletionTime: number;
   }

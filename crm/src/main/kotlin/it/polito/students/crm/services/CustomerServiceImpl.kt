@@ -169,9 +169,10 @@ class CustomerServiceImpl(
             it.deleted = true
             if (it.professional?.employmentState == EmploymentStateEnum.EMPLOYED) {
                 it.professional!!.employmentState = EmploymentStateEnum.AVAILABLE_FOR_WORK
+                kafkaProducer.sendProfessional(KafkaTopics.TOPIC_PROFESSIONAL, ProfessionalAnalyticsDTO(EmploymentStateEnum.EMPLOYED, EmploymentStateEnum.AVAILABLE_FOR_WORK))
             }
             jobOfferRepository.save(it)
-            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(it.status, null, LocalDate.now().format(formatter).lowercase()))
+            kafkaProducer.sendJobOffer(KafkaTopics.TOPIC_JOB_OFFER, JobOfferAnalyticsDTO(it.status, null, LocalDate.now().format(formatter).lowercase(), it.creationTime, it.endTime))
         }
     }
 

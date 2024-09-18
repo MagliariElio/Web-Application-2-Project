@@ -2,6 +2,7 @@ package com.example.analytics.services
 
 import com.example.analytics.entities.CounterEntity
 import com.example.analytics.repositories.CounterRepository
+import com.example.analytics.utils.EmploymentStateCounters
 import com.example.analytics.utils.JobStatusCounters
 import com.example.analytics.utils.StateOptionsCounters
 import org.slf4j.LoggerFactory
@@ -110,6 +111,30 @@ class CounterServiceImpl(
         val failedCounter = counterRepository.findByType(JobStatusCounters.ABORT_COUNTER) ?: CounterEntity(StateOptionsCounters.FAILED_COUNTER, 0)
         countersMap[JobStatusCounters.ABORT_COUNTER] = failedCounter.count
 
+        val avarageCounter = counterRepository.findByType("AvarageJobOfferCompletionTime") ?: CounterEntity("AvarageJobOfferCompletionTime", 0)
+        countersMap["AvarageJobOfferCompletionTime"] = avarageCounter.count
+
+        val fulltimeCounter = counterRepository.findByType("Full Timecounter") ?: CounterEntity("Full Timecounter", 0)
+        countersMap["fullTimeCounter"] = fulltimeCounter.count
+
+        val parttimeCounter = counterRepository.findByType("Part Timecounter") ?: CounterEntity("Part Timecounter", 0)
+        countersMap["partTimeCounter"] = parttimeCounter.count
+
+        val contractCounter = counterRepository.findByType("Contractcounter") ?: CounterEntity("Contractcounter", 0)
+        countersMap["contractCounter"] = contractCounter.count
+
+        val freelanceCounter = counterRepository.findByType("Freelancecounter") ?: CounterEntity("Freelancecounter", 0)
+        countersMap["freelanceCounter"] = freelanceCounter.count
+
+        val remoteCounter = counterRepository.findByType("Remotecounter") ?: CounterEntity("Remotecounter", 0)
+        countersMap["remoteCounter"] = freelanceCounter.count
+
+        val hybridCounter = counterRepository.findByType("Hybridcounter") ?: CounterEntity("Hybridcounter", 0)
+        countersMap["hybridCounter"] = hybridCounter.count
+
+        val inPersonCounter = counterRepository.findByType("In-Personcounter") ?: CounterEntity("In-Personcounter", 0)
+        countersMap["inPersonCounter"] = inPersonCounter.count
+
         // Return the map as a JSON response
         return countersMap
     }
@@ -124,5 +149,42 @@ class CounterServiceImpl(
         }
 
         return monthMap
+    }
+
+    override fun updateCompletedJobOfferAvarageValue(newValue: Long) {
+        val completedJobOffers = counterRepository.findByType("CompletedJobOffersForAvarage") ?: CounterEntity("CompletedJobOffersForAvarage", 0)
+        val avarage = counterRepository.findByType("AvarageJobOfferCompletionTime") ?: CounterEntity("AvarageJobOfferCompletionTime", 0)
+        if(completedJobOffers.count <= 0){
+            avarage.count = newValue
+        }else{
+            var newAvarage = avarage.count*completedJobOffers.count
+            newAvarage += newValue
+            newAvarage = newAvarage/(completedJobOffers.count + 1)
+            avarage.count = newAvarage
+        }
+        counterRepository.save(avarage)
+        completedJobOffers.count += 1
+        counterRepository.save(completedJobOffers)
+    }
+
+    override fun getProfessionals(): Map<String, Long> {
+        // Create a mutable map to store counter name as key and its value as the value
+        val countersMap = mutableMapOf<String, Long>()
+
+        // Retrieve each counter from the repository and add it to the map
+        val employedCounter = counterRepository.findByType(EmploymentStateCounters.EMPLOYED_COUNTER) ?: CounterEntity(EmploymentStateCounters.EMPLOYED_COUNTER, 0)
+        countersMap[EmploymentStateCounters.EMPLOYED_COUNTER] = employedCounter.count
+
+        val unemployedCounter = counterRepository.findByType(EmploymentStateCounters.UNEMPLOYED_COUNTER) ?: CounterEntity(EmploymentStateCounters.UNEMPLOYED_COUNTER, 0)
+        countersMap[EmploymentStateCounters.UNEMPLOYED_COUNTER] = unemployedCounter.count
+
+        val availableCounter = counterRepository.findByType(EmploymentStateCounters.AVAILABLE_FOR_WORK_COUNTER) ?: CounterEntity(EmploymentStateCounters.AVAILABLE_FOR_WORK_COUNTER, 0)
+        countersMap[EmploymentStateCounters.AVAILABLE_FOR_WORK_COUNTER] = availableCounter.count
+
+        val notAvailableCounter = counterRepository.findByType(EmploymentStateCounters.NOT_AVAILABLE_COUNTER) ?: CounterEntity(EmploymentStateCounters.NOT_AVAILABLE_COUNTER, 0)
+        countersMap[EmploymentStateCounters.NOT_AVAILABLE_COUNTER] = notAvailableCounter.count
+
+        // Return the map as a JSON response
+        return countersMap
     }
 }

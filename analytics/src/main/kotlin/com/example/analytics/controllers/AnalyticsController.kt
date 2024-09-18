@@ -68,5 +68,15 @@ class AnalyticsController(
         }
     }
 
+    @GetMapping("/professionals")
+    fun getProfessionalsStates() : ResponseEntity<Any> {
+        try {
+            var response = counterService.getProfessionals()
 
+            return ResponseEntity.ok(response)
+        } catch (e: Exception) {
+            logger.info("Error retrieving completed job offers ratio ${e.message}")
+            return ResponseEntity("Error: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
 }

@@ -47,7 +47,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
                 it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
             }
             .authorizeHttpRequests {
-                it.requestMatchers("/me", "/logout", "/ui/**").permitAll()
+                it.requestMatchers("/me",  "/logout", "/ui/**").permitAll()
                 it.anyRequest().authenticated()
             }
             .oauth2Login { }
