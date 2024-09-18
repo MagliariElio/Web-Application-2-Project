@@ -177,6 +177,8 @@ class ErrorsPage {
 
         const val EMPTY_CONTRACT_TYPE_ERROR = "The 'contract type' field cannot be empty."
 
+        const val EMPTY_PROMPT_ERROR = "The 'prompt' cannot be empty."
+
 
         /**
          * SERVICE

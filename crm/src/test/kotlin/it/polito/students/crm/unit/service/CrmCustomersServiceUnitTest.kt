@@ -132,7 +132,7 @@ class CrmCustomersServiceUnitTest {
         val result = customerService.getAllCustomers(0, 30, HashMap<ContactEnumFields, String>())
 
         verify(exactly = 1) { customerRepository.findAll(PageRequest.of(0, 30)) }
-        Assertions.assertEquals(expectedPage.size, result.size)
+        assertEquals(expectedPage.size, result.size)
     }
 
     @Test
@@ -161,7 +161,7 @@ class CrmCustomersServiceUnitTest {
         val result = customerService.getAllCustomers(0, 30, map)
 
         verify(exactly = 1) { customerRepository.findAll(PageRequest.of(0, 30)) }
-        Assertions.assertEquals(expectedPage.size, result.size)
+        assertEquals(expectedPage.size, result.size)
     }
 
     @Test
@@ -188,7 +188,7 @@ class CrmCustomersServiceUnitTest {
         val result = customerService.getAllCustomers(0, 30, map)
 
         verify(exactly = 1) { customerRepository.findAll(PageRequest.of(0, 30)) }
-        Assertions.assertEquals(expectedPage, result)
+        assertEquals(expectedPage, result)
     }
 
     /**
@@ -202,10 +202,10 @@ class CrmCustomersServiceUnitTest {
         val result = customerService.getCustomer(1)
 
         verify(exactly = 1) { customerRepository.findById(1) }
-        Assertions.assertEquals(customerDTOList[0].id, result.id)
-        Assertions.assertEquals(customerDTOList[0].information.contactDTO, result.information.contactDTO)
-        Assertions.assertEquals(customerDTOList[0].information.emailDTOs, result.information.emailDTOs)
-        Assertions.assertEquals(customerDTOList[0].information.addressDTOs, result.information.addressDTOs)
+        assertEquals(customerDTOList[0].id, result.id)
+        assertEquals(customerDTOList[0].information.contactDTO, result.information.contactDTO)
+        assertEquals(customerDTOList[0].information.emailDTOs, result.information.emailDTOs)
+        assertEquals(customerDTOList[0].information.addressDTOs, result.information.addressDTOs)
     }
 
     @Test
@@ -213,7 +213,7 @@ class CrmCustomersServiceUnitTest {
         every { customerRepository.findById(30) } returns Optional.empty()
 
         val exception = assertThrows<CustomerNotFoundException> { customerService.getCustomer(30) }
-        Assertions.assertEquals("Customer with id = '30' not found!", exception.message)
+        assertEquals("Customer with id = '30' not found!", exception.message)
 
         verify(exactly = 1) { customerRepository.findById(30) }
     }
@@ -313,10 +313,10 @@ class CrmCustomersServiceUnitTest {
 
         val result = customerService.postNewCustomer(contactCreate)
 
-        Assertions.assertEquals(newCustomer.toDTO().id, result.id)
-        Assertions.assertEquals(newCustomer.toDTO().information.contactDTO, result.information.contactDTO)
-        Assertions.assertEquals(newCustomer.toDTO().information.emailDTOs, result.information.emailDTOs)
-        Assertions.assertEquals(newCustomer.toDTO().information.addressDTOs, result.information.addressDTOs)
+        assertEquals(newCustomer.toDTO().id, result.id)
+        assertEquals(newCustomer.toDTO().information.contactDTO, result.information.contactDTO)
+        assertEquals(newCustomer.toDTO().information.emailDTOs, result.information.emailDTOs)
+        assertEquals(newCustomer.toDTO().information.addressDTOs, result.information.addressDTOs)
     }
 
     /**
@@ -353,7 +353,7 @@ class CrmCustomersServiceUnitTest {
         verify(exactly = 1) { customerRepository.findById(any()) }
 
         val expectedErrorMessage = "Customer with id = '${customer.id}' not found!"
-        Assertions.assertEquals(expectedErrorMessage, exception.message)
+        assertEquals(expectedErrorMessage, exception.message)
     }
 
     @Test
@@ -373,7 +373,7 @@ class CrmCustomersServiceUnitTest {
         verify(exactly = 1) { customerRepository.findById(any()) }
 
         val expectedErrorMessage = "The contact with id equal to 3 was not found!"
-        Assertions.assertEquals(expectedErrorMessage, exception.message)
+        assertEquals(expectedErrorMessage, exception.message)
     }
 
     /**

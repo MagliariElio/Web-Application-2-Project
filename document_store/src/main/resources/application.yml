@@ -32,7 +32,7 @@ management:
 
 logging:
   file:
-    path: /var/log/document-store
+    path: ./../logs/document-store
   level:
     root: INFO
     org.springframework.web: DEBUG

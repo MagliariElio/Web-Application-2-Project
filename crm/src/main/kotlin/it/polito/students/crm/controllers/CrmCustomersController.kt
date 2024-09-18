@@ -180,7 +180,7 @@ class CrmCustomersController(private val customerService: CustomerService) {
             }
             if (newContactDetails.addresses.isNotEmpty()) {
                 newContactDetails.addresses.forEach {
-                    if (!(!(it.city.isNullOrBlank() || it.address.isNullOrBlank() || it.region.isNullOrBlank() || it.state.isNullOrBlank()))) {
+                    if ((it.city.isNullOrBlank() || it.address.isNullOrBlank() || it.region.isNullOrBlank() || it.state.isNullOrBlank())) {
                         throw BadRequestException(ErrorsPage.ADDRESSES_NOT_VALID)
                     }
                 }

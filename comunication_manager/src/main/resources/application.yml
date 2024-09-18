@@ -49,7 +49,7 @@ management:
 
 logging:
   file:
-    path: /var/log/comunication-manager
+    path: ./../logs/comunication-manager
   level:
     root: INFO
     org.springframework.web: DEBUG

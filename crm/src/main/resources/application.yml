@@ -38,10 +38,21 @@ management:
 
 logging:
   file:
-    path: /var/log/crm
+    path: ./../logs/crm
   level:
     root: INFO
     org.springframework.web: DEBUG
+
+api:
+  ai21:
+    url: "https://api.ai21.com/studio/v1/chat/completions"
+    key: "Bearer e1as3WOyj3E8GBp0lSBKey8UOo5CNyJL"
+    model: "jamba-1.5-large"
+
+org:
+  owasp:
+    esapi:
+      resources: src/main/resources
 
 server:
   port: 8082

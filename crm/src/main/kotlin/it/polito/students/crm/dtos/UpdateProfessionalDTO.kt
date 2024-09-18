@@ -8,4 +8,4 @@ data class UpdateProfessionalDTO(
     var geographicalLocation: String,
     var dailyRate: Double,
 
-)
+    )

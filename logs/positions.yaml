@@ -1,0 +1,5 @@
+positions:
+  /var/log/analytics/spring.log: "602890"
+  /var/log/crm/spring.log: "634539"
+  /var/log/document-store/spring.log: "339505"
+  /var/log/gateway/spring.log: "148121"

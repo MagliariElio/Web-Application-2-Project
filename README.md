@@ -23,7 +23,7 @@
 - First name: `Alex`
 - Last name:  `Smith`
 - Password: `alexsmithPassword`
-- Role: `operator`
+- Role: `manager`
 
 ## User 3
 

@@ -26,6 +26,9 @@ dependencies {
     implementation("org.springframework.security:spring-security-oauth2-jose")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
+    implementation("org.jsoup:jsoup:1.16.1")
+    implementation("org.owasp.esapi:esapi:latest.release")
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.1.4")
     implementation("org.springframework.boot:spring-boot-starter-web:3.1.4")
     implementation("org.springframework.boot:spring-boot-starter-validation")

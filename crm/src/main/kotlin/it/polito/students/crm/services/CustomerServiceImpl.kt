@@ -3,7 +3,7 @@ package it.polito.students.crm.services
 
 import it.polito.students.crm.controllers.CrmCustomersController
 import it.polito.students.crm.dtos.*
-import it.polito.students.crm.entities.*
+import it.polito.students.crm.entities.Customer
 import it.polito.students.crm.exception_handlers.CustomerNotFoundException
 import it.polito.students.crm.exception_handlers.InvalidUpdateException
 import it.polito.students.crm.repositories.*
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.HashMap
 
 @Service
 class CustomerServiceImpl(
@@ -142,7 +141,8 @@ class CustomerServiceImpl(
 
     override fun updateCustomerDetails(customerID: Long, newContactDetails: UpdateContactDTO): CustomerDTO {
         val customer = getCustomer(customerID).toEntity(factory)
-        val prev_contact = contactService.getContact(customer.information.id)        // if not found it raises an exception
+        val prev_contact =
+            contactService.getContact(customer.information.id)        // if not found it raises an exception
 
         if (prev_contact.category == CategoryOptions.PROFESSIONAL) {
             throw InvalidUpdateException(ErrorsPage.INVALID_UPDATE_CUSTOMER)

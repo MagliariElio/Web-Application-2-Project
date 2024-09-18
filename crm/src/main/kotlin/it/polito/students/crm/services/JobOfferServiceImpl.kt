@@ -7,11 +7,20 @@ import it.polito.students.crm.exception_handlers.*
 import it.polito.students.crm.repositories.JobOfferRepository
 import it.polito.students.crm.repositories.ProfessionalRepository
 import it.polito.students.crm.utils.*
+import it.polito.students.crm.utils.Factory.Companion.convertJsonToCreateJobOfferDTO
 import it.polito.students.crm.utils.Factory.Companion.toEntity
 import jakarta.transaction.Transactional
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import java.io.StringReader
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -24,12 +33,22 @@ class JobOfferServiceImpl(
     private val customerService: CustomerService,
     private val professionalRepository: ProfessionalRepository,
     private val factory: Factory,
-    private val kafkaProducer: KafkaProducerService
+    private val kafkaProducer: KafkaProducerService,
 ) : JobOfferService {
 
+    private val logger = LoggerFactory.getLogger(JobOfferServiceImpl::class.java)
     private val profitMargin: Int = 10
     private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
+    private val restTemplate = RestTemplate()
 
+    @Value("\${api.ai21.url}")
+    private lateinit var apiUrl: String
+
+    @Value("\${api.ai21.key}")
+    private lateinit var apiKey: String
+
+    @Value("\${api.ai21.model}")
+    private lateinit var model: String
 
     override fun getAllJobOffers(
         page: Int,
@@ -484,6 +503,104 @@ class JobOfferServiceImpl(
         } else {
             throw NotFoundJobOfferException(ErrorsPage.JOB_OFFER_NOT_FOUND_ERROR)
         }
+    }
 
+    override fun getGenerateJobOffer(prompt: String): CreateJobOfferDTO {
+        val headers = HttpHeaders().apply {
+            set("Authorization", apiKey)
+            set("Content-Type", "application/json")
+        }
+
+        val finalPrompt = generatePromptChatGPTJobOffer(prompt)
+        val requestBody = """
+            {
+                "model": "$model",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "$finalPrompt"
+                    }
+                ],
+                "documents":[],
+                "tools":[],
+                "n": 1,
+                "max_tokens": 1024,
+                "temperature": 1,
+                "top_p": 1,
+                "stop": [],
+                "response_format":{"type": "text"}
+            }
+        """.trimIndent()
+
+        val entity = HttpEntity(requestBody, headers)
+
+        val response: ResponseEntity<String> =
+            restTemplate.exchange(apiUrl, HttpMethod.POST, entity, String::class.java)
+        val objectMapper = jacksonObjectMapper()
+
+        logger.info(response.body)
+
+        val responseBody = response.body ?: "{}"
+        val responseJson = objectMapper.readTree(responseBody)
+        val content = responseJson["choices"]?.get(0)?.get("message")?.get("content")?.asText() ?: "{}"
+
+        return convertJsonToCreateJobOfferDTO(content)
+    }
+
+    override fun getGenerateSkills(prompt: String): List<String> {
+        val headers = HttpHeaders().apply {
+            set("Authorization", apiKey)
+            set("Content-Type", "application/json")
+        }
+
+        val finalPrompt = generatePromptChatGPTSkills(prompt)
+        val requestBody = """
+            {
+                "model": "$model",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "$finalPrompt"
+                    }
+                ],
+                "documents":[],
+                "tools":[],
+                "n": 1,
+                "max_tokens": 1024,
+                "temperature": 1,
+                "top_p": 1,
+                "stop": [],
+                "response_format":{"type": "text"}
+            }
+        """.trimIndent()
+
+        val entity = HttpEntity(requestBody, headers)
+
+        val response: ResponseEntity<String> =
+            restTemplate.exchange(apiUrl, HttpMethod.POST, entity, String::class.java)
+
+        logger.info(response.body)
+
+        val gson = Gson()
+        val responseBody = response.body ?: "{}"
+        val responseJson = gson.fromJson(responseBody, Map::class.java)
+
+        val choices = responseJson["choices"] as? List<Map<String, Any>>
+        val message = choices?.firstOrNull()?.get("message") as? Map<String, Any>
+        var content = message?.get("content") as? String ?: "[]"
+
+        content = content.trim().removePrefix("```json").removeSuffix("```").trim()
+        val reader = JsonReader(StringReader(content))
+        reader.isLenient = true
+
+        val skillsListType = object : TypeToken<List<String>>() {}.type
+
+        return try {
+            val skillsList: List<String> = gson.fromJson(reader, skillsListType)
+            skillsList.toMutableList()
+        } catch (e: Exception) {
+            logger.warn("Content is not a valid list, returning as plain string.")
+            throw IllegalArgumentException(content)
+        }
     }
 }

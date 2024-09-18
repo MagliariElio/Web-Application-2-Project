@@ -28,4 +28,4 @@
 - After login:
     - Go to **Connections > Data Sources** from the sidebar and verify that **Prometheus** and **Loki** are configured.
     - Test the connection for both datasources by scrolling to the bottom and clicking "Test". If the response is positive, everything is set up correctly.
-    - Go to **Dashboards** from the sidebar and ensure the dashboards are visible with the correct metrics.
+    - Go to **Dashboards** from the sidebar and ensure the dashboards are visible with the correct metrics. **Each chart has its own description**.

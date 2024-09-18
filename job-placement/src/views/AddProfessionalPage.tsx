@@ -5,18 +5,16 @@ import { BsPencilSquare, BsTrash, BsX, BsXLg } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
 import { createProfessional } from "../apis/ProfessionalRequests";
-import {
-  deleteContactWhatContact,
-  editContactWhatContact,
-  fetchAllContactWhatContact,
-  postNewWhatContact,
-} from "../apis/ContactRequests";
+import { deleteContactWhatContact, editContactWhatContact, fetchAllContactWhatContact, postNewWhatContact } from "../apis/ContactRequests";
 import { Email } from "../interfaces/Email";
 import { Telephone } from "../interfaces/Telephone";
 import { Address } from "../interfaces/Address";
 import { toTitleCase } from "../utils/costants";
 import { checkValidEmail, checkValidTelephone } from "../utils/checkers";
 import { LoadingSection } from "../App";
+import { DescriptionGenerateAIModal } from "./AddJobOfferPage";
+import { generateSkillsAPI } from "../apis/JobOfferRequests";
+import { FaMicrochip, FaPlus, FaTrashAlt } from "react-icons/fa";
 
 function AddProfessionalPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
@@ -38,8 +36,12 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
   const [singleSkill, setSingleSkill] = useState("");
   const [geographicalLocation, setGeographicalLocation] = useState("");
   const [dailyRate, setDailyRate] = useState("");
+
   const [errorMessage, setErrorMessage] = useState("");
   const errorRef = useRef<HTMLDivElement | null>(null);
+
+  const [showGenerateSkillsModal, setShowGenerateSkillsModal] = useState(false);
+  const [generationSkills, setGenerationSkills] = useState(false);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -69,9 +71,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
     }
 
     if (geographicalLocation.trim() === "") {
-      setErrorMessage(
-        "The geographical location cannot be empty or just spaces."
-      );
+      setErrorMessage("The geographical location cannot be empty or just spaces.");
       if (errorRef.current) {
         errorRef.current.scrollIntoView({ behavior: "smooth" });
       }
@@ -110,27 +110,58 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
       .catch((error) => {
         navigate("/ui/professionals", { state: { success: false } });
         console.log("Error during professional post: ", error);
-        throw new Error(
-          "POST /API/professionals : Network response was not ok"
-        );
+        throw new Error("POST /API/professionals : Network response was not ok");
       });
+  };
+
+  const generateSkills = async (description: string) => {
+    try {
+      setGenerationSkills(true);
+      setShowGenerateSkillsModal(false);
+      const response = await generateSkillsAPI(description, me.xsrfToken);
+
+      const newSkills: string[] = [...skills];
+      response.forEach((r: string) => newSkills.push(r));
+      setSkills(newSkills);
+
+      setGenerationSkills(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+
+      setGenerationSkills(false);
+
+      // Scroll to error message when it appears
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
   };
 
   return (
     <div className="add-job-offer-container">
+      <DescriptionGenerateAIModal
+        name={"Generate Professional Skills with AI"}
+        placeholderValue={"Enter a detailed description of the professional role to generate the skills"}
+        suggestion_1={"Be as precise as possible about the role and responsibilities to generate relevant skills."}
+        suggestion_2={
+          "For example: <i>Generate required skills for a Senior Project Manager with experience in Agile methodologies and team leadership.</i>"
+        }
+        show={showGenerateSkillsModal}
+        handleClose={() => setShowGenerateSkillsModal(false)}
+        onSubmit={generateSkills}
+      />
+
       {contactModalOpen != null && (
         <ContactModal
           me={me}
           open={contactModalOpen}
           setOpen={setContactModalOpen}
           contactContainer={
-            contactModalOpen === "email"
-              ? emails
-              : contactModalOpen === "telephone"
-              ? telephones
-              : contactModalOpen === "address"
-              ? addresses
-              : []
+            contactModalOpen === "email" ? emails : contactModalOpen === "telephone" ? telephones : contactModalOpen === "address" ? addresses : []
           }
           setContactContainer={
             contactModalOpen === "email"
@@ -149,10 +180,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           <h3>Add New Professional</h3>
         </Col>
         <Col className="d-flex justify-content-end">
-          <Button
-            className="d-flex align-items-center secondaryButton"
-            onClick={() => navigate(-1)}
-          >
+          <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1)}>
             <BsXLg size={"1.5em"} />
           </Button>
         </Col>
@@ -176,30 +204,15 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
         <Row className="justify-content-center">
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+            <Form.Control placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
           </Col>
           <Col xs={12} md={6} lg={3} className="mb-4">
-            <Form.Control
-              placeholder="Surname"
-              value={surname}
-              onChange={(e) => setSurname(e.target.value)}
-              required
-            />
+            <Form.Control placeholder="Surname" value={surname} onChange={(e) => setSurname(e.target.value)} required />
           </Col>
         </Row>
         <Row className="justify-content-center">
           <Col xs={12} md={6} lg={6} className="mb-4">
-            <Form.Control
-              placeholder="SSN Code"
-              value={ssnCode}
-              required
-              onChange={(e) => setSsnCode(e.target.value)}
-            />
+            <Form.Control placeholder="SSN Code" value={ssnCode} required onChange={(e) => setSsnCode(e.target.value)} />
           </Col>
         </Row>
 
@@ -274,10 +287,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         {emails.length > 0 &&
           emails.map((email, index) => {
             return (
-              <Row
-                key={index}
-                className="mb-1 d-flex align-items-center justify-content-center"
-              >
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
@@ -341,21 +351,13 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         {telephones.length > 0 &&
           telephones.map((telephone, index) => {
             return (
-              <Row
-                key={index}
-                className="mb-1 d-flex align-items-center justify-content-center"
-              >
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
                       <p className="text-truncate">{telephone.telephone}</p>
                     </Col>
-                    <Col
-                      xs={12}
-                      md={12}
-                      lg={6}
-                      className="mb-0  fs-10 fw-light"
-                    >
+                    <Col xs={12} md={12} lg={6} className="mb-0  fs-10 fw-light">
                       <p className="text-truncate">{telephone.comment}</p>
                     </Col>
                   </Row>
@@ -365,9 +367,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                     <Button
                       className="secondaryDangerButton w-100"
                       onClick={() => {
-                        setTelephones(
-                          telephones.filter((_e, i) => i !== index)
-                        );
+                        setTelephones(telephones.filter((_e, i) => i !== index));
                       }}
                     >
                       Remove
@@ -416,10 +416,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         {addresses.length > 0 &&
           addresses.map((address, index) => {
             return (
-              <Row
-                key={index}
-                className="mb-1 d-flex align-items-center justify-content-center"
-              >
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
                 <Col xs={8} md={6} lg={5}>
                   <Row className="justify-content-center">
                     <Col xs={12} md={12} lg={6} className="mb-0">
@@ -475,77 +472,96 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
           </Col>
         </Row>
 
-        {skills.length === 0 && (
-          <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No skills added yet.</p>
-            </Col>
-          </Row>
-        )}
-        {
-          <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={6} className="mb-2">
-              <Row className="d-flex flex-wrap ps-2">
-                {skills.length > 0 &&
-                  skills.map((skill, index) => (
-                    <div
-                      key={index}
-                      style={{ width: "auto" }}
-                      className="text-truncate me-2 tag mb-1"
-                    >
-                      {skill}
-
-                      <BsX
-                        size={20}
-                        className="ms-2"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          setSkills(skills.filter((_e, i) => i !== index));
-                        }}
-                      />
-                    </div>
-                  ))}
+        {generationSkills && <LoadingSection h={200} />}
+        {!generationSkills && (
+          <>
+            {skills.length === 0 && (
+              <Row className="justify-content-center">
+                <Col xs={12} md={12} lg={6} className="mb-0">
+                  <p>No skills added yet.</p>
+                </Col>
               </Row>
-            </Col>
-          </Row>
-        }
+            )}
+            {
+              <Row className="justify-content-center">
+                <Col xs={12} md={12} lg={6} className="mb-2">
+                  <Row className="d-flex flex-wrap ps-2">
+                    {skills.length > 0 &&
+                      skills.map((skill, index) => (
+                        <div key={index} style={{ width: "auto" }} className="text-truncate me-2 tag mb-1">
+                          {skill}
 
-        <Row className="justify-content-center">
-          <Col xs={12} md={6} lg={5} className="mb-2">
-            <Form.Control
-              placeholder="New skill"
-              value={singleSkill}
-              onChange={(e) => setSingleSkill(e.target.value)}
-            />
-          </Col>
-          <Col xs={12} md={6} lg={1} className="mb-2">
-            <Button
-              className="secondaryButton w-100"
-              onClick={() => {
-                if (singleSkill.trim() === "") {
-                  setErrorMessage("Please enter a skill before adding.");
-                  if (errorRef.current) {
-                    errorRef.current.scrollIntoView({ behavior: "smooth" });
-                  }
-                  return;
-                }
+                          <BsX
+                            size={20}
+                            className="ms-2"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              setSkills(skills.filter((_e, i) => i !== index));
+                            }}
+                          />
+                        </div>
+                      ))}
+                  </Row>
+                </Col>
+              </Row>
+            }
+          </>
+        )}
 
-                setSkills([...skills, singleSkill]);
-                setSingleSkill("");
-              }}
-            >
-              Add skill
-            </Button>
-          </Col>
-        </Row>
+        {!generationSkills && (
+          <>
+            <Row className="justify-content-center">
+              <Col xs={12} md={8} lg={5} className="mb-2">
+                <Form.Control placeholder="Enter a new skill" value={singleSkill} onChange={(e) => setSingleSkill(e.target.value)} />
+              </Col>
+            </Row>
+
+            <Row className="justify-content-center mt-4">
+              <Col xs={12} md={8} lg={6} className="d-flex justify-content-center">
+                <Button
+                  className="secondaryButton mb-2 d-flex align-items-center me-2"
+                  onClick={() => {
+                    if (singleSkill.trim() === "") {
+                      setErrorMessage("Please enter a skill before adding.");
+                      if (errorRef.current) {
+                        errorRef.current.scrollIntoView({ behavior: "smooth" });
+                      }
+                      return;
+                    }
+
+                    setSkills([...skills, singleSkill]);
+                    setSingleSkill("");
+                  }}
+                  disabled={singleSkill.trim() === ""}
+                >
+                  <FaPlus style={{ marginRight: "5px" }} />
+                  Add Skill
+                </Button>
+
+                <Button
+                  className="secondaryDangerButton mb-2 d-flex align-items-center me-2"
+                  onClick={() => setSkills([])}
+                  disabled={skills.length === 0}
+                >
+                  <FaTrashAlt style={{ marginRight: "5px" }} />
+                  Clear
+                </Button>
+
+                <Button
+                  className="secondaryButton mb-2 d-flex align-items-center"
+                  onClick={() => setShowGenerateSkillsModal(true)}
+                  disabled={skills.length > 100}
+                >
+                  <FaMicrochip style={{ marginRight: "5px" }} />
+                  Generate Skills with AI
+                </Button>
+              </Col>
+            </Row>
+          </>
+        )}
 
         <Row className="mt-5 justify-content-center">
-          <Col
-            xs={12}
-            md={12}
-            lg={6}
-            className="d-flex flex-column justify-content-center align-items-center"
-          >
+          <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
             <Button type="submit" className="primaryButton">
               Save
             </Button>
@@ -558,9 +574,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
 export default AddProfessionalPage;
 
-const loadContactContacts = async (
-  whatContact: string
-): Promise<Email[] | Telephone[] | Address[]> => {
+const loadContactContacts = async (whatContact: string): Promise<Email[] | Telephone[] | Address[]> => {
   if (whatContact === "email") {
     try {
       const allEmails = await fetchAllContactWhatContact("email");
@@ -608,9 +622,7 @@ export const ContactModal = ({
   contactContainer: Email[] | Telephone[] | Address[];
   setContactContainer: any;
 }) => {
-  const [contacts, setContacts] = useState<Email[] | Telephone[] | Address[]>(
-    []
-  );
+  const [contacts, setContacts] = useState<Email[] | Telephone[] | Address[]>([]);
 
   const [singleContact, setSingleContact] = useState("");
   const [singleContactComment, setSingleContactComment] = useState("");
@@ -620,9 +632,7 @@ export const ContactModal = ({
   const [singleState, setSingleState] = useState("");
 
   const [deleteSelected, setDeleteSelected] = useState<number | null>(null);
-  const [editSelected, setEditSelected] = useState<
-    Email | Telephone | Address | null
-  >(null);
+  const [editSelected, setEditSelected] = useState<Email | Telephone | Address | null>(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -665,8 +675,7 @@ export const ContactModal = ({
       </Modal.Header>
       <Modal.Body>
         <small>
-          Click on a <strong>{open}</strong> to select it or use side buttons to
-          edit and delete them from the <strong>{open} book</strong>.
+          Click on a <strong>{open}</strong> to select it or use side buttons to edit and delete them from the <strong>{open} book</strong>.
         </small>
 
         {loading && <LoadingSection h={300} />}
@@ -682,62 +691,40 @@ export const ContactModal = ({
         {!loading &&
           contacts.length > 0 &&
           contacts
-            .filter(
-              (contact) => !contactContainer.find((c) => c.id === contact.id)
-            )
+            .filter((contact) => !contactContainer.find((c) => c.id === contact.id))
             .filter((contact) => {
               if (editSelected !== null) {
                 return true;
               }
               if (open === "email") {
-                return (
-                  (contact as Email).email.includes(singleContact) &&
-                  (contact as Email).comment.includes(singleContactComment)
-                );
+                return (contact as Email).email.includes(singleContact) && (contact as Email).comment.includes(singleContactComment);
               } else if (open === "telephone") {
-                return (
-                  (contact as Telephone).telephone.includes(singleContact) &&
-                  (contact as Telephone).comment.includes(singleContactComment)
-                );
+                return (contact as Telephone).telephone.includes(singleContact) && (contact as Telephone).comment.includes(singleContactComment);
               } else {
-                return (
-                  (contact as Address).address.includes(singleContact) &&
-                  (contact as Address).comment.includes(singleContactComment)
-                );
+                return (contact as Address).address.includes(singleContact) && (contact as Address).comment.includes(singleContactComment);
               }
             })
             .sort((a, b) => {
               if (open === "email") {
                 return (a as Email).email.localeCompare((b as Email).email);
               } else if (open === "telephone") {
-                return (a as Telephone).telephone.localeCompare(
-                  (b as Telephone).telephone
-                );
+                return (a as Telephone).telephone.localeCompare((b as Telephone).telephone);
               } else {
-                return (a as Address).address.localeCompare(
-                  (b as Address).address
-                );
+                return (a as Address).address.localeCompare((b as Address).address);
               }
             })
             .map((contact, index) => {
               return (
                 <>
-                  <Row
-                    key={index}
-                    className="mb-1 mt-2 ms-1 d-flex align-items-center"
-                  >
+                  <Row key={index} className="mb-1 mt-2 ms-1 d-flex align-items-center">
                     <Col
                       xs={12}
                       md={8}
                       lg={10}
                       className={
                         "d-flex align-items-center justify-content-between " +
-                        (editSelected?.id === contact.id
-                          ? " secondaryWarningButton "
-                          : "") +
-                        (deleteSelected === contact.id
-                          ? " secondaryDangerButton "
-                          : " secondaryButton ")
+                        (editSelected?.id === contact.id ? " secondaryWarningButton " : "") +
+                        (deleteSelected === contact.id ? " secondaryDangerButton " : " secondaryButton ")
                       }
                       onClick={() => {
                         setContactContainer([...contactContainer, contact]);
@@ -745,30 +732,18 @@ export const ContactModal = ({
                       }}
                     >
                       <Row className="w-100">
-                        <Col
-                          xs={12}
-                          md={12}
-                          lg={6}
-                          className="my-2  d-flex align-items-center"
-                        >
+                        <Col xs={12} md={12} lg={6} className="my-2  d-flex align-items-center">
                           <p className="text-truncate m-0">
                             {open === "email"
                               ? (contact as Email).email
                               : open === "telephone"
                               ? (contact as Telephone).telephone
-                              : `${(contact as Address).address}, ${
-                                  (contact as Address).city
-                                }, ${(contact as Address).region}, ${
+                              : `${(contact as Address).address}, ${(contact as Address).city}, ${(contact as Address).region}, ${
                                   (contact as Address).state
                                 }`}
                           </p>
                         </Col>
-                        <Col
-                          xs={12}
-                          md={12}
-                          lg={6}
-                          className="my-2 fs-10 fw-light d-flex align-items-center"
-                        >
+                        <Col xs={12} md={12} lg={6} className="my-2 fs-10 fw-light d-flex align-items-center">
                           <p className="text-truncate m-0">
                             {open === "email"
                               ? (contact as Email).comment
@@ -784,10 +759,7 @@ export const ContactModal = ({
                         <Button
                           className="secondaryButton w-100 d-flex justify-content-center align-items-center "
                           onClick={() => {
-                            if (
-                              editSelected === null ||
-                              editSelected?.id !== contact.id
-                            ) {
+                            if (editSelected === null || editSelected?.id !== contact.id) {
                               setEditSelected(contact);
                             } else {
                               setEditSelected(null);
@@ -799,13 +771,9 @@ export const ContactModal = ({
                             }
                           }}
                         >
-                          {editSelected?.id === contact.id && (
-                            <BsXLg size={20} />
-                          )}
+                          {editSelected?.id === contact.id && <BsXLg size={20} />}
 
-                          {editSelected?.id !== contact.id && (
-                            <BsPencilSquare size={20} />
-                          )}
+                          {editSelected?.id !== contact.id && <BsPencilSquare size={20} />}
                         </Button>
                       </Col>
                     </Col>
@@ -827,12 +795,8 @@ export const ContactModal = ({
                   {deleteSelected === contact.id && (
                     <Row className="mt-2 ms-2 d-flex align-items-center">
                       <Col xs={12} md={12} lg={6} className="mb-0">
-                        <p className="text-danger my-auto">
-                          Are you sure you want to delete this {open}?
-                        </p>
-                        <p className="text-danger my-auto">
-                          It will be also removed from all contacts using it
-                        </p>
+                        <p className="text-danger my-auto">Are you sure you want to delete this {open}?</p>
+                        <p className="text-danger my-auto">It will be also removed from all contacts using it</p>
                       </Col>
                       <Col xs={6} md={2} lg={1}>
                         <Col className="mb-0">
@@ -840,17 +804,8 @@ export const ContactModal = ({
                             className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
                             onClick={() => {
                               if (contact.id !== undefined) {
-                                deleteContactWhatContact(
-                                  open!!,
-                                  contact.id.toString(),
-                                  me
-                                ).then(() => {
-                                  setContacts(
-                                    (prevContacts) =>
-                                      prevContacts.filter(
-                                        (e) => e.id !== contact.id
-                                      ) as Email[] | Telephone[] | Address[]
-                                  );
+                                deleteContactWhatContact(open!!, contact.id.toString(), me).then(() => {
+                                  setContacts((prevContacts) => prevContacts.filter((e) => e.id !== contact.id) as Email[] | Telephone[] | Address[]);
 
                                   setDeleteSelected(null);
                                 });
@@ -880,11 +835,7 @@ export const ContactModal = ({
             })}
 
         <Form className="mt-4">
-          <small className="mb-1 ms-1">
-            {editSelected === null
-              ? `Use fields to search or create a new ${open}`
-              : `Edit the ${open} below`}
-          </small>
+          <small className="mb-1 ms-1">{editSelected === null ? `Use fields to search or create a new ${open}` : `Edit the ${open} below`}</small>
           <Row className="d-flex align-items-center">
             <Col xs={12} md={12} lg={6} className="">
               <Form.Control
@@ -892,13 +843,7 @@ export const ContactModal = ({
                 onChange={(e) => {
                   setSingleContact(e.target.value);
                 }}
-                placeholder={
-                  open === "email"
-                    ? "Email address"
-                    : open === "telephone"
-                    ? "Telephone number"
-                    : "Address"
-                }
+                placeholder={open === "email" ? "Email address" : open === "telephone" ? "Telephone number" : "Address"}
               />
             </Col>
             {open === "address" && (
@@ -938,37 +883,20 @@ export const ContactModal = ({
                 onChange={(e) => {
                   setSingleContactComment(e.target.value);
                 }}
-                placeholder={
-                  open === "email"
-                    ? "Email address comment"
-                    : open === "telephone"
-                    ? "Telephone number comment"
-                    : "Address comment"
-                }
+                placeholder={open === "email" ? "Email address comment" : open === "telephone" ? "Telephone number comment" : "Address comment"}
               />
             </Col>
-            <Col
-              xs={12}
-              md={12}
-              lg={3}
-              className="d-flex flex-column justify-content-center align-items-center"
-            >
+            <Col xs={12} md={12} lg={3} className="d-flex flex-column justify-content-center align-items-center">
               <Button
                 disabled={
                   (open === "email" &&
                     (singleContact.trim() === "" ||
                       !checkValidEmail(singleContact) ||
-                      contactContainer.some(
-                        (c): c is Email =>
-                          "email" in c && c.email === singleContact
-                      ))) ||
+                      contactContainer.some((c): c is Email => "email" in c && c.email === singleContact))) ||
                   (open === "telephone" &&
                     (singleContact.trim() === "" ||
                       !checkValidTelephone(singleContact) ||
-                      contactContainer.some(
-                        (c): c is Telephone =>
-                          "telephone" in c && c.telephone === singleContact
-                      ))) ||
+                      contactContainer.some((c): c is Telephone => "telephone" in c && c.telephone === singleContact))) ||
                   (open === "address" &&
                     (singleContact.trim() === "" ||
                       singleCity.trim() === "" ||
@@ -977,10 +905,7 @@ export const ContactModal = ({
                       contactContainer.some(
                         (c): c is Address =>
                           "address" in c &&
-                          (c.address === singleContact ||
-                            c.city === singleCity ||
-                            c.region === singleRegion ||
-                            c.state === singleState)
+                          (c.address === singleContact || c.city === singleCity || c.region === singleRegion || c.state === singleState)
                       )))
                 }
                 className="primaryButton"
@@ -1046,10 +971,7 @@ export const ContactModal = ({
                       me
                     ).then((res) => {
                       setContacts(
-                        (prevContacts) =>
-                          prevContacts.map((c) =>
-                            c.id === editSelected.id ? res : c
-                          ) as Email[] | Telephone[] | Address[]
+                        (prevContacts) => prevContacts.map((c) => (c.id === editSelected.id ? res : c)) as Email[] | Telephone[] | Address[]
                       );
                       setSingleContact("");
                       setSingleCity("");

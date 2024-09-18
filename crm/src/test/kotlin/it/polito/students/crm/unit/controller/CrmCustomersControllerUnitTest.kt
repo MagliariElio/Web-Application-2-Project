@@ -136,76 +136,76 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getAllCustomers(0, 10, any()) } returns customers
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers?pageNumber=0&pageSize=10"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(3))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(customerDTOList[0].id))
+            .andExpect(jsonPath("$.content.length()").value(3))
+            .andExpect(jsonPath("$.content[0].id").value(customerDTOList[0].id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.name")
+                jsonPath("$.content[0].information.contactDTO.name")
                     .value(customerDTOList[0].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.surname")
+                jsonPath("$.content[0].information.contactDTO.surname")
                     .value(customerDTOList[0].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.ssnCode")
+                jsonPath("$.content[0].information.contactDTO.ssnCode")
                     .value(customerDTOList[0].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.category")
+                jsonPath("$.content[0].information.contactDTO.category")
                     .value(customerDTOList[0].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.comment")
+                jsonPath("$.content[0].information.contactDTO.comment")
                     .value(customerDTOList[0].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.id")
+                jsonPath("$.content[1].information.contactDTO.id")
                     .value(customerDTOList[1].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.name")
+                jsonPath("$.content[1].information.contactDTO.name")
                     .value(customerDTOList[1].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.surname")
+                jsonPath("$.content[1].information.contactDTO.surname")
                     .value(customerDTOList[1].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.ssnCode")
+                jsonPath("$.content[1].information.contactDTO.ssnCode")
                     .value(customerDTOList[1].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.category")
+                jsonPath("$.content[1].information.contactDTO.category")
                     .value(customerDTOList[1].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.comment")
+                jsonPath("$.content[1].information.contactDTO.comment")
                     .value(customerDTOList[1].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.id")
+                jsonPath("$.content[2].information.contactDTO.id")
                     .value(customerDTOList[2].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.name")
+                jsonPath("$.content[2].information.contactDTO.name")
                     .value(customerDTOList[2].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.surname")
+                jsonPath("$.content[2].information.contactDTO.surname")
                     .value(customerDTOList[2].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.ssnCode")
+                jsonPath("$.content[2].information.contactDTO.ssnCode")
                     .value(customerDTOList[2].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.category")
+                jsonPath("$.content[2].information.contactDTO.category")
                     .value(customerDTOList[2].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.comment")
+                jsonPath("$.content[2].information.contactDTO.comment")
                     .value(customerDTOList[2].information.contactDTO.comment)
             )
     }
@@ -217,52 +217,52 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getAllCustomers(0, 2, any()) } returns customers
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers?pageNumber=0&pageSize=2"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(2))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(customerDTOList[0].id))
+            .andExpect(jsonPath("$.content.length()").value(2))
+            .andExpect(jsonPath("$.content[0].id").value(customerDTOList[0].id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.name")
+                jsonPath("$.content[0].information.contactDTO.name")
                     .value(customerDTOList[0].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.surname")
+                jsonPath("$.content[0].information.contactDTO.surname")
                     .value(customerDTOList[0].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.ssnCode")
+                jsonPath("$.content[0].information.contactDTO.ssnCode")
                     .value(customerDTOList[0].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.category")
+                jsonPath("$.content[0].information.contactDTO.category")
                     .value(customerDTOList[0].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.comment")
+                jsonPath("$.content[0].information.contactDTO.comment")
                     .value(customerDTOList[0].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.id")
+                jsonPath("$.content[1].information.contactDTO.id")
                     .value(customerDTOList[1].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.name")
+                jsonPath("$.content[1].information.contactDTO.name")
                     .value(customerDTOList[1].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.surname")
+                jsonPath("$.content[1].information.contactDTO.surname")
                     .value(customerDTOList[1].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.ssnCode")
+                jsonPath("$.content[1].information.contactDTO.ssnCode")
                     .value(customerDTOList[1].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.category")
+                jsonPath("$.content[1].information.contactDTO.category")
                     .value(customerDTOList[1].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.comment")
+                jsonPath("$.content[1].information.contactDTO.comment")
                     .value(customerDTOList[1].information.contactDTO.comment)
             )
     }
@@ -270,27 +270,27 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
     @Test
     fun getCustomers_invalidPage() {
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers?pageNumber=-1&pageSize=10"))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(status().isBadRequest)
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$").value("The page number and the page size cannot be negative!")
+                jsonPath("$").value("The page number and the page size cannot be negative!")
             )
     }
 
     @Test
     fun getCustomers_invalidPageSize() {
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers/?pageNumber=0&pageSize=-1"))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(status().isBadRequest)
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$").value("The page number and the page size cannot be negative!")
+                jsonPath("$").value("The page number and the page size cannot be negative!")
             )
     }
 
     @Test
     fun getCustomers_invalidPageAndPageSize() {
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers/?pageNumber=-1&pageSize=-1"))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(status().isBadRequest)
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$").value("The page number and the page size cannot be negative!")
+                jsonPath("$").value("The page number and the page size cannot be negative!")
             )
     }
 
@@ -301,76 +301,76 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getAllCustomers(0, 10, any()) } returns customers
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers?pageSize=10"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(3))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(customerDTOList[0].id))
+            .andExpect(jsonPath("$.content.length()").value(3))
+            .andExpect(jsonPath("$.content[0].id").value(customerDTOList[0].id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.name")
+                jsonPath("$.content[0].information.contactDTO.name")
                     .value(customerDTOList[0].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.surname")
+                jsonPath("$.content[0].information.contactDTO.surname")
                     .value(customerDTOList[0].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.ssnCode")
+                jsonPath("$.content[0].information.contactDTO.ssnCode")
                     .value(customerDTOList[0].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.category")
+                jsonPath("$.content[0].information.contactDTO.category")
                     .value(customerDTOList[0].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.comment")
+                jsonPath("$.content[0].information.contactDTO.comment")
                     .value(customerDTOList[0].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.id")
+                jsonPath("$.content[1].information.contactDTO.id")
                     .value(customerDTOList[1].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.name")
+                jsonPath("$.content[1].information.contactDTO.name")
                     .value(customerDTOList[1].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.surname")
+                jsonPath("$.content[1].information.contactDTO.surname")
                     .value(customerDTOList[1].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.ssnCode")
+                jsonPath("$.content[1].information.contactDTO.ssnCode")
                     .value(customerDTOList[1].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.category")
+                jsonPath("$.content[1].information.contactDTO.category")
                     .value(customerDTOList[1].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.comment")
+                jsonPath("$.content[1].information.contactDTO.comment")
                     .value(customerDTOList[1].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.id")
+                jsonPath("$.content[2].information.contactDTO.id")
                     .value(customerDTOList[2].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.name")
+                jsonPath("$.content[2].information.contactDTO.name")
                     .value(customerDTOList[2].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.surname")
+                jsonPath("$.content[2].information.contactDTO.surname")
                     .value(customerDTOList[2].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.ssnCode")
+                jsonPath("$.content[2].information.contactDTO.ssnCode")
                     .value(customerDTOList[2].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.category")
+                jsonPath("$.content[2].information.contactDTO.category")
                     .value(customerDTOList[2].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.comment")
+                jsonPath("$.content[2].information.contactDTO.comment")
                     .value(customerDTOList[2].information.contactDTO.comment)
             )
     }
@@ -382,76 +382,76 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getAllCustomers(0, 10, any()) } returns customers
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers?pageNumber=0"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(3))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(customerDTOList[0].id))
+            .andExpect(jsonPath("$.content.length()").value(3))
+            .andExpect(jsonPath("$.content[0].id").value(customerDTOList[0].id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.name")
+                jsonPath("$.content[0].information.contactDTO.name")
                     .value(customerDTOList[0].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.surname")
+                jsonPath("$.content[0].information.contactDTO.surname")
                     .value(customerDTOList[0].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.ssnCode")
+                jsonPath("$.content[0].information.contactDTO.ssnCode")
                     .value(customerDTOList[0].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.category")
+                jsonPath("$.content[0].information.contactDTO.category")
                     .value(customerDTOList[0].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.comment")
+                jsonPath("$.content[0].information.contactDTO.comment")
                     .value(customerDTOList[0].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.id")
+                jsonPath("$.content[1].information.contactDTO.id")
                     .value(customerDTOList[1].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.name")
+                jsonPath("$.content[1].information.contactDTO.name")
                     .value(customerDTOList[1].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.surname")
+                jsonPath("$.content[1].information.contactDTO.surname")
                     .value(customerDTOList[1].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.ssnCode")
+                jsonPath("$.content[1].information.contactDTO.ssnCode")
                     .value(customerDTOList[1].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.category")
+                jsonPath("$.content[1].information.contactDTO.category")
                     .value(customerDTOList[1].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.comment")
+                jsonPath("$.content[1].information.contactDTO.comment")
                     .value(customerDTOList[1].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.id")
+                jsonPath("$.content[2].information.contactDTO.id")
                     .value(customerDTOList[2].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.name")
+                jsonPath("$.content[2].information.contactDTO.name")
                     .value(customerDTOList[2].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.surname")
+                jsonPath("$.content[2].information.contactDTO.surname")
                     .value(customerDTOList[2].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.ssnCode")
+                jsonPath("$.content[2].information.contactDTO.ssnCode")
                     .value(customerDTOList[2].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.category")
+                jsonPath("$.content[2].information.contactDTO.category")
                     .value(customerDTOList[2].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.comment")
+                jsonPath("$.content[2].information.contactDTO.comment")
                     .value(customerDTOList[2].information.contactDTO.comment)
             )
     }
@@ -463,76 +463,76 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getAllCustomers(0, 10, any()) } returns customers
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(3))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(customerDTOList[0].id))
+            .andExpect(jsonPath("$.content.length()").value(3))
+            .andExpect(jsonPath("$.content[0].id").value(customerDTOList[0].id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.name")
+                jsonPath("$.content[0].information.contactDTO.name")
                     .value(customerDTOList[0].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.surname")
+                jsonPath("$.content[0].information.contactDTO.surname")
                     .value(customerDTOList[0].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.ssnCode")
+                jsonPath("$.content[0].information.contactDTO.ssnCode")
                     .value(customerDTOList[0].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.category")
+                jsonPath("$.content[0].information.contactDTO.category")
                     .value(customerDTOList[0].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.comment")
+                jsonPath("$.content[0].information.contactDTO.comment")
                     .value(customerDTOList[0].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.id")
+                jsonPath("$.content[1].information.contactDTO.id")
                     .value(customerDTOList[1].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.name")
+                jsonPath("$.content[1].information.contactDTO.name")
                     .value(customerDTOList[1].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.surname")
+                jsonPath("$.content[1].information.contactDTO.surname")
                     .value(customerDTOList[1].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.ssnCode")
+                jsonPath("$.content[1].information.contactDTO.ssnCode")
                     .value(customerDTOList[1].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.category")
+                jsonPath("$.content[1].information.contactDTO.category")
                     .value(customerDTOList[1].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.comment")
+                jsonPath("$.content[1].information.contactDTO.comment")
                     .value(customerDTOList[1].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.id")
+                jsonPath("$.content[2].information.contactDTO.id")
                     .value(customerDTOList[2].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.name")
+                jsonPath("$.content[2].information.contactDTO.name")
                     .value(customerDTOList[2].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.surname")
+                jsonPath("$.content[2].information.contactDTO.surname")
                     .value(customerDTOList[2].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.ssnCode")
+                jsonPath("$.content[2].information.contactDTO.ssnCode")
                     .value(customerDTOList[2].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.category")
+                jsonPath("$.content[2].information.contactDTO.category")
                     .value(customerDTOList[2].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.comment")
+                jsonPath("$.content[2].information.contactDTO.comment")
                     .value(customerDTOList[2].information.contactDTO.comment)
             )
     }
@@ -544,76 +544,76 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getAllCustomers(0, 1000, any()) } returns customers
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers?pageNumber=0&pageSize=1000"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(3))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(customerDTOList[0].id))
+            .andExpect(jsonPath("$.content.length()").value(3))
+            .andExpect(jsonPath("$.content[0].id").value(customerDTOList[0].id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.name")
+                jsonPath("$.content[0].information.contactDTO.name")
                     .value(customerDTOList[0].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.surname")
+                jsonPath("$.content[0].information.contactDTO.surname")
                     .value(customerDTOList[0].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.ssnCode")
+                jsonPath("$.content[0].information.contactDTO.ssnCode")
                     .value(customerDTOList[0].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.category")
+                jsonPath("$.content[0].information.contactDTO.category")
                     .value(customerDTOList[0].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.comment")
+                jsonPath("$.content[0].information.contactDTO.comment")
                     .value(customerDTOList[0].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.id")
+                jsonPath("$.content[1].information.contactDTO.id")
                     .value(customerDTOList[1].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.name")
+                jsonPath("$.content[1].information.contactDTO.name")
                     .value(customerDTOList[1].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.surname")
+                jsonPath("$.content[1].information.contactDTO.surname")
                     .value(customerDTOList[1].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.ssnCode")
+                jsonPath("$.content[1].information.contactDTO.ssnCode")
                     .value(customerDTOList[1].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.category")
+                jsonPath("$.content[1].information.contactDTO.category")
                     .value(customerDTOList[1].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[1].information.contactDTO.comment")
+                jsonPath("$.content[1].information.contactDTO.comment")
                     .value(customerDTOList[1].information.contactDTO.comment)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.id")
+                jsonPath("$.content[2].information.contactDTO.id")
                     .value(customerDTOList[2].information.contactDTO.id)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.name")
+                jsonPath("$.content[2].information.contactDTO.name")
                     .value(customerDTOList[2].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.surname")
+                jsonPath("$.content[2].information.contactDTO.surname")
                     .value(customerDTOList[2].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.ssnCode")
+                jsonPath("$.content[2].information.contactDTO.ssnCode")
                     .value(customerDTOList[2].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.category")
+                jsonPath("$.content[2].information.contactDTO.category")
                     .value(customerDTOList[2].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[2].information.contactDTO.comment")
+                jsonPath("$.content[2].information.contactDTO.comment")
                     .value(customerDTOList[2].information.contactDTO.comment)
             )
     }
@@ -625,28 +625,28 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getAllCustomers(0, 10, any()) } returns customers
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers?pageNumber=0&pageSize=10&name=Alice"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(customerDTOList[0].id))
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].id").value(customerDTOList[0].id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.name")
+                jsonPath("$.content[0].information.contactDTO.name")
                     .value(customerDTOList[0].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.surname")
+                jsonPath("$.content[0].information.contactDTO.surname")
                     .value(customerDTOList[0].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.ssnCode")
+                jsonPath("$.content[0].information.contactDTO.ssnCode")
                     .value(customerDTOList[0].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.category")
+                jsonPath("$.content[0].information.contactDTO.category")
                     .value(customerDTOList[0].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.content[0].information.contactDTO.comment")
+                jsonPath("$.content[0].information.contactDTO.comment")
                     .value(customerDTOList[0].information.contactDTO.comment)
             )
 
@@ -662,27 +662,27 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getCustomer(customer.id) } returns customer.toDTO()
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers/${customer.id}"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(customerDTOList[0].id))
+            .andExpect(jsonPath("$.id").value(customerDTOList[0].id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.name")
+                jsonPath("$.information.contactDTO.name")
                     .value(customerDTOList[0].information.contactDTO.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.surname")
+                jsonPath("$.information.contactDTO.surname")
                     .value(customerDTOList[0].information.contactDTO.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.ssnCode")
+                jsonPath("$.information.contactDTO.ssnCode")
                     .value(customerDTOList[0].information.contactDTO.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.category")
+                jsonPath("$.information.contactDTO.category")
                     .value(customerDTOList[0].information.contactDTO.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.comment")
+                jsonPath("$.information.contactDTO.comment")
                     .value(customerDTOList[0].information.contactDTO.comment)
             )
 
@@ -695,7 +695,7 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
         every { customerService.getCustomer(customer.id) } returns customer.toDTO()
 
         mockMvc.perform(MockMvcRequestBuilders.get("/API/customers/-1"))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(status().isBadRequest)
 
     }
 
@@ -711,9 +711,9 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
             MockMvcRequestBuilders.get("/API/customers/${customerId}")
                 .contentType(MediaType.APPLICATION_JSON)
         )
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .andExpect(status().isNotFound)
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$").value("The customer with id equal to $customerId was not found!")
+                jsonPath("$").value("The customer with id equal to $customerId was not found!")
             )
     }
 
@@ -794,26 +794,26 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         )
-            .andExpect(MockMvcResultMatchers.status().isCreated)
+            .andExpect(status().isCreated)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(newCustomer.id))
+            .andExpect(jsonPath("$.id").value(newCustomer.id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.name").value(newCustomer.information.name)
+                jsonPath("$.information.contactDTO.name").value(newCustomer.information.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.surname")
+                jsonPath("$.information.contactDTO.surname")
                     .value(newCustomer.information.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.ssnCode")
+                jsonPath("$.information.contactDTO.ssnCode")
                     .value(newCustomer.information.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.category")
+                jsonPath("$.information.contactDTO.category")
                     .value(newCustomer.information.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.comment")
+                jsonPath("$.information.contactDTO.comment")
                     .value(newCustomer.information.comment)
             )
 
@@ -885,8 +885,8 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").value(ErrorsPage.EMAILS_NOT_VALID))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$").value(ErrorsPage.EMAILS_NOT_VALID))
 
 
         verify(exactly = 0) { customerService.postNewCustomer(any()) }
@@ -963,8 +963,8 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").value(ErrorsPage.TELEPHONES_NOT_VALID))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$").value(ErrorsPage.TELEPHONES_NOT_VALID))
 
 
         verify(exactly = 0) { customerService.postNewCustomer(any()) }
@@ -1041,8 +1041,8 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").value(ErrorsPage.ADDRESSES_NOT_VALID))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$").value(ErrorsPage.ADDRESSES_NOT_VALID))
 
 
         verify(exactly = 0) { customerService.postNewCustomer(any()) }
@@ -1095,25 +1095,25 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
             MockMvcRequestBuilders.patch("/API/customers/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody3)
-        ).andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(newCustomer.id))
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(newCustomer.id))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.name").value(newCustomer.information.name)
+                jsonPath("$.information.contactDTO.name").value(newCustomer.information.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.surname")
+                jsonPath("$.information.contactDTO.surname")
                     .value(newCustomer.information.surname)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.ssnCode")
+                jsonPath("$.information.contactDTO.ssnCode")
                     .value(newCustomer.information.ssnCode)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.category")
+                jsonPath("$.information.contactDTO.category")
                     .value(newCustomer.information.category.name)
             )
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.information.contactDTO.comment")
+                jsonPath("$.information.contactDTO.comment")
                     .value(newCustomer.information.comment)
             )
 
@@ -1136,9 +1136,9 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
             MockMvcRequestBuilders.patch("/API/customers/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody3)
-        ).andExpect(MockMvcResultMatchers.status().isNotFound)
+        ).andExpect(status().isNotFound)
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.error").value("The customer with id equal to 1 was not found!")
+                jsonPath("$.error").value("The customer with id equal to 1 was not found!")
             )
 
 
@@ -1161,8 +1161,8 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
             MockMvcRequestBuilders.patch("/API/customers/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody3)
-        ).andExpect(MockMvcResultMatchers.status().isNotFound)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("The contact with id equal to 2 was not found!"))
+        ).andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.error").value("The contact with id equal to 2 was not found!"))
 
 
         verify(exactly = 1) { customerService.updateCustomer(any(), any()) }
@@ -1177,8 +1177,8 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
             MockMvcRequestBuilders.patch("/API/customers/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody3)
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(ErrorsPage.CUSTOMER_ID_CONTACT_ID_ERROR))
+        ).andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value(ErrorsPage.CUSTOMER_ID_CONTACT_ID_ERROR))
 
 
         verify(exactly = 0) { customerService.updateCustomer(any(), any()) }
@@ -1193,8 +1193,8 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
             MockMvcRequestBuilders.patch("/API/customers/-1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody3)
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(ErrorsPage.CUSTOMER_ID_CONTACT_ID_ERROR))
+        ).andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value(ErrorsPage.CUSTOMER_ID_CONTACT_ID_ERROR))
 
 
         verify(exactly = 0) { customerService.updateCustomer(any(), any()) }
@@ -1209,8 +1209,8 @@ class CrmCustomersControllerUnitTest(@Autowired val mockMvc: MockMvc) {
             MockMvcRequestBuilders.patch("/API/customers/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody3)
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(ErrorsPage.CONTACT_ID_NOT_SPECIFIED_ERROR))
+        ).andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value(ErrorsPage.CONTACT_ID_NOT_SPECIFIED_ERROR))
 
 
         verify(exactly = 0) { customerService.updateCustomer(any(), any()) }

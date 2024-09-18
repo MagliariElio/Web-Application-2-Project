@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.NoSuchElementException
 
 @RestController
 @RequestMapping("/API/joboffers")
@@ -303,6 +302,48 @@ class CrmJobOffersController(
         } catch (e: NotFoundJobOfferException) {
             logger.info("mapOf(\"error\" to \"No such a job offer with id = $jobOfferId or value not computable\"),\n")
             return ResponseEntity(mapOf("error" to e.message), HttpStatus.NOT_FOUND)
+        } catch (e: Exception) {
+            logger.info("Error: Internal server error, ${e.message}")
+            return ResponseEntity(mapOf("error" to "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @PostMapping("/generate", "/generate/")
+    fun getGenerateJobOffer(
+        @RequestBody prompt: String,
+    ): ResponseEntity<Any> {
+        if (prompt.isEmpty()) {
+            logger.info(ErrorsPage.EMPTY_PROMPT_ERROR)
+            return ResponseEntity(ErrorsPage.EMPTY_PROMPT_ERROR, HttpStatus.BAD_REQUEST)
+        }
+
+        try {
+            val jobOffer = jobOfferService.getGenerateJobOffer(prompt)
+            return ResponseEntity(jobOffer, HttpStatus.OK)
+        } catch (e: IllegalArgumentException) {
+            logger.info("Problem during job offer generation: dangerous description (${e.message})")
+            return ResponseEntity(mapOf("error" to e.message), HttpStatus.BAD_REQUEST)
+        } catch (e: Exception) {
+            logger.info("Error: Internal server error, ${e.message}")
+            return ResponseEntity(mapOf("error" to "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @PostMapping("/skills/generate", "/skills/generate/")
+    fun getGenerateSkillsJobOffer(
+        @RequestBody prompt: String,
+    ): ResponseEntity<Any> {
+        if (prompt.isEmpty()) {
+            logger.info(ErrorsPage.EMPTY_PROMPT_ERROR)
+            return ResponseEntity(ErrorsPage.EMPTY_PROMPT_ERROR, HttpStatus.BAD_REQUEST)
+        }
+
+        try {
+            val jobOffer = jobOfferService.getGenerateSkills(prompt)
+            return ResponseEntity(jobOffer, HttpStatus.OK)
+        } catch (e: IllegalArgumentException) {
+            logger.info("Problem during skills generation: dangerous description (${e.message})")
+            return ResponseEntity(mapOf("error" to e.message), HttpStatus.BAD_REQUEST)
         } catch (e: Exception) {
             logger.info("Error: Internal server error, ${e.message}")
             return ResponseEntity(mapOf("error" to "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR)
