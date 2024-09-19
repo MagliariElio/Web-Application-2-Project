@@ -298,7 +298,7 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
           <h5>Total number of job offers: {jobOfferAnalytics.totalJobOffers}</h5>
         </Row>
         <Row>
-          <h5>Avarage completition time for completed job offers: {formatDuration(jobOfferAnalytics.AvarageJobOfferCompletionTime)}</h5>
+          <h5>Average completion time for finalized job offers: {formatDuration(jobOfferAnalytics.AvarageJobOfferCompletionTime)}</h5>
         </Row>
         <Row>
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
