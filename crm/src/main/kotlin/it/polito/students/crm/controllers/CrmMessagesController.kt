@@ -1,5 +1,6 @@
 package it.polito.students.crm.controllers
 
+import com.github.kittinunf.fuel.httpPost
 import it.polito.students.crm.dtos.*
 import it.polito.students.crm.exception_handlers.BadQueryParametersException
 import it.polito.students.crm.exception_handlers.InvalidStateTransitionException
@@ -21,6 +22,12 @@ import it.polito.students.crm.utils.ErrorsPage.Companion.SENDER_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.SENDER_MISSING_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.SORT_BY_AND_STATE_REQUEST_PARAMETERS_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.SUBJECT_MISSING_ERROR
+import kotlinx.serialization.json.Json
+import org.keycloak.OAuth2Constants
+import org.keycloak.admin.client.Keycloak
+import org.keycloak.admin.client.KeycloakBuilder
+import org.keycloak.admin.client.resource.UsersResource
+import org.keycloak.representations.idm.UserRepresentation
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -35,6 +42,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
 
+
 @RestController
 @RequestMapping("/API/messages")
 class CrmMessagesController(
@@ -43,6 +51,8 @@ class CrmMessagesController(
 ) {
     private val logger = LoggerFactory.getLogger(CrmMessagesController::class.java)
     private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
+
+
 
     // TODO: aggiunto per testare la route
     @GetMapping("/auth")

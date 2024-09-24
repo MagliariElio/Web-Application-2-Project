@@ -1,5 +1,9 @@
 package it.polito.students.crm.services
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
 import it.polito.students.crm.dtos.*
 import it.polito.students.crm.entities.JobOffer
 import it.polito.students.crm.entities.Professional

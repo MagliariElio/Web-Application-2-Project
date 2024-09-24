@@ -7,7 +7,7 @@ import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
 import JobOffersPage from "./views/JobOffersPage.tsx";
-import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsGearFill, BsPieChartFill  } from "react-icons/bs";
+import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsGearFill, BsPieChartFill, BsPersonFill  } from "react-icons/bs";
 import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
 import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
@@ -25,6 +25,8 @@ import { runCustomerTests, runJobOfferTests, runProfessionalTests } from "./test
 import { FaSignInAlt, FaUsers } from "react-icons/fa";
 import AboutUs from "./views/AboutUs.tsx";
 import AnalyticsPage from "./views/AnalyticsPage.tsx";
+import UsersPage from "./views/UsersPage.tsx";
+import { AddUserPage } from "./views/Adduser.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -141,6 +143,10 @@ function App() {
                     element={me && me.principal !== null ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />}
                   />
                   <Route
+                    path="/ui/users/add"
+                    element={me && me.principal !== null ? <AddUserPage me={me} /> : <Navigate to="/not-found" />}
+                  />
+                  <Route
                     path="/ui/joboffers/add"
                     element={
                       me && me.principal !== null && me.role === RoleState.OPERATOR ? <AddJobOfferPage me={me} /> : <Navigate to="/not-found" />
@@ -148,6 +154,7 @@ function App() {
                   />
                   <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
                   <Route path="/ui/analytics" element={me && me.principal !== null ? <AnalyticsPage me={me} /> : <Navigate to="/not-found" /> } /> 
+                  <Route path="/ui/users" element={me && me.principal !== null ? <UsersPage me={me} /> : <Navigate to="/not-found" /> } /> 
 
                   <Route path="*" element={<PageNotFound />} />
                 </>
@@ -228,6 +235,15 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
             >
               <BsPieChartFill  className={opened ? "me-2" : ""} />
               {opened && "Analytics"}
+            </Nav.Link>
+            <Nav.Link
+              className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
+              onClick={() => {
+                if (location.pathname !== "/ui/users") navigate("/ui/users");
+              }}
+            >
+              <BsPersonFill  className={opened ? "me-2" : ""} />
+              {opened && "Users"}
             </Nav.Link>
           </>
         )}

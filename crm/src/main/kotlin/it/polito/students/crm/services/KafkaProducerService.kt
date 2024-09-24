@@ -1,8 +1,10 @@
 package it.polito.students.crm.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import it.polito.students.crm.dtos.AnalyticsJobOfferDTO
 import it.polito.students.crm.dtos.JobOfferAnalyticsDTO
 import it.polito.students.crm.dtos.MessageAnalyticsDTO
+import it.polito.students.crm.dtos.ProfessionalAnalyticsDTO
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory

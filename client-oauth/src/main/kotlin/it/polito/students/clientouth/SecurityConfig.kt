@@ -41,7 +41,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
-            .cors {  }
+            .cors { it.configurationSource(corsConfigurationSource()) }
             .csrf {
                 it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
@@ -59,7 +59,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:5173", "http://192.168.252.250:5173", "http://172.29.224.1:5173") // Add your allowed origins here
+        configuration.allowedOrigins = listOf("http://localhost:5173", "http://192.168.252.250:5173", "http://172.29.224.1:5173", "http://localhost:8080", "http://localhost:9090" ) // Add your allowed origins here
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("Authorization", "Content-Type", "X-XSRF-TOKEN")
         configuration.allowCredentials = true

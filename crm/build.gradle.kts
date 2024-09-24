@@ -47,6 +47,12 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.3")
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation("com.github.kittinunf.fuel:fuel:2.3.1")
+    implementation("com.github.kittinunf.fuel:fuel-coroutines:2.3.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+    // Keycloak Admin Client dependencies
+    implementation("org.keycloak:keycloak-admin-client:22.0.1") // Replace with the latest version
 
     // Exclude JUnit vintage support from spring-boot-starter-test
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -79,6 +85,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.named<BootBuildImage>("bootBuildImage"){
+tasks.named<BootBuildImage>("bootBuildImage") {
     imageName.set("crm")
 }
