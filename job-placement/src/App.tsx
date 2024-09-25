@@ -7,7 +7,7 @@ import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 import JPAPIAuth from "./apis/JPAuth.ts";
 import NavBar from "./views/NavBar.tsx";
 import JobOffersPage from "./views/JobOffersPage.tsx";
-import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsGearFill, BsPieChartFill, BsPersonFill  } from "react-icons/bs";
+import { BsBriefcaseFill, BsBuildingsFill, BsCaretLeftFill, BsCaretRightFill, BsGearFill, BsPieChartFill, BsPersonFill, BsChatSquareDotsFill   } from "react-icons/bs";
 import ProfilePage from "./views/ProfilePage.tsx";
 import CustomersPage from "./views/CustomersPage.tsx";
 import ProfessionalsPage from "./views/ProfessionalsPage.tsx";
@@ -27,6 +27,8 @@ import AboutUs from "./views/AboutUs.tsx";
 import AnalyticsPage from "./views/AnalyticsPage.tsx";
 import UsersPage from "./views/UsersPage.tsx";
 import { AddUserPage } from "./views/Adduser.tsx";
+import MessagesPage from "./views/MessagesPage.tsx";
+import MessageDetail from "./views/MessageDetail.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -155,6 +157,8 @@ function App() {
                   <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
                   <Route path="/ui/analytics" element={me && me.principal !== null ? <AnalyticsPage me={me} /> : <Navigate to="/not-found" /> } /> 
                   <Route path="/ui/users" element={me && me.principal !== null ? <UsersPage me={me} /> : <Navigate to="/not-found" /> } /> 
+                  <Route path="/ui/messages" element={me && me.principal !== null ? <MessagesPage me={me}/> : <Navigate to="/not-found" />} />
+                  <Route path="/ui/messages/:id" element={me && me.principal !== null ? <MessageDetail me={me} /> : <Navigate to="/not-found" />} />
 
                   <Route path="*" element={<PageNotFound />} />
                 </>
@@ -226,6 +230,15 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
             >
               <BsBriefcaseFill className={opened ? "me-2" : ""} />
               {opened && "Professionals"}
+            </Nav.Link>
+            <Nav.Link
+              className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
+              onClick={() => {
+                if (location.pathname !== "/ui/messages") navigate("/ui/messages");
+              }}
+            >
+              <BsChatSquareDotsFill  className={opened ? "me-2" : ""} />
+              {opened && "Messages"}
             </Nav.Link>
             <Nav.Link
               className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}

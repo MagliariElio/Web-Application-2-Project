@@ -118,6 +118,14 @@ class CrmMessagesController(
                 pageImpl.totalElements
             )
 
+            val mapAnswer: Map<String, Any?> = mapOf(
+                "content" to pageImpl.content,
+                "currentPage" to pageImpl.number,
+                "elementPerPage" to pageImpl.size,
+                "totalPages" to pageImpl.totalPages,
+                "totalElements" to pageImpl.totalElements
+            )
+
             return ResponseEntity.ok(response)
         } catch (e: BadQueryParametersException) {
             logger.info("Error retrieving all messages ${e.message}")

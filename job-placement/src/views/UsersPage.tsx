@@ -132,7 +132,7 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                                 </Row>
                             ) : (
                                 users?.map((user) => (
-                                    <div key={user.id} className="job-offer-item mb-4 p-3">
+                                    <div key={user.id} className="user-item mb-4 p-3">
                                         <Row className="align-items-center">
                                             <Col md={8}>
                                                 <Row className="mb-2">

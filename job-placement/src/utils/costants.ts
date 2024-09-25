@@ -27,6 +27,8 @@ export enum EmploymentStateEnumSearchCandidateProfessional {
 
 export const contractTypeList = ["Full Time", "Part Time", "Contract", "Freelance"];
 
+export const messageStateTypeList = ["Received", "Read", "Discarded", "Processing", "Done", "Failed"]
+
 export const workModeList = ["Remote", "Hybrid", "In-Person"];
 
 export const toTitleCase = (str: string) => {
