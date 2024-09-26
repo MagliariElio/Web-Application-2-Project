@@ -29,6 +29,7 @@ import UsersPage from "./views/UsersPage.tsx";
 import { AddUserPage } from "./views/Adduser.tsx";
 import MessagesPage from "./views/MessagesPage.tsx";
 import MessageDetail from "./views/MessageDetail.tsx";
+import SettingsPage from "./views/SettingsPage.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -159,6 +160,7 @@ function App() {
                   <Route path="/ui/users" element={me && me.principal !== null ? <UsersPage me={me} /> : <Navigate to="/not-found" /> } /> 
                   <Route path="/ui/messages" element={me && me.principal !== null ? <MessagesPage me={me}/> : <Navigate to="/not-found" />} />
                   <Route path="/ui/messages/:id" element={me && me.principal !== null ? <MessageDetail me={me} /> : <Navigate to="/not-found" />} />
+                  <Route path="/ui/settings" element={me && me.principal !== null ? <SettingsPage me={me} /> : <Navigate to="/not-found" />}/>
 
                   <Route path="*" element={<PageNotFound />} />
                 </>
@@ -264,7 +266,12 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
         <div className="flex-grow-1"></div>
 
         {me?.principal !== null && (
-          <Nav.Link href="#" className={opened ? navLinkClassnameOpened + " mt-auto" : navLinkClassnameClosed + " mt-auto"}>
+          <Nav.Link 
+            className={opened ? navLinkClassnameOpened + " mt-auto" : navLinkClassnameClosed + " mt-auto"}
+            onClick={() => {
+              if (location.pathname !== "/ui/settings") navigate("/ui/settings");
+            }}
+          >
             <BsGearFill className={opened ? "me-2" : ""} />
             {opened && "Settings"}
           </Nav.Link>

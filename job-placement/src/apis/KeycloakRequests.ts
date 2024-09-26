@@ -99,69 +99,6 @@ export async function fetchUsers(): Promise<KeycloakUser[]> {
 }
 
 
-/*export async function addUser(
-    firstName: string,
-    lastName: string,
-    email: string,
-    username: string,
-    role: string
-  ): Promise<void> {
-    const usersUrl = 'http://localhost:9090/admin/realms/job-connect/users';
-  
-    try {
-      // Fetch access token first
-      const accessToken = await fetchAccessToken();
-  
-      // Prepare the new user data
-      const newUser = {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        username: username,
-        enabled: true, // Set to true to activate the user
-        realmRoles: [role]
-      };
-  
-      // Step 1: Create the user
-      const createUserResponse = await fetch(usersUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
-      });
-  
-      if (!createUserResponse.ok) {
-        throw new Error(`Error creating user: ${createUserResponse.statusText}`);
-      }
-  
-      // Step 2: Fetch the newly created user's ID from Keycloak
-      const createdUserResponse = await fetch(usersUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      });
-  
-      if (!createdUserResponse.ok) {
-        throw new Error(`Error fetching users after creating: ${createdUserResponse.statusText}`);
-      }
-  
-      const users: KeycloakUser[] = await createdUserResponse.json();
-      const createdUser = users.find(user => user.username === username);
-  
-      if (!createdUser) {
-        throw new Error(`Newly created user not found: ${username}`);
-      }
-  
-      console.log(`User ${username} created and assigned role ${role} successfully.`);
-    } catch (error) {
-      console.error('Failed to add user:', error);
-      throw error; // Re-throw error to inform the caller
-    }
-  }*/
-
     async function fetchRoleByName(roleName: string, accessToken: string): Promise<any> {
         const roleUrl = `http://localhost:9090/admin/realms/job-connect/roles/${roleName}`;
       
@@ -313,3 +250,89 @@ export async function fetchUsers(): Promise<KeycloakUser[]> {
           throw error; // Re-throw error to inform the caller
         }
       }
+
+
+      export async function updateUserName(userId: string, newFirstName: string, newLastName: string): Promise<void> {
+        const updateUserUrl = `http://localhost:9090/admin/realms/job-connect/users/${userId}`;
+      
+        try {
+          // Fetch access token
+          const accessToken = await fetchAccessToken();
+      
+          // Step 1: Get the existing user data
+          const getUserResponse = await fetch(updateUserUrl, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          if (!getUserResponse.ok) {
+            throw new Error(`Error fetching user data: ${getUserResponse.statusText}`);
+          }
+      
+          // Step 2: Get the current user data and modify the name
+          const existingUser = await getUserResponse.json();
+          const updatedUser = {
+            ...existingUser,
+            firstName: newFirstName,
+            lastName: newLastName,
+          };
+      
+          // Step 3: Send the updated user data to Keycloak
+          const updateUserResponse = await fetch(updateUserUrl, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUser),
+          });
+      
+          if (!updateUserResponse.ok) {
+            throw new Error(`Error updating user name: ${updateUserResponse.statusText}`);
+          }
+      
+          console.log(`User with ID ${userId} name updated to ${newFirstName} ${newLastName} successfully.`);
+        } catch (error) {
+          console.error(`Failed to update user name for user ${userId}:`, error);
+          throw error;
+        }
+      }
+      
+      export async function changeUserPassword(userId: string, newPassword: string): Promise<void> {
+        const updatePasswordUrl = `http://localhost:9090/admin/realms/job-connect/users/${userId}/reset-password`;
+    
+        try {
+            // Fetch access token
+            const accessToken = await fetchAccessToken();
+    
+            // Step 1: Prepare the payload for the password change
+            const passwordPayload = {
+                type: 'password',
+                value: newPassword,
+                temporary: false, // Set to true if you want the password to be temporary
+            };
+    
+            // Step 2: Send the request to update the password
+            const updatePasswordResponse = await fetch(updatePasswordUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(passwordPayload),
+            });
+    
+            if (!updatePasswordResponse.ok) {
+                throw new Error(`Error changing user password: ${updatePasswordResponse.statusText}`);
+            }
+    
+            console.log(`User with ID ${userId} password changed successfully.`);
+        } catch (error) {
+            console.error(`Failed to change password for user ${userId}:`, error);
+            throw error;
+        }
+    }
+    
