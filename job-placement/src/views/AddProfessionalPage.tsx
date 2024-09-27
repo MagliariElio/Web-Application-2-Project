@@ -109,7 +109,8 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
     };
 
     createProfessional(professional, attachments, me)
-      .then(() => {
+      .then((res) => {
+        console.log("Professional created: ", res);
         navigate("/ui/professionals", { state: { success: true } });
       })
       .catch((error) => {

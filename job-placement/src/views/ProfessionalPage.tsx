@@ -7,6 +7,8 @@ import { employmentStateToText, toTitleCase } from "../utils/costants";
 import { deleteProfessional, fetchProfessional } from "../apis/ProfessionalRequests";
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
 import { JobOfferCard } from "./JobOffersPage";
+import { DocumentFile } from "../interfaces/DocumentFile";
+import { getDocumentById, getDocumentDataById } from "../apis/DocumentRequests";
 
 function ProfessionalPage({ me }: { me: MeInterface }) {
   // Estrai l'ID dall'URL
@@ -33,6 +35,8 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
 
   const [professional, setProfessional] = useState<ProfessionalWithAssociatedData | null>(null);
 
+  const [attachments, setAttachments] = useState<DocumentFile[]>([]);
+
   const [expandedInfoSection, setExpandedInfoSection] = useState(false);
 
   useEffect(() => {
@@ -46,6 +50,16 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
       .then((json) => {
         setProfessional(json);
         console.log("Professional:  ", json);
+        setAttachments([]);
+        json.professionalDTO.attachmentsList.forEach((attachment) => {
+          getDocumentById(attachment, me)
+            .then((json) => {
+              setAttachments((attachments) => [...attachments, json]);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        })
         setLoading(false);
       })
       .catch((error) => {
@@ -198,6 +212,30 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                   {professional?.professionalDTO.skills.length === 0 && (
                     <Row className="d-flex">
                       <p className="p-0 m-0 fs-6">No skill found</p>
+                    </Row>
+                  )}
+                </Row>
+              </Col>
+
+              <Col xs={12} md={8} lg={8}>
+                <Row className="d-flex flex-column mt-3">
+                  <Row className="d-flex">
+                    <h6 className="p-0 m-0">Attachments</h6>
+                  </Row>
+                  <Row className="d-flex flex-wrap">
+                    {attachments &&
+                      attachments.length > 0 &&
+                      attachments.map((attachment, index) => (
+                        <Row key={index} className="d-flex align-items-center mb-1">
+                          <a href={`/documentStoreService/v1/API/documents/${attachment.id}/data`} target="_blank" rel="noreferrer" className="text-truncate me-2 p-0">
+                            {attachment.name}
+                          </a>
+                        </Row>
+                      ))}
+                  </Row>
+                  {attachments.length === 0 && (
+                    <Row className="d-flex">
+                      <p className="p-0 m-0 fs-6">No attachment found</p>
                     </Row>
                   )}
                 </Row>

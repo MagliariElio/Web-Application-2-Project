@@ -4,19 +4,41 @@ import { MeInterface } from "../interfaces/MeInterface";
 import { Professional } from "../interfaces/Professional";
 
 
-export const addDocument = async (document: FormData, me: MeInterface): Promise<DocumentFile> => {
-  console.log("addDocument", document);
+// export const addDocument = async (document: FormData, me: MeInterface): Promise<DocumentFile> => {
+//   console.log("addDocument", document);
+//   try {
+//     const response = await fetch("http://localhost:8080/gateway/documentUpload", {
+//       method: "POST",
+//       headers: {
+//         "X-XSRF-Token": me.xsrfToken,
+//       },
+//       body: document,
+//     });
+
+//     if (!response.ok) {
+//       const errorMessage = `POST /API/documents : ${response.status} ${response.statusText}`;
+//       console.error(errorMessage);
+//       throw new Error(errorMessage);
+//     }
+
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error("Error adding document:", error);
+//     throw error;
+//   }
+// };
+
+export const getDocumentById = async (documentId: number, me: MeInterface): Promise<DocumentFile> => {
   try {
-    const response = await fetch("http://localhost:8080/gateway/documentUpload", {
-      method: "POST",
+    const response = await fetch("/documentStoreService/v1/API/documents/" + documentId, {
       headers: {
         "X-XSRF-Token": me.xsrfToken,
-      },
-      body: document,
+      }
     });
 
     if (!response.ok) {
-      const errorMessage = `POST /API/documents : ${response.status} ${response.statusText}`;
+      const errorMessage = `GET /API/documents/${documentId} : ${response.status} ${response.statusText}`;
       console.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -24,7 +46,29 @@ export const addDocument = async (document: FormData, me: MeInterface): Promise<
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error adding document:", error);
+    console.error("Error getting document:", error);
+    throw error;
+  }
+};
+
+export const getDocumentDataById = async (documentId: number, me: MeInterface): Promise<any> => {
+  try {
+    const response = await fetch("/documentStoreService/v1/API/documents/" + documentId + "/data", {
+      headers: {
+        "X-XSRF-Token": me.xsrfToken,
+      }
+    });
+
+    if (!response.ok) {
+      const errorMessage = `GET /API/documents/${documentId}/data : ${response.status} ${response.statusText}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error getting document:", error);
     throw error;
   }
 };
