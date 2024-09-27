@@ -189,13 +189,13 @@ class CrmProfessionalsController(
             kafkaProducer.sendProfessional(KafkaTopics.TOPIC_PROFESSIONAL, ProfessionalAnalyticsDTO(null, savedProfessional.employmentState))
             return ResponseEntity(savedProfessional, HttpStatus.CREATED)
         } catch (e: BadRequestException) {
-            logger.info("Error: ${e.message}")
+            logger.error("Error: ${e.message}")
             return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
         } catch (e: IllegalArgumentException) {
-            logger.info("Error in category or employment state: ${e.javaClass}: ${e.message}")
+            logger.error("Error in category or employment state: ${e.javaClass}: ${e.message}")
             return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
         } catch (e: Exception) {
-            logger.info("Error saving a new professional: ${e}")
+            logger.error("Error saving a new professional: ${e}")
             return ResponseEntity(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }

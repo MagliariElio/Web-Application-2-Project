@@ -9,7 +9,8 @@ data class ProfessionalDTO(
     var skills: List<String>,
     var employmentState: EmploymentStateEnum,
     var geographicalLocation: String,
-    var dailyRate: Double
+    var dailyRate: Double,
+    var attachmentsList: List<Long>
 )
 
 fun Professional.toDTO(): ProfessionalDTO = ProfessionalDTO(
@@ -19,4 +20,5 @@ fun Professional.toDTO(): ProfessionalDTO = ProfessionalDTO(
     this.employmentState,
     this.geographicalLocation,
     this.dailyRate,
+    this.attachmentsList
 )

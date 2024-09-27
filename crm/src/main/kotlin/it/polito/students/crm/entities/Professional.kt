@@ -19,6 +19,8 @@ class Professional {
     lateinit var employmentState: EmploymentStateEnum
     lateinit var geographicalLocation: String
     var dailyRate: Double = 0.0
+    @ElementCollection
+    var attachmentsList: List<Long> = emptyList()
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

@@ -98,6 +98,7 @@ class ProfessionalServiceImpl(
             employmentState = state
             geographicalLocation = professional.geographicalLocation
             dailyRate = professional.dailyRate
+            attachmentsList = professional.attachmentsList
         }
 
         val professionalSaved = professionalRepository.save(newProfessional)

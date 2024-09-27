@@ -43,6 +43,9 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
   const [showGenerateSkillsModal, setShowGenerateSkillsModal] = useState(false);
   const [generationSkills, setGenerationSkills] = useState(false);
 
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [singleAttachment, setSingleAttachment] = useState<File | null>(null);
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -87,6 +90,8 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
       return;
     }
 
+    console.log("DailyRateeeeeeee: " + dailyRate);
+
     const professional = {
       information: {
         name: name,
@@ -100,10 +105,10 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
       },
       skills: skills,
       geographicalLocation: geographicalLocation,
-      dailyRate: dailyRate,
+      dailyRate: parseFloat(dailyRate),
     };
 
-    createProfessional(professional, me)
+    createProfessional(professional, attachments, me)
       .then(() => {
         navigate("/ui/professionals", { state: { success: true } });
       })
@@ -561,6 +566,89 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         )}
 
         <Row className="mt-5 justify-content-center">
+          <Col xs={12} md={12} lg={6} className="mb-2">
+            <Row className="align-items-center">
+              <Col>
+                <hr />
+              </Col>
+              <Col xs="auto">
+                <h5 className="fw-normal">Attachments</h5>
+              </Col>
+              <Col>
+                <hr />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        {attachments.length === 0 && (
+          <Row className="justify-content-center">
+            <Col xs={12} md={12} lg={6} className="mb-0">
+              <p>No uploaded file yet.</p>
+            </Col>
+          </Row>
+        )}
+        {attachments.length > 0 &&
+          attachments.map((attachment, index) => {
+            return (
+              <Row key={index} className="mb-1 d-flex align-items-center justify-content-center">
+                <Col xs={8} md={6} lg={5}>
+                  <Row className="justify-content-center">
+                    <Col xs={12} md={12} lg={6} className="mb-0">
+                      <p className="text-truncate">{attachment.name}</p>
+                    </Col>
+                    <Col xs={12} md={12} lg={6} className="mb-0 fs-10 fw-light">
+                      <p className="text-truncate">{`${attachment.size} B`}</p>
+                    </Col>
+                  </Row>
+                </Col>
+                <Col xs={4} md={6} lg={1}>
+                  <Col className="mb-0">
+                    <Button
+                      className="secondaryDangerButton w-100"
+                      onClick={() => {
+                        setAttachments(attachments.filter((_e, i) => i !== index));
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </Col>
+                </Col>
+              </Row>
+            );
+          })}
+
+          <Row className="justify-content-center">
+            <Col xs={12} md={8} lg={4} className="mb-2">
+                <Form.Group controlId="formFile" className="mb-3">
+                  <Form.Control
+                  value={singleAttachment == null ? '' : undefined}
+                    type="file"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setSingleAttachment(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </Form.Group>
+              
+            </Col>
+            <Col xs={12} md={4} lg={2} className="mb-2">
+            <Button
+              className="secondaryButton w-100"
+              onClick={() => {
+                if (singleAttachment) {
+                  setAttachments([...attachments, singleAttachment]);
+                }
+                setSingleAttachment(null);
+              }}
+              disabled={singleAttachment === null}
+            >
+              Upload
+            </Button>
+          </Col>
+          </Row>
+
+        <Row className="mt-5 justify-content-center">
           <Col xs={12} md={12} lg={6} className="d-flex flex-column justify-content-center align-items-center">
             <Button type="submit" className="primaryButton">
               Save
@@ -569,8 +657,9 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         </Row>
       </Form>
     </div>
-  );
+  )
 }
+
 
 export default AddProfessionalPage;
 
