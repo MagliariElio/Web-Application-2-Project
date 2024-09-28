@@ -115,12 +115,14 @@ class ProfessionalServiceImpl(
             employmentState = professionalDb.employmentState
             geographicalLocation = professionalDb.geographicalLocation
             dailyRate = professionalDb.dailyRate
+            attachmentsList = professionalDb.attachmentsList
         }
 
         professional.employmentState = EmploymentStateEnum.valueOf(professionalDto.employmentState)
         professional.geographicalLocation = professionalDto.geographicalLocation
         professional.dailyRate = professionalDto.dailyRate
         professional.skills = professionalDto.skills
+        professional.attachmentsList = professionalDto.attachmentsList
 
         //Update the contact in db
         val professionalSaved = professionalRepository.save(professional).toDTO()

@@ -18,3 +18,22 @@ data class CreateContactDTO(
     @Valid
     var addresses: List<CreateAddressDTO>?,
 )
+
+
+data class EditContactDTO(
+    var id: Long,
+    @field:Pattern(regexp = "^[a-zA-Z ]+\$", message = "The name should contain only alphabetic characters")
+    var name: String,
+    @field:Pattern(regexp = "^[a-zA-Z ]+\$", message = "The surname should contain only alphabetic characters")
+    var surname: String,
+    var ssnCode: String?,
+    var category: String?,
+    var comment: String?,
+    @Valid
+    var emails: List<String>?,
+    @Valid
+    var telephones: List<String>?,
+    @Valid
+    var addresses: List<String>?,
+)
+

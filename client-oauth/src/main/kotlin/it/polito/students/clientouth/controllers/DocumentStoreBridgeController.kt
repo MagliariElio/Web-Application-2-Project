@@ -1,12 +1,13 @@
 package it.polito.students.clientouth.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.polito.students.clientouth.dtos.CreateProfessionalDTO
-import it.polito.students.clientouth.dtos.ProfessionalDTO
-import it.polito.students.clientouth.dtos.ProfessionalWithAssociatedDataDTO
+import it.polito.students.clientouth.dtos.*
+import org.apache.hc.client5.http.classic.HttpClient
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.*
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
@@ -14,11 +15,10 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.client.HttpClientErrorException.BadRequest
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.exchange
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
+
 
 @RestController
 @RequestMapping("/gateway")
@@ -198,7 +198,7 @@ class DocumentStoreBridgeController(
                     throw Exception("Failed to delete professional with ID: $professionalId")
                 }
 
-                
+
                 return ResponseEntity("Professional and documents deleted successfully", HttpStatus.OK)
 
             } else {
@@ -209,6 +209,139 @@ class DocumentStoreBridgeController(
             return ResponseEntity("Failed to delete professional: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
+
+
+
+    @PatchMapping("/editProfessional", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun editProfessional(
+        @RequestPart("updateProfessionalInfo") updateProfessionalInfo: EditProfessionalDTO,
+        @RequestPart("addedFiles", required = false) addedFiles: List<MultipartFile>?,
+        @RequestPart("removedFiles", required = false) removedFiles: List<Long>?
+    ): ResponseEntity<String> {
+        return try {
+            val authentication = SecurityContextHolder.getContext().authentication
+
+            if (authentication is OAuth2AuthenticationToken) {
+                val oauthToken = authentication as OAuth2AuthenticationToken
+
+                val authorizedClient = authorizedClientService.loadAuthorizedClient<OAuth2AuthorizedClient>(
+                    oauthToken.authorizedClientRegistrationId,
+                    oauthToken.name
+                )
+
+                val accessToken = authorizedClient?.accessToken?.tokenValue
+                    ?: throw RuntimeException("Access token not available")
+
+                val headers = HttpHeaders()
+                headers.setBearerAuth(accessToken)
+                headers.contentType = MediaType.MULTIPART_FORM_DATA
+
+                // Lista di nuovi documenti aggiunti
+                val addedDocumentsIDs: MutableList<Long> = mutableListOf()
+
+                // Carico i nuovi file aggiunti
+                addedFiles?.forEach { file ->
+                    val uniqueString = "___" + LocalDateTime.now().nano
+                    val fileExtension = file.originalFilename?.substringAfterLast('.', "")
+                    val newFileName = if (!fileExtension.isNullOrEmpty()) {
+                        "${file.originalFilename?.substringBeforeLast('.')}-$uniqueString.$fileExtension"
+                    } else {
+                        "${file.originalFilename}-$uniqueString"
+                    }
+
+                    val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
+                    val fileResource = object : ByteArrayResource(file.bytes) {
+                        override fun getFilename(): String? {
+                            return newFileName
+                        }
+                    }
+                    body.add("file", fileResource)
+
+                    val requestEntity = HttpEntity(body, headers)
+
+                    val res = RestTemplate().exchange(
+                        "http://localhost:8081/API/documents",
+                        HttpMethod.POST,
+                        requestEntity,
+                        String::class.java
+                    )
+
+                    if (res.statusCode.is2xxSuccessful) {
+                        val trimmedJson = res.body!!.trim().removePrefix("{").removeSuffix("}")
+                        val fields = trimmedJson.split(",")
+                        val idField = fields.find { it.startsWith("\"id\":") }
+                        val id = idField?.substringAfter(":")?.trim()?.removePrefix("\"")?.removeSuffix("\"")
+                        addedDocumentsIDs.add(id!!.toLong())
+                    } else {
+                        throw Exception("Error during document creation")
+                    }
+                }
+
+
+                headers.contentType = MediaType.APPLICATION_JSON
+
+                removedFiles?.forEach { removedFileID ->
+                    val requestEntity = HttpEntity(null, headers)
+                    val removeRes = RestTemplate().exchange(
+                        "http://localhost:8081/API/documents/$removedFileID",
+                        HttpMethod.DELETE,
+                        requestEntity,
+                        String::class.java
+                    )
+                    if (!removeRes.statusCode.is2xxSuccessful) {
+                        throw Exception("Failed to delete document with ID: $removedFileID for professional ID: ${updateProfessionalInfo.id}")
+                    }
+                }
+
+
+                val professionalInfoResponse = RestTemplate().exchange(
+                    "http://localhost:8082/API/professionals/${updateProfessionalInfo.id}",
+                    HttpMethod.GET,
+                    HttpEntity<String>(headers),
+                    ProfessionalWithAssociatedDataDTO::class.java
+                )
+
+                if (!professionalInfoResponse.statusCode.is2xxSuccessful || professionalInfoResponse.body == null) {
+                    throw Exception("No professional found for this professional ID!")
+                }
+
+
+                val updatedAttachmentsList = professionalInfoResponse.body!!.professionalDTO.attachmentsList
+                    .filterNot { removedFiles?.contains(it) == true } + addedDocumentsIDs
+
+
+                updateProfessionalInfo.attachmentsList = updatedAttachmentsList
+
+                val requestEntity = HttpEntity(updateProfessionalInfo, headers)
+
+                val url = "http://localhost:8082/API/professionals/${updateProfessionalInfo.id}"
+
+                val restTemplate = RestTemplate()
+                val httpClient: HttpClient = HttpClientBuilder.create().build()
+                restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory(httpClient)
+
+
+                val responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.PATCH,
+                    requestEntity,
+                    String::class.java
+                )
+
+                return if (responseEntity.statusCode.is2xxSuccessful) {
+                    ResponseEntity(responseEntity.body, HttpStatus.OK)
+                } else {
+                    throw Exception("Failed to update professional")
+                }
+            } else {
+                throw RuntimeException("User not authenticated!")
+            }
+        } catch (e: Exception) {
+            logger.error("Error: ${e.message}", e)
+            return ResponseEntity("Error: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
 
 
 }

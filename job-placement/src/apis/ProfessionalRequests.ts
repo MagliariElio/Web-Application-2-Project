@@ -134,23 +134,43 @@ export const deleteProfessional = async (
 
 export const updateProfessional = async (
   professional: EditProfessional,
+  addedAttachments: File[],
+  removedAttachments: number[],
   me: MeInterface
 ): Promise<Professional> => {
   try {
+    const formData = new FormData();
+    formData.append(
+      "updateProfessionalInfo",
+      new Blob([JSON.stringify(professional)], { type: "application/json" })
+    );
+
+    if (addedAttachments.length > 0) {
+      addedAttachments.forEach((file) => {
+        formData.append("addedFiles", file);
+      });
+    }
+
+    if (removedAttachments.length > 0) {
+      formData.append(
+        "removedFiles",
+        new Blob([JSON.stringify(removedAttachments)], { type: "application/json" })
+      );
+    }
+
     const response = await fetch(
-      `/crmService/v1/API/professionals/${professional.id}`,
+      "/gateway/editProfessional",
       {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
           "X-XSRF-Token": me.xsrfToken,
         },
-        body: JSON.stringify(professional),
+        body: formData,
       }
     );
 
     if (!response.ok) {
-      const errorMessage = `PUT /API/professionals/${professional.id} : ${response.status} ${response.statusText}`;
+      const errorMessage = `PATCH /gateway/editProfessional : ${response.status} ${response.statusText}`;
       console.error(errorMessage);
       throw new Error(errorMessage);
     }
