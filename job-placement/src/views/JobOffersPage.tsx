@@ -241,12 +241,14 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
             <Col md={8}>
               {jobOffers?.content.length === 0 ? (
                 <Row className="w-100">
-                  <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-                    <h5 className="p-5">
-                      No job offers found with the selected criteria. Try adjusting the filters, or it could be that no job offers have been added
-                      yet.
-                    </h5>
-                  </Col>
+                    <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
+                      <h5 className="p-3 text-center">
+                        No job offers found with the selected criteria.
+                      </h5>
+                      <h5 className="p-3 text-center">
+                        Try adjusting the filters, or it could be that no job offers have been added yet.
+                      </h5>
+                    </Col>
                 </Row>
               ) : (
                 jobOffers?.content.map((joboffer) => (

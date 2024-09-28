@@ -12,7 +12,7 @@ const AboutUs = () => {
           <h1 className="display-4 fw-bold text-primary">Who We Are</h1>
           <p className="lead text-muted about-text  p-2">
             We are three passionate software development students from the <strong>Politecnico di Torino</strong>. This website was born as part of our project for the
-            <strong>Web Application 2 course</strong>, where we combined our love for coding, creativity, and teamwork.
+            <strong> Web Application 2 course</strong>, where we combined our love for coding, creativity, and teamwork.
           </p>
         </Col>
       </Row>

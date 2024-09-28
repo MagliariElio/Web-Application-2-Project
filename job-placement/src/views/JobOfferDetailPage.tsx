@@ -2323,10 +2323,11 @@ const CandidateProfessionalModal: React.FC<{
 
   const handleProfessionalClick = (professional: Professional) => {
     setSelectedProfessionals((prevSelected) => {
-      if (!prevSelected.some((p) => p.id === professional.id)) {
+      if (prevSelected.some((p) => p.id === professional.id)) {
+        return prevSelected.filter((p) => p.id !== professional.id);
+      } else {
         return [...prevSelected, professional];
       }
-      return prevSelected;
     });
   };
 

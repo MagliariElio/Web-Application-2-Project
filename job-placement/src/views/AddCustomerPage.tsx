@@ -25,6 +25,8 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
 
   const [addresses, setAddresses] = useState<any[]>([]);
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -63,11 +65,15 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
       addresses: addresses,
     };
 
+    setLoading(true);
+
     createCustomer(customer, me)
       .then(() => {
+        setLoading(false);
         navigate("/ui/customers", { state: { success: true } });
       })
       .catch((error) => {
+        setLoading(false);
         navigate("/ui/customers", { state: { success: false } });
         console.log("Error during customer post: ", error);
         throw new Error("POST /API/customers : Network response was not ok");
@@ -388,8 +394,16 @@ function AddCustomerPage({ me }: { me: MeInterface }) {
             lg={6}
             className="d-flex flex-column justify-content-center align-items-center"
           >
-            <Button type="submit" className="primaryButton">
-              Save
+            <Button type="submit" className="primaryButton" disabled={loading}>
+              {loading ? (
+                <span
+                  className="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+              ) : (
+                "Save"
+              )}
             </Button>
           </Col>
         </Row>

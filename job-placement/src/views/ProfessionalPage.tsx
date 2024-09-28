@@ -246,32 +246,123 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
 
           {expandedInfoSection && (
             <>
-              <Col xs={12} md={6} lg={4}>
-                <Row className="d-flex flex-column mt-3">
-                  <Row className="d-flex">
-                    <h6 className="p-0 m-0">Geographical location</h6>
-                  </Row>
+              <Col xs={12} md={6} lg={8}>
+                <Row>
+                  <Col xs={12} md={6} lg={6}>
+                    <Row className="d-flex flex-column mt-3">
+                      <Row className="d-flex">
+                        <h6 className="p-0 m-0">Geographical location</h6>
+                      </Row>
 
-                  <Row className="d-flex">
-                    <p className="p-0 m-0 fs-6">
-                      {professional?.professionalDTO.geographicalLocation}{" "}
-                    </p>
-                  </Row>
+                      <Row className="d-flex">
+                        <p className="p-0 m-0 fs-6">
+                          {professional?.professionalDTO.geographicalLocation}{" "}
+                        </p>
+                      </Row>
+                    </Row>
+                  </Col>
+                  <Col xs={12} md={6} lg={4}>
+                    <Row className="d-flex flex-column mt-3">
+                      <Row className="d-flex">
+                        <h6 className="p-0 m-0">Daily rate</h6>
+                      </Row>
+
+                      <Row className="d-flex">
+                        <p className="p-0 m-0 fs-6">
+                          {professional?.professionalDTO.dailyRate} €
+                        </p>
+                      </Row>
+                    </Row>
+                  </Col>
                 </Row>
-              </Col>
 
-              <Col xs={12} md={6} lg={4}>
-                <Row className="d-flex flex-column mt-3">
-                  <Row className="d-flex">
-                    <h6 className="p-0 m-0">Daily rate</h6>
+                <Col xs={12} md={8} lg={8}>
+                  <Row className="d-flex flex-column mt-3">
+                    <Row className="d-flex">
+                      <h6 className="p-0 m-0">Attachments</h6>
+                    </Row>
+                    <Row className="d-flex flex-wrap">
+                      {attachments &&
+                        attachments.length > 0 &&
+                        attachments
+                          .sort((a, b) => a.name.localeCompare(b.name))
+                          .map((attachment, index) => (
+                            <Row key={index} className="d-flex mb-1">
+                              <a
+                                href={`/documentStoreService/v1/API/documents/${attachment.id}/data`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-truncate me-2 p-0 d-flex align-items-center"
+                              >
+                                {attachment.contentType ===
+                                "application/pdf" ? (
+                                  <BsFileEarmarkPdf
+                                    style={{ width: "20px", height: "20px" }}
+                                    className="me-1"
+                                  />
+                                ) : attachment.contentType ===
+                                    "application/msword" ||
+                                  attachment.contentType ===
+                                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ? (
+                                  <BsFileEarmarkWord
+                                    style={{ width: "20px", height: "20px" }}
+                                    className="me-1"
+                                  />
+                                ) : attachment.contentType ===
+                                    "application/vnd.ms-excel" ||
+                                  attachment.contentType ===
+                                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ? (
+                                  <BsFileEarmarkExcel
+                                    style={{ width: "20px", height: "20px" }}
+                                    className="me-1"
+                                  />
+                                ) : attachment.contentType ===
+                                    "application/vnd.ms-powerpoint" ||
+                                  attachment.contentType ===
+                                    "application/vnd.openxmlformats-officedocument.presentationml.presentation" ? (
+                                  <BsFileEarmarkPpt
+                                    style={{ width: "20px", height: "20px" }}
+                                    className="me-1"
+                                  />
+                                ) : attachment.contentType ===
+                                    "application/zip" ||
+                                  attachment.contentType ===
+                                    "application/x-rar-compressed" ? (
+                                  <BsFileEarmarkZip
+                                    style={{ width: "20px", height: "20px" }}
+                                    className="me-1"
+                                  />
+                                ) : attachment.contentType === "image/jpeg" ||
+                                  attachment.contentType === "image/png" ? (
+                                  <BsFileEarmarkImage
+                                    style={{ width: "20px", height: "20px" }}
+                                    className="me-1"
+                                  />
+                                ) : attachment.contentType === "text/plain" ||
+                                  attachment.contentType ===
+                                    "application/octet-stream" ? (
+                                  <BsFileEarmarkText
+                                    style={{ width: "20px", height: "20px" }}
+                                    className="me-1"
+                                  />
+                                ) : (
+                                  <BsFileEarmark
+                                    style={{ width: "20px", height: "20px" }}
+                                    className="me-1"
+                                  />
+                                )}
+                                {attachment.name}
+                              </a>
+                            </Row>
+                          ))}
+                    </Row>
+                    {attachments.length === 0 && (
+                      <Row className="d-flex">
+                        <p className="p-0 m-0 fs-6">No attachment found</p>
+                      </Row>
+                    )}
                   </Row>
-
-                  <Row className="d-flex">
-                    <p className="p-0 m-0 fs-6">
-                      {professional?.professionalDTO.dailyRate} €
-                    </p>
-                  </Row>
-                </Row>
+                </Col>
               </Col>
 
               <Col xs={12} md={6} lg={4}>
@@ -297,90 +388,6 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                   {professional?.professionalDTO.skills.length === 0 && (
                     <Row className="d-flex">
                       <p className="p-0 m-0 fs-6">No skill found</p>
-                    </Row>
-                  )}
-                </Row>
-              </Col>
-
-              <Col xs={12} md={8} lg={8}>
-                <Row className="d-flex flex-column mt-3">
-                  <Row className="d-flex">
-                    <h6 className="p-0 m-0">Attachments</h6>
-                  </Row>
-                  <Row className="d-flex flex-wrap">
-                    {attachments &&
-                      attachments.length > 0 &&
-                      attachments.sort((a, b) => a.name.localeCompare(b.name)).map((attachment, index) => (
-                        <Row key={index} className="d-flex mb-1">
-                          <a
-                            href={`/documentStoreService/v1/API/documents/${attachment.id}/data`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-truncate me-2 p-0 d-flex align-items-center"
-                          >
-                            {attachment.contentType === "application/pdf" ? (
-                              <BsFileEarmarkPdf
-                                style={{ width: "20px", height: "20px" }}
-                                className="me-1"
-                              />
-                            ) : attachment.contentType ===
-                                "application/msword" ||
-                              attachment.contentType ===
-                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ? (
-                              <BsFileEarmarkWord
-                                style={{ width: "20px", height: "20px" }}
-                                className="me-1"
-                              />
-                            ) : attachment.contentType ===
-                                "application/vnd.ms-excel" ||
-                              attachment.contentType ===
-                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ? (
-                              <BsFileEarmarkExcel
-                                style={{ width: "20px", height: "20px" }}
-                                className="me-1"
-                              />
-                            ) : attachment.contentType ===
-                                "application/vnd.ms-powerpoint" ||
-                              attachment.contentType ===
-                                "application/vnd.openxmlformats-officedocument.presentationml.presentation" ? (
-                              <BsFileEarmarkPpt
-                                style={{ width: "20px", height: "20px" }}
-                                className="me-1"
-                              />
-                            ) : attachment.contentType === "application/zip" ||
-                              attachment.contentType ===
-                                "application/x-rar-compressed" ? (
-                              <BsFileEarmarkZip
-                                style={{ width: "20px", height: "20px" }}
-                                className="me-1"
-                              />
-                            ) : attachment.contentType === "image/jpeg" ||
-                              attachment.contentType === "image/png" ? (
-                              <BsFileEarmarkImage
-                                style={{ width: "20px", height: "20px" }}
-                                className="me-1"
-                              />
-                            ) : attachment.contentType === "text/plain" ||
-                              attachment.contentType ===
-                                "application/octet-stream" ? (
-                              <BsFileEarmarkText
-                                style={{ width: "20px", height: "20px" }}
-                                className="me-1"
-                              />
-                            ) : (
-                              <BsFileEarmark
-                                style={{ width: "20px", height: "20px" }}
-                                className="me-1"
-                              />
-                            )}
-                            {attachment.name}
-                          </a>
-                        </Row>
-                      ))}
-                  </Row>
-                  {attachments.length === 0 && (
-                    <Row className="d-flex">
-                      <p className="p-0 m-0 fs-6">No attachment found</p>
                     </Row>
                   )}
                 </Row>

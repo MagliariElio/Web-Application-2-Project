@@ -344,10 +344,12 @@ function CustomersPage() {
 
                 {presentedCustomers.length === 0 && (
                   <Row className="w-100">
-                    <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-                      <h5 className="p-5">
-                        No customers found with the selected criteria. Try adjusting the filters, or it could be that no customers have been added
-                        yet.
+                    <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
+                      <h5 className="p-3 text-center">
+                        No customers found with the selected criteria.
+                      </h5>
+                      <h5 className="p-3 text-center">
+                        Try adjusting the filters, or it could be that no customers have been added yet.
                       </h5>
                     </Col>
                   </Row>

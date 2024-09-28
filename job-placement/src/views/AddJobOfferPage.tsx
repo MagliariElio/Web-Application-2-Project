@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Col, Container, Modal, OverlayTrigger, Pagination, Row, Table, Tooltip } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { BsXLg } from "react-icons/bs";
+import { BsX, BsXLg } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
 import { contractTypeList, RoleState, toTitleCase, workModeList } from "../utils/costants";
@@ -162,6 +162,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
     };
 
     try {
+      setLoading(true);
       const response = await submitJobOffer(jobOffer, me.xsrfToken);
       navigate(`/ui/joboffers/${response.id}`);
     } catch (error) {
@@ -393,23 +394,30 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
               )}
 
               {requiredSkills.length > 0 &&
-                !generationSkills &&
-                requiredSkills.map((requiredSkill, index) => (
-                  <Row key={index} className="mt-3 d-flex align-items-center justify-content-between">
+                !generationSkills && (
+                  <Row className="mt-3 d-flex align-items-center justify-content-between">
                     <Col xs={8} md={8} lg={10}>
-                      <li>
-                        <ul>
-                          <p className="text-truncate fw-light mb-0">{requiredSkill}</p>
-                        </ul>
-                      </li>
-                    </Col>
-                    <Col xs={4} md={4} lg={2} className="text-end">
-                      <Button variant="outline-danger" size="sm" onClick={() => setRequiredSkills(requiredSkills.filter((_, i) => i !== index))}>
-                        Remove
-                      </Button>
+                      <Row className="d-flex flex-wrap ps-2">
+                        {requiredSkills.map((requiredSkill, index) => (
+                          <div
+                            key={index}
+                            style={{ width: "auto" }}
+                            className="text-truncate me-2 tag mb-1"
+                          >
+                            {requiredSkill}
+                            <BsX
+                              size={20}
+                              className="ms-2"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => setRequiredSkills(requiredSkills.filter((_, i) => i !== index))}
+                            />
+                          </div>
+                        ))}
+                      </Row>
                     </Col>
                   </Row>
-                ))}
+                )}
+                
 
               <Row className="mt-3 justify-content-center">
                 <Col xs={12} md={8} lg={10}>
@@ -476,9 +484,15 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
               </Button>
             </Col>
             <Col xs={12} md={12} lg={3} className="d-flex flex-column justify-content-start align-items-center">
-              <Button type="submit" className="primaryButton">
-                Save Job Offer
-              </Button>
+                <Button type="submit" className="primaryButton" disabled={loading}>
+                {loading ? (
+                  <div className="spinner-border spinner-border-sm" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                  </div>
+                ) : (
+                  "Save Job Offer"
+                )}
+                </Button>
             </Col>
           </Row>
         </Form>
