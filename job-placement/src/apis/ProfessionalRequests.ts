@@ -112,7 +112,7 @@ export const deleteProfessional = async (
 ): Promise<void> => {
   try {
     const response = await fetch(
-      `/crmService/v1/API/professionals/${professionalId}`,
+      `/gateway/deleteProfessional/${professionalId}`,
       {
         method: "DELETE",
         headers: {
@@ -122,7 +122,7 @@ export const deleteProfessional = async (
     );
 
     if (!response.ok) {
-      const errorMessage = `DELETE /API/professionals/${professionalId} : ${response.status} ${response.statusText}`;
+      const errorMessage = `DELETE /gateway/deleteProfessional/${professionalId} : ${response.status} ${response.statusText}`;
       console.error(errorMessage);
       throw new Error(errorMessage);
     }
