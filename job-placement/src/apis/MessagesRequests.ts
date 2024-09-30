@@ -58,6 +58,30 @@ export const fetchMessages = async (
     }
   };
 
+  export const fetchMessage = async (
+    id: number
+  ): Promise<Message> => {
+    try {
+      
+      const response = await fetch(
+          `/crmService/v1/API/messages/${id}`
+        );
+      
+  
+      if (!response.ok) {
+        const errorMessage = `GET /API/messages/{id} : ${response.status} ${response.statusText}`;
+        console.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching message:", error);
+      throw error;
+    }
+  };
+
   interface RequestBody {
     actualState?: string;   // Optional property
     priority?: string; // Optional property

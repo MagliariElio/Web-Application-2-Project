@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
 import { useEffect, useRef, useState } from "react";
 import { Message } from "../interfaces/Message";
-import { fetchMessagesHistory, updateMessage } from "../apis/MessagesRequests";
+import { fetchMessage, fetchMessagesHistory, updateMessage } from "../apis/MessagesRequests";
 import { Container, Row, Col, Form, Alert, Button, Modal } from "react-bootstrap";
 import { formatArrayDate } from "./MessagesPage";
 import { MessageHistory } from "../interfaces/MessageHistory";
@@ -21,19 +21,13 @@ const  MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
 
   useEffect(() => {
     const fetchAndUpdateMessage = async () => {
-        try {
-          if (messageSelected.actualState === "RECEIVED") {
-            // Await the updateMessage function here
-            const newMessage = await updateMessage(me, messageSelected.id, "READ", undefined);
-            setMessageSelected(newMessage);
-          }
-          
+        try {         
           // Fetch the message history
           const result = await fetchMessagesHistory(messageSelected.id);
           setHistory(result);
           setLoading(false);
         } catch (error) {
-          setErrorMessage("Error fetching messages, please reload the page: " + error);
+          setErrorMessage("Error fetching message history, please reload the page: " + error);
           setLoading(false);
           console.log(error);
           if (errorRef.current) {
@@ -41,9 +35,24 @@ const  MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
           }
         }
       };
+
+      const fetchMessageEffetc = async () => {
+        try {
+          const message = await fetchMessage(messageSelected.id)
+          setMessageSelected(message)
+          setPriority(message.priority)
+        } catch (error) {
+          setErrorMessage("Error fetching message, please reload the page: " + error);
+          setLoading(false);
+          console.log(error);
+          if (errorRef.current) {
+              errorRef.current.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      }
   
       // Call the async function inside useEffect
-      fetchAndUpdateMessage()
+      fetchMessageEffetc().then(fetchAndUpdateMessage);
   }, [])
 
   const handlePriorityChange = async () => {
@@ -117,6 +126,7 @@ const  MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
               <h3 className="title">Message</h3>
             </Col>
             <Col>
+                {messageSelected.actualState === "RECEIVED" && <Button variant="warning" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("READ"); setShowModal(true)}}>Mark as read</Button>}
                 {messageSelected.actualState === "READ" && <Button variant="warning" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("PROCESSING"); setShowModal(true)}}>Process</Button>}
                 {(messageSelected.actualState === "READ" || messageSelected.actualState === "PROCESSING") && <Button variant="success" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("DONE"); setShowModal(true)}}>Done</Button>}
                 {(messageSelected.actualState === "READ" || messageSelected.actualState === "PROCESSING") && <Button variant="danger" style={{ marginRight: '10px' }}  onClick={() => {setStateToAssign("FAILED"); setShowModal(true)}}>Fail</Button>}
