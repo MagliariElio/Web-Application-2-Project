@@ -19,7 +19,7 @@ gmail:
   client-email: groupg04.polito@gmail.com
   client-id: 535682431083-4kepur0t0uld14g3c0getmkkc6h0o3nd.apps.googleusercontent.com
   client-secret: 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
-  refresh-token: 1//04YenrURvPoK-CgYIARAAGAQSNwF-L9Ir_lUHra0FbY6jNeysjizSt36MAnv724kOT0Jk2uxisBDQB5kmO7B5ifcgCgyi6UkIlWk
+  refresh-token: 1//048rCZ8KSrENnCgYIARAAGAQSNwF-L9IrXQu1yhM07UBWoIadIDoqdqNutPT0PQzvye23fy3rb4ziCdhDi7Nw555bI3Z2RPPv7-E
 
 camel:
   component:
