@@ -3,7 +3,7 @@ import { FaUsers, FaInstagram } from "react-icons/fa";
 
 const AboutUs = () => {
   return (
-    <Container className="my-5 py-5">
+    <Container className="mb-5 pt-4 pb-5">
       <Row className="text-center mb-5">
         <Col>
           <div className="icon-container mb-3">

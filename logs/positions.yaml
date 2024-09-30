@@ -1,5 +1,5 @@
 positions:
-  /var/log/analytics/spring.log: "602890"
-  /var/log/crm/spring.log: "634539"
-  /var/log/document-store/spring.log: "339505"
-  /var/log/gateway/spring.log: "148121"
+  /var/log/analytics/spring.log: "411427"
+  /var/log/crm/spring.log: "1295276"
+  /var/log/document-store/spring.log: "338739"
+  /var/log/gateway/spring.log: "5269791"

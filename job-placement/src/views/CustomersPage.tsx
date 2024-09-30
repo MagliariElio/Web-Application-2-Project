@@ -345,45 +345,45 @@ function CustomersPage() {
                 {presentedCustomers.length === 0 && (
                   <Row className="w-100">
                     <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
-                      <h5 className="p-3 text-center">
-                        No customers found with the selected criteria.
-                      </h5>
-                      <h5 className="p-3 text-center">
-                        Try adjusting the filters, or it could be that no customers have been added yet.
-                      </h5>
+                      <h5 className="p-3 text-center">No customers found with the selected criteria.</h5>
+                      <h5 className="p-3 text-center">Try adjusting the filters, or it could be that no customers have been added yet.</h5>
                     </Col>
                   </Row>
                 )}
               </Col>
             </Row>
-            <Row>
-              <Col className="d-flex justify-content-center mt-4 justify-self-center">
-                <Pagination className="custom-pagination">
-                  <Pagination.First onClick={() => changePage(0)} disabled={customers.currentPage === 0} />
-                  <Pagination.Prev onClick={() => changePage(customers.currentPage - 1)} disabled={customers.currentPage === 0} />
 
-                  {Array.from({ length: Math.min(5, customers.totalPages) }, (_, index) => {
-                    const startPage = Math.max(Math.min(customers.currentPage - 2, customers.totalPages - 5), 0);
-                    const actualPage = startPage + index;
+            {/* Pagination */}
+            {customers?.content.length > 0 && (
+              <Row>
+                <Col className="d-flex justify-content-center mt-4 justify-self-center">
+                  <Pagination className="custom-pagination">
+                    <Pagination.First onClick={() => changePage(0)} disabled={customers.currentPage === 0} />
+                    <Pagination.Prev onClick={() => changePage(customers.currentPage - 1)} disabled={customers.currentPage === 0} />
 
-                    return (
-                      <Pagination.Item key={actualPage} active={actualPage === customers.currentPage} onClick={() => changePage(actualPage)}>
-                        {actualPage + 1}
-                      </Pagination.Item>
-                    );
-                  })}
+                    {Array.from({ length: Math.min(5, customers.totalPages) }, (_, index) => {
+                      const startPage = Math.max(Math.min(customers.currentPage - 2, customers.totalPages - 5), 0);
+                      const actualPage = startPage + index;
 
-                  <Pagination.Next
-                    onClick={() => changePage(customers.currentPage + 1)}
-                    disabled={customers.currentPage + 1 === customers.totalPages}
-                  />
-                  <Pagination.Last
-                    onClick={() => changePage(customers.totalPages - 1)}
-                    disabled={customers.currentPage + 1 === customers.totalPages}
-                  />
-                </Pagination>
-              </Col>
-            </Row>
+                      return (
+                        <Pagination.Item key={actualPage} active={actualPage === customers.currentPage} onClick={() => changePage(actualPage)}>
+                          {actualPage + 1}
+                        </Pagination.Item>
+                      );
+                    })}
+
+                    <Pagination.Next
+                      onClick={() => changePage(customers.currentPage + 1)}
+                      disabled={customers.currentPage + 1 === customers.totalPages}
+                    />
+                    <Pagination.Last
+                      onClick={() => changePage(customers.totalPages - 1)}
+                      disabled={customers.currentPage + 1 === customers.totalPages}
+                    />
+                  </Pagination>
+                </Col>
+              </Row>
+            )}
           </Col>
         </Row>
       )}

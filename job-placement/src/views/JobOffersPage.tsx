@@ -241,14 +241,10 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
             <Col md={8}>
               {jobOffers?.content.length === 0 ? (
                 <Row className="w-100">
-                    <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
-                      <h5 className="p-3 text-center">
-                        No job offers found with the selected criteria.
-                      </h5>
-                      <h5 className="p-3 text-center">
-                        Try adjusting the filters, or it could be that no job offers have been added yet.
-                      </h5>
-                    </Col>
+                  <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
+                    <h5 className="p-3 text-center">No job offers found with the selected criteria.</h5>
+                    <h5 className="p-3 text-center">Try adjusting the filters, or it could be that no job offers have been added yet.</h5>
+                  </Col>
                 </Row>
               ) : (
                 jobOffers?.content.map((joboffer) => (
@@ -260,6 +256,32 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                     <JobOfferCard joboffer={joboffer} />
                   </div>
                 ))
+              )}
+
+              {/* Pagination */}
+              {jobOffers?.content.length > 0 && (
+                <Row className="mt-auto">
+                  <Col className="d-flex justify-content-center mt-4 custom-pagination">
+                    <Pagination>
+                      <Pagination.First onClick={() => changePage(0)} disabled={currentPage === 0} />
+                      <Pagination.Prev onClick={() => changePage(currentPage - 1)} disabled={currentPage === 0} />
+
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
+                        const startPage = Math.max(Math.min(currentPage - 2, totalPages - 5), 0);
+                        const actualPage = startPage + index;
+
+                        return (
+                          <Pagination.Item key={actualPage} active={actualPage === currentPage} onClick={() => changePage(actualPage)}>
+                            {actualPage + 1}
+                          </Pagination.Item>
+                        );
+                      })}
+
+                      <Pagination.Next onClick={() => changePage(currentPage + 1)} disabled={currentPage + 1 === totalPages} />
+                      <Pagination.Last onClick={() => changePage(totalPages - 1)} disabled={currentPage + 1 === totalPages} />
+                    </Pagination>
+                  </Col>
+                </Row>
               )}
             </Col>
 
@@ -337,30 +359,6 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                   </ButtonGroup>
                 </Form>
               </div>
-            </Col>
-          </Row>
-
-          {/* Pagination */}
-          <Row>
-            <Col className="d-flex justify-content-center mt-4 custom-pagination">
-              <Pagination>
-                <Pagination.First onClick={() => changePage(0)} disabled={currentPage === 0} />
-                <Pagination.Prev onClick={() => changePage(currentPage - 1)} disabled={currentPage === 0} />
-
-                {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
-                  const startPage = Math.max(Math.min(currentPage - 2, totalPages - 5), 0);
-                  const actualPage = startPage + index;
-
-                  return (
-                    <Pagination.Item key={actualPage} active={actualPage === currentPage} onClick={() => changePage(actualPage)}>
-                      {actualPage + 1}
-                    </Pagination.Item>
-                  );
-                })}
-
-                <Pagination.Next onClick={() => changePage(currentPage + 1)} disabled={currentPage + 1 === totalPages} />
-                <Pagination.Last onClick={() => changePage(totalPages - 1)} disabled={currentPage + 1 === totalPages} />
-              </Pagination>
             </Col>
           </Row>
         </>

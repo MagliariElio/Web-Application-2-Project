@@ -3,25 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Message } from "../interfaces/Message";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Toast,
-  ToastContainer,
-  Form,
-  Alert,
-  Pagination,
-  ButtonGroup,
-} from "react-bootstrap";
+import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert, Pagination, ButtonGroup } from "react-bootstrap";
 import { BsPlus, BsSearch } from "react-icons/bs";
-import {
-  contractTypeList,
-  messageStateTypeList,
-  RoleState,
-  toTitleCase,
-} from "../utils/costants";
+import { contractTypeList, messageStateTypeList, RoleState, toTitleCase } from "../utils/costants";
 import { fetchMessages } from "../apis/MessagesRequests";
 
 const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
@@ -44,9 +28,7 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
 
   var presentedMessages = messages?.content || [];
 
-  const handleFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     console.log(name + " " + value);
     setFilters((prevFilters) => ({
@@ -56,8 +38,7 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   };
 
   const changePage = (page: number) => {
-    if (messages?.totalPages && page >= messages?.totalPages)
-      page = messages?.totalPages - 1;
+    if (messages?.totalPages && page >= messages?.totalPages) page = messages?.totalPages - 1;
     if (page < 0) page = 0;
 
     setLoading(true);
@@ -87,9 +68,7 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
         setLoading(false);
       })
       .catch((error) => {
-        setErrorMessage(
-          "Error fetching messages, please reload the page: " + error
-        );
+        setErrorMessage("Error fetching messages, please reload the page: " + error);
         setLoading(false);
         console.log(error);
         if (errorRef.current) {
@@ -103,29 +82,19 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
     <Container fluid>
       {showAlert && (
         <ToastContainer position="top-end" className="p-3">
-          <Toast
-            bg={success ? "success" : "danger"}
-            show={success != null}
-            onClose={() => (success = null)}
-          >
+          <Toast bg={success ? "success" : "danger"} show={success != null} onClose={() => (success = null)}>
             <Toast.Header>
-              <img
-                src="holder.js/20x20?text=%20"
-                className="rounded me-2"
-                alt=""
-              />
+              <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
               <strong className="me-auto">JobConnect</strong>
               <small>now</small>
             </Toast.Header>
-            <Toast.Body>
-              {success ? "Operation correctly executed!" : "Operation failed!"}
-            </Toast.Body>
+            <Toast.Body>{success ? "Operation correctly executed!" : "Operation failed!"}</Toast.Body>
           </Toast>
         </ToastContainer>
       )}
 
       <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-        <Col md={4}>
+        <Col md={10}>
           <h3 className="title">Messages</h3>
         </Col>
         <Col md={2} className="d-flex justify-content-end">
@@ -145,17 +114,13 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                     setLoading(false);
                   })
                   .catch((error) => {
-                    setErrorMessage(
-                      "Error fetching messages, please reload the page"
-                    );
+                    setErrorMessage("Error fetching messages, please reload the page");
                     setLoading(false);
                     console.log(error);
                     if (errorRef.current) {
                       errorRef.current.scrollIntoView({ behavior: "smooth" });
                     }
-                    throw new Error(
-                      "GET /API/messages : Network response was not ok"
-                    );
+                    throw new Error("GET /API/messages : Network response was not ok");
                   });
               }}
             >
@@ -171,12 +136,7 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
       {errorMessage && (
         <Row className="justify-content-center" ref={errorRef}>
           <Col xs={12} md={10} lg={6}>
-            <Alert
-              variant="danger"
-              onClose={() => setErrorMessage("")}
-              className="d-flex mt-3 justify-content-center align-items-center"
-              dismissible
-            >
+            <Alert variant="danger" onClose={() => setErrorMessage("")} className="d-flex mt-3 justify-content-center align-items-center" dismissible>
               {errorMessage}
             </Alert>
           </Col>
@@ -208,13 +168,8 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
               {messages?.content.length === 0 ? (
                 <Row className="w-100">
                   <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
-                    <h5 className="p-3 text-center">
-                      No job offers found with the selected criteria.
-                    </h5>
-                    <h5 className="p-3 text-center">
-                      Try adjusting the filters, or it could be that no messages
-                      have been added yet.
-                    </h5>
+                    <h5 className="p-3 text-center">No job offers found with the selected criteria.</h5>
+                    <h5 className="p-3 text-center">Try adjusting the filters, or it could be that no messages have been added yet.</h5>
                   </Col>
                 </Row>
               ) : (
@@ -251,6 +206,38 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                   </div>
                 ))
               )}
+
+              {/* Pagination */}
+              {messages?.content.length > 0 && (
+                <Row className="mt-auto">
+                  <Col className="d-flex justify-content-center mt-4 custom-pagination">
+                    <Pagination>
+                      <Pagination.First onClick={() => changePage(0)} disabled={messages.currentPage === 0} />
+                      <Pagination.Prev onClick={() => changePage(messages.currentPage - 1)} disabled={messages.currentPage === 0} />
+
+                      {Array.from({ length: Math.min(5, messages.totalPages) }, (_, index) => {
+                        const startPage = Math.max(Math.min(messages.currentPage - 2, messages.totalPages - 5), 0);
+                        const actualPage = startPage + index;
+
+                        return (
+                          <Pagination.Item key={actualPage} active={actualPage === messages.currentPage} onClick={() => changePage(actualPage)}>
+                            {actualPage + 1}
+                          </Pagination.Item>
+                        );
+                      })}
+
+                      <Pagination.Next
+                        onClick={() => changePage(messages.currentPage + 1)}
+                        disabled={messages.currentPage + 1 === messages.totalPages}
+                      />
+                      <Pagination.Last
+                        onClick={() => changePage(messages.totalPages - 1)}
+                        disabled={messages.currentPage + 1 === messages.totalPages}
+                      />
+                    </Pagination>
+                  </Col>
+                </Row>
+              )}
             </Col>
 
             <Col md={4}>
@@ -259,12 +246,7 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                 <Form>
                   <Form.Group controlId="state" className="mb-3">
                     <Form.Label>State</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="state"
-                      value={filters.state}
-                      onChange={handleFilterChange}
-                    >
+                    <Form.Control as="select" name="state" value={filters.state} onChange={handleFilterChange}>
                       <option value={""}>All</option>
                       {messageStateTypeList.map((contract, index) => (
                         <option key={index} value={contract}>
@@ -288,14 +270,10 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                               setLoading(false);
                             })
                             .catch((error) => {
-                              setErrorMessage(
-                                "Error fetching the filtered messages"
-                              );
+                              setErrorMessage("Error fetching the filtered messages");
                               setLoading(false);
                               console.log(error);
-                              throw new Error(
-                                "GET /API/messages : Network response was not ok"
-                              );
+                              throw new Error("GET /API/messages : Network response was not ok");
                             });
                         }}
                       >
@@ -319,55 +297,6 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                   </ButtonGroup>
                 </Form>
               </div>
-            </Col>
-          </Row>
-
-          {/* Pagination */}
-          <Row className="mt-auto">
-            <Col className="d-flex justify-content-center mt-4 custom-pagination">
-              <Pagination>
-                <Pagination.First
-                  onClick={() => changePage(0)}
-                  disabled={messages.currentPage === 0}
-                />
-                <Pagination.Prev
-                  onClick={() => changePage(messages.currentPage - 1)}
-                  disabled={messages.currentPage === 0}
-                />
-
-                {Array.from(
-                  { length: Math.min(5, messages.totalPages) },
-                  (_, index) => {
-                    const startPage = Math.max(
-                      Math.min(
-                        messages.currentPage - 2,
-                        messages.totalPages - 5
-                      ),
-                      0
-                    );
-                    const actualPage = startPage + index;
-
-                    return (
-                      <Pagination.Item
-                        key={actualPage}
-                        active={actualPage === messages.currentPage}
-                        onClick={() => changePage(actualPage)}
-                      >
-                        {actualPage + 1}
-                      </Pagination.Item>
-                    );
-                  }
-                )}
-
-                <Pagination.Next
-                  onClick={() => changePage(messages.currentPage + 1)}
-                  disabled={messages.currentPage + 1 === messages.totalPages}
-                />
-                <Pagination.Last
-                  onClick={() => changePage(messages.totalPages - 1)}
-                  disabled={messages.currentPage + 1 === messages.totalPages}
-                />
-              </Pagination>
             </Col>
           </Row>
         </>
