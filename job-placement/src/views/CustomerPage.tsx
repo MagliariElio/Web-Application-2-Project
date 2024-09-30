@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button, ButtonGroup, Col, Modal, OverlayTrigger, Row, Toast, ToastContainer, Tooltip } from "react-bootstrap";
+import { Button, Col, Modal, OverlayTrigger, Row, Toast, ToastContainer, Tooltip } from "react-bootstrap";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Customer } from "../interfaces/Customer";
 import { BsChevronDown, BsChevronUp, BsPencilSquare, BsPlus, BsTrash } from "react-icons/bs";
 import { MeInterface } from "../interfaces/MeInterface";
 import { deleteCustomer, fetchCustomer } from "../apis/CustomerRequests";
-import { toTitleCase } from "../utils/costants";
-import { LoadingSection } from "../App";
 import { JobOfferCard } from "./JobOffersPage";
+import { RoleState } from "../utils/costants";
 
 function CustomerPage({ me }: { me: MeInterface }) {
   // Estrai l'ID dall'URL
@@ -110,7 +109,7 @@ function CustomerPage({ me }: { me: MeInterface }) {
         <Col>
           <h3 className="title">Customer</h3>
         </Col>
-        {!loading && (
+        {!loading && me.role === RoleState.OPERATOR &&  (
           <Col className="d-flex justify-content-end">
             <OverlayTrigger overlay={<Tooltip id="editButton">Edit Customer</Tooltip>}>
               <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate(`/ui/customers/${id}/edit`)}>
@@ -232,7 +231,7 @@ function CustomerPage({ me }: { me: MeInterface }) {
 
       <Row className="d-flex justify-content-between mt-5 mb-3">
         <h4 className="title w-25">Job Offers</h4>
-        {customer?.jobOffers && customer?.jobOffers.length > 0 && (
+        {me.role === RoleState.OPERATOR && (
           <Col xs="auto" className="me-4">
             <Button
               className="d-flex align-items-center primaryButton"

@@ -122,28 +122,25 @@ function App() {
                 <>
                   <Route path="/ui" element={<JobOffersPage me={me} />} />
                   <Route path="/ui/profile" element={<ProfilePage me={me} />} />
-                  <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage /> : <Navigate to="/not-found" />} />
+                  <Route path="/ui/customers" element={me && me.principal !== null ? <CustomersPage me={me} /> : <Navigate to="/not-found" />} />
                   <Route path="/ui/customers/:id" element={me && me.principal !== null ? <CustomerPage me={me} /> : <Navigate to="/not-found" />} />
-                  <Route
-                    path="/ui/customers/:id/edit"
-                    element={me && me.principal !== null ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />}
-                  />
+                  <Route path="/ui/customers/:id/edit" element={me && me.principal !== null && me.role === RoleState.OPERATOR ? <EditCustomerPage me={me} /> : <Navigate to="/not-found" />}/>
                   <Route
                     path="/ui/professionals/:id/edit"
-                    element={me && me.principal !== null ? <EditProfessionalPage me={me} /> : <Navigate to="/not-found" />}
+                    element={me && me.principal !== null && me.role === RoleState.OPERATOR ? <EditProfessionalPage me={me} /> : <Navigate to="/not-found" />}
                   />
-                  <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage /> : <Navigate to="/not-found" />} />
+                  <Route path="/ui/professionals" element={me && me.principal !== null ? <ProfessionalsPage me={me} /> : <Navigate to="/not-found" />} />
                   <Route
                     path="/ui/professionals/:id"
                     element={me && me.principal !== null ? <ProfessionalPage me={me} /> : <Navigate to="/not-found" />}
                   />
                   <Route
                     path="/ui/customers/add"
-                    element={me && me.principal !== null ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />}
+                    element={me && me.principal !== null && me.role === RoleState.OPERATOR ? <AddCustomerPage me={me} /> : <Navigate to="/not-found" />}
                   />
                   <Route
                     path="/ui/professionals/add"
-                    element={me && me.principal !== null ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />}
+                    element={me && me.principal !== null && me.role === RoleState.OPERATOR ? <AddProfessionalPage me={me} /> : <Navigate to="/not-found" />}
                   />
                   <Route
                     path="/ui/users/add"

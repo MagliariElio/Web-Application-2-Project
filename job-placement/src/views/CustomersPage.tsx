@@ -5,9 +5,14 @@ import { PagedResponse } from "../interfaces/PagedResponse";
 import { Customer } from "../interfaces/Customer";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchCustomers } from "../apis/CustomerRequests";
-import { LoadingSection } from "../App";
+import { MeInterface } from "../interfaces/MeInterface";
+import { RoleState } from "../utils/costants";
 
-function CustomersPage() {
+interface CustomersPageProps {
+  me: MeInterface;
+}
+
+function CustomersPage(props: CustomersPageProps) {
   const navigate = useNavigate();
 
   const [customers, setCustomers] = useState<PagedResponse<Customer> | null>(null);
@@ -135,13 +140,15 @@ function CustomersPage() {
             </Form.Select>
           </Form.Group>
         </Col>
-
-        <Col md={2} className="d-flex justify-content-end">
+        {
+          props.me.role === RoleState.OPERATOR && 
+          <Col md={2} className="d-flex justify-content-end">
           <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate("/ui/customers/add")}>
             <BsPlus size={"1.5em"} className="me-1" />
             Add Customer
           </Button>
         </Col>
+        }
       </Row>
 
       {error && (

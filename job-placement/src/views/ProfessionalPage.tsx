@@ -25,7 +25,7 @@ import {
   BsTrash,
 } from "react-icons/bs";
 import { MeInterface } from "../interfaces/MeInterface";
-import { employmentStateToText, toTitleCase } from "../utils/costants";
+import { employmentStateToText, RoleState } from "../utils/costants";
 import {
   deleteProfessional,
   fetchProfessional,
@@ -33,7 +33,7 @@ import {
 import { ProfessionalWithAssociatedData } from "../interfaces/ProfessionalWithAssociatedData";
 import { JobOfferCard } from "./JobOffersPage";
 import { DocumentFile } from "../interfaces/DocumentFile";
-import { getDocumentById, getDocumentDataById } from "../apis/DocumentRequests";
+import { getDocumentById } from "../apis/DocumentRequests";
 
 function ProfessionalPage({ me }: { me: MeInterface }) {
   // Estrai l'ID dall'URL
@@ -182,7 +182,7 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
         <Col>
           <h3 className="title">Professional</h3>
         </Col>
-        {!loading && (
+        {!loading && me.role === RoleState.OPERATOR && (
           <Col className="d-flex justify-content-end">
             <OverlayTrigger
               overlay={<Tooltip id="editButton">Edit Professional</Tooltip>}

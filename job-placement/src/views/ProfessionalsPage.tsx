@@ -5,7 +5,14 @@ import { PagedResponse } from "../interfaces/PagedResponse";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Professional } from "../interfaces/Professional";
 import { fetchProfessionals } from "../apis/ProfessionalRequests";
-function ProfessionalsPage() {
+import { MeInterface } from "../interfaces/MeInterface";
+import { RoleState } from "../utils/costants";
+
+interface ProfessionalsPageProps {
+  me: MeInterface;
+}
+
+function ProfessionalsPage(props: ProfessionalsPageProps) {
   const navigate = useNavigate();
 
   const [professionals, setProfessionals] = useState<PagedResponse<Professional> | null>(null);
@@ -134,12 +141,13 @@ function ProfessionalsPage() {
             </Form.Select>
           </Form.Group>
         </Col>
-        <Col md={2} className="d-flex justify-content-end">
+        { props.me.role === RoleState.OPERATOR && 
+          <Col md={2} className="d-flex justify-content-end">
           <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate("/ui/professionals/add")}>
             <BsPlus size={"1.5em"} className="me-1" />
             Add Professional
           </Button>
-        </Col>
+        </Col>}
       </Row>
 
       {error && (
