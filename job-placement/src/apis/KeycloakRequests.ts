@@ -6,7 +6,7 @@ async function fetchAccessToken(): Promise<string> {
   
   // Adding the required body parameters
   params.append('client_id', 'job-client-user-requests');
-  params.append('client_secret', '8yGDKkGgT1Ck5lXQUE8CEm0ZPOv3jmMd');
+  params.append('client_secret', 'aM5tUowkMKgbvZ3U2kOmPu36DG2zEK3W');
   params.append('grant_type', 'client_credentials');
 
   try {
