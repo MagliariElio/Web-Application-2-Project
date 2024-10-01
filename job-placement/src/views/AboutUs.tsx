@@ -33,8 +33,8 @@ const AboutUs = () => {
                 <Button variant="outline-primary" href="https://www.instagram.com/magliari_elio/" target="_blank" className="instagram-button">
                   <FaInstagram className="me-2" /> @magliari_elio
                 </Button>
-                <Button variant="outline-primary" href="https://instagram.com/" target="_blank" className="instagram-button">
-                  <FaInstagram className="me-2" /> @alessandro_bianco
+                <Button variant="outline-primary" href="https://instagram.com/ale.white_" target="_blank" className="instagram-button">
+                  <FaInstagram className="me-2" /> @ale.white_
                 </Button>
               </div>
             </Card.Body>

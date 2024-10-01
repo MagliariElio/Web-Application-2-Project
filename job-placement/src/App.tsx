@@ -144,7 +144,7 @@ function App() {
                   />
                   <Route
                     path="/ui/users/add"
-                    element={me && me.principal !== null ? <AddUserPage me={me} /> : <Navigate to="/not-found" />}
+                    element={me && me.principal !== null && me.role === RoleState.MANAGER ? <AddUserPage me={me} /> : <Navigate to="/not-found" />}
                   />
                   <Route
                     path="/ui/joboffers/add"
@@ -153,8 +153,8 @@ function App() {
                     }
                   />
                   <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
-                  <Route path="/ui/analytics" element={me && me.principal !== null ? <AnalyticsPage me={me} /> : <Navigate to="/not-found" /> } /> 
-                  <Route path="/ui/users" element={me && me.principal !== null ? <UsersPage me={me} /> : <Navigate to="/not-found" /> } /> 
+                  <Route path="/ui/analytics" element={me && me.principal !== null && me.role === RoleState.MANAGER ? <AnalyticsPage me={me} /> : <Navigate to="/not-found" /> } /> 
+                  <Route path="/ui/users" element={me && me.principal !== null && me.role === RoleState.MANAGER ? <UsersPage me={me} /> : <Navigate to="/not-found" /> } /> 
                   <Route path="/ui/messages" element={me && me.principal !== null ? <MessagesPage me={me}/> : <Navigate to="/not-found" />} />
                   <Route path="/ui/messages/:id" element={me && me.principal !== null ? <MessageDetail me={me} /> : <Navigate to="/not-found" />} />
                   <Route path="/ui/settings" element={me && me.principal !== null ? <SettingsPage me={me} /> : <Navigate to="/not-found" />}/>
@@ -239,6 +239,7 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               <BsChatSquareDotsFill  className={opened ? "me-2" : ""} />
               {opened && "Messages"}
             </Nav.Link>
+            {me?.role === RoleState.MANAGER && 
             <Nav.Link
               className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
               onClick={() => {
@@ -247,7 +248,8 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
             >
               <BsPieChartFill  className={opened ? "me-2" : ""} />
               {opened && "Analytics"}
-            </Nav.Link>
+            </Nav.Link>}
+            {me?.role === RoleState.MANAGER && 
             <Nav.Link
               className={opened ? navLinkClassnameOpened : navLinkClassnameClosed}
               onClick={() => {
@@ -256,7 +258,7 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
             >
               <BsPersonFill  className={opened ? "me-2" : ""} />
               {opened && "Users"}
-            </Nav.Link>
+            </Nav.Link>}
           </>
         )}
 

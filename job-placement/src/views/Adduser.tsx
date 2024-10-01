@@ -87,7 +87,7 @@ export function AddUserPage({me}: { me: MeInterface }) {
         <div className="add-job-offer-container">
             <Row className="d-flex flex-row p-0 mb-5 align-items-center">
               <Col>
-                <h3>Add Nnew user</h3>
+                <h3>Add New User</h3>
               </Col>
               <Col className="d-flex justify-content-end">
                 <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate(-1)}>
