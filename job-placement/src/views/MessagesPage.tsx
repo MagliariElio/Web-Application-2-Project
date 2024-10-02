@@ -4,7 +4,7 @@ import { MeInterface } from "../interfaces/MeInterface";
 import { PagedResponse } from "../interfaces/PagedResponse";
 import { Message } from "../interfaces/Message";
 import { Container, Row, Col, Button, Toast, ToastContainer, Form, Alert, Pagination, ButtonGroup } from "react-bootstrap";
-import { BsPlus, BsSearch } from "react-icons/bs";
+import { BsCalendarFill , BsEnvelopeFill  , BsSearch } from "react-icons/bs";
 import { contractTypeList, messageStateTypeList, RoleState, toTitleCase } from "../utils/costants";
 import { fetchMessages } from "../apis/MessagesRequests";
 
@@ -173,7 +173,13 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                   </Col>
                 </Row>
               ) : (
-                messages?.content.map((message) => (
+                messages?.content
+                .sort((a, b) => {
+                  const dateA = new Date(a.date[0], a.date[1] - 1, a.date[2], a.date[3], a.date[4], a.date[5]); // Create Date from array
+                  const dateB = new Date(b.date[0], b.date[1] - 1, b.date[2], b.date[3], b.date[4], b.date[5]); // Create Date from array
+                  return dateB.getTime() - dateA.getTime();
+                })
+                .map((message) => (
                   <div
                     key={message.id}
                     className="job-offer-item mb-4 p-3"
@@ -187,18 +193,18 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                       <Col md={8}>
                         <Row className="mb-2">
                           <Col>
-                            <strong>{message.sender}</strong>
+                            <p><BsEnvelopeFill /><> {message.sender}</></p>
                           </Col>
                           <Col>
-                            <strong>{formatArrayDate(message.date)}</strong>
+                          <p><BsCalendarFill /><> {formatArrayDate(message.date)}</></p>
                           </Col>
                         </Row>
                         <Row>
                           <Col xs={6}>
-                            <strong>{message.subject}</strong>
+                            <p><>{message.subject}</></p>
                           </Col>
                           <Col xs={2}>
-                            <strong>{message.actualState}</strong>
+                            <span className={`status ${message.actualState.toLowerCase()}`}>{toTitleCase(message.actualState).toLocaleUpperCase()}</span>
                           </Col>
                         </Row>
                       </Col>

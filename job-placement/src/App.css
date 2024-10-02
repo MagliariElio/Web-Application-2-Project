@@ -90,6 +90,11 @@
   font-weight: 600;
 }
 
+.subtitle {
+  color: #095bb3;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
 /* HomePage */
 .job-offer-item {
   background-color: #f3f4f6;
@@ -125,6 +130,17 @@
   padding: 1.5rem;
   margin-bottom: 1.5rem;
 }
+
+.analytics-item {
+  background-color: #f3f4f6;
+  border: 1px solid #c0c4cc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  width: fit-content; /* This makes the width adjust to the content */
+  display: inline-block;
+}
+
 
 .user-item p {
   font-size: 1rem;
@@ -163,6 +179,26 @@
 
 .status.done {
   background-color: #c8e6c9;
+}
+
+.status.received {
+  background-color: #aac6f2;
+}
+
+.status.read {
+  background-color: #c3e0e5;
+}
+
+.status.processing {
+  background-color: #ffdd8a;
+}
+
+.status.discarded {
+  background-color: #c9ccd1;
+}
+
+.status.failed {
+  background-color: #f5b7b1;
 }
 
 /* Pulsante "Add Job Offer" */

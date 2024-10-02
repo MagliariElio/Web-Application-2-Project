@@ -162,7 +162,7 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
           </Col>
         </Row>
       </div>}
-    {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && <div className="w-100">
+    {(me.role === RoleState.MANAGER) && <div className="w-100">
       <Row className="d-flex flex-row p-0 mb-3 align-items-center">
         <Col md={9}>
           <h3 className="title">Analytics</h3>
@@ -203,97 +203,103 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
       )}
 
       {!loading && (
-        <>
+        <div className="border rounded p-3 shadow-sm mt-4">
         {dataToDisplay === "messages" && 
         <>
         <Row>
+          <h2 className="subtitle">Messages</h2>
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <Box flexGrow={1}>
-              <h5>Number of messages in the different states</h5>
-              <PieChart
-                series={[
-                  {
-                    data: [
-                      { id: 0, value: messagesAnalytics.receivedMessages, label: 'Received' },
-                      { id: 1, value: messagesAnalytics.readMessages, label: 'Read' },
-                      { id: 2, value: messagesAnalytics.processingMessages, label: 'Processing' },
-                      { id: 3, value: messagesAnalytics.doneMessages, label: 'Done' },
-                      { id: 4, value: messagesAnalytics.failedMessages, label: 'Failed' },
-                      { id: 5, value: messagesAnalytics.discardedMessages, label: 'Discarded' }
-                    ],
-                  },
-                ]}
-                width={400}
-                height={200}
-              />
-            </Box>            
+            <div className="analytics-item mb-4 p-3">
+              <Box flexGrow={1}>
+                <h5>Number of messages in the different states</h5>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        { id: 0, value: messagesAnalytics.receivedMessages, label: 'Received' },
+                        { id: 1, value: messagesAnalytics.readMessages, label: 'Read' },
+                        { id: 2, value: messagesAnalytics.processingMessages, label: 'Processing' },
+                        { id: 3, value: messagesAnalytics.doneMessages, label: 'Done' },
+                        { id: 4, value: messagesAnalytics.failedMessages, label: 'Failed' },
+                        { id: 5, value: messagesAnalytics.discardedMessages, label: 'Discarded' }
+                      ],
+                    },
+                  ]}
+                  width={500}
+                  height={220}
+                />
+              </Box>     
+            </div>       
           </Col> 
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <Box flexGrow={1}>
-              <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-                <Col md={9}>
-                  <h5>Completed messages per month</h5>
-                </Col> 
-                <Col md={1} className="d-flex justify-content-end">
-                  <Form.Group controlId="yearToDisplay">
-                    <Form.Select
-                      style={{ width: "auto" }}
-                      name="yearToDisplay"
-                      value={yearToDisplay}
-                      onChange={(e) => {
-                        setYearToDisplay(parseInt(e.target.value))
-
-                        fetchMessagesPerMonthAnalytics(parseInt(e.target.value), me)
-                        .then((result) => {
-                          console.log("Completed messages per month fetched: " + result)
-                          setCompletedMessagesPerMonth(result)
-                        })
-                        .catch((error) => {
-                          setError(true);
-                          console.log(error);
-                          throw new Error(
-                            "Network response was not ok"
-                          );
-                        })
-                      }}
-                    >
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
-              <BarChart
-                xAxis={[{ scaleType: 'band', data: [
-                  'Jan', 'Feb', 'Mar', 'Apr',
-                   'May', 'June', 'July', 'Aug',
-                    'Sept', 'Oct', 'Nov', 'Dec'] 
-                  }]}
-                series={[{ data: [
-                  completedMessagesPerMonth.january, 
-                  completedMessagesPerMonth.february, 
-                  completedMessagesPerMonth.march, 
-                  completedMessagesPerMonth.april, 
-                  completedMessagesPerMonth.may, 
-                  completedMessagesPerMonth.june, 
-                  completedMessagesPerMonth.july, 
-                  completedMessagesPerMonth.august, 
-                  completedMessagesPerMonth.september, 
-                  completedMessagesPerMonth.october, 
-                  completedMessagesPerMonth.november, 
-                  completedMessagesPerMonth.december
-                ] },]}
-                width={500}
-                height={200}
-              />
-            </Box>            
+            <div className="analytics-item mb-4 p-3">
+              <Box flexGrow={1}>
+                <Row className="d-flex flex-row p-0 mb-3 align-items-center">
+                  <Col md={9}>
+                    <h5>Completed messages per month</h5>
+                  </Col> 
+                  <Col md={1} className="d-flex justify-content-end">
+                    <Form.Group controlId="yearToDisplay">
+                      <Form.Select
+                        style={{ width: "auto" }}
+                        name="yearToDisplay"
+                        value={yearToDisplay}
+                        onChange={(e) => {
+                          setYearToDisplay(parseInt(e.target.value))
+  
+                          fetchMessagesPerMonthAnalytics(parseInt(e.target.value), me)
+                          .then((result) => {
+                            console.log("Completed messages per month fetched: " + result)
+                            setCompletedMessagesPerMonth(result)
+                          })
+                          .catch((error) => {
+                            setError(true);
+                            console.log(error);
+                            throw new Error(
+                              "Network response was not ok"
+                            );
+                          })
+                        }}
+                      >
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <BarChart
+                  xAxis={[{ scaleType: 'band', data: [
+                    'Jan', 'Feb', 'Mar', 'Apr',
+                     'May', 'June', 'July', 'Aug',
+                      'Sept', 'Oct', 'Nov', 'Dec'] 
+                    }]}
+                  series={[{ data: [
+                    completedMessagesPerMonth.january, 
+                    completedMessagesPerMonth.february, 
+                    completedMessagesPerMonth.march, 
+                    completedMessagesPerMonth.april, 
+                    completedMessagesPerMonth.may, 
+                    completedMessagesPerMonth.june, 
+                    completedMessagesPerMonth.july, 
+                    completedMessagesPerMonth.august, 
+                    completedMessagesPerMonth.september, 
+                    completedMessagesPerMonth.october, 
+                    completedMessagesPerMonth.november, 
+                    completedMessagesPerMonth.december
+                  ] },]}
+                  width={500}
+                  height={200}
+                />
+              </Box>   
+            </div>         
           </Col>        
         </Row>
         </>
         }
         {dataToDisplay === "job offers" && 
         <>
+        <h2 className="subtitle">Job offers</h2>
         <Row>
           <h5>Total number of job offers: {jobOfferAnalytics.totalJobOffers}</h5>
         </Row>
@@ -302,153 +308,164 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
         </Row>
         <Row>
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <Box flexGrow={1}>
-              <h5>Number of job offers in the different states</h5>
-              <PieChart
-                series={[
-                  {
-                    data: [
-                      { id: 0, value: jobOfferAnalytics.createdJobOffers, label: 'Created' },
-                      { id: 1, value: jobOfferAnalytics.selectionPhaseJobOffers, label: 'Selection Phase' },
-                      { id: 2, value: jobOfferAnalytics.candidateProposalJobOffers, label: 'Candidate Proposal' },
-                      { id: 3, value: jobOfferAnalytics.consolidatedJobOffers, label: 'Consolidated' },
-                      { id: 4, value: jobOfferAnalytics.doneJobOffers, label: 'Done' },
-                      { id: 5, value: jobOfferAnalytics.abortJobOffers, label: 'Abort' }
-                    ],
-                  },
-                ]}
-                width={500}
-                height={200}
-              />
-            </Box>            
+            <div className="analytics-item mb-4 p-3">
+              <Box flexGrow={1}>
+                <h5>Number of job offers in the different states</h5>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        { id: 0, value: jobOfferAnalytics.createdJobOffers, label: 'Created' },
+                        { id: 1, value: jobOfferAnalytics.selectionPhaseJobOffers, label: 'Selection Phase' },
+                        { id: 2, value: jobOfferAnalytics.candidateProposalJobOffers, label: 'Candidate Proposal' },
+                        { id: 3, value: jobOfferAnalytics.consolidatedJobOffers, label: 'Consolidated' },
+                        { id: 4, value: jobOfferAnalytics.doneJobOffers, label: 'Done' },
+                        { id: 5, value: jobOfferAnalytics.abortJobOffers, label: 'Abort' }
+                      ],
+                    },
+                  ]}
+                  width={500}
+                  height={220}
+                />
+              </Box> 
+            </div>           
           </Col> 
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <Box flexGrow={1}>
-              <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-                <Col md={9}>
-                  <h5>Completed job offers per month</h5>
-                </Col> 
-                <Col md={1} className="d-flex justify-content-end">
-                  <Form.Group controlId="yearToDisplayJobOffers">
-                    <Form.Select
-                      style={{ width: "auto" }}
-                      name="yearToDisplayJobOffers"
-                      value={yearToDisplayJobOffers}
-                      onChange={(e) => {
-                        setYearToDisplayJobOffers(parseInt(e.target.value))
-
-                        fetchJobOffersPerMonthAnalytics(parseInt(e.target.value), me)
-                        .then((result) => {
-                          console.log("Completed job offers per month fetched: " + result)
-                          setCompletedJobOffersPerMonth(result)
-                        })
-                        .catch((error) => {
-                          setError(true);
-                          console.log(error);
-                          throw new Error(
-                            "Network response was not ok"
-                          );
-                        })
-                      }}
-                    >
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
-              <BarChart
-                xAxis={[{ scaleType: 'band', data: [
-                  'Jan', 'Feb', 'Mar', 'Apr',
-                   'May', 'June', 'July', 'Aug',
-                    'Sept', 'Oct', 'Nov', 'Dec'] 
-                  }]}
-                series={[{ data: [
-                  completedJobOffersPerMonth.january, 
-                  completedJobOffersPerMonth.february, 
-                  completedJobOffersPerMonth.march, 
-                  completedJobOffersPerMonth.april, 
-                  completedJobOffersPerMonth.may, 
-                  completedJobOffersPerMonth.june, 
-                  completedJobOffersPerMonth.july, 
-                  completedJobOffersPerMonth.august, 
-                  completedJobOffersPerMonth.september, 
-                  completedJobOffersPerMonth.october, 
-                  completedJobOffersPerMonth.november, 
-                  completedJobOffersPerMonth.december
-                ] },]}
-                width={500}
-                height={200}
-              />
-            </Box>            
+            <div className="analytics-item mb-4 p-3">
+              <Box flexGrow={1}>
+                <Row className="d-flex flex-row p-0 mb-3 align-items-center">
+                  <Col md={9}>
+                    <h5>Completed job offers per month</h5>
+                  </Col> 
+                  <Col md={1} className="d-flex justify-content-end">
+                    <Form.Group controlId="yearToDisplayJobOffers">
+                      <Form.Select
+                        style={{ width: "auto" }}
+                        name="yearToDisplayJobOffers"
+                        value={yearToDisplayJobOffers}
+                        onChange={(e) => {
+                          setYearToDisplayJobOffers(parseInt(e.target.value))
+  
+                          fetchJobOffersPerMonthAnalytics(parseInt(e.target.value), me)
+                          .then((result) => {
+                            console.log("Completed job offers per month fetched: " + result)
+                            setCompletedJobOffersPerMonth(result)
+                          })
+                          .catch((error) => {
+                            setError(true);
+                            console.log(error);
+                            throw new Error(
+                              "Network response was not ok"
+                            );
+                          })
+                        }}
+                      >
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <BarChart
+                  xAxis={[{ scaleType: 'band', data: [
+                    'Jan', 'Feb', 'Mar', 'Apr',
+                     'May', 'June', 'July', 'Aug',
+                      'Sept', 'Oct', 'Nov', 'Dec'] 
+                    }]}
+                  series={[{ data: [
+                    completedJobOffersPerMonth.january, 
+                    completedJobOffersPerMonth.february, 
+                    completedJobOffersPerMonth.march, 
+                    completedJobOffersPerMonth.april, 
+                    completedJobOffersPerMonth.may, 
+                    completedJobOffersPerMonth.june, 
+                    completedJobOffersPerMonth.july, 
+                    completedJobOffersPerMonth.august, 
+                    completedJobOffersPerMonth.september, 
+                    completedJobOffersPerMonth.october, 
+                    completedJobOffersPerMonth.november, 
+                    completedJobOffersPerMonth.december
+                  ] },]}
+                  width={500}
+                  height={200}
+                />
+              </Box> 
+            </div>           
           </Col> 
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <Box flexGrow={1}>
-              <h5>Number of job offers with differnt contract types</h5>
-              <PieChart
-                series={[
-                  {
-                    data: [
-                      { id: 0, value: jobOfferAnalytics.fullTimeCouner, label: 'Full time' },
-                      { id: 1, value: jobOfferAnalytics.partTimeCounter, label: 'Partr time' },
-                      { id: 2, value: jobOfferAnalytics.contractCounter, label: 'Contract' },
-                      { id: 3, value: jobOfferAnalytics.freelanceCounter, label: 'Freelance' }
-                    ],
-                  },
-                ]}
-                width={500}
-                height={200}
-              />
-            </Box>            
+            <div className="analytics-item mb-4 p-3">
+              <Box flexGrow={1}>
+                <h5>Number of job offers with differnt contract types</h5>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        { id: 0, value: jobOfferAnalytics.fullTimeCouner, label: 'Full time' },
+                        { id: 1, value: jobOfferAnalytics.partTimeCounter, label: 'Partr time' },
+                        { id: 2, value: jobOfferAnalytics.contractCounter, label: 'Contract' },
+                        { id: 3, value: jobOfferAnalytics.freelanceCounter, label: 'Freelance' }
+                      ],
+                    },
+                  ]}
+                  width={500}
+                  height={220}
+                />
+              </Box> 
+            </div>           
           </Col>
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <Box flexGrow={1}>
-              <h5>Number of job offers with differet working mode</h5>
-              <PieChart
-                series={[
-                  {
-                    data: [
-                      { id: 0, value: jobOfferAnalytics.remoteCounter, label: 'Remote' },
-                      { id: 1, value: jobOfferAnalytics.hybridCounter, label: 'Hybrid' },
-                      { id: 2, value: jobOfferAnalytics.inPersonCounter, label: 'In-Person' },
-                    ],
-                  },
-                ]}
-                width={500}
-                height={200}
-              />
-            </Box>            
+            <div className="analytics-item mb-4 p-3">
+              <Box flexGrow={1}>
+                <h5>Number of job offers with differet working mode</h5>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        { id: 0, value: jobOfferAnalytics.remoteCounter, label: 'Remote' },
+                        { id: 1, value: jobOfferAnalytics.hybridCounter, label: 'Hybrid' },
+                        { id: 2, value: jobOfferAnalytics.inPersonCounter, label: 'In-Person' },
+                      ],
+                    },
+                  ]}
+                  width={500}
+                  height={220}
+                />
+              </Box> 
+            </div>           
           </Col>       
         </Row>
         </>
         }
         {dataToDisplay === "professionals" && 
         <>
+        <h2 className="subtitle">Professionals</h2>
         <Row>
           <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <Box flexGrow={1}>
-              <h5>Number of professionals in the different states</h5>
-              <PieChart
-                series={[
-                  {
-                    data: [
-                      { id: 0, value: professionalAnalytics.employedProfessional, label: 'Employed' },
-                      { id: 1, value: professionalAnalytics.unemployedProfessional, label: 'Unemployed' },
-                      { id: 2, value: professionalAnalytics.availableForWorkProfessional, label: 'Available for work' },
-                      { id: 3, value: professionalAnalytics.notAvailableProfessional, label: 'Unavailable for work' },
-                    ],
-                  },
-                ]}
-                width={500}
-                height={200}
-              />
-            </Box>            
+            <div className="analytics-item mb-4 p-3">
+              <Box flexGrow={1}>
+                <h5>Number of professionals in the different states</h5>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        { id: 0, value: professionalAnalytics.employedProfessional, label: 'Employed' },
+                        { id: 1, value: professionalAnalytics.unemployedProfessional, label: 'Unemployed' },
+                        { id: 2, value: professionalAnalytics.availableForWorkProfessional, label: 'Available for work' },
+                        { id: 3, value: professionalAnalytics.notAvailableProfessional, label: 'Unavailable for work' },
+                      ],
+                    },
+                  ]}
+                  width={500}
+                  height={200}
+                />
+              </Box>
+            </div>            
           </Col>       
         </Row>
         </>
         }
-        </>
+        </div>
       )}
     </div>}
     </>

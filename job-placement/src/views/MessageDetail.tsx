@@ -6,6 +6,7 @@ import { fetchMessage, fetchMessagesHistory, updateMessage } from "../apis/Messa
 import { Container, Row, Col, Form, Alert, Button, Modal } from "react-bootstrap";
 import { formatArrayDate } from "./MessagesPage";
 import { MessageHistory } from "../interfaces/MessageHistory";
+import { RoleState } from "../utils/costants";
 
 const  MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
   const location = useLocation();
@@ -120,17 +121,17 @@ const  MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
           </Row>
         )}
         {!loading &&
-        <>
+        <div className="border rounded p-3 shadow-sm mt-4">
         <Row className="d-flex flex-row p-0 mb-3 align-items-center">
             <Col>
               <h3 className="title">Message</h3>
             </Col>
             <Col>
-                {messageSelected.actualState === "RECEIVED" && <Button variant="warning" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("READ"); setShowModal(true)}}>Mark as read</Button>}
-                {messageSelected.actualState === "READ" && <Button variant="warning" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("PROCESSING"); setShowModal(true)}}>Process</Button>}
-                {(messageSelected.actualState === "READ" || messageSelected.actualState === "PROCESSING") && <Button variant="success" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("DONE"); setShowModal(true)}}>Done</Button>}
-                {(messageSelected.actualState === "READ" || messageSelected.actualState === "PROCESSING") && <Button variant="danger" style={{ marginRight: '10px' }}  onClick={() => {setStateToAssign("FAILED"); setShowModal(true)}}>Fail</Button>}
-                {messageSelected.actualState === "READ" && <Button variant="danger" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("DISCARDED"); setShowModal(true)}}>Discard</Button>}
+                {messageSelected.actualState === "RECEIVED" && me.role === RoleState.OPERATOR && <Button variant="warning" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("READ"); setShowModal(true)}}>Mark as read</Button>}
+                {messageSelected.actualState === "READ" && me.role === RoleState.OPERATOR && <Button variant="warning" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("PROCESSING"); setShowModal(true)}}>Process</Button>}
+                {(messageSelected.actualState === "READ" || messageSelected.actualState === "PROCESSING") && me.role === RoleState.OPERATOR && <Button variant="success" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("DONE"); setShowModal(true)}}>Done</Button>}
+                {(messageSelected.actualState === "READ" || messageSelected.actualState === "PROCESSING") && me.role === RoleState.OPERATOR && <Button variant="danger" style={{ marginRight: '10px' }}  onClick={() => {setStateToAssign("FAILED"); setShowModal(true)}}>Fail</Button>}
+                {messageSelected.actualState === "READ" && me.role === RoleState.OPERATOR && <Button variant="danger" style={{ marginRight: '10px' }} onClick={() => {setStateToAssign("DISCARDED"); setShowModal(true)}}>Discard</Button>}
             </Col>
         </Row>
         <div className="border rounded p-3 shadow-sm mt-4">
@@ -227,7 +228,7 @@ const  MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
             </Row>
         </div>        
         
-        </>}
+        </div>}
 
         {/* Confirmation Modal */}
         <Modal show={showModal} onHide={() => setShowModal(false)}>

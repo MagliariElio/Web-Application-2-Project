@@ -61,7 +61,8 @@
       "composites" : {
         "realm" : [ "offline_access", "uma_authorization" ],
         "client" : {
-          "account" : [ "view-profile", "manage-account" ]
+          "account" : [ "view-profile", "manage-account" ],
+          "realm-management" : [ "manage-users", "query-users", "view-users" ]
         }
       },
       "clientRole" : false,
