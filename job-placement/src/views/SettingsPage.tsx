@@ -149,9 +149,8 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                   <div className="d-flex align-items-center">
                     <FormControl type="text" value={name || ""} disabled />
                     <Button
-                      variant="primary"
                       size="sm"
-                      className="ms-2 d-flex align-items-center"
+                      className="ms-2 d-flex align-items-center secondaryButton"
                       onClick={() => {
                         setEditName(true);
                       }}
@@ -202,9 +201,8 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                   <div className="d-flex align-items-center">
                     <FormControl type="text" value={surname || ""} disabled />
                     <Button
-                      variant="primary"
                       size="sm"
-                      className="ms-2 d-flex align-items-center"
+                      className="ms-2 d-flex align-items-center secondaryButton"
                       onClick={() => {
                         setEditSurname(true);
                       }}
@@ -259,7 +257,7 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
             <Form.Group as={Row} className="mb-3" controlId="changePasswordButton">
               <FormLabel column sm={4}></FormLabel>
               <Col sm={8} className="d-flex justify-content-start">
-                <Button variant="primary" onClick={handleChangePassword}>
+                <Button onClick={handleChangePassword} className="primaryButton">
                   <BsPencilSquare size={"1em"} className="me-2" />
                   Change Password
                 </Button>

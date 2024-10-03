@@ -7,9 +7,9 @@ const AboutUs = () => {
       <Row className="text-center mb-5">
         <Col>
           <div className="icon-container mb-3">
-            <FaUsers className="icon-about" />
+            <FaUsers className="icon-about primaryTextColor" />
           </div>
-          <h1 className="display-4 fw-bold text-primary">Who We Are</h1>
+          <h1 className="display-4 fw-bold primaryTextColor">Who We Are</h1>
           <p className="lead text-muted about-text  p-2">
             We are three passionate software development students from the <strong>Politecnico di Torino</strong>. This website was born as part of our project for the
             <strong> Web Application 2 course</strong>, where we combined our love for coding, creativity, and teamwork.
@@ -27,13 +27,13 @@ const AboutUs = () => {
                 check out what we're up to.
               </Card.Text>
               <div className="d-flex justify-content-around mt-4">
-                <Button variant="outline-primary" href="https://www.instagram.com/elia_ferraro/" target="_blank" className="instagram-button">
+                <Button href="https://www.instagram.com/elia_ferraro/" target="_blank" className="instagram-button secondaryButton">
                   <FaInstagram className="me-2" /> @elia_ferraro
                 </Button>
-                <Button variant="outline-primary" href="https://www.instagram.com/magliari_elio/" target="_blank" className="instagram-button">
+                <Button href="https://www.instagram.com/magliari_elio/" target="_blank" className="instagram-button secondaryButton">
                   <FaInstagram className="me-2" /> @magliari_elio
                 </Button>
-                <Button variant="outline-primary" href="https://instagram.com/ale.white_" target="_blank" className="instagram-button">
+                <Button href="https://instagram.com/ale.white_" target="_blank" className="instagram-button secondaryButton">
                   <FaInstagram className="me-2" /> @ale.white_
                 </Button>
               </div>

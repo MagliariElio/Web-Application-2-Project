@@ -61,6 +61,16 @@
   overflow-y: auto;
   z-index: 1000;
 }
+.topbar {
+  background-color: #162250 !important;
+  max-height: 100vh;
+  border-radius: 0 5px 5px 0;
+  box-shadow: #162250 0px 0px 10px;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  z-index: 1000;
+}
 
 .main-content {
   padding-left: 15px;
@@ -79,9 +89,17 @@
   background-color: #ffa600a1 !important;
 }
 
+.nav-link-active {
+  background-color: #ffa600a1 !important;
+}
+
 .navbarStyle {
   border: none;
   border-bottom: 1px solid #ddd;
+}
+
+.primaryTextColor {
+  color: #162250 !important;
 }
 
 .title {

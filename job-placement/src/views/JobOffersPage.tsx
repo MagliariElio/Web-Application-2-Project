@@ -128,7 +128,7 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
       )}
 
       <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-        <Col md={4}>
+        <Col md={3}>
           <h3 className="title">Job Offers</h3>
         </Col>
         <Col md={2} className="d-flex justify-content-end">
@@ -198,8 +198,8 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
           </Form.Group>
         </Col>
         {me.role === RoleState.OPERATOR && (
-          <Col md={2} className="d-flex justify-content-end">
-            <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/joboffers/add")}>
+          <Col md={3} className="d-flex justify-content-end">
+            <Button className="d-flex align-items-center primaryButton p-2" onClick={() => navigate("/ui/joboffers/add")}>
               <BsPlus size={"1.5em"} className="me-1" />
               Add Job Offer
             </Button>

@@ -164,7 +164,7 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
             className="me-5"
             onClick={() => {
               deleteProfessional(Number.parseInt(id!!), me)
-                .then((json) => {
+                .then(() => {
                   navigate("/ui/professionals", { state: { success: true } });
                 })
                 .catch((error) => {
