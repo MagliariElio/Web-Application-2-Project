@@ -9,13 +9,11 @@ import {
   Alert,
   Modal,
   Toast,
-  ToastContainer,
-  OverlayTrigger,
-  Tooltip,
+  ToastContainer
 } from "react-bootstrap";
 import { MeInterface } from "../interfaces/MeInterface";
 import { toTitleCase } from "../utils/costants";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { changeUserPassword, updateUserName } from "../apis/KeycloakRequests";
 import { useLocation } from "react-router-dom";
 import { BsPencilSquare } from "react-icons/bs";

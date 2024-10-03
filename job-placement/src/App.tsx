@@ -546,7 +546,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
         {me?.principal !== null && ( // Only logged user links here
           <>
             { opened && <Nav.Link
-              className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
+              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui" ? " nav-link-active" : "")} 
               onClick={() => {
                 if (location.pathname !== "/ui") navigate("/ui");
               }}
@@ -559,7 +559,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               
             </Nav.Link>}
             { opened && <Nav.Link
-              className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
+              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/customers" ? " nav-link-active" : "")}
               onClick={() => {
                 if (location.pathname !== "/ui/customers")
                   navigate("/ui/customers");
@@ -573,7 +573,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               
             </Nav.Link>}
             { opened && <Nav.Link
-              className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
+              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/professionals" ? " nav-link-active" : "")}
               onClick={() => {
                 if (location.pathname !== "/ui/professionals")
                   navigate("/ui/professionals");
@@ -587,7 +587,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               
             </Nav.Link>}
             { opened && <Nav.Link
-              className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
+              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/messages" ? " nav-link-active" : "")}
               onClick={() => {
                 if (location.pathname !== "/ui/messages")
                   navigate("/ui/messages");
@@ -601,7 +601,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               
             </Nav.Link>}
             { opened && <Nav.Link
-              className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
+              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/analytics" ? " nav-link-active" : "")}
               onClick={() => {
                 if (location.pathname !== "/ui/analytics")
                   navigate("/ui/analytics");
@@ -615,7 +615,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               
             </Nav.Link>}
             { opened && <Nav.Link
-              className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
+              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/users" ? " nav-link-active" : "")}
               onClick={() => {
                 if (location.pathname !== "/ui/users") navigate("/ui/users");
               }}
@@ -634,7 +634,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
 
         {me?.principal !== null && opened && (
            <Nav.Link
-            className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center mt-auto"
+          className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/settings" ? " nav-link-active" : "")}
             onClick={() => {
               if (location.pathname !== "/ui/settings")
                 navigate("/ui/settings");
@@ -650,7 +650,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
         )}
 
         { opened && <Nav.Link
-          className="text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center"
+          className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/aboutus" ? " nav-link-active" : "")}
           onClick={() => {
             if (location.pathname !== "/ui/aboutus") navigate("/ui/aboutus");
           }}

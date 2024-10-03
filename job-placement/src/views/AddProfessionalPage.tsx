@@ -856,229 +856,15 @@ export const ContactModal = ({
         <Modal.Title>Add New {toTitleCase(open ? open : "")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <small>
-          Click on a <strong>{open}</strong> to select it or use side buttons to
-          edit and delete them from the <strong>{open} book</strong>.
-        </small>
 
-        {loading && <LoadingSection h={300} />}
-
-        {!loading && contacts.length === 0 && (
-          <Row className="mt-2">
-            <Col xs={12} md={12} lg={6} className="mb-0">
-              <p>No {open}s added yet.</p>
-            </Col>
-          </Row>
-        )}
-
-        {!loading &&
-          contacts.length > 0 &&
-          contacts
-            .filter(
-              (contact) => !contactContainer.find((c) => c.id === contact.id)
-            )
-            .filter((contact) => {
-              if (editSelected !== null) {
-                return true;
-              }
-              if (open === "email") {
-                return (
-                  (contact as Email).email.includes(singleContact) &&
-                  (contact as Email).comment.includes(singleContactComment)
-                );
-              } else if (open === "telephone") {
-                return (
-                  (contact as Telephone).telephone.includes(singleContact) &&
-                  (contact as Telephone).comment.includes(singleContactComment)
-                );
-              } else {
-                return (
-                  (contact as Address).address.includes(singleContact) &&
-                  (contact as Address).comment.includes(singleContactComment)
-                );
-              }
-            })
-            .sort((a, b) => {
-              if (open === "email") {
-                return (a as Email).email.localeCompare((b as Email).email);
-              } else if (open === "telephone") {
-                return (a as Telephone).telephone.localeCompare(
-                  (b as Telephone).telephone
-                );
-              } else {
-                return (a as Address).address.localeCompare(
-                  (b as Address).address
-                );
-              }
-            })
-            .map((contact, index) => {
-              return (
-                <>
-                  <Row
-                    key={index}
-                    className="mb-1 mt-2 ms-1 d-flex align-items-center"
-                  >
-                    <Col
-                      xs={12}
-                      md={8}
-                      lg={10}
-                      className={
-                        "d-flex align-items-center justify-content-between " +
-                        (editSelected?.id === contact.id
-                          ? " secondaryWarningButton "
-                          : "") +
-                        (deleteSelected === contact.id
-                          ? " secondaryDangerButton "
-                          : " secondaryButton ")
-                      }
-                      onClick={() => {
-                        setContactContainer([...contactContainer, contact]);
-                        setOpen(null);
-                      }}
-                    >
-                      <Row className="w-100">
-                        <Col
-                          xs={12}
-                          md={12}
-                          lg={6}
-                          className="my-2  d-flex align-items-center"
-                        >
-                          <p className="text-truncate m-0">
-                            {open === "email"
-                              ? (contact as Email).email
-                              : open === "telephone"
-                              ? (contact as Telephone).telephone
-                              : `${(contact as Address).address}, ${
-                                  (contact as Address).city
-                                }, ${(contact as Address).region}, ${
-                                  (contact as Address).state
-                                }`}
-                          </p>
-                        </Col>
-                        <Col
-                          xs={12}
-                          md={12}
-                          lg={6}
-                          className="my-2 fs-10 fw-light d-flex align-items-center"
-                        >
-                          <p className="text-truncate m-0">
-                            {open === "email"
-                              ? (contact as Email).comment
-                              : open === "telephone"
-                              ? (contact as Telephone).comment
-                              : (contact as Address).comment}
-                          </p>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col xs={6} md={2} lg={1}>
-                      <Col className="mb-0">
-                        <Button
-                          className="secondaryButton w-100 d-flex justify-content-center align-items-center "
-                          onClick={() => {
-                            if (
-                              editSelected === null ||
-                              editSelected?.id !== contact.id
-                            ) {
-                              setEditSelected(contact);
-                            } else {
-                              setEditSelected(null);
-                              setSingleContact("");
-                              setSingleContactComment("");
-                              setSingleCity("");
-                              setSingleRegion("");
-                              setSingleState("");
-                            }
-                          }}
-                        >
-                          {editSelected?.id === contact.id && (
-                            <BsXLg size={20} />
-                          )}
-
-                          {editSelected?.id !== contact.id && (
-                            <BsPencilSquare size={20} />
-                          )}
-                        </Button>
-                      </Col>
-                    </Col>
-                    <Col xs={6} md={2} lg={1}>
-                      <Col className="mb-0">
-                        <Button
-                          className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
-                          onClick={() => {
-                            if (contact.id !== undefined) {
-                              setDeleteSelected(contact.id);
-                            }
-                          }}
-                        >
-                          <BsTrash size={20} />
-                        </Button>
-                      </Col>
-                    </Col>
-                  </Row>
-                  {deleteSelected === contact.id && (
-                    <Row className="mt-2 ms-2 d-flex align-items-center">
-                      <Col xs={12} md={12} lg={6} className="mb-0">
-                        <p className="text-danger my-auto">
-                          Are you sure you want to delete this {open}?
-                        </p>
-                        <p className="text-danger my-auto">
-                          It will be also removed from all contacts using it
-                        </p>
-                      </Col>
-                      <Col xs={6} md={2} lg={1}>
-                        <Col className="mb-0">
-                          <Button
-                            className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
-                            onClick={() => {
-                              if (contact.id !== undefined) {
-                                deleteContactWhatContact(
-                                  open!!,
-                                  contact.id.toString(),
-                                  me
-                                ).then(() => {
-                                  setContacts(
-                                    (prevContacts) =>
-                                      prevContacts.filter(
-                                        (e) => e.id !== contact.id
-                                      ) as Email[] | Telephone[] | Address[]
-                                  );
-
-                                  setDeleteSelected(null);
-                                });
-                              }
-                            }}
-                          >
-                            Yes
-                          </Button>
-                        </Col>
-                      </Col>
-                      <Col xs={6} md={2} lg={1}>
-                        <Col className="mb-0">
-                          <Button
-                            className="secondaryButton w-100 d-flex justify-content-center align-items-center "
-                            onClick={() => {
-                              setDeleteSelected(null);
-                            }}
-                          >
-                            No
-                          </Button>
-                        </Col>
-                      </Col>
-                    </Row>
-                  )}
-                </>
-              );
-            })}
-
-        <Form className="mt-4">
+      <Form className="mb-4">
           <small className="mb-1 ms-1">
             {editSelected === null
               ? `Use fields to search or create a new ${open}`
               : `Edit the ${open} below`}
           </small>
           <Row className="d-flex align-items-center">
-            <Col xs={12} md={12} lg={6} className="">
+            <Col xs={12} md={12} lg={6} className="mb-2 md-lg-0">
               <Form.Control
                 value={singleContact}
                 onChange={(e) => {
@@ -1095,7 +881,7 @@ export const ContactModal = ({
             </Col>
             {open === "address" && (
               <>
-                <Col xs={12} md={12} lg={6} className="">
+                <Col xs={12} md={12} lg={6} className="mb-2 md-lg-0">
                   <Form.Control
                     value={singleCity}
                     onChange={(e) => {
@@ -1104,7 +890,7 @@ export const ContactModal = ({
                     placeholder="City"
                   />
                 </Col>
-                <Col xs={12} md={12} lg={6} className="my-2">
+                <Col xs={12} md={12} lg={6} className="mb-2 md-lg-0">
                   <Form.Control
                     value={singleRegion}
                     onChange={(e) => {
@@ -1113,7 +899,7 @@ export const ContactModal = ({
                     placeholder="Region"
                   />
                 </Col>
-                <Col xs={12} md={12} lg={6} className="">
+                <Col xs={12} md={12} lg={6} className="mb-2 md-lg-0">
                   <Form.Control
                     value={singleState}
                     onChange={(e) => {
@@ -1124,7 +910,7 @@ export const ContactModal = ({
                 </Col>
               </>
             )}
-            <Col xs={12} md={12} lg={open === "address" ? 9 : 3} className="">
+            <Col xs={12} md={12} lg={open === "address" ? 9 : 3} className="mb-2 md-lg-0">
               <Form.Control
                 value={singleContactComment}
                 onChange={(e) => {
@@ -1271,6 +1057,222 @@ export const ContactModal = ({
             </Col>
           </Row>
         </Form>
+
+        <small>
+          Click on a <strong>{open}</strong> to select it or use side buttons to
+          edit and delete them from the <strong>{open} book</strong>.
+        </small>
+
+        {loading && <LoadingSection h={300} />}
+
+        {!loading && contacts.length === 0 && (
+          <Row className="mt-2">
+            <Col xs={12} md={12} lg={6} className="mb-0">
+              <p>No {open}s added yet.</p>
+            </Col>
+          </Row>
+        )}
+
+        {!loading &&
+          contacts.length > 0 &&
+          contacts
+            .filter(
+              (contact) => !contactContainer.find((c) => c.id === contact.id)
+            )
+            .filter((contact) => {
+              if (editSelected !== null) {
+                return true;
+              }
+              if (open === "email") {
+                return (
+                  (contact as Email).email.includes(singleContact) &&
+                  (contact as Email).comment.includes(singleContactComment)
+                );
+              } else if (open === "telephone") {
+                return (
+                  (contact as Telephone).telephone.includes(singleContact) &&
+                  (contact as Telephone).comment.includes(singleContactComment)
+                );
+              } else {
+                return (
+                  (contact as Address).address.includes(singleContact) &&
+                  (contact as Address).comment.includes(singleContactComment)
+                );
+              }
+            })
+            .sort((a, b) => {
+              if (open === "email") {
+                return (a as Email).email.localeCompare((b as Email).email);
+              } else if (open === "telephone") {
+                return (a as Telephone).telephone.localeCompare(
+                  (b as Telephone).telephone
+                );
+              } else {
+                return (a as Address).address.localeCompare(
+                  (b as Address).address
+                );
+              }
+            })
+            .map((contact, index) => {
+              return (
+                <>
+                  <Row
+                    key={index}
+                    className="mb-1 mt-2 ms-1 d-flex align-items-center"
+                  >
+                    <Col
+                      xs={9}
+                      md={9}
+                      lg={10}
+                      className={
+                        "d-flex align-items-center justify-content-between " +
+                        (editSelected?.id === contact.id
+                          ? " secondaryWarningButton "
+                          : "") +
+                        (deleteSelected === contact.id
+                          ? " secondaryDangerButton "
+                          : " secondaryButton ")
+                      }
+                      onClick={() => {
+                        setContactContainer([...contactContainer, contact]);
+                        setOpen(null);
+                      }}
+                    >
+                      <Row className="w-100">
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="my-2  d-flex align-items-center"
+                        >
+                          <p className="text-truncate m-0">
+                            {open === "email"
+                              ? (contact as Email).email
+                              : open === "telephone"
+                              ? (contact as Telephone).telephone
+                              : `${(contact as Address).address}, ${
+                                  (contact as Address).city
+                                }, ${(contact as Address).region}, ${
+                                  (contact as Address).state
+                                }`}
+                          </p>
+                        </Col>
+                        <Col
+                          xs={12}
+                          md={12}
+                          lg={6}
+                          className="my-2 fs-10 fw-light d-flex align-items-center"
+                        >
+                          <p className="text-truncate m-0">
+                            {open === "email"
+                              ? (contact as Email).comment
+                              : open === "telephone"
+                              ? (contact as Telephone).comment
+                              : (contact as Address).comment}
+                          </p>
+                        </Col>
+                      </Row>
+                    </Col>
+
+                    <Col className="d-flex flex-column flex-lg-row">
+                      <Col xs={12} md={6} className="mb-1 mb-lg-0 me-0 me-lg-1">
+                      <Button
+                        className="secondaryButton w-100 d-flex justify-content-center align-items-center"
+                        onClick={() => {
+                        if (
+                          editSelected === null ||
+                          editSelected?.id !== contact.id
+                        ) {
+                          setEditSelected(contact);
+                        } else {
+                          setEditSelected(null);
+                          setSingleContact("");
+                          setSingleContactComment("");
+                          setSingleCity("");
+                          setSingleRegion("");
+                          setSingleState("");
+                        }
+                        }}
+                      >
+                        {editSelected?.id === contact.id && (
+                        <BsXLg size={20} />
+                        )}
+                        {editSelected?.id !== contact.id && (
+                        <BsPencilSquare size={20} />
+                        )}
+                      </Button>
+                      </Col>
+                      <Col xs={12} md={6}>
+                      <Button
+                        className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center"
+                        onClick={() => {
+                        if (contact.id !== undefined) {
+                          setDeleteSelected(contact.id);
+                        }
+                        }}
+                      >
+                        <BsTrash size={20} />
+                      </Button>
+                      </Col>
+                    </Col>
+                    
+                  </Row>
+                  {deleteSelected === contact.id && (
+                    <Row className="mt-2 ms-2 d-flex align-items-center">
+                      <Col xs={12} md={12} lg={6} className="mb-0">
+                        <p className="text-danger my-auto">
+                          Are you sure you want to delete this {open}?
+                        </p>
+                        <p className="text-danger my-auto">
+                          It will be also removed from all contacts using it
+                        </p>
+                      </Col>
+                      <Col xs={6} md={2} lg={1}>
+                        <Col className="mb-0">
+                          <Button
+                            className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center "
+                            onClick={() => {
+                              if (contact.id !== undefined) {
+                                deleteContactWhatContact(
+                                  open!!,
+                                  contact.id.toString(),
+                                  me
+                                ).then(() => {
+                                  setContacts(
+                                    (prevContacts) =>
+                                      prevContacts.filter(
+                                        (e) => e.id !== contact.id
+                                      ) as Email[] | Telephone[] | Address[]
+                                  );
+
+                                  setDeleteSelected(null);
+                                });
+                              }
+                            }}
+                          >
+                            Yes
+                          </Button>
+                        </Col>
+                      </Col>
+                      <Col xs={6} md={2} lg={1}>
+                        <Col className="mb-0">
+                          <Button
+                            className="secondaryButton w-100 d-flex justify-content-center align-items-center "
+                            onClick={() => {
+                              setDeleteSelected(null);
+                            }}
+                          >
+                            No
+                          </Button>
+                        </Col>
+                      </Col>
+                    </Row>
+                  )}
+                </>
+              );
+            })}
+
+        
       </Modal.Body>
     </Modal>
   );

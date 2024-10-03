@@ -1,10 +1,8 @@
 import { Navbar, Nav, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface.ts";
 import { BsPersonCircle } from "react-icons/bs";
 
 function NavBar({ me }: { me: MeInterface | null }) {
-  const navigate = useNavigate();
 
   return (
     <Navbar className="justify-content-between align-items-center navbarStyle">

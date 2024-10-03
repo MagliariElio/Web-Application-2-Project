@@ -105,12 +105,12 @@ function CustomersPage(props: CustomersPageProps) {
       )}
 
       <Row className="d-flex flex-row p-0 mb-1 align-items-center">
-        <Col md={8}>
+        <Col xs={6}>
           <h3 className="title">Customers</h3>
         </Col>
 
-        <Col md={2} className="d-flex justify-content-end">
-          <Form.Group controlId="elementsPerPage">
+        <Col xs={6} lg={2} className="d-flex justify-content-end">
+          <Form.Group controlId="elementsPerPage text-center text-md-end">
             <Form.Select
               style={{ width: "auto" }}
               name="pageSize"
@@ -142,12 +142,12 @@ function CustomersPage(props: CustomersPageProps) {
         </Col>
         {
           props.me.role === RoleState.OPERATOR && 
-          <Col md={2} className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate("/ui/customers/add")}>
+            <Col xs={12} lg={4} className="d-flex justify-content-center justify-content-lg-end">
+            <Button className="d-flex align-items-center primaryButton me-4 mt-2 mt-lg-0" onClick={() => navigate("/ui/customers/add")}>
             <BsPlus size={"1.5em"} className="me-1" />
             Add Customer
-          </Button>
-        </Col>
+            </Button>
+          </Col>
         }
       </Row>
 
@@ -225,61 +225,61 @@ function CustomersPage(props: CustomersPageProps) {
                   </Row>
                 </Form.Group>
 
-                <ButtonGroup className="d-flex justify-content-center mt-4">
-                  <Col className="text-center">
-                    <Button
-                      className="primaryButton mb-2"
-                      variant="primary"
-                      onClick={() => {
-                        setLoading(true);
-                        fetchCustomers(0, filters.name, filters.surname, filters.ssnCode)
-                          .then((result) => {
-                            console.log("Customers fetched: ", result);
-                            setCustomers(result);
-                            setLoading(false);
-                          })
-                          .catch((error) => {
-                            setError(true);
-                            setLoading(false);
-                            console.log(error);
-                            throw new Error("GET /API/customers : Network response was not ok");
-                          });
-                      }}
-                    >
-                      <BsSearch className="me-1" />
-                      Filter
-                    </Button>
+                <ButtonGroup className="d-flex justify-content-center mt-4 flex-lg-column flex-xl-row w-100">
+                  <Col className="text-center mb-lg-2 mb-xl-0 me-2 me-lg-0 me-xl-2 w-100 d-flex align-items-center">
+                  <Button
+                    className="primaryButton w-100"
+                    variant="primary"
+                    onClick={() => {
+                    setLoading(true);
+                    fetchCustomers(0, filters.name, filters.surname, filters.ssnCode)
+                      .then((result) => {
+                      console.log("Customers fetched: ", result);
+                      setCustomers(result);
+                      setLoading(false);
+                      })
+                      .catch((error) => {
+                      setError(true);
+                      setLoading(false);
+                      console.log(error);
+                      throw new Error("GET /API/customers : Network response was not ok");
+                      });
+                    }}
+                  >
+                    <BsSearch className="me-1" />
+                    Filter
+                  </Button>
                   </Col>
 
-                  <Col className="text-center">
-                    <Button
-                      className="secondaryButton"
-                      variant="primary"
-                      onClick={() => {
-                        setFilters({
-                          name: "",
-                          surname: "",
-                          ssnCode: "",
-                          jobOffersNumberFrom: 0,
-                          jobOffersNumberTo: 10000,
-                        });
-                        fetchCustomers(0)
-                          .then((result) => {
-                            console.log("Customers fetched: ", result);
-                            setCustomers(result);
-                            presentedCustomers = result.content;
-                            setLoading(false);
-                          })
-                          .catch((error) => {
-                            setError(true);
-                            setLoading(false);
-                            console.log(error);
-                            throw new Error("GET /API/customers : Network response was not ok");
-                          });
-                      }}
-                    >
-                      Clear Filters
-                    </Button>
+                  <Col className="text-center w-100 d-flex align-items-center">
+                  <Button
+                    className="secondaryButton w-100"
+                    variant="primary"
+                    onClick={() => {
+                    setFilters({
+                      name: "",
+                      surname: "",
+                      ssnCode: "",
+                      jobOffersNumberFrom: 0,
+                      jobOffersNumberTo: 10000,
+                    });
+                    fetchCustomers(0)
+                      .then((result) => {
+                      console.log("Customers fetched: ", result);
+                      setCustomers(result);
+                      presentedCustomers = result.content;
+                      setLoading(false);
+                      })
+                      .catch((error) => {
+                      setError(true);
+                      setLoading(false);
+                      console.log(error);
+                      throw new Error("GET /API/customers : Network response was not ok");
+                      });
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
                   </Col>
                 </ButtonGroup>
               </Form>

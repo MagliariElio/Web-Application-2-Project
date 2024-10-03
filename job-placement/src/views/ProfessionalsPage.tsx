@@ -107,11 +107,11 @@ function ProfessionalsPage(props: ProfessionalsPageProps) {
       )}
 
       <Row className="d-flex flex-row p-0 mb-1 align-items-center">
-        <Col md={8}>
+        <Col xs={6}>
           <h3 className="title">Professionals</h3>
         </Col>
-        <Col md={2} className="d-flex justify-content-end">
-          <Form.Group controlId="elementsPerPage">
+        <Col xs={6} lg={2} className="d-flex justify-content-end">
+          <Form.Group controlId="elementsPerPage text-center text-md-end">
             <Form.Select
               style={{ width: "auto" }}
               name="pageSize"
@@ -141,13 +141,14 @@ function ProfessionalsPage(props: ProfessionalsPageProps) {
             </Form.Select>
           </Form.Group>
         </Col>
-        { props.me.role === RoleState.OPERATOR && 
-          <Col md={2} className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate("/ui/professionals/add")}>
-            <BsPlus size={"1.5em"} className="me-1" />
-            Add Professional
-          </Button>
-        </Col>}
+        {props.me.role === RoleState.OPERATOR && 
+          <Col xs={12} lg={4} className="d-flex justify-content-center justify-content-lg-end">
+            <Button className="d-flex align-items-center primaryButton me-4 mt-2 mt-lg-0" onClick={() => navigate("/ui/professionals/add")}>
+              <BsPlus size={"1.5em"} className="me-1" />
+              Add Professional
+            </Button>
+          </Col>
+        }
       </Row>
 
       {error && (
@@ -177,253 +178,251 @@ function ProfessionalsPage(props: ProfessionalsPageProps) {
       )}
 
       {!error && !loading && professionals !== null && (
-        <>
-          <Row className="w-100 d-flex justify-content-center">
-            <Col xs={12} lg={4} className="order-1 order-lg-2 mt-3">
-              <div className="sidebar-search p-4">
-                <h5>Filter Professionals</h5>
-                <Form>
-                  <Form.Group controlId="skill" className="mb-3">
-                    <Form.Label>Skill</Form.Label>
-                    <Form.Control type="text" name="skill" value={filters.skill} onChange={handleFilterChange} />
-                  </Form.Group>
+        <Row className="w-100 d-flex justify-content-center">
+          <Col xs={12} lg={4} className="order-1 order-lg-2 mt-3">
+            <div className="sidebar-search p-4">
+              <h5>Filter Professionals</h5>
+              <Form>
+                <Form.Group controlId="skill" className="mb-3">
+                  <Form.Label>Skill</Form.Label>
+                  <Form.Control type="text" name="skill" value={filters.skill} onChange={handleFilterChange} />
+                </Form.Group>
 
-                  <Form.Group controlId="geographicalLocation" className="mb-3">
-                    <Form.Label>Geographical location</Form.Label>
-                    <Form.Control type="text" name="geographicalLocation" value={filters.geographicalLocation} onChange={handleFilterChange} />
-                  </Form.Group>
+                <Form.Group controlId="geographicalLocation" className="mb-3">
+                  <Form.Label>Geographical location</Form.Label>
+                  <Form.Control type="text" name="geographicalLocation" value={filters.geographicalLocation} onChange={handleFilterChange} />
+                </Form.Group>
 
-                  <Form.Group controlId="employmentState" className="mb-3">
-                    <Form.Label>Employment state</Form.Label>
+                <Form.Group controlId="employmentState" className="mb-3">
+                  <Form.Label>Employment state</Form.Label>
 
-                    <Form.Select name="employmentState" value={filters.employmentState} onChange={handleFilterChange}>
-                      <option value="">All</option>
-                      <option value="EMPLOYED">Employed</option>
-                      <option value="UNEMPLOYED">Unemployed</option>
-                      <option value="AVAILABLE_FOR_WORK">Available for work</option>
-                      <option value="NOT_AVAILABLE">Not available</option>
-                    </Form.Select>
-                  </Form.Group>
+                  <Form.Select name="employmentState" value={filters.employmentState} onChange={handleFilterChange}>
+                    <option value="">All</option>
+                    <option value="EMPLOYED">Employed</option>
+                    <option value="UNEMPLOYED">Unemployed</option>
+                    <option value="AVAILABLE_FOR_WORK">Available for work</option>
+                    <option value="NOT_AVAILABLE">Not available</option>
+                  </Form.Select>
+                </Form.Group>
 
-                  <ButtonGroup className="d-flex justify-content-center mt-4">
-                    <Col className="text-center">
-                      <Button
-                        className="primaryButton mb-2"
-                        variant="primary"
-                        onClick={() => {
-                          setLoading(true);
-                          fetchProfessionals(0, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
-                            .then((result) => {
-                              console.log("Professionals fetched: ", result);
-                              setProfessionals(result);
-                              setActiveFilters(filters);
-                              setLoading(false);
-                            })
-                            .catch((error) => {
-                              setError(true);
-                              setActiveFilters({
-                                skill: "",
-                                geographicalLocation: "",
-                                employmentState: "",
-                              });
-                              setLoading(false);
-                              console.log(error);
-                              throw new Error("GET /API/professionals : Network response was not ok");
+                <ButtonGroup className="d-flex justify-content-center mt-4 flex-lg-column flex-xl-row w-100">
+                  <Col className="text-center mb-lg-2 mb-xl-0 me-2 me-lg-0 me-xl-2 w-100 d-flex align-items-center">
+                    <Button
+                      className="primaryButton w-100"
+                      variant="primary"
+                      onClick={() => {
+                        setLoading(true);
+                        fetchProfessionals(0, pageSize, filters.skill, filters.geographicalLocation, filters.employmentState)
+                          .then((result) => {
+                            console.log("Professionals fetched: ", result);
+                            setProfessionals(result);
+                            setActiveFilters(filters);
+                            setLoading(false);
+                          })
+                          .catch((error) => {
+                            setError(true);
+                            setActiveFilters({
+                              skill: "",
+                              geographicalLocation: "",
+                              employmentState: "",
                             });
-                        }}
-                      >
-                        <BsSearch className="me-1" />
-                        Filter
-                      </Button>
-                    </Col>
-
-                    <Col className="text-center">
-                      <Button
-                        className="secondaryButton"
-                        variant="primary"
-                        onClick={() => {
-                          setFilters({
-                            skill: "",
-                            geographicalLocation: "",
-                            employmentState: "",
+                            setLoading(false);
+                            console.log(error);
+                            throw new Error("GET /API/professionals : Network response was not ok");
                           });
-                          fetchProfessionals(0, pageSize)
-                            .then((result) => {
-                              console.log("Professionals fetched: ", result);
-                              setProfessionals(result);
-                              presentedProfessionals = result.content;
-                              setActiveFilters({
-                                skill: "",
-                                geographicalLocation: "",
-                                employmentState: "",
-                              });
-                              setLoading(false);
-                            })
-                            .catch((error) => {
-                              setError(true);
-                              setLoading(false);
-                              console.log(error);
-                              throw new Error("GET /API/professionals : Network response was not ok");
+                      }}
+                    >
+                      <BsSearch className="me-1" />
+                      Filter
+                    </Button>
+                  </Col>
+
+                  <Col className="text-center w-100 d-flex align-items-center">
+                    <Button
+                      className="secondaryButton w-100"
+                      variant="primary"
+                      onClick={() => {
+                        setFilters({
+                          skill: "",
+                          geographicalLocation: "",
+                          employmentState: "",
+                        });
+                        fetchProfessionals(0, pageSize)
+                          .then((result) => {
+                            console.log("Professionals fetched: ", result);
+                            setProfessionals(result);
+                            presentedProfessionals = result.content;
+                            setActiveFilters({
+                              skill: "",
+                              geographicalLocation: "",
+                              employmentState: "",
                             });
-                        }}
-                      >
-                        Clear Filters
-                      </Button>
-                    </Col>
-                  </ButtonGroup>
-                </Form>
+                            setLoading(false);
+                          })
+                          .catch((error) => {
+                            setError(true);
+                            setLoading(false);
+                            console.log(error);
+                            throw new Error("GET /API/professionals : Network response was not ok");
+                          });
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  </Col>
+                </ButtonGroup>
+              </Form>
 
-                <h5 className="mt-3">Sort Professionals</h5>
-                <Form>
-                  <Form.Group controlId="sort" className="mb-3">
-                    <Form.Select name="sort" value={sortCriteria} onChange={(e) => setSortCriteria(e.target.value)}>
-                      <option value="asc_name">Alphabetically ascending name</option>
-                      <option value="asc_surname">Alphabetically ascending surname</option>
-                      <option value="asc_num_skills">Ascending number of skills</option>
-                      <option value="asc_geographicalLocation">Alphabetically ascending location</option>
-                      <option value="desc_name">Alphabetically descending name</option>
-                      <option value="desc_surname">Alphabetically descending surname</option>
-                      <option value="desc_num_skills">Descending number of skills</option>
-                      <option value="desc_geographicalLocation">Alphabetically descending location</option>
-                      <option value="employed_before">Occupied before</option>
-                      <option value="unemployed_before">Non-occupied before</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Form>
-              </div>
-            </Col>
+              <h5 className="mt-3">Sort Professionals</h5>
+              <Form>
+                <Form.Group controlId="sort" className="mb-3">
+                  <Form.Select name="sort" value={sortCriteria} onChange={(e) => setSortCriteria(e.target.value)}>
+                    <option value="asc_name">Alphabetically ascending name</option>
+                    <option value="asc_surname">Alphabetically ascending surname</option>
+                    <option value="asc_num_skills">Ascending number of skills</option>
+                    <option value="asc_geographicalLocation">Alphabetically ascending location</option>
+                    <option value="desc_name">Alphabetically descending name</option>
+                    <option value="desc_surname">Alphabetically descending surname</option>
+                    <option value="desc_num_skills">Descending number of skills</option>
+                    <option value="desc_geographicalLocation">Alphabetically descending location</option>
+                    <option value="employed_before">Occupied before</option>
+                    <option value="unemployed_before">Non-occupied before</option>
+                  </Form.Select>
+                </Form.Group>
+              </Form>
+            </div>
+          </Col>
 
-            <Col xs={12} lg={8} className="order-2 order-lg-1">
-              <Row className="d-flex justify-content-center">
-                <Col className="d-flex-column justify-content-center align-items-center mt-3">
-                  {presentedProfessionals
-                    .sort((a, b) => {
-                      if (sortCriteria === "asc_name") {
-                        return a.information.name.localeCompare(b.information.name);
-                      } else if (sortCriteria === "asc_surname") {
-                        return a.information.surname.localeCompare(b.information.surname);
-                      } else if (sortCriteria === "asc_num_skills") {
-                        return a.skills.length - b.skills.length;
-                      } else if (sortCriteria === "asc_geographicalLocation") {
-                        return a.geographicalLocation.localeCompare(b.geographicalLocation);
-                      } else if (sortCriteria === "desc_name") {
-                        return b.information.name.localeCompare(a.information.name);
-                      } else if (sortCriteria === "desc_surname") {
-                        return b.information.surname.localeCompare(a.information.surname);
-                      } else if (sortCriteria === "desc_num_skills") {
-                        return b.skills.length - a.skills.length;
-                      } else if (sortCriteria === "desc_geographicalLocation") {
-                        return b.geographicalLocation.localeCompare(a.geographicalLocation);
-                      } else if (sortCriteria === "employed_before") {
-                        if (a.employmentState === "EMPLOYED" && b.employmentState !== "EMPLOYED") {
-                          return -1;
-                        } else if (a.employmentState !== "EMPLOYED" && b.employmentState === "EMPLOYED") {
-                          return 1;
-                        }
-                      } else if (sortCriteria === "unemployed_before") {
-                        if (a.employmentState === "UNEMPLOYED" && b.employmentState !== "UNEMPLOYED") {
-                          return -1;
-                        } else if (a.employmentState !== "UNEMPLOYED" && b.employmentState === "UNEMPLOYED") {
-                          return 1;
-                        }
+          <Col xs={12} lg={8} className="order-2 order-lg-1">
+            <Row className="d-flex justify-content-center">
+              <Col className="d-flex-column justify-content-center align-items-center mt-3">
+                {presentedProfessionals
+                  .sort((a, b) => {
+                    if (sortCriteria === "asc_name") {
+                      return a.information.name.localeCompare(b.information.name);
+                    } else if (sortCriteria === "asc_surname") {
+                      return a.information.surname.localeCompare(b.information.surname);
+                    } else if (sortCriteria === "asc_num_skills") {
+                      return a.skills.length - b.skills.length;
+                    } else if (sortCriteria === "asc_geographicalLocation") {
+                      return a.geographicalLocation.localeCompare(b.geographicalLocation);
+                    } else if (sortCriteria === "desc_name") {
+                      return b.information.name.localeCompare(a.information.name);
+                    } else if (sortCriteria === "desc_surname") {
+                      return b.information.surname.localeCompare(a.information.surname);
+                    } else if (sortCriteria === "desc_num_skills") {
+                      return b.skills.length - a.skills.length;
+                    } else if (sortCriteria === "desc_geographicalLocation") {
+                      return b.geographicalLocation.localeCompare(a.geographicalLocation);
+                    } else if (sortCriteria === "employed_before") {
+                      if (a.employmentState === "EMPLOYED" && b.employmentState !== "EMPLOYED") {
+                        return -1;
+                      } else if (a.employmentState !== "EMPLOYED" && b.employmentState === "EMPLOYED") {
+                        return 1;
                       }
-                      return 0;
-                    })
-                    .map((professional, index) => {
-                      const selectedSkill = professional.skills.reduce((bestMatch, skill) => {
-                        if (activeFilters.skill === "") {
-                          return professional.skills[0];
-                        }
-                        const skillLower = skill.toLowerCase();
-                        const filterSkillLower = activeFilters.skill.toLowerCase();
-                        const matchLength = skillLower.includes(filterSkillLower) ? filterSkillLower.length : 0;
-                        const bestMatchLower = bestMatch.toLowerCase();
-                        const bestMatchLength = bestMatchLower.includes(filterSkillLower) ? filterSkillLower.length : 0;
-                        return matchLength > bestMatchLength ? skill : bestMatch;
-                      }, professional.skills[0]);
+                    } else if (sortCriteria === "unemployed_before") {
+                      if (a.employmentState === "UNEMPLOYED" && b.employmentState !== "UNEMPLOYED") {
+                        return -1;
+                      } else if (a.employmentState !== "UNEMPLOYED" && b.employmentState === "UNEMPLOYED") {
+                        return 1;
+                      }
+                    }
+                    return 0;
+                  })
+                  .map((professional, index) => {
+                    const selectedSkill = professional.skills.reduce((bestMatch, skill) => {
+                      if (activeFilters.skill === "") {
+                        return professional.skills[0];
+                      }
+                      const skillLower = skill.toLowerCase();
+                      const filterSkillLower = activeFilters.skill.toLowerCase();
+                      const matchLength = skillLower.includes(filterSkillLower) ? filterSkillLower.length : 0;
+                      const bestMatchLower = bestMatch.toLowerCase();
+                      const bestMatchLength = bestMatchLower.includes(filterSkillLower) ? filterSkillLower.length : 0;
+                      return matchLength > bestMatchLength ? skill : bestMatch;
+                    }, professional.skills[0]);
+                    return (
+                      <Row
+                        key={index}
+                        className="w-100 border border-dark rounded-3 p-3 mb-2 ms-1 d-flex align-items-center secondaryButton"
+                        onClick={() => navigate(`/ui/professionals/${professional.id}`)}
+                      >
+                        <Col xs={12} md={4} lg={3} className="pe-0">
+                          <h5 className="mb-0 text-center-sm">{`${professional.information.name} ${professional.information.surname}`}</h5>
+                        </Col>
+                        <Col xs={12} md={8} lg={4}>
+                          <p className="mb-0 fw-light  text-center-sm text-right-md">
+                            {`${selectedSkill} + `}
+                            <strong className="fw-semibold">{professional.skills.length - 1}</strong>
+                            {` skills`}
+                          </p>
+                        </Col>
+                        <Col xs={12} md={6} lg={2}>
+                          <p className="mb-0 fw-light  text-center-sm">{professional.geographicalLocation}</p>
+                        </Col>
+                        <Col xs={12} md={6} lg={3} className="d-flex justify-content-center justify-content-md-end ">
+                          <p className="mb-0">
+                            <span className="fw-semibold fs-5">
+                              {professional.employmentState === "EMPLOYED"
+                                ? "Employed"
+                                : professional.employmentState === "UNEMPLOYED"
+                                ? "Unemployed"
+                                : professional.employmentState === "AVAILABLE_FOR_WORK"
+                                ? "Available for work"
+                                : professional.employmentState === "NOT_AVAILABLE"
+                                ? "Not available"
+                                : ""}
+                            </span>
+                          </p>
+                        </Col>
+                      </Row>
+                    );
+                  })}
+
+                {presentedProfessionals.length === 0 && (
+                  <Row className="w-100">
+                    <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
+                      <h5 className="p-3 text-center">No professionals found with the selected criteria.</h5>
+                      <h5 className="p-3 text-center">Try adjusting the filters, or it could be that no professionals have been added yet.</h5>
+                    </Col>
+                  </Row>
+                )}
+              </Col>
+            </Row>
+
+            {/* Pagination */}
+            {professionals?.content.length > 0 && (
+              <Row>
+                <Col className="d-flex justify-content-center mt-4 justify-self-center">
+                  <Pagination className="custom-pagination">
+                    <Pagination.First onClick={() => changePage(0)} disabled={professionals.currentPage === 0} />
+                    <Pagination.Prev onClick={() => changePage(professionals.currentPage - 1)} disabled={professionals.currentPage === 0} />
+
+                    {Array.from({ length: Math.min(5, professionals.totalPages) }, (_, index) => {
+                      const startPage = Math.max(Math.min(professionals.currentPage - 2, professionals.totalPages - 5), 0);
+                      const actualPage = startPage + index;
+
                       return (
-                        <Row
-                          key={index}
-                          className="w-100 border border-dark rounded-3 p-3 mb-2 ms-1 d-flex align-items-center secondaryButton"
-                          onClick={() => navigate(`/ui/professionals/${professional.id}`)}
-                        >
-                          <Col xs={12} md={6} lg={3}>
-                            <h5 className="mb-0 text-center-sm">{`${professional.information.name} ${professional.information.surname}`}</h5>
-                          </Col>
-                          <Col xs={12} md={6} lg={3}>
-                            <p className="mb-0 fw-light  text-center-sm text-right-md">
-                              {`${selectedSkill} + `}
-                              <strong className="fw-semibold">{professional.skills.length - 1}</strong>
-                              {` skills`}
-                            </p>
-                          </Col>
-                          <Col xs={12} md={6} lg={3}>
-                            <p className="mb-0 fw-light  text-center-sm">{professional.geographicalLocation}</p>
-                          </Col>
-                          <Col xs={12} md={6} lg={3} className="d-flex justify-content-end  text-center-sm">
-                            <p className="mb-0">
-                              <span className="fw-semibold fs-5">
-                                {professional.employmentState === "EMPLOYED"
-                                  ? "Employed"
-                                  : professional.employmentState === "UNEMPLOYED"
-                                  ? "Unemployed"
-                                  : professional.employmentState === "AVAILABLE_FOR_WORK"
-                                  ? "Available for work"
-                                  : professional.employmentState === "NOT_AVAILABLE"
-                                  ? "Not available"
-                                  : ""}
-                              </span>
-                            </p>
-                          </Col>
-                        </Row>
+                        <Pagination.Item key={actualPage} active={actualPage === professionals.currentPage} onClick={() => changePage(actualPage)}>
+                          {actualPage + 1}
+                        </Pagination.Item>
                       );
                     })}
 
-                  {presentedProfessionals.length === 0 && (
-                    <Row className="w-100">
-                      <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
-                        <h5 className="p-3 text-center">No professionals found with the selected criteria.</h5>
-                        <h5 className="p-3 text-center">Try adjusting the filters, or it could be that no professionals have been added yet.</h5>
-                      </Col>
-                    </Row>
-                  )}
+                    <Pagination.Next
+                      onClick={() => changePage(professionals.currentPage + 1)}
+                      disabled={professionals.currentPage + 1 === professionals.totalPages}
+                    />
+                    <Pagination.Last
+                      onClick={() => changePage(professionals.totalPages - 1)}
+                      disabled={professionals.currentPage + 1 === professionals.totalPages}
+                    />
+                  </Pagination>
                 </Col>
               </Row>
-
-              {/* Pagination */}
-              {professionals?.content.length > 0 && (
-                <Row className="mt-auto">
-                  <Col className="d-flex justify-content-center mt-4 custom-pagination">
-                    <Pagination>
-                      <Pagination.First onClick={() => changePage(0)} disabled={professionals.currentPage === 0} />
-                      <Pagination.Prev onClick={() => changePage(professionals.currentPage - 1)} disabled={professionals.currentPage === 0} />
-
-                      {Array.from({ length: Math.min(5, professionals.totalPages) }, (_, index) => {
-                        const startPage = Math.max(Math.min(professionals.currentPage - 2, professionals.totalPages - 5), 0);
-                        const actualPage = startPage + index;
-
-                        return (
-                          <Pagination.Item key={actualPage} active={actualPage === professionals.currentPage} onClick={() => changePage(actualPage)}>
-                            {actualPage + 1}
-                          </Pagination.Item>
-                        );
-                      })}
-
-                      <Pagination.Next
-                        onClick={() => changePage(professionals.currentPage + 1)}
-                        disabled={professionals.currentPage + 1 === professionals.totalPages}
-                      />
-                      <Pagination.Last
-                        onClick={() => changePage(professionals.totalPages - 1)}
-                        disabled={professionals.currentPage + 1 === professionals.totalPages}
-                      />
-                    </Pagination>
-                  </Col>
-                </Row>
-              )}
-            </Col>
-          </Row>
-        </>
+            )}
+          </Col>
+        </Row>
       )}
     </div>
   );
