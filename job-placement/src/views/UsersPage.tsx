@@ -6,6 +6,7 @@ import { BsPlus } from "react-icons/bs";
 import { RoleState } from "../utils/costants";
 import { deleteUser, fetchUsers } from "../apis/KeycloakRequests";
 import { KeycloakUser } from "../interfaces/KeycloakUser";
+import { FaEnvelope, FaTrashAlt, FaUserTie } from "react-icons/fa";
 
 const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   const navigate = useNavigate();
