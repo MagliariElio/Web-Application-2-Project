@@ -103,9 +103,9 @@
 }
 
 .title {
-  color: #004085;
-  font-size: 1.8rem;
-  font-weight: 600;
+  color: #004085 !important;
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
 }
 
 .subtitle {
@@ -158,7 +158,6 @@
   width: fit-content; /* This makes the width adjust to the content */
   display: inline-block;
 }
-
 
 .user-item p {
   font-size: 1rem;
@@ -518,10 +517,6 @@ button.primaryButton:hover {
   transition: all 0.3s ease;
 }
 
-.borderedSection:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 .borderedSection h4 {
   font-size: 1.5rem;
   font-weight: 600;
@@ -565,8 +560,13 @@ button.primaryButton:hover {
   color: #495057;
 }
 
-.borderedSection .text-center:hover {
+.borderedSection {
+  color: #004085;
+}
+
+.hoverUnderline:hover {
   text-decoration: underline;
+  cursor: pointer;
   color: #004085;
 }
 
@@ -732,7 +732,8 @@ button.primaryButton:hover {
   border: none !important;
   border-radius: 5px !important;
   cursor: pointer !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease !important;
   font-size: 18px !important;
 }
 
@@ -748,7 +749,8 @@ button.primaryButton:hover {
   border: 2px solid #218838 !important;
   border-radius: 5px !important;
   cursor: pointer !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease, color 0.3s ease !important;
   font-size: 18px !important;
 }
 
@@ -781,7 +783,8 @@ button.primaryButton:hover {
   border: none !important;
   border-radius: 5px !important;
   cursor: pointer !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease !important;
 }
 
 .primaryDangerButton:hover {

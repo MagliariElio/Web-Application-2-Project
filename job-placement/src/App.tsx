@@ -139,9 +139,7 @@ function App() {
             top: 0,
             left: 0,
           }}
-        >
-          
-        </Col>
+        ></Col>
 
         <Col
           xs={12}
@@ -265,7 +263,15 @@ function App() {
                   />
                   <Route
                     path="/ui/users/add"
-                    element={me && me.principal !== null && me.role === RoleState.MANAGER ? <AddUserPage me={me} /> : <Navigate to="/not-found" />}
+                    element={
+                      me &&
+                      me.principal !== null &&
+                      me.role === RoleState.MANAGER ? (
+                        <AddUserPage me={me} />
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
                   />
                   <Route
                     path="/ui/joboffers/add"
@@ -339,12 +345,70 @@ function App() {
                       )
                     }
                   />
-                  <Route path="/ui/joboffers/:id" element={me && me.principal !== null ? <JobOfferDetail me={me} /> : <Navigate to="/not-found" />} />
-                  <Route path="/ui/analytics" element={me && me.principal !== null && me.role === RoleState.MANAGER ? <AnalyticsPage me={me} /> : <Navigate to="/not-found" /> } /> 
-                  <Route path="/ui/users" element={me && me.principal !== null && me.role === RoleState.MANAGER ? <UsersPage me={me} /> : <Navigate to="/not-found" /> } /> 
-                  <Route path="/ui/messages" element={me && me.principal !== null ? <MessagesPage me={me}/> : <Navigate to="/not-found" />} />
-                  <Route path="/ui/messages/:id" element={me && me.principal !== null ? <MessageDetail me={me} /> : <Navigate to="/not-found" />} />
-                  <Route path="/ui/settings" element={me && me.principal !== null ? <SettingsPage me={me} /> : <Navigate to="/not-found" />}/>
+                  <Route
+                    path="/ui/joboffers/:id"
+                    element={
+                      me && me.principal !== null ? (
+                        <JobOfferDetail me={me} />
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/ui/analytics"
+                    element={
+                      me &&
+                      me.principal !== null &&
+                      me.role === RoleState.MANAGER ? (
+                        <AnalyticsPage me={me} />
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/ui/users"
+                    element={
+                      me &&
+                      me.principal !== null &&
+                      me.role === RoleState.MANAGER ? (
+                        <UsersPage me={me} />
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/ui/messages"
+                    element={
+                      me && me.principal !== null ? (
+                        <MessagesPage me={me} />
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/ui/messages/:id"
+                    element={
+                      me && me.principal !== null ? (
+                        <MessageDetail me={me} />
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/ui/settings"
+                    element={
+                      me && me.principal !== null ? (
+                        <SettingsPage me={me} />
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
+                  />
 
                   <Route path="*" element={<PageNotFound />} />
                 </>
@@ -390,92 +454,106 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
           </div>
           <hr className="border-top border-light" />
         </div>
-        {me?.principal !== null && ( // Only logged user links here
-          <>
-            <Nav.Link
-              className={
-                (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                (location.pathname === "/ui" ? " nav-link-active" : "")
-              }
-              onClick={() => {
-                if (location.pathname !== "/ui") navigate("/ui");
-              }}
-            >
-              <BsBriefcaseFill className={opened ? "me-2" : ""} />
-              {opened && "Job Offers"}
-            </Nav.Link>
-            <Nav.Link
-              className={
-                (opened ? navLinkClassnameOpened : navLinkClassnameClosed) + 
-                (location.pathname === "/ui/customers" ? " nav-link-active" : "")
-              }
-              onClick={() => {
-                if (location.pathname !== "/ui/customers")
-                  navigate("/ui/customers");
-              }}
-            >
-              <BsBuildingsFill className={opened ? "me-2" : ""} />
-              {opened && "Customers"}
-            </Nav.Link>
-            <Nav.Link
-              className={
-                (opened ? navLinkClassnameOpened : navLinkClassnameClosed) + 
-                (location.pathname === "/ui/professionals" ? " nav-link-active" : "")
-              }
-              onClick={() => {
-                if (location.pathname !== "/ui/professionals")
-                  navigate("/ui/professionals");
-              }}
-            >
-              <BsBriefcaseFill className={opened ? "me-2" : ""} />
-              {opened && "Professionals"}
-            </Nav.Link>
-            <Nav.Link
-              className={
-                (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                (location.pathname === "/ui/messages" ? " nav-link-active" : "")
-              }
-              onClick={() => {
-                if (location.pathname !== "/ui/messages")
-                  navigate("/ui/messages");
-              }}
-            >
-              <BsChatSquareDotsFill className={opened ? "me-2" : ""} />
-              {opened && "Messages"}
-            </Nav.Link>
-            {me?.role === RoleState.MANAGER && 
-            <Nav.Link
-              className={
-                (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                (location.pathname === "/ui/analytics" ? " nav-link-active" : "")
-              }
-              onClick={() => {
-                if (location.pathname !== "/ui/analytics")
-                  navigate("/ui/analytics");
-              }}
-            >
-              <BsPieChartFill className={opened ? "me-2" : ""} />
-              {opened && "Analytics"}
-            </Nav.Link>}
-            {me?.role === RoleState.MANAGER && 
-            <Nav.Link
-              className={
-                (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                (location.pathname === "/ui/users" ? " nav-link-active" : "")
-              }
-              onClick={() => {
-                if (location.pathname !== "/ui/users") navigate("/ui/users");
-              }}
-            >
-              <BsPersonFill className={opened ? "me-2" : ""} />
-              {opened && "Users"}
-            </Nav.Link>}
-          </>
-        )}
+        {me !== null &&
+          me.principal !== null && ( // Only logged user links here
+            <>
+              <Nav.Link
+                className={
+                  (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
+                  (location.pathname === "/ui" ? " nav-link-active" : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui") navigate("/ui");
+                }}
+              >
+                <BsBriefcaseFill className={opened ? "me-2" : ""} />
+                {opened && "Job Offers"}
+              </Nav.Link>
+              <Nav.Link
+                className={
+                  (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
+                  (location.pathname === "/ui/customers"
+                    ? " nav-link-active"
+                    : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui/customers")
+                    navigate("/ui/customers");
+                }}
+              >
+                <BsBuildingsFill className={opened ? "me-2" : ""} />
+                {opened && "Customers"}
+              </Nav.Link>
+              <Nav.Link
+                className={
+                  (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
+                  (location.pathname === "/ui/professionals"
+                    ? " nav-link-active"
+                    : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui/professionals")
+                    navigate("/ui/professionals");
+                }}
+              >
+                <BsBriefcaseFill className={opened ? "me-2" : ""} />
+                {opened && "Professionals"}
+              </Nav.Link>
+              <Nav.Link
+                className={
+                  (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
+                  (location.pathname === "/ui/messages"
+                    ? " nav-link-active"
+                    : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui/messages")
+                    navigate("/ui/messages");
+                }}
+              >
+                <BsChatSquareDotsFill className={opened ? "me-2" : ""} />
+                {opened && "Messages"}
+              </Nav.Link>
+              {me?.role === RoleState.MANAGER && (
+                <Nav.Link
+                  className={
+                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
+                    (location.pathname === "/ui/analytics"
+                      ? " nav-link-active"
+                      : "")
+                  }
+                  onClick={() => {
+                    if (location.pathname !== "/ui/analytics")
+                      navigate("/ui/analytics");
+                  }}
+                >
+                  <BsPieChartFill className={opened ? "me-2" : ""} />
+                  {opened && "Analytics"}
+                </Nav.Link>
+              )}
+              {me?.role === RoleState.MANAGER && (
+                <Nav.Link
+                  className={
+                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
+                    (location.pathname === "/ui/users"
+                      ? " nav-link-active"
+                      : "")
+                  }
+                  onClick={() => {
+                    if (location.pathname !== "/ui/users")
+                      navigate("/ui/users");
+                  }}
+                >
+                  <BsPersonFill className={opened ? "me-2" : ""} />
+                  {opened && "Users"}
+                </Nav.Link>
+              )}
+            </>
+          )}
 
         <div className="flex-grow-1"></div>
 
-        {me?.principal !== null && (
+        {me !== null && me.principal !== null && (
           <Nav.Link
             className={
               (opened
@@ -545,123 +623,153 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
         </div>
         {me?.principal !== null && ( // Only logged user links here
           <>
-            { opened && <Nav.Link
-              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui" ? " nav-link-active" : "")} 
-              onClick={() => {
-                if (location.pathname !== "/ui") navigate("/ui");
-              }}
-            >
-              
+            {opened && (
+              <Nav.Link
+                className={
+                  "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
+                  (location.pathname === "/ui" ? " nav-link-active" : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui") navigate("/ui");
+                }}
+              >
                 <>
-                  <BsBriefcaseFill className = "me-2" />
+                  <BsBriefcaseFill className="me-2" />
                   Job Offers
                 </>
-              
-            </Nav.Link>}
-            { opened && <Nav.Link
-              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/customers" ? " nav-link-active" : "")}
-              onClick={() => {
-                if (location.pathname !== "/ui/customers")
-                  navigate("/ui/customers");
-              }}
-            >
-              
+              </Nav.Link>
+            )}
+            {opened && (
+              <Nav.Link
+                className={
+                  "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
+                  (location.pathname === "/ui/customers"
+                    ? " nav-link-active"
+                    : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui/customers")
+                    navigate("/ui/customers");
+                }}
+              >
                 <>
-                  <BsBuildingsFill className = "me-2" />
+                  <BsBuildingsFill className="me-2" />
                   Customers
                 </>
-              
-            </Nav.Link>}
-            { opened && <Nav.Link
-              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/professionals" ? " nav-link-active" : "")}
-              onClick={() => {
-                if (location.pathname !== "/ui/professionals")
-                  navigate("/ui/professionals");
-              }}
-            >
-              
+              </Nav.Link>
+            )}
+            {opened && (
+              <Nav.Link
+                className={
+                  "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
+                  (location.pathname === "/ui/professionals"
+                    ? " nav-link-active"
+                    : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui/professionals")
+                    navigate("/ui/professionals");
+                }}
+              >
                 <>
-                  <BsBriefcaseFill className = "me-2" />
+                  <BsBriefcaseFill className="me-2" />
                   Professionals
                 </>
-              
-            </Nav.Link>}
-            { opened && <Nav.Link
-              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/messages" ? " nav-link-active" : "")}
-              onClick={() => {
-                if (location.pathname !== "/ui/messages")
-                  navigate("/ui/messages");
-              }}
-            >
-              
+              </Nav.Link>
+            )}
+            {opened && (
+              <Nav.Link
+                className={
+                  "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
+                  (location.pathname === "/ui/messages"
+                    ? " nav-link-active"
+                    : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui/messages")
+                    navigate("/ui/messages");
+                }}
+              >
                 <>
-                  <BsChatSquareDotsFill className = "me-2" />
+                  <BsChatSquareDotsFill className="me-2" />
                   Messages
                 </>
-              
-            </Nav.Link>}
-            { opened && <Nav.Link
-              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/analytics" ? " nav-link-active" : "")}
-              onClick={() => {
-                if (location.pathname !== "/ui/analytics")
-                  navigate("/ui/analytics");
-              }}
-            >
-              
+              </Nav.Link>
+            )}
+            {opened && (
+              <Nav.Link
+                className={
+                  "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
+                  (location.pathname === "/ui/analytics"
+                    ? " nav-link-active"
+                    : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui/analytics")
+                    navigate("/ui/analytics");
+                }}
+              >
                 <>
-                  <BsPieChartFill className = "me-2" />
+                  <BsPieChartFill className="me-2" />
                   Analytics
                 </>
-              
-            </Nav.Link>}
-            { opened && <Nav.Link
-              className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/users" ? " nav-link-active" : "")}
-              onClick={() => {
-                if (location.pathname !== "/ui/users") navigate("/ui/users");
-              }}
-            >
-              
+              </Nav.Link>
+            )}
+            {opened && (
+              <Nav.Link
+                className={
+                  "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
+                  (location.pathname === "/ui/users" ? " nav-link-active" : "")
+                }
+                onClick={() => {
+                  if (location.pathname !== "/ui/users") navigate("/ui/users");
+                }}
+              >
                 <>
-                  <BsPersonFill className = "me-2" />
+                  <BsPersonFill className="me-2" />
                   Users
                 </>
-              
-            </Nav.Link>}
+              </Nav.Link>
+            )}
           </>
         )}
 
         <div className="flex-grow-1"></div>
 
         {me?.principal !== null && opened && (
-           <Nav.Link
-          className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/settings" ? " nav-link-active" : "")}
+          <Nav.Link
+            className={
+              "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
+              (location.pathname === "/ui/settings" ? " nav-link-active" : "")
+            }
             onClick={() => {
               if (location.pathname !== "/ui/settings")
                 navigate("/ui/settings");
             }}
           >
-            
-              <>
-                <BsGearFill className = "me-2" />
-                Settings
-              </>
-            
+            <>
+              <BsGearFill className="me-2" />
+              Settings
+            </>
           </Nav.Link>
         )}
 
-        { opened && <Nav.Link
-          className={"text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" + (location.pathname === "/ui/aboutus" ? " nav-link-active" : "")}
-          onClick={() => {
-            if (location.pathname !== "/ui/aboutus") navigate("/ui/aboutus");
-          }}
-        >
-          
+        {opened && (
+          <Nav.Link
+            className={
+              "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
+              (location.pathname === "/ui/aboutus" ? " nav-link-active" : "")
+            }
+            onClick={() => {
+              if (location.pathname !== "/ui/aboutus") navigate("/ui/aboutus");
+            }}
+          >
             <>
-              <FaUsers className = "me-2" />
+              <FaUsers className="me-2" />
               About Us
             </>
-          
-        </Nav.Link>}
+          </Nav.Link>
+        )}
 
         <Button
           className="w-100 align-self-center text-white ms-2 bg-transparent border-0 nav-link-hover"

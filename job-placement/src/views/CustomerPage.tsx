@@ -1,8 +1,23 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Modal, OverlayTrigger, Row, Toast, ToastContainer, Tooltip } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Modal,
+  OverlayTrigger,
+  Row,
+  Toast,
+  ToastContainer,
+  Tooltip,
+} from "react-bootstrap";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Customer } from "../interfaces/Customer";
-import { BsChevronDown, BsChevronUp, BsPencilSquare, BsPlus, BsTrash } from "react-icons/bs";
+import {
+  BsChevronDown,
+  BsChevronUp,
+  BsPencilSquare,
+  BsPlus,
+  BsTrash,
+} from "react-icons/bs";
 import { MeInterface } from "../interfaces/MeInterface";
 import { deleteCustomer, fetchCustomer } from "../apis/CustomerRequests";
 import { JobOfferCard } from "./JobOffersPage";
@@ -36,7 +51,12 @@ function CustomerPage({ me }: { me: MeInterface }) {
   const [expandedInfoSection, setExpandedInfoSection] = useState(false);
 
   useEffect(() => {
-    if (id === undefined || id === null || id === "" || Number.parseInt(id) < 1) {
+    if (
+      id === undefined ||
+      id === null ||
+      id === "" ||
+      Number.parseInt(id) < 1
+    ) {
       navigate("/not-found");
       return;
     }
@@ -59,13 +79,23 @@ function CustomerPage({ me }: { me: MeInterface }) {
     <div className="w-100">
       {showAlert && (
         <ToastContainer position="top-end" className="p-3">
-          <Toast bg={success ? "success" : "danger"} show={success != null} onClose={() => (location.state = null)}>
+          <Toast
+            bg={success ? "success" : "danger"}
+            show={success != null}
+            onClose={() => (location.state = null)}
+          >
             <Toast.Header>
-              <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
+              <img
+                src="holder.js/20x20?text=%20"
+                className="rounded me-2"
+                alt=""
+              />
               <strong className="me-auto">JobConnect</strong>
               <small>now</small>
             </Toast.Header>
-            <Toast.Body>{success ? "Operation correctly executed!" : "Operation failed!"}</Toast.Body>
+            <Toast.Body>
+              {success ? "Operation correctly executed!" : "Operation failed!"}
+            </Toast.Body>
           </Toast>
         </ToastContainer>
       )}
@@ -75,14 +105,30 @@ function CustomerPage({ me }: { me: MeInterface }) {
           <Modal.Title>Delete customer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p style={{ color: "#856404", fontSize: "1rem", backgroundColor: "#fff3cd", padding: "10px", borderRadius: "5px" }}>
-            <strong>Warning:</strong> Are you certain you wish to permanently delete this customer? This action cannot be undone. All associated{" "}
-            <strong>job offers</strong> will also be <strong>irreversibly removed</strong>, if present.
+          <p
+            style={{
+              color: "#856404",
+              fontSize: "1rem",
+              backgroundColor: "#fff3cd",
+              padding: "10px",
+              borderRadius: "5px",
+            }}
+          >
+            <strong>Warning:</strong> Are you certain you wish to permanently
+            delete this customer? This action cannot be undone. All associated{" "}
+            <strong>job offers</strong> will also be{" "}
+            <strong>irreversibly removed</strong>, if present.
           </p>
-          <p className="text-center fs-3 fw-semibold">{`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname}?`} </p>
+          <p className="text-center fs-3 fw-semibold">
+            {`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname}?`}{" "}
+          </p>
         </Modal.Body>
         <Modal.Footer className="justify-content-between">
-          <Button variant="secondary" className="ms-5" onClick={() => handleCloseDeleteModal()}>
+          <Button
+            variant="secondary"
+            className="ms-5"
+            onClick={() => handleCloseDeleteModal()}
+          >
             Close
           </Button>
           <Button
@@ -109,18 +155,28 @@ function CustomerPage({ me }: { me: MeInterface }) {
         <Col>
           <h3 className="title">Customer</h3>
         </Col>
-        {!loading && me.role === RoleState.OPERATOR &&  (
+        {!loading && me.role === RoleState.OPERATOR && (
           <Col className="d-flex justify-content-end">
-            <OverlayTrigger overlay={<Tooltip id="editButton">Edit Customer</Tooltip>}>
-              <Button className="d-flex align-items-center primaryButton me-4" onClick={() => navigate(`/ui/customers/${id}/edit`)}>
-                <BsPencilSquare size={"1em"} className="me-2" />
-                Edit
+            <OverlayTrigger
+              overlay={<Tooltip id="editButton">Edit Customer</Tooltip>}
+            >
+              <Button
+                className="d-flex align-items-center primaryButton me-4"
+                onClick={() => navigate(`/ui/customers/${id}/edit`)}
+              >
+                <BsPencilSquare size={"1em"} className="me-md-2" />
+                <span className="d-none d-md-inline">Edit</span>
               </Button>
             </OverlayTrigger>
-            <OverlayTrigger overlay={<Tooltip id="deleteButton">Delete Customer</Tooltip>}>
-              <Button className="d-flex align-items-center primaryDangerButton me-4" onClick={() => setShowDeleteModal(true)}>
-                <BsTrash size={"1em"} className="me-2" />
-                Delete
+            <OverlayTrigger
+              overlay={<Tooltip id="deleteButton">Delete Customer</Tooltip>}
+            >
+              <Button
+                className="d-flex align-items-center primaryDangerButton me-4"
+                onClick={() => setShowDeleteModal(true)}
+              >
+                <BsTrash size={"1em"} className="me-md-2 mx-2 mx-md-0" />
+                <span className="d-none d-md-inline">Delete</span>
               </Button>
             </OverlayTrigger>
           </Col>
@@ -141,11 +197,15 @@ function CustomerPage({ me }: { me: MeInterface }) {
           <Row className="d-flex mb-2">
             <h4 className="p-0 m-0 d-flex align-items-center">
               {`${customer?.information.contactDTO.name} ${customer?.information.contactDTO.surname}`}
-              <span className="fw-light fs-6 ms-2">({customer?.information.contactDTO.ssnCode})</span>
+              <span className="fw-light fs-6 ms-2">
+                ({customer?.information.contactDTO.ssnCode})
+              </span>
             </h4>
           </Row>
           <Row className="d-flex">
-            <p className="p-0 m-0 fs-6 fw-light">{customer?.information.contactDTO.comment}</p>
+            <p className="p-0 m-0 fs-6 fw-light">
+              {customer?.information.contactDTO.comment}
+            </p>
           </Row>
 
           {expandedInfoSection && (
@@ -170,7 +230,7 @@ function CustomerPage({ me }: { me: MeInterface }) {
               </Col>
 
               <Col xs={12} md={6} lg={4}>
-                <Row className="d-flex flex-column mt-3">
+                <Row className="d-flex flex-column mt-3 align-content-start align-content-md-end">
                   <Row className="d-flex">
                     <h6 className="p-0 m-0 mb-2">Phones</h6>
                   </Row>
@@ -195,7 +255,10 @@ function CustomerPage({ me }: { me: MeInterface }) {
                   </Row>
                   {customer?.information.addressDTOs.map((address, index) => (
                     <Row key={index} className="d-flex mb-2">
-                      <p className="p-0 m-0 fs-6"> {`${address.address}, ${address.city}, ${address.region}, ${address.state}`} </p>
+                      <p className="p-0 m-0 fs-6">
+                        {" "}
+                        {`${address.address}, ${address.city}, ${address.region}, ${address.state}`}{" "}
+                      </p>
                       <small className="m-0 p-0">{address.comment}</small>
                     </Row>
                   ))}
@@ -211,7 +274,11 @@ function CustomerPage({ me }: { me: MeInterface }) {
 
           <Row className="d-flex justify-content-center">
             <Col className="d-flex justify-content-center align-items-center">
-              <div className="text-center fs-6 text-muted" style={{ cursor: "pointer" }} onClick={() => setExpandedInfoSection(!expandedInfoSection)}>
+              <div
+                className="text-center fs-6 text-muted"
+                style={{ cursor: "pointer" }}
+                onClick={() => setExpandedInfoSection(!expandedInfoSection)}
+              >
                 {expandedInfoSection ? (
                   <>
                     <BsChevronUp size={"1em"} />
@@ -230,9 +297,16 @@ function CustomerPage({ me }: { me: MeInterface }) {
       )}
 
       <Row className="d-flex justify-content-between mt-5 mb-3">
-        <h4 className="title w-25">Job Offers</h4>
+        <Col xs={12} md={5}>
+          <h4 className="text-center text-md-start title">Job Offers</h4>
+        </Col>
+
         {me.role === RoleState.OPERATOR && (
-          <Col xs="auto" className="me-4">
+          <Col
+            xs={12}
+            md={7}
+            className="d-flex justify-content-center justify-content-md-end"
+          >
             <Button
               className="d-flex align-items-center primaryButton"
               onClick={() =>

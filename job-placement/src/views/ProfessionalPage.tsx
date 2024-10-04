@@ -191,8 +191,8 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                 className="d-flex align-items-center primaryButton me-4"
                 onClick={() => navigate(`/ui/professionals/${id}/edit`)}
               >
-                <BsPencilSquare size={"1em"} className="me-2" />
-                Edit
+                <BsPencilSquare size={"1em"} className="me-md-2" />
+                <span className="d-none d-md-inline">Edit</span>
               </Button>
             </OverlayTrigger>
             <OverlayTrigger
@@ -202,8 +202,8 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                 className="d-flex align-items-center primaryDangerButton me-4"
                 onClick={() => setShowDeleteModal(true)}
               >
-                <BsTrash size={"1em"} className="me-2" />
-                Delete
+                <BsTrash size={"1em"} className="me-md-2 mx-2 mx-md-0" />
+                <span className="d-none d-md-inline">Delete</span>
               </Button>
             </OverlayTrigger>
           </Col>
@@ -220,55 +220,72 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
       )}
 
       {!loading && (
-        <Row className="w-100 borderedSection heigth-transition">
-          <div className="d-flex justify-content-between mb-2 ps-0">
-            <h4 className="p-0 m-0 d-flex align-items-center">
+        <Row className="w-100 borderedSection">
+          <Col
+            xs={12}
+            lg={6}
+            className="d-flex justify-content-center mb-2 ps-0"
+          >
+            <h4 className="p-0 m-0 d-flex align-items-center text-center text-lg-start w-100 justify-content-center justify-content-lg-start">
               {`${professional?.professionalDTO.information.name} ${professional?.professionalDTO.information.surname}`}
               <span className="fw-light fs-6 ms-2">
                 ({professional?.professionalDTO.information.ssnCode})
               </span>
             </h4>
-
+          </Col>
+          <Col
+            xs={12}
+            lg={6}
+            className="d-flex justify-content-center justify-content-lg-end mb-2 ps-0"
+          >
             <span
-              className="text-uppercase fs-4 fw-semibold"
+              className="text-uppercase fs-4 fw-semibold mt-2 mt-lg-0 text-center text-lg-end"
               style={{ color: "#162250" }}
             >
               {employmentStateToText(
                 professional?.professionalDTO.employmentState || ""
               )}
             </span>
-          </div>
-          <Row className="d-flex">
+          </Col>
+
+          <Col
+            xs={12}
+            className="d-flex justify-content-center justify-content-lg-start ps-0"
+          >
             <p className="p-0 m-0 fs-6 fw-light">
               {professional?.professionalDTO.information.comment}
             </p>
-          </Row>
+          </Col>
 
           {expandedInfoSection && (
             <>
-              <Col xs={12} md={6} lg={8}>
+              <Col xs={12} md={6} lg={8} className="mt-3">
                 <Row>
-                  <Col xs={12} md={6} lg={6}>
+                  <Col xs={12} lg={6}>
                     <Row className="d-flex flex-column mt-3">
                       <Row className="d-flex">
-                        <h6 className="p-0 m-0">Geographical location</h6>
+                        <h6 className="p-0 m-0 text-center text-lg-start">
+                          Geographical location
+                        </h6>
                       </Row>
 
                       <Row className="d-flex">
-                        <p className="p-0 m-0 fs-6">
+                        <p className="p-0 m-0 fs-6 text-center text-lg-start">
                           {professional?.professionalDTO.geographicalLocation}{" "}
                         </p>
                       </Row>
                     </Row>
                   </Col>
-                  <Col xs={12} md={6} lg={4}>
+                  <Col xs={12} lg={4}>
                     <Row className="d-flex flex-column mt-3">
                       <Row className="d-flex">
-                        <h6 className="p-0 m-0">Daily rate</h6>
+                        <h6 className="p-0 m-0 text-center text-lg-start">
+                          Daily rate
+                        </h6>
                       </Row>
 
                       <Row className="d-flex">
-                        <p className="p-0 m-0 fs-6">
+                        <p className="p-0 m-0 fs-6 text-center text-lg-start">
                           {professional?.professionalDTO.dailyRate} €
                         </p>
                       </Row>
@@ -276,10 +293,12 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                   </Col>
                 </Row>
 
-                <Col xs={12} md={8} lg={8}>
+                <Col xs={12} lg={8}>
                   <Row className="d-flex flex-column mt-3">
                     <Row className="d-flex">
-                      <h6 className="p-0 m-0">Attachments</h6>
+                      <h6 className="p-0 m-0 text-center text-lg-start">
+                        Attachments
+                      </h6>
                     </Row>
                     <Row className="d-flex flex-wrap">
                       {attachments &&
@@ -287,7 +306,10 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                         attachments
                           .sort((a, b) => a.name.localeCompare(b.name))
                           .map((attachment, index) => (
-                            <Row key={index} className="d-flex mb-1">
+                            <Row
+                              key={index}
+                              className="d-flex mb-1 text-center text-lg-start"
+                            >
                               <a
                                 href={`/documentStoreService/v1/API/documents/${attachment.id}/data`}
                                 target="_blank"
@@ -358,7 +380,9 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
                     </Row>
                     {attachments.length === 0 && (
                       <Row className="d-flex">
-                        <p className="p-0 m-0 fs-6">No attachment found</p>
+                        <p className="p-0 m-0 fs-6 text-center text-lg-start">
+                          No attachment found
+                        </p>
                       </Row>
                     )}
                   </Row>
@@ -368,9 +392,11 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
               <Col xs={12} md={6} lg={4}>
                 <Row className="d-flex flex-column mt-3">
                   <Row className="d-flex">
-                    <h6 className="p-0 m-0">Skills</h6>
+                    <h6 className="p-0 m-0 text-center text-lg-start">
+                      Skills
+                    </h6>
                   </Row>
-                  <Row className="d-flex flex-wrap ps-2">
+                  <Row className="d-flex justify-content-center justify-content-lg-start flex-wrap ps-2">
                     {professional?.professionalDTO.skills &&
                       professional.professionalDTO.skills.length > 0 &&
                       professional.professionalDTO.skills.map(
@@ -395,7 +421,7 @@ function ProfessionalPage({ me }: { me: MeInterface }) {
             </>
           )}
 
-          <Row className="d-flex justify-content-center">
+          <Row className="d-flex mx-auto hoverUnderline w-100">
             <Col className="d-flex justify-content-center align-items-center">
               <div
                 className="text-center fs-6 text-muted"

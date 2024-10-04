@@ -264,7 +264,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
         </Row>
 
         <Row className="justify-content-center mb-4">
-          <Col xs={12} md={12} lg={3}>
+          <Col xs={12} md={12} lg={3} className="mb-4 md-lg-0">
             <Form.Control
               placeholder="Geographical location"
               required
@@ -272,7 +272,6 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               onChange={(e) => setGeographicalLocation(e.target.value)}
             />
           </Col>
-
           <Col xs={12} md={12} lg={3}>
             <Form.Control
               type="text"
@@ -577,8 +576,8 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
 
         {!generationSkills && (
           <>
-            <Row className="justify-content-center">
-              <Col xs={12} md={8} lg={5} className="mb-2">
+            <Row className="justify-content-center mt-4">
+              <Col xs={12} md={10} lg={6} className="mb-2">
                 <Form.Control
                   placeholder="Enter a new skill"
                   value={singleSkill}
@@ -587,15 +586,10 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
               </Col>
             </Row>
 
-            <Row className="justify-content-center mt-4">
-              <Col
-                xs={12}
-                md={8}
-                lg={6}
-                className="d-flex justify-content-center"
-              >
+            <Row className="justify-content-center mt-2">
+              <Col xs={6} md={5} lg={3}>
                 <Button
-                  className="secondaryButton mb-2 d-flex align-items-center me-2"
+                  className="secondaryButton mb-2 d-flex align-items-center justify-content-center me-2 w-100"
                   onClick={() => {
                     if (singleSkill.trim() === "") {
                       setErrorMessage("Please enter a skill before adding.");
@@ -613,18 +607,23 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                   <FaPlus style={{ marginRight: "5px" }} />
                   Add Skill
                 </Button>
+              </Col>
 
+              <Col xs={6} md={5} lg={3}>
                 <Button
-                  className="secondaryDangerButton mb-2 d-flex align-items-center me-2"
+                  className="secondaryDangerButton mb-2 d-flex align-items-center justify-content-center me-2 w-100"
                   onClick={() => setSkills([])}
                   disabled={skills.length === 0}
                 >
                   <FaTrashAlt style={{ marginRight: "5px" }} />
                   Clear
                 </Button>
-
+              </Col>
+            </Row>
+            <Row className="justify-content-center">
+              <Col xs={12} md={10} lg={6}>
                 <Button
-                  className="secondaryButton mb-2 d-flex align-items-center"
+                  className="secondaryButton mb-2 d-flex align-items-center justify-content-center w-100"
                   onClick={() => setShowGenerateSkillsModal(true)}
                   disabled={skills.length > 100}
                 >
@@ -856,8 +855,7 @@ export const ContactModal = ({
         <Modal.Title>Add New {toTitleCase(open ? open : "")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-
-      <Form className="mb-4">
+        <Form className="mb-4">
           <small className="mb-1 ms-1">
             {editSelected === null
               ? `Use fields to search or create a new ${open}`
@@ -910,7 +908,12 @@ export const ContactModal = ({
                 </Col>
               </>
             )}
-            <Col xs={12} md={12} lg={open === "address" ? 9 : 3} className="mb-2 md-lg-0">
+            <Col
+              xs={12}
+              md={12}
+              lg={open === "address" ? 9 : 3}
+              className="mb-2 md-lg-0"
+            >
               <Form.Control
                 value={singleContactComment}
                 onChange={(e) => {
@@ -1176,46 +1179,45 @@ export const ContactModal = ({
 
                     <Col className="d-flex flex-column flex-lg-row">
                       <Col xs={12} md={6} className="mb-1 mb-lg-0 me-0 me-lg-1">
-                      <Button
-                        className="secondaryButton w-100 d-flex justify-content-center align-items-center"
-                        onClick={() => {
-                        if (
-                          editSelected === null ||
-                          editSelected?.id !== contact.id
-                        ) {
-                          setEditSelected(contact);
-                        } else {
-                          setEditSelected(null);
-                          setSingleContact("");
-                          setSingleContactComment("");
-                          setSingleCity("");
-                          setSingleRegion("");
-                          setSingleState("");
-                        }
-                        }}
-                      >
-                        {editSelected?.id === contact.id && (
-                        <BsXLg size={20} />
-                        )}
-                        {editSelected?.id !== contact.id && (
-                        <BsPencilSquare size={20} />
-                        )}
-                      </Button>
+                        <Button
+                          className="secondaryButton w-100 d-flex justify-content-center align-items-center"
+                          onClick={() => {
+                            if (
+                              editSelected === null ||
+                              editSelected?.id !== contact.id
+                            ) {
+                              setEditSelected(contact);
+                            } else {
+                              setEditSelected(null);
+                              setSingleContact("");
+                              setSingleContactComment("");
+                              setSingleCity("");
+                              setSingleRegion("");
+                              setSingleState("");
+                            }
+                          }}
+                        >
+                          {editSelected?.id === contact.id && (
+                            <BsXLg size={20} />
+                          )}
+                          {editSelected?.id !== contact.id && (
+                            <BsPencilSquare size={20} />
+                          )}
+                        </Button>
                       </Col>
                       <Col xs={12} md={6}>
-                      <Button
-                        className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center"
-                        onClick={() => {
-                        if (contact.id !== undefined) {
-                          setDeleteSelected(contact.id);
-                        }
-                        }}
-                      >
-                        <BsTrash size={20} />
-                      </Button>
+                        <Button
+                          className="secondaryDangerButton w-100 d-flex justify-content-center align-items-center"
+                          onClick={() => {
+                            if (contact.id !== undefined) {
+                              setDeleteSelected(contact.id);
+                            }
+                          }}
+                        >
+                          <BsTrash size={20} />
+                        </Button>
                       </Col>
                     </Col>
-                    
                   </Row>
                   {deleteSelected === contact.id && (
                     <Row className="mt-2 ms-2 d-flex align-items-center">
@@ -1271,8 +1273,6 @@ export const ContactModal = ({
                 </>
               );
             })}
-
-        
       </Modal.Body>
     </Modal>
   );
