@@ -122,7 +122,7 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
       {!loading && users !== null && (
         
           <Row>
-            <Col md={8}>
+            <Col xs={12} md={10} lg={7} xl={5} >
               {users?.length === 0 ? (
                 <Row className="w-100">
                   <Col className="w-100 d-flex justify-content-center align-items-center mt-5">

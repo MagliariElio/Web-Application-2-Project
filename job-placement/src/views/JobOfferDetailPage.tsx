@@ -1351,7 +1351,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                           Profile
                         </Button>
                       </OverlayTrigger>
-                      
+                    )}
                     </Col>
                     <Col xs={12} className="d-flex justify-content-center mt-3">
                     {jobOffer?.status === JobOfferState.CONSOLIDATED && me.role === RoleState.OPERATOR && !isEditing && (
@@ -1443,13 +1443,13 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   )}
 
                 {jobOffer?.status === JobOfferState.SELECTION_PHASE && me.role === RoleState.OPERATOR && (
-                  <Col md={12} className="mt-2">
-                    <p style={{ color: "gray", fontSize: "0.9rem", display: "flex", alignItems: "center" }}>
+                  <Row xs={12} className="mt-2">
+                    <p style={{ color: "gray", fontSize: "0.9rem" }}>
                       <AiOutlineInfoCircle className="me-1" /> Please select{" "}
                       <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>one or more candidates</strong> to propose them for this job
                       offer.
                     </p>
-                  </Col>
+                  </Row>
                 )}
 
                 <Col xs={12} className="mt-4">
