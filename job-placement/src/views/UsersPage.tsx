@@ -6,6 +6,7 @@ import { BsPlus } from "react-icons/bs";
 import { RoleState } from "../utils/costants";
 import { deleteUser, fetchUsers } from "../apis/KeycloakRequests";
 import { KeycloakUser } from "../interfaces/KeycloakUser";
+import { FaEnvelope, FaTrashAlt, FaUserTie } from "react-icons/fa";
 
 const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   const navigate = useNavigate();
@@ -132,31 +133,37 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                 </Row>
               ) : (
                 users?.map((user) => (
-                  <div key={user.id} className="user-item mb-4 p-3">
-                    <Row className="align-items-center">
+                  <div key={user.id}>
+                    <Row className="w-100 border border-dark rounded-3 p-3 mb-2 ms-1 d-flex align-items-center secondaryButton">
                       <Col md={8}>
                         <Row className="mb-2">
                           <Col>
-                            <strong>
+                            <h5 className="fw-bold">
                               {user.firstName} {user.lastName}
-                            </strong>
+                            </h5>
                           </Col>
                         </Row>
-                        <Row>
+                        <Row className="mt-3">
                           <Col xs={6}>
-                            <strong>{user.email}</strong>
+                            <p className="d-flex align-items-center">
+                              <FaEnvelope className="me-1" />
+                              <span className="me-1">Email: </span>
+                              {user.email}
+                            </p>
                           </Col>
-                          <Col xs={2}>
-                            <strong>{user.role}</strong>
+                          <Col xs={6}>
+                            <p className="d-flex align-items-center">
+                              <FaUserTie className="me-1" />
+                              <span className="me-1">Role: </span>
+                              {user.role}
+                            </p>
                           </Col>
                         </Row>
                       </Col>
                       {me.role === RoleState.MANAGER && (
-                        <Col md={2} className="d-flex justify-content-end">
-                          <Button
-                            variant="danger"
-                            onClick={() => openDeleteModal(user.id)} // Open confirmation modal
-                          >
+                        <Col md={2} className="d-flex align-items-center justify-content-end">
+                          <Button variant="danger" onClick={() => openDeleteModal(user.id)}>
+                            <FaTrashAlt className="me-1" />
                             Delete
                           </Button>
                         </Col>

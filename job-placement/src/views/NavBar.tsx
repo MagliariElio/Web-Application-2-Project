@@ -3,25 +3,18 @@ import { MeInterface } from "../interfaces/MeInterface.ts";
 import { BsPersonCircle } from "react-icons/bs";
 
 function NavBar({ me }: { me: MeInterface | null }) {
-
   return (
     <Navbar className="justify-content-between align-items-center navbarStyle">
       {me?.principal && (
-        <Navbar.Text
-          className="ms-4 me-4 px-1 py-0 d-flex align-items-center justify-content-center" 
-        >
-          <span className="fs-3"><BsPersonCircle /></span>{" "}
+        <Navbar.Text className="ms-4 me-4 px-1 py-0 d-flex align-items-center justify-content-center">
+          <span className="fs-3">
+            <BsPersonCircle />
+          </span>{" "}
           <span className="fs-5 ms-2 fw-semibold">{me?.principal?.fullName ?? "Loading..."}</span>
         </Navbar.Text>
       )}
-      {
-        !me?.principal && (
-          <Navbar.Text>
-            <span className="ms-4 fs-3"><BsPersonCircle /></span>{" "}
-            <span className="fs-5 ms-2 fw-semibold">Guest</span>
-          </Navbar.Text>
-        )
-      }
+      <div className="flex-grow-1"></div>
+
       <Nav.Item className="ml-auto me-4">
         {me && me.principal && (
           <>
@@ -34,11 +27,7 @@ function NavBar({ me }: { me: MeInterface | null }) {
           </>
         )}
         {me && me.principal == null && me.loginUrl && (
-          <Button
-            variant="warning"
-            onClick={() => window.location.href = me?.loginUrl}
-            className="ml-auto"
-          >
+          <Button variant="warning" onClick={() => (window.location.href = me?.loginUrl)} className="ml-auto">
             Login
           </Button>
         )}

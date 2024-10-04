@@ -295,11 +295,21 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
               {dataToDisplay === "job offers" && (
                 <>
                   <h2 className="subtitle">Job offers</h2>
-                  <Row>
-                    <h5>Total number of job offers: {jobOfferAnalytics.totalJobOffers}</h5>
+                  <Row className="mb-3">
+                    <Col className="d-flex justify-content-center">
+                      <h5 className="text-primary">
+                        Total number of job offers:
+                        <span className="fw-bold ms-2">{jobOfferAnalytics.totalJobOffers}</span>
+                      </h5>
+                    </Col>
                   </Row>
                   <Row>
-                    <h5>Average completion time for finalized job offers: {formatDuration(jobOfferAnalytics.AvarageJobOfferCompletionTime)}</h5>
+                    <Col className="d-flex justify-content-center">
+                      <h5 className="text-secondary">
+                        Average completion time for finalized job offers:
+                        <span className="fw-bold ms-2">{formatDuration(jobOfferAnalytics.AvarageJobOfferCompletionTime)}</span>
+                      </h5>
+                    </Col>
                   </Row>
                   <Row>
                     <Col className="w-100 h-100 justify-content-center align-items-center mt-5">

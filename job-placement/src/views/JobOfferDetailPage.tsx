@@ -898,7 +898,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
             <Row className="pt-3 mb-3">
               {!isEditing && (
                 <>
-                {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && me.role === RoleState.OPERATOR && (
+                  {jobOffer?.status !== JobOfferState.ABORT && jobOffer?.status !== JobOfferState.DONE && me.role === RoleState.OPERATOR && (
                     <>
                       <Col className="d-flex justify-content-between">
                         <OverlayTrigger overlay={<Tooltip id="editButton">Edit</Tooltip>}>
@@ -915,9 +915,8 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     </>
                   )}
                   <Col md={12}>
-                    <h3 className="font-weight-bold d-flex justify-content-center mt-3">{jobOffer?.name}</h3>
+                    <h3 className="font-weight-bold d-flex justify-content-center fw-bold mt-1">{jobOffer?.name}</h3>
                   </Col>
-                  
                 </>
               )}
               {isEditing && (
@@ -1178,16 +1177,12 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                         <Row className="justify-content-center">
                           <Col xs={12} md={12} lg={6} className="mb-2">
                             <Row className="d-flex flex-wrap ps-2">
-                              {
-                                formDataJobOffer?.requiredSkills.map((skill, index) => (
-                                  <div
-                                    key={index}
-                                    style={{ width: "auto" }}
-                                    className="text-truncate me-2 tag mb-1"
-                                  >
-                                    {skill}
+                              {formDataJobOffer?.requiredSkills.map((skill, index) => (
+                                <div key={index} style={{ width: "auto" }} className="text-truncate me-2 tag mb-1">
+                                  {skill}
 
-                                    {isEditing && <BsX
+                                  {isEditing && (
+                                    <BsX
                                       size={20}
                                       className="ms-2"
                                       style={{ cursor: "pointer" }}
@@ -1200,9 +1195,10 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                             } as JobOffer)
                                         );
                                       }}
-                                    />}
-                                  </div>
-                                ))}
+                                    />
+                                  )}
+                                </div>
+                              ))}
                             </Row>
                           </Col>
                         </Row>
@@ -1215,54 +1211,54 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
             {/* Add Skill */}
             {isEditing && !generationSkills && (
-                  <>
-                    <Row className="justify-content-center mt-4">
-                      <Col xs={12} md={10} lg={6} className="mb-2">
-                        <Form.Control
-                          placeholder="Enter a new skill"
-                          value={singleRequiredSkill}
-                          onChange={(e) => setSingleRequiredSkill(e.target.value)}
-                        />
-                      </Col>
-                    </Row>
+              <>
+                <Row className="justify-content-center mt-4">
+                  <Col xs={12} md={10} lg={6} className="mb-2">
+                    <Form.Control
+                      placeholder="Enter a new skill"
+                      value={singleRequiredSkill}
+                      onChange={(e) => setSingleRequiredSkill(e.target.value)}
+                    />
+                  </Col>
+                </Row>
 
-                    <Row className="justify-content-center mt-2">
-                      <Col xs={6} md={5} lg={3}>
-                        <Button
-                          className="secondaryButton mb-2 d-flex align-items-center justify-content-center me-2 w-100"
-                          onClick={handleAddSkill}
-                          disabled={singleRequiredSkill.trim() === ""}
-                        >
-                          <FaPlus style={{ marginRight: "5px" }} />
-                          Add Skill
-                        </Button>
-                      </Col>
+                <Row className="justify-content-center mt-2">
+                  <Col xs={6} md={5} lg={3}>
+                    <Button
+                      className="secondaryButton mb-2 d-flex align-items-center justify-content-center me-2 w-100"
+                      onClick={handleAddSkill}
+                      disabled={singleRequiredSkill.trim() === ""}
+                    >
+                      <FaPlus style={{ marginRight: "5px" }} />
+                      Add Skill
+                    </Button>
+                  </Col>
 
-                      <Col xs={6} md={5} lg={3}>
-                        <Button
-                          className="secondaryDangerButton mb-2 d-flex align-items-center justify-content-center me-2 w-100"
-                          onClick={() => setFormDataJobOffer((prevData) => ({ ...prevData, requiredSkills: [] } as JobOffer))}
-                          disabled={formDataJobOffer?.requiredSkills.length === 0}
-                        >
-                          <FaTrashAlt style={{ marginRight: "5px" }} />
-                          Clear
-                        </Button>
-                      </Col>
-                    </Row>
-                    <Row className="justify-content-center">
-                      <Col xs={12} md={10} lg={6}>
-                        <Button
-                          className="secondaryButton mb-2 d-flex align-items-center justify-content-center w-100"
-                          onClick={() => setShowGenerateSkillsModal(true)}
-                          disabled={(formDataJobOffer?.requiredSkills.length ?? 0) > 100}
-                        >
-                          <FaMicrochip style={{ marginRight: "5px" }} />
-                          Generate Skills with AI
-                        </Button>
-                      </Col>
-                    </Row>
-                  </>
-                )}
+                  <Col xs={6} md={5} lg={3}>
+                    <Button
+                      className="secondaryDangerButton mb-2 d-flex align-items-center justify-content-center me-2 w-100"
+                      onClick={() => setFormDataJobOffer((prevData) => ({ ...prevData, requiredSkills: [] } as JobOffer))}
+                      disabled={formDataJobOffer?.requiredSkills.length === 0}
+                    >
+                      <FaTrashAlt style={{ marginRight: "5px" }} />
+                      Clear
+                    </Button>
+                  </Col>
+                </Row>
+                <Row className="justify-content-center">
+                  <Col xs={12} md={10} lg={6}>
+                    <Button
+                      className="secondaryButton mb-2 d-flex align-items-center justify-content-center w-100"
+                      onClick={() => setShowGenerateSkillsModal(true)}
+                      disabled={(formDataJobOffer?.requiredSkills.length ?? 0) > 100}
+                    >
+                      <FaMicrochip style={{ marginRight: "5px" }} />
+                      Generate Skills with AI
+                    </Button>
+                  </Col>
+                </Row>
+              </>
+            )}
 
             {/* Note */}
             <Row className="border-top pt-3 mb-3">
@@ -1299,16 +1295,14 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 <Form.Group as={Row} controlId="customerId">
                   <Row>
                     <Col xs={6}>
-                      <Form.Label className="fw-bold">
-                        Customer Information
-                      </Form.Label>
+                      <Form.Label className="fw-bold">Customer Information</Form.Label>
                     </Col>
 
                     {/* Buttons Section */}
                     {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
                       <Col xs={6} className="text-end pe-0">
                         <OverlayTrigger overlay={<Tooltip id="profileCustomerButton">Profile</Tooltip>}>
-                          <Button  className="text-center secondaryButton" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
+                          <Button className="text-center secondaryButton" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
                             <FaUser className="me-1" />
                             Profile
                           </Button>
@@ -1344,17 +1338,21 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
                     {/* Buttons Section */}
                     <Col xs={6} className="text-end">
-                    {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
-                      <OverlayTrigger overlay={<Tooltip id="profileApplicationButton">Profile</Tooltip>}>
-                        <Button variant="primary" className="me-2 text-center secondaryButton" onClick={() => navigate(`/ui/professionals/${professional.id}`)}>
-                          <FaUser className="me-1" />
-                          Profile
-                        </Button>
-                      </OverlayTrigger>
-                      
+                      {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
+                        <OverlayTrigger overlay={<Tooltip id="profileApplicationButton">Profile</Tooltip>}>
+                          <Button
+                            variant="primary"
+                            className="me-2 text-center secondaryButton"
+                            onClick={() => navigate(`/ui/professionals/${professional.id}`)}
+                          >
+                            <FaUser className="me-1" />
+                            Profile
+                          </Button>
+                        </OverlayTrigger>
+                      )}
                     </Col>
                     <Col xs={12} className="d-flex justify-content-center mt-3">
-                    {jobOffer?.status === JobOfferState.CONSOLIDATED && me.role === RoleState.OPERATOR && !isEditing && (
+                      {jobOffer?.status === JobOfferState.CONSOLIDATED && me.role === RoleState.OPERATOR && !isEditing && (
                         <OverlayTrigger overlay={<Tooltip id="revokeApplicationButton">Revoke Acceptance</Tooltip>}>
                           <Button variant="danger" onClick={() => setShowModalRevokeApplication(true)}>
                             <FaTrash className="me-1" />
@@ -1456,15 +1454,15 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   <Row className="d-flex justify-content-between align-items-center px-4 max-w-100">
                     <Col xs={12} lg={6} xl={4} className="d-flex align-items-center justify-content-between justify-content-lg-start mb-2 ps-0">
                       <div>
-                      <FaUsers className="me-2 text-primary" />
-                      <span>Potential candidates:</span>
+                        <FaUsers className="me-2 text-primary" />
+                        <span>Potential candidates:</span>
                       </div>
                       <strong className="ms-2">{filteredCandidateProfessionalList.length}</strong>
                     </Col>
                     <Col xs={12} lg={6} xl={4} className="d-flex align-items-center justify-content-between justify-content-lg-start mb-2 ps-0">
-                    <div>
-                      <FaBan className="me-2 text-danger" />
-                      <span>Candidates whose position was cancelled:</span>
+                      <div>
+                        <FaBan className="me-2 text-danger" />
+                        <span>Candidates whose position was cancelled:</span>
                       </div>
                       <strong className="ms-2">
                         {
@@ -1475,9 +1473,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       </strong>
                     </Col>
                     <Col xs={12} lg={6} xl={4} className="d-flex align-items-center justify-content-between justify-content-lg-start mb-2 ps-0">
-                    <div>
-                      <FaUndoAlt className="me-2 text-secondary" />
-                      <span>Candidates who revoked acceptance:</span>
+                      <div>
+                        <FaUndoAlt className="me-2 text-secondary" />
+                        <span>Candidates who revoked acceptance:</span>
                       </div>
                       <strong className="ms-2">
                         {
@@ -1487,9 +1485,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       </strong>
                     </Col>
                     <Col xs={12} lg={6} xl={4} className="d-flex align-items-center justify-content-between justify-content-lg-start mb-2 ps-0">
-                    <div>
-                      <FaClock className="me-2 text-warning" />
-                      <span>Candidates pending approval:</span>
+                      <div>
+                        <FaClock className="me-2 text-warning" />
+                        <span>Candidates pending approval:</span>
                       </div>
                       <strong className="ms-2">
                         {
@@ -1502,9 +1500,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       </strong>
                     </Col>
                     <Col xs={12} lg={6} xl={4} className="d-flex align-items-center justify-content-between justify-content-lg-start mb-2 ps-0">
-                    <div>
-                      <FaTimes className="me-2 text-danger" />
-                      <span>Candidates who have rejected position:</span>
+                      <div>
+                        <FaTimes className="me-2 text-danger" />
+                        <span>Candidates who have rejected position:</span>
                       </div>
                       <strong className="ms-2">
                         {
@@ -1514,9 +1512,9 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                       </strong>
                     </Col>
                     <Col xs={12} lg={6} xl={4} className="d-flex align-items-center justify-content-between justify-content-lg-start mb-2 ps-0">
-                    <div>
-                      <FaUserSlash className="me-2" style={{ color: "#FF8C00" }} />
-                      <span>Candidates not selected:</span>
+                      <div>
+                        <FaUserSlash className="me-2" style={{ color: "#FF8C00" }} />
+                        <span>Candidates not selected:</span>
                       </div>
                       <strong className="ms-2">
                         {
@@ -1532,8 +1530,6 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     </Col>
                   </Row>
                 </Col>
-
-                
 
                 <Col md={12} className="mt-3">
                   {loadingCandidateProfessional && <LoadingSection h={100} />}
@@ -1734,154 +1730,154 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                         }}
                       />
 
-                        <Table responsive striped bordered hover className="align-middle">
+                      <Table responsive striped bordered hover className="align-middle">
                         <thead>
                           <tr>
-                          <th>#</th>
-                          <th>Name</th>
-                          <th>Surname</th>
-                          <th>SSN Code</th>
-                          <th>Actions</th>
-                          <th>
-                            <OverlayTrigger
-                            placement="top"
-                            overlay={
-                              <Tooltip id="legendToolTip">
-                              <div className="p-2">
-                                <p>
-                                <FaTimes className="me-1 text-danger" /> Rejected: The application was rejected.
-                                </p>
-                                <p>
-                                <FaUndoAlt className="me-1 text-secondary" /> Revoked: The application was revoked.
-                                </p>
-                                <p>
-                                <FaThumbsUp className="me-1 text-success" /> Accepted: The application was accepted.
-                                </p>
-                                <p>
-                                <FaClock className="me-1 text-warning" /> Pending Approval: Awaiting approval.
-                                </p>
-                                <p>
-                                <FaBan className="me-1 text-danger" /> Cancelled: The application was cancelled.
-                                </p>
-                                <p>
-                                <FaUserSlash className="me-1" style={{ color: "#FF8C00" }} /> Not Selected: The candidate was not selected.
-                                </p>
-                              </div>
-                              </Tooltip>
-                            }
-                            >
-                            <div>
-                              Status <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
-                            </div>
-                            </OverlayTrigger>
-                          </th>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>SSN Code</th>
+                            <th>Actions</th>
+                            <th>
+                              <OverlayTrigger
+                                placement="top"
+                                overlay={
+                                  <Tooltip id="legendToolTip">
+                                    <div className="p-2">
+                                      <p>
+                                        <FaTimes className="me-1 text-danger" /> Rejected: The application was rejected.
+                                      </p>
+                                      <p>
+                                        <FaUndoAlt className="me-1 text-secondary" /> Revoked: The application was revoked.
+                                      </p>
+                                      <p>
+                                        <FaThumbsUp className="me-1 text-success" /> Accepted: The application was accepted.
+                                      </p>
+                                      <p>
+                                        <FaClock className="me-1 text-warning" /> Pending Approval: Awaiting approval.
+                                      </p>
+                                      <p>
+                                        <FaBan className="me-1 text-danger" /> Cancelled: The application was cancelled.
+                                      </p>
+                                      <p>
+                                        <FaUserSlash className="me-1" style={{ color: "#FF8C00" }} /> Not Selected: The candidate was not selected.
+                                      </p>
+                                    </div>
+                                  </Tooltip>
+                                }
+                              >
+                                <div>
+                                  Status <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
+                                </div>
+                              </OverlayTrigger>
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
                           {filteredCandidateProfessionalList.length === 0 && (
-                          <tr key={0}>
-                            <td>-1</td>
-                            <td>No professional candidates found with this filter.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
+                            <tr key={0}>
+                              <td>-1</td>
+                              <td>No professional candidates found with this filter.</td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
                           )}
                           {filteredCandidateProfessionalList.map((candidate, index) => {
-                          const hasRejected = jobOffer?.candidatesProfessionalRejected.includes(candidate.id);
-                          const hasAccepted =
-                            professional?.id === candidate.id &&
-                            (jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                            jobOffer?.status === JobOfferState.DONE ||
-                            jobOffer?.status === JobOfferState.ABORT);
-                          const isPendingApproval =
-                            candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
-                            jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
-                          const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
-                          const isCancelled =
-                            candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
-                            (jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                            jobOffer?.status === JobOfferState.DONE ||
-                            jobOffer?.status === JobOfferState.ABORT);
-                          const isNotSelected =
-                            !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
-                            !isRevoked &&
-                            !hasAccepted &&
-                            !hasRejected &&
-                            jobOffer?.status !== JobOfferState.CREATED &&
-                            jobOffer?.status !== JobOfferState.SELECTION_PHASE;
-                          const isCandidateProposal = candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id);
+                            const hasRejected = jobOffer?.candidatesProfessionalRejected.includes(candidate.id);
+                            const hasAccepted =
+                              professional?.id === candidate.id &&
+                              (jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                jobOffer?.status === JobOfferState.DONE ||
+                                jobOffer?.status === JobOfferState.ABORT);
+                            const isPendingApproval =
+                              candidateProposalProfessionalList?.some((c: Professional) => c.id === candidate.id) &&
+                              jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL;
+                            const isRevoked = jobOffer?.candidatesProfessionalRevoked.includes(candidate.id);
+                            const isCancelled =
+                              candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                              (jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                jobOffer?.status === JobOfferState.DONE ||
+                                jobOffer?.status === JobOfferState.ABORT);
+                            const isNotSelected =
+                              !candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id) &&
+                              !isRevoked &&
+                              !hasAccepted &&
+                              !hasRejected &&
+                              jobOffer?.status !== JobOfferState.CREATED &&
+                              jobOffer?.status !== JobOfferState.SELECTION_PHASE;
+                            const isCandidateProposal = candidateProposalProfessionalList.some((c: Professional) => c.id === candidate.id);
 
-                          return (
-                            <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{candidate.information.name}</td>
-                            <td>{candidate.information.surname}</td>
-                            <td>{candidate.information.ssnCode}</td>
-                            <td className="d-flex align-items-center justify-content-center text-center">
-                              <ButtonGroup>
-                              {!hasRejected &&
-                                !hasAccepted &&
-                                !isPendingApproval &&
-                                !isRevoked &&
-                                me.role === RoleState.OPERATOR &&
-                                jobOffer?.status !== JobOfferState.CONSOLIDATED && (
-                                <>
-                                  {jobOffer?.status === JobOfferState.SELECTION_PHASE && isCandidateProposal && (
-                                  <OverlayTrigger overlay={<Tooltip id="cancelCandidateButton">Cancel</Tooltip>}>
-                                    <Button
-                                    variant="secondary"
-                                    className="me-2"
-                                    onClick={() => handleRemoveCandidateProposal(candidate.id)}
-                                    disabled={
-                                      jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
-                                      isModifyCandidatesList ||
-                                      loadingCandidateProfessional
-                                    }
-                                    >
-                                    <FaReply />
-                                    </Button>
-                                  </OverlayTrigger>
-                                  )}
+                            return (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{candidate.information.name}</td>
+                                <td>{candidate.information.surname}</td>
+                                <td>{candidate.information.ssnCode}</td>
+                                <td className="d-flex align-items-center justify-content-center text-center">
+                                  <ButtonGroup>
+                                    {!hasRejected &&
+                                      !hasAccepted &&
+                                      !isPendingApproval &&
+                                      !isRevoked &&
+                                      me.role === RoleState.OPERATOR &&
+                                      jobOffer?.status !== JobOfferState.CONSOLIDATED && (
+                                        <>
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && isCandidateProposal && (
+                                            <OverlayTrigger overlay={<Tooltip id="cancelCandidateButton">Cancel</Tooltip>}>
+                                              <Button
+                                                variant="secondary"
+                                                className="me-2"
+                                                onClick={() => handleRemoveCandidateProposal(candidate.id)}
+                                                disabled={
+                                                  jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                                  isModifyCandidatesList ||
+                                                  loadingCandidateProfessional
+                                                }
+                                              >
+                                                <FaReply />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
 
-                                  {jobOffer?.status === JobOfferState.SELECTION_PHASE && !isCandidateProposal && (
-                                  <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
-                                    <Button
-                                    variant="success"
-                                    className="me-2"
-                                    onClick={() => handleAddCandidateProposal(candidate)}
-                                    disabled={
-                                      jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
-                                      isModifyCandidatesList ||
-                                      loadingCandidateProfessional
-                                    }
-                                    >
-                                    <FaCheck />
-                                    </Button>
-                                  </OverlayTrigger>
-                                  )}
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && !isCandidateProposal && (
+                                            <OverlayTrigger overlay={<Tooltip id="confirmCandidateButton">Confirm Candidate</Tooltip>}>
+                                              <Button
+                                                variant="success"
+                                                className="me-2"
+                                                onClick={() => handleAddCandidateProposal(candidate)}
+                                                disabled={
+                                                  jobOffer?.status !== JobOfferState.SELECTION_PHASE ||
+                                                  isModifyCandidatesList ||
+                                                  loadingCandidateProfessional
+                                                }
+                                              >
+                                                <FaCheck />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
 
-                                  {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
-                                  <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
-                                    <Button
-                                    variant="danger"
-                                    className="me-2"
-                                    onClick={() => handleDeleteCandidateProfessional(candidate.id)}
-                                    >
-                                    <FaTrash />
-                                    </Button>
-                                  </OverlayTrigger>
-                                  )}
-                                </>
-                                )}
+                                          {jobOffer?.status === JobOfferState.SELECTION_PHASE && (
+                                            <OverlayTrigger overlay={<Tooltip id="deleteCandidateButton">Delete</Tooltip>}>
+                                              <Button
+                                                variant="danger"
+                                                className="me-2"
+                                                onClick={() => handleDeleteCandidateProfessional(candidate.id)}
+                                              >
+                                                <FaTrash />
+                                              </Button>
+                                            </OverlayTrigger>
+                                          )}
+                                        </>
+                                      )}
 
                                     {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
-                                <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
-                                  <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
-                                  <FaUser />
-                                  </Button>
-                                </OverlayTrigger>
+                                      <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                        <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                          <FaUser />
+                                        </Button>
+                                      </OverlayTrigger>
                                     )}
                                     {me.role === RoleState.GUEST && (
                                       <Button
@@ -1893,60 +1889,60 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                         Test
                                       </Button>
                                     )}
-                              </ButtonGroup>
-                            </td>
-                            <td>
-                              {hasRejected && (
-                              <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
-                                <FaTimes className="me-1" />
-                                Rejected
-                              </Badge>
-                              )}
+                                  </ButtonGroup>
+                                </td>
+                                <td>
+                                  {hasRejected && (
+                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaTimes className="me-1" />
+                                      Rejected
+                                    </Badge>
+                                  )}
 
-                              {isRevoked && (
-                              <Badge bg="secondary" className="p-2 d-flex align-items-center justify-content-center">
-                                <FaUndoAlt className="me-1" />
-                                Revoked
-                              </Badge>
-                              )}
+                                  {isRevoked && (
+                                    <Badge bg="secondary" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaUndoAlt className="me-1" />
+                                      Revoked
+                                    </Badge>
+                                  )}
 
-                              {hasAccepted && (
-                              <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
-                                <FaThumbsUp className="me-1" />
-                                Accepted
-                              </Badge>
-                              )}
+                                  {hasAccepted && (
+                                    <Badge bg="success" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaThumbsUp className="me-1" />
+                                      Accepted
+                                    </Badge>
+                                  )}
 
-                              {isPendingApproval && (
-                              <Badge bg="warning" className="p-2 d-flex align-items-center justify-content-center">
-                                <FaClock className="me-1" />
-                                Pending Approval
-                              </Badge>
-                              )}
+                                  {isPendingApproval && (
+                                    <Badge bg="warning" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaClock className="me-1" />
+                                      Pending Approval
+                                    </Badge>
+                                  )}
 
-                              {isCancelled && (
-                              <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
-                                <FaBan className="me-1" />
-                                Cancelled
-                              </Badge>
-                              )}
+                                  {isCancelled && (
+                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center me-2">
+                                      <FaBan className="me-1" />
+                                      Cancelled
+                                    </Badge>
+                                  )}
 
-                              {isNotSelected && (
-                              <Badge
-                                bg="orange"
-                                className="p-2 d-flex align-items-center justify-content-center me-2"
-                                style={{ backgroundColor: "#FF8C00", color: "#fff" }}
-                              >
-                                <FaUserSlash className="me-1" />
-                                Not Selected
-                              </Badge>
-                              )}
-                            </td>
-                            </tr>
-                          );
+                                  {isNotSelected && (
+                                    <Badge
+                                      bg="orange"
+                                      className="p-2 d-flex align-items-center justify-content-center me-2"
+                                      style={{ backgroundColor: "#FF8C00", color: "#fff" }}
+                                    >
+                                      <FaUserSlash className="me-1" />
+                                      Not Selected
+                                    </Badge>
+                                  )}
+                                </td>
+                              </tr>
+                            );
                           })}
                         </tbody>
-                        </Table>
+                      </Table>
                     </>
                   )}
 
@@ -2006,21 +2002,21 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   !loadingCandidateProposalProfessional && (
                     <Row className="mt-2">
                       <p style={{ color: "gray", fontSize: "0.9rem" }}>
-                      <AiOutlineInfoCircle className="me-1" />
-                      Please select the <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Confirm</strong> button to move to the
-                      <strong style={{ marginLeft: "0.25rem" }}>candidate proposal phase</strong>.
+                        <AiOutlineInfoCircle className="me-1" />
+                        Please select the<strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Confirm</strong>button to move to the
+                        <strong style={{ marginLeft: "0.25rem" }}>candidate proposal phase</strong>.
                       </p>
                     </Row>
                   )}
 
                 {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && (
                   <Row className="mt-2">
-                    <p style={{ color: "gray", fontSize: "0.9rem"}}>
+                    <p style={{ color: "gray", fontSize: "0.9rem" }}>
                       <AiOutlineInfoCircle className="me-1" />
-                      Please select <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>only one</strong> candidate to accept the job
+                      Please select<strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>only one</strong>candidate to accept the job
                       offer. To return to the
                       <strong style={{ marginLeft: "0.25rem" }}>candidate selection phase</strong>, please click the
-                      <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Cancel All</strong> button.
+                      <strong style={{ marginLeft: "0.25rem", marginRight: "0.25rem" }}>Cancel All</strong>button.
                     </p>
                   </Row>
                 )}
@@ -2028,17 +2024,17 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 <Col md={12} className="mt-4">
                   <Row className="d-flex justify-content-between align-items-center px-4">
                     <Col xs={12} lg={6} xl={4} className="d-flex align-items-center justify-content-between justify-content-lg-start mb-2 ps-0">
-                    <div>
-                      <FaUsers className="me-2 text-primary" />
-                      <span>Potential candidates:</span>
+                      <div>
+                        <FaUsers className="me-2 text-primary" />
+                        <span>Potential candidates:</span>
                       </div>
                       <strong className="ms-2">{filteredCandidateProposalProfessionalList.length}</strong>
                     </Col>
 
                     <Col xs={12} lg={6} xl={4} className="d-flex align-items-center justify-content-between justify-content-lg-start mb-2 ps-0">
-                    <div>
-                      <FaBan className="me-2 text-danger" />
-                      <span>Candidates whose position was cancelled:</span>
+                      <div>
+                        <FaBan className="me-2 text-danger" />
+                        <span>Candidates whose position was cancelled:</span>
                       </div>
                       <strong className="ms-2">
                         {
@@ -2103,102 +2099,102 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                         handleFilterByPendingApproval={() => {}}
                       />
 
-                        <Table responsive striped bordered hover className="align-middle">
+                      <Table responsive striped bordered hover className="align-middle">
                         <thead>
                           <tr>
-                          <th>#</th>
-                          <th>Name</th>
-                          <th>Surname</th>
-                          <th>SSN Code</th>
-                          <th>Actions</th>
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={
-                            <Tooltip id="legendToolTip">
-                              <div className="p-2">
-                              <p>
-                                <FaTimes className="me-1 text-danger" /> Rejected: The application was rejected.
-                              </p>
-                              <p>
-                                <FaUndoAlt className="me-1 text-secondary" /> Revoked: The application was revoked.
-                              </p>
-                              <p>
-                                <FaThumbsUp className="me-1 text-success" /> Accepted: The application was accepted.
-                              </p>
-                              <p>
-                                <FaClock className="me-1 text-warning" /> Pending Approval: Awaiting approval.
-                              </p>
-                              <p>
-                                <FaBan className="me-1 text-danger" /> Cancelled: The application was cancelled.
-                              </p>
-                              <p>
-                                <FaUserSlash className="me-1" style={{ color: "#FF8C00" }} /> Not Selected: The candidate was not selected.
-                              </p>
-                              </div>
-                            </Tooltip>
-                            }
-                          >
-                            <th>
-                            Status <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
-                            </th>
-                          </OverlayTrigger>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>SSN Code</th>
+                            <th>Actions</th>
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id="legendToolTip">
+                                  <div className="p-2">
+                                    <p>
+                                      <FaTimes className="me-1 text-danger" /> Rejected: The application was rejected.
+                                    </p>
+                                    <p>
+                                      <FaUndoAlt className="me-1 text-secondary" /> Revoked: The application was revoked.
+                                    </p>
+                                    <p>
+                                      <FaThumbsUp className="me-1 text-success" /> Accepted: The application was accepted.
+                                    </p>
+                                    <p>
+                                      <FaClock className="me-1 text-warning" /> Pending Approval: Awaiting approval.
+                                    </p>
+                                    <p>
+                                      <FaBan className="me-1 text-danger" /> Cancelled: The application was cancelled.
+                                    </p>
+                                    <p>
+                                      <FaUserSlash className="me-1" style={{ color: "#FF8C00" }} /> Not Selected: The candidate was not selected.
+                                    </p>
+                                  </div>
+                                </Tooltip>
+                              }
+                            >
+                              <th>
+                                Status <FaInfoCircle className="text-muted" style={{ cursor: "pointer" }} />
+                              </th>
+                            </OverlayTrigger>
                           </tr>
                         </thead>
                         <tbody>
                           {filteredCandidateProposalProfessionalList.length === 0 && (
-                          <tr key={0}>
-                            <td>-1</td>
-                            <td>No professional candidates found with this filter.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
+                            <tr key={0}>
+                              <td>-1</td>
+                              <td>No professional candidates found with this filter.</td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
                           )}
                           {filteredCandidateProposalProfessionalList.map((candidate, index) => {
-                          return (
-                            <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{candidate.information.name}</td>
-                            <td>{candidate.information.surname}</td>
-                            <td>{candidate.information.ssnCode}</td>
-                            <td className="d-flex align-items-center justify-content-center text-center">
-                              <ButtonGroup>
-                              {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && me.role === RoleState.OPERATOR && (
-                                <>
-                                <OverlayTrigger overlay={<Tooltip id="confirmApplicationButton">Confirm Proposal</Tooltip>}>
-                                  <Button
-                                  variant="success"
-                                  className="me-2"
-                                  onClick={() => {
-                                    setProfessional(candidate);
-                                    setShowModalConfirmApplication(true);
-                                  }}
-                                  >
-                                  <FaCheck />
-                                  </Button>
-                                </OverlayTrigger>
+                            return (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{candidate.information.name}</td>
+                                <td>{candidate.information.surname}</td>
+                                <td>{candidate.information.ssnCode}</td>
+                                <td className="d-flex align-items-center justify-content-center text-center">
+                                  <ButtonGroup>
+                                    {jobOffer?.status === JobOfferState.CANDIDATE_PROPOSAL && me.role === RoleState.OPERATOR && (
+                                      <>
+                                        <OverlayTrigger overlay={<Tooltip id="confirmApplicationButton">Confirm Proposal</Tooltip>}>
+                                          <Button
+                                            variant="success"
+                                            className="me-2"
+                                            onClick={() => {
+                                              setProfessional(candidate);
+                                              setShowModalConfirmApplication(true);
+                                            }}
+                                          >
+                                            <FaCheck />
+                                          </Button>
+                                        </OverlayTrigger>
 
-                                {me.role === RoleState.OPERATOR && (
-                                  <OverlayTrigger overlay={<Tooltip id="deleteCandidateProposalButton">Delete Proposal</Tooltip>}>
-                                  <Button
-                                    variant="danger"
-                                    className="me-2"
-                                    onClick={() => setShowModalCancelApplication({ b: true, c: candidate })}
-                                  >
-                                    <FaTrash />
-                                  </Button>
-                                  </OverlayTrigger>
-                                )}
-                                </>
-                              )}
+                                        {me.role === RoleState.OPERATOR && (
+                                          <OverlayTrigger overlay={<Tooltip id="deleteCandidateProposalButton">Delete Proposal</Tooltip>}>
+                                            <Button
+                                              variant="danger"
+                                              className="me-2"
+                                              onClick={() => setShowModalCancelApplication({ b: true, c: candidate })}
+                                            >
+                                              <FaTrash />
+                                            </Button>
+                                          </OverlayTrigger>
+                                        )}
+                                      </>
+                                    )}
 
                                     {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
-                                <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
-                                  <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
-                                  <FaUser />
-                                  </Button>
-                                </OverlayTrigger>
+                                      <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                        <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                          <FaUser />
+                                        </Button>
+                                      </OverlayTrigger>
                                     )}
                                     {me.role === RoleState.GUEST && (
                                       <Button
@@ -2210,23 +2206,23 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                         Test
                                       </Button>
                                     )}
-                              </ButtonGroup>
-                            </td>
-                            <td>
-                              {(jobOffer?.status === JobOfferState.CONSOLIDATED ||
-                              jobOffer?.status === JobOfferState.DONE ||
-                              jobOffer?.status === JobOfferState.ABORT) && (
-                              <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
-                                <FaBan className="me-1" />
-                                Cancelled
-                              </Badge>
-                              )}
-                            </td>
-                            </tr>
-                          );
+                                  </ButtonGroup>
+                                </td>
+                                <td>
+                                  {(jobOffer?.status === JobOfferState.CONSOLIDATED ||
+                                    jobOffer?.status === JobOfferState.DONE ||
+                                    jobOffer?.status === JobOfferState.ABORT) && (
+                                    <Badge bg="danger" className="p-2 d-flex align-items-center justify-content-center">
+                                      <FaBan className="me-1" />
+                                      Cancelled
+                                    </Badge>
+                                  )}
+                                </td>
+                              </tr>
+                            );
                           })}
                         </tbody>
-                        </Table>
+                      </Table>
                     </>
                   )}
 
