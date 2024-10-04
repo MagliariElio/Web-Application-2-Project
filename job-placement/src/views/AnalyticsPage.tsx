@@ -1,168 +1,163 @@
 import { Col, Row, Form } from "react-bootstrap";
 import { MeInterface } from "../interfaces/MeInterface";
 import { useEffect, useState } from "react";
-import { fetchJobOffersAnalytics, fetchJobOffersPerMonthAnalytics, fetchMessagesAnalytics, fetchMessagesPerMonthAnalytics, fetchProfessionalsAnalytics } from "../apis/AnalyticsRequests";
+import {
+  fetchJobOffersAnalytics,
+  fetchJobOffersPerMonthAnalytics,
+  fetchMessagesAnalytics,
+  fetchMessagesPerMonthAnalytics,
+  fetchProfessionalsAnalytics,
+} from "../apis/AnalyticsRequests";
 import { MessageAnalytics } from "../interfaces/MessageAnalytics";
 import { useNavigate } from "react-router-dom";
-import { PieChart } from '@mui/x-charts/PieChart';
+import { PieChart } from "@mui/x-charts/PieChart";
 import { JobOfferAnalytics } from "../interfaces/JobOfferAnalytics";
-import Box from '@mui/material/Box';
+import Box from "@mui/material/Box";
 import { BarChart } from "@mui/x-charts";
 import { MessagesPerMonth } from "../interfaces/MessagesPerMonth";
 import { ProfessionalAnalytics } from "../interfaces/ProfessionalAnalytics";
 import { RoleState } from "../utils/costants";
+import { UnauthorizedPage } from "../App";
 
 const AnalyticsPage = ({ me }: { me: MeInterface }) => {
-    const navigate = useNavigate();
-    const [dataToDisplay, setDataToDisplay] = useState("messages")
-    const [yearToDisplay, setYearToDisplay] = useState(2024)
-    const [yearToDisplayJobOffers, setYearToDisplayJobOffers] = useState(2024)
-    const [error, setError] = useState(false);
-    
-    const [loading, setLoading] = useState(true)
-    const [messagesAnalytics, setMessagesAnalytics] = useState<MessageAnalytics>({
-      totalMessages: 0,
-      receivedMessages: 0,
-      readMessages: 0,
-      discardedMessages: 0,
-      processingMessages: 0,
-      doneMessages: 0,
-      failedMessages: 0
-    });
-    
-    const [completedMessagesPerMonth, setCompletedMessagesPerMonth] = useState<MessagesPerMonth>({
-      january: 0,
-      february: 0,
-      march: 0,
-      april: 0,
-      may: 0,
-      june: 0,
-      july: 0,
-      august: 0,
-      september: 0,
-      october: 0,
-      november: 0,
-      december: 0
-    })
+  const navigate = useNavigate();
+  const [dataToDisplay, setDataToDisplay] = useState("messages");
+  const [yearToDisplay, setYearToDisplay] = useState(2024);
+  const [yearToDisplayJobOffers, setYearToDisplayJobOffers] = useState(2024);
+  const [error, setError] = useState(false);
 
-    const [jobOfferAnalytics, setJobOfferAnalytics] = useState<JobOfferAnalytics>({
-      totalJobOffers: 0,
-      createdJobOffers: 0,
-      selectionPhaseJobOffers: 0,
-      candidateProposalJobOffers: 0,
-      consolidatedJobOffers: 0,
-      doneJobOffers: 0,
-      abortJobOffers: 0,
-      fullTimeCouner: 0,
-      partTimeCounter: 0,
-      contractCounter:0,
-      freelanceCounter: 0,
-      remoteCounter: 0,
-      hybridCounter: 0,
-      inPersonCounter: 0,
-      AvarageJobOfferCompletionTime: 0
-    });
+  const [loading, setLoading] = useState(true);
+  const [messagesAnalytics, setMessagesAnalytics] = useState<MessageAnalytics>({
+    totalMessages: 0,
+    receivedMessages: 0,
+    readMessages: 0,
+    discardedMessages: 0,
+    processingMessages: 0,
+    doneMessages: 0,
+    failedMessages: 0,
+  });
 
-    const [completedJobOffersPerMonth, setCompletedJobOffersPerMonth] = useState<MessagesPerMonth>({
-      january: 0,
-      february: 0,
-      march: 0,
-      april: 0,
-      may: 0,
-      june: 0,
-      july: 0,
-      august: 0,
-      september: 0,
-      october: 0,
-      november: 0,
-      december: 0
-    })
+  const [completedMessagesPerMonth, setCompletedMessagesPerMonth] = useState<MessagesPerMonth>({
+    january: 0,
+    february: 0,
+    march: 0,
+    april: 0,
+    may: 0,
+    june: 0,
+    july: 0,
+    august: 0,
+    september: 0,
+    october: 0,
+    november: 0,
+    december: 0,
+  });
 
-    const [professionalAnalytics, setProfessionalAnalytics] = useState<ProfessionalAnalytics>({
-      employedProfessional: 0,
-      unemployedProfessional: 0,
-      availableForWorkProfessional: 0,
-      notAvailableProfessional: 0
-    });
-      
+  const [jobOfferAnalytics, setJobOfferAnalytics] = useState<JobOfferAnalytics>({
+    totalJobOffers: 0,
+    createdJobOffers: 0,
+    selectionPhaseJobOffers: 0,
+    candidateProposalJobOffers: 0,
+    consolidatedJobOffers: 0,
+    doneJobOffers: 0,
+    abortJobOffers: 0,
+    fullTimeCouner: 0,
+    partTimeCounter: 0,
+    contractCounter: 0,
+    freelanceCounter: 0,
+    remoteCounter: 0,
+    hybridCounter: 0,
+    inPersonCounter: 0,
+    AvarageJobOfferCompletionTime: 0,
+  });
 
-    useEffect(() => {
-      const fetchAllData = async () => {
-        try {
-          setLoading(true); // Start loading
-          
-          // Perform all API calls concurrently
-          const [
-            messagesAnalyticsData,
-            jobOfferAnalyticsData,
-            messagesPerMonthData,
-            jobOffersPerMonthData, 
-            professionalAnalyticsData
-          ] = await Promise.all([
+  const [completedJobOffersPerMonth, setCompletedJobOffersPerMonth] = useState<MessagesPerMonth>({
+    january: 0,
+    february: 0,
+    march: 0,
+    april: 0,
+    may: 0,
+    june: 0,
+    july: 0,
+    august: 0,
+    september: 0,
+    october: 0,
+    november: 0,
+    december: 0,
+  });
+
+  const [professionalAnalytics, setProfessionalAnalytics] = useState<ProfessionalAnalytics>({
+    employedProfessional: 0,
+    unemployedProfessional: 0,
+    availableForWorkProfessional: 0,
+    notAvailableProfessional: 0,
+  });
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        setLoading(true); // Start loading
+
+        // Perform all API calls concurrently
+        const [messagesAnalyticsData, jobOfferAnalyticsData, messagesPerMonthData, jobOffersPerMonthData, professionalAnalyticsData] =
+          await Promise.all([
             fetchMessagesAnalytics(me),
             fetchJobOffersAnalytics(me),
             fetchMessagesPerMonthAnalytics(yearToDisplay, me),
             fetchJobOffersPerMonthAnalytics(yearToDisplayJobOffers, me),
-            fetchProfessionalsAnalytics(me)
+            fetchProfessionalsAnalytics(me),
           ]);
-    
-          // Set the responses to state
-          setMessagesAnalytics(messagesAnalyticsData);
-          setJobOfferAnalytics(jobOfferAnalyticsData);
-          setCompletedMessagesPerMonth(messagesPerMonthData);
-          setCompletedJobOffersPerMonth(jobOffersPerMonthData);
-          setProfessionalAnalytics(professionalAnalyticsData);
-    
-          console.log("Completed messages per month fetched: ", messagesPerMonthData);
-          console.log("Completed job offers per month fetched: ", jobOffersPerMonthData);
-          console.log("JobOffers created: " + jobOfferAnalytics.createdJobOffers)
-        } catch (error) {
-          console.error("Error:", error);
-          setLoading(false); // Stop loading if error
-          setError(true); // Set error state
-          navigate("/not-found"); // Redirect in case of error
-          throw new Error("Network response was not ok");
-        } finally {
-          setLoading(false); // Stop loading after data is fetched
-        }
-      };
-    
-      if(me.role !== RoleState.GUEST){
-        fetchAllData(); // Invoke the async function
-      }
-      
-    }, []); 
 
-    function formatDuration(minutes: number): string {
-      const days = Math.floor(minutes / (24 * 60));  // 1 day = 24 * 60 minutes
-      const hours = Math.floor((minutes % (24 * 60)) / 60);  // remainder from days to hours
-      const mins = minutes % 60;  // remainder from hours to minutes
-  
-      let result = '';
-  
-      if (days > 0) {
-          result += `${days} day${days > 1 ? 's' : ''} `;
+        // Set the responses to state
+        setMessagesAnalytics(messagesAnalyticsData);
+        setJobOfferAnalytics(jobOfferAnalyticsData);
+        setCompletedMessagesPerMonth(messagesPerMonthData);
+        setCompletedJobOffersPerMonth(jobOffersPerMonthData);
+        setProfessionalAnalytics(professionalAnalyticsData);
+
+        console.log("Completed messages per month fetched: ", messagesPerMonthData);
+        console.log("Completed job offers per month fetched: ", jobOffersPerMonthData);
+        console.log("JobOffers created: " + jobOfferAnalytics.createdJobOffers);
+      } catch (error) {
+        console.error("Error:", error);
+        setLoading(false); // Stop loading if error
+        setError(true); // Set error state
+        navigate("/not-found"); // Redirect in case of error
+        throw new Error("Network response was not ok");
+      } finally {
+        setLoading(false); // Stop loading after data is fetched
       }
-  
-      if (hours > 0) {
-          result += `${hours} hour${hours > 1 ? 's' : ''} `;
-      }
-  
-      result += `${mins} minute${mins !== 1 ? 's' : ''}`;
-  
-      return result.trim();  // Remove trailing spaces if any
+    };
+
+    if (me.role !== RoleState.GUEST) {
+      fetchAllData(); // Invoke the async function
+    }
+  }, []);
+
+  function formatDuration(minutes: number): string {
+    const days = Math.floor(minutes / (24 * 60)); // 1 day = 24 * 60 minutes
+    const hours = Math.floor((minutes % (24 * 60)) / 60); // remainder from days to hours
+    const mins = minutes % 60; // remainder from hours to minutes
+
+    let result = "";
+
+    if (days > 0) {
+      result += `${days} day${days > 1 ? "s" : ""} `;
     }
 
-    return(
+    if (hours > 0) {
+      result += `${hours} hour${hours > 1 ? "s" : ""} `;
+    }
+
+    result += `${mins} minute${mins !== 1 ? "s" : ""}`;
+
+    return result.trim(); // Remove trailing spaces if any
+  }
+
+  return (
     <>
-    {me.role === RoleState.GUEST && <div className="w-100">
-        <Row className="w-100">
-          <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-            <h5>Only managers can access this content</h5>
-          </Col>
-        </Row>
-      </div>}
-    {(me.role === RoleState.MANAGER) && <div className="w-100">
+    {me.role === RoleState.GUEST && <UnauthorizedPage />}
+    {(me.role === RoleState.MANAGER) && 
+    <div className="w-100">
       <Row className="d-flex flex-row p-0 mb-3 align-items-center">
         <Col xs={6}>
           <h3 className="title">Analytics</h3>
@@ -185,22 +180,23 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
         </Col>
       </Row>
 
-      {error && (
-        <Row className="w-100">
-          <Col className="w-100 d-flex justify-content-center align-items-center mt-5 text-danger">
-            <h5>An error occurred. Please, reload the page!</h5>
-          </Col>
-        </Row>
-      )}
 
-      {loading && (
-        <Row>
-          <Col md={12}>
-            <div className="loading-card"></div>
-            <div className="loading-card"></div>
-          </Col>
-        </Row>
-      )}
+          {error && (
+            <Row className="w-100">
+              <Col className="w-100 d-flex justify-content-center align-items-center mt-5 text-danger">
+                <h5>An error occurred. Please, reload the page!</h5>
+              </Col>
+            </Row>
+          )}
+
+          {loading && (
+            <Row>
+              <Col md={12}>
+                <div className="loading-card"></div>
+                <div className="loading-card"></div>
+              </Col>
+            </Row>
+          )}
 
       {!loading && (
         <div className="border rounded p-3 shadow-sm mt-4">
@@ -466,10 +462,11 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
         </>
         }
         </div>
-      )}
-    </div>}
-    </>
-    )
-}
+        )}
+    </div>
+  }
+  </>
+  );
+};
 
 export default AnalyticsPage;

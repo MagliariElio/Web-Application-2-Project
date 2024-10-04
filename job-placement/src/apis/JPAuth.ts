@@ -13,7 +13,7 @@ const fetchMe = async () => {
 
 const fetchRole = async () => {
   try {
-    const res = await fetch("/documentStoreService/v1/API/documents/auth");
+    const res = await fetch("/documentStoreService/v1/API/documents/auth/public");
     const result = await res.json();
     return result;
   } catch (err) {

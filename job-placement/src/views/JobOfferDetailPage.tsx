@@ -1297,19 +1297,25 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
             <Row className="border-top pt-3 mb-3">
               <Col xs={12}>
                 <Form.Group as={Row} controlId="customerId">
-                  <Form.Label column xs={6} className="fw-bold">
-                    Customer Information
-                  </Form.Label>
+                  <Row>
+                    <Col xs={6}>
+                      <Form.Label className="fw-bold">
+                        Customer Information
+                      </Form.Label>
+                    </Col>
 
-                  {/* Buttons Section */}
-                  <Col xs={6} className="text-end">
-                    <OverlayTrigger overlay={<Tooltip id="profileCustomerButton">Profile</Tooltip>}>
-                      <Button  className="me-2 text-center secondaryButton" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
-                        <FaUser className="me-1" />
-                        Profile
-                      </Button>
-                    </OverlayTrigger>
-                  </Col>
+                    {/* Buttons Section */}
+                    {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
+                      <Col xs={6} className="text-end pe-0">
+                        <OverlayTrigger overlay={<Tooltip id="profileCustomerButton">Profile</Tooltip>}>
+                          <Button  className="text-center secondaryButton" onClick={() => navigate(`/ui/customers/${customer?.id}`)}>
+                            <FaUser className="me-1" />
+                            Profile
+                          </Button>
+                        </OverlayTrigger>
+                      </Col>
+                    )}
+                  </Row>
 
                   <Col xs={12} md={6} className="mb-3">
                     <Form.Label>Surname</Form.Label>
@@ -1338,6 +1344,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
                     {/* Buttons Section */}
                     <Col xs={6} className="text-end">
+                    {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
                       <OverlayTrigger overlay={<Tooltip id="profileApplicationButton">Profile</Tooltip>}>
                         <Button variant="primary" className="me-2 text-center secondaryButton" onClick={() => navigate(`/ui/professionals/${professional.id}`)}>
                           <FaUser className="me-1" />
@@ -1869,11 +1876,23 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                 </>
                                 )}
 
-                              <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
-                                <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
-                                <FaUser />
-                                </Button>
-                              </OverlayTrigger>
+                                    {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
+                                <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                  <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                  <FaUser />
+                                  </Button>
+                                </OverlayTrigger>
+                                    )}
+                                    {me.role === RoleState.GUEST && (
+                                      <Button
+                                        style={{
+                                          flex: 1,
+                                          visibility: "hidden",
+                                        }}
+                                      >
+                                        Test
+                                      </Button>
+                                    )}
                               </ButtonGroup>
                             </td>
                             <td>
@@ -2174,11 +2193,23 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                                 </>
                               )}
 
-                              <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
-                                <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
-                                <FaUser />
-                                </Button>
-                              </OverlayTrigger>
+                                    {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
+                                <OverlayTrigger overlay={<Tooltip id="profileCandidateButton">Profile</Tooltip>}>
+                                  <Button variant="warning" onClick={() => navigate(`/ui/professionals/${candidate?.id}`)}>
+                                  <FaUser />
+                                  </Button>
+                                </OverlayTrigger>
+                                    )}
+                                    {me.role === RoleState.GUEST && (
+                                      <Button
+                                        style={{
+                                          flex: 1,
+                                          visibility: "hidden",
+                                        }}
+                                      >
+                                        Test
+                                      </Button>
+                                    )}
                               </ButtonGroup>
                             </td>
                             <td>
