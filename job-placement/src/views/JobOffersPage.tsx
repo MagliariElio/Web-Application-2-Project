@@ -134,79 +134,82 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
 
         <Col xs={6} lg={3} xl={2} className="d-flex justify-content-end">
           <Form.Group controlId="sortBy">
-        <Form.Select
-          style={{ width: "auto" }}
-          name="sortBy"
-          value={filters.sortBy}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-            const value = e.target.value as "duration" | "value" | "";
-            setFilters((prevFilters) => ({
-          ...prevFilters,
-          sortBy: value,
-          sortDirection: value === "" ? "" : filters.sortDirection,
-            }));
-          }}
-        >
-          <option value="">Sort By</option>
-          <option value="duration">Duration</option>
-          <option value="value">Value</option>
-        </Form.Select>
+            <Form.Select
+              style={{ width: "auto" }}
+              name="sortBy"
+              value={filters.sortBy}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                const value = e.target.value as "duration" | "value" | "";
+                setFilters((prevFilters) => ({
+                  ...prevFilters,
+                  sortBy: value,
+                  sortDirection: value === "" ? "" : filters.sortDirection,
+                }));
+              }}
+            >
+              <option value="">Sort By</option>
+              <option value="duration">Duration</option>
+              <option value="value">Value</option>
+            </Form.Select>
           </Form.Group>
         </Col>
 
         <Col xs={6} lg={3} xl={2} className="d-flex justify-content-start justify-content-lg-end">
           <Form.Group controlId="sortDirection">
-        <Form.Select
-          style={{ width: "auto" }}
-          name="sortDirection"
-          value={filters.sortDirection}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-            const value = e.target.value as "asc" | "desc";
-            setFilters((prevFilters) => ({
-          ...prevFilters,
-          sortDirection: value,
-            }));
-          }}
-          disabled={filters.sortBy === ""}
-        >
-          {filters.sortBy === "" && <option value="">Sort Direction</option>}
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </Form.Select>
+            <Form.Select
+              style={{ width: "auto" }}
+              name="sortDirection"
+              value={filters.sortDirection}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                const value = e.target.value as "asc" | "desc";
+                setFilters((prevFilters) => ({
+                  ...prevFilters,
+                  sortDirection: value,
+                }));
+              }}
+              disabled={filters.sortBy === ""}
+            >
+              {filters.sortBy === "" && <option value="">Sort Direction</option>}
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </Form.Select>
           </Form.Group>
         </Col>
 
         <Col xs={6} lg={3} xl={2} className="d-flex justify-content-end">
           <Form.Group controlId="elementsPerPage">
-        <Form.Select
-          style={{ width: "auto" }}
-          name="elementsPerPage"
-          value={filters.elementsPerPage}
-          onChange={(e) => {
-            setCurrentPage(0);
-            const value = parseInt(e.target.value, 10);
-            setFilters((prevFilters) => ({
-          ...prevFilters,
-          elementsPerPage: value,
-            }));
-          }}
-        >
-          <option value="5">5 job offers</option>
-          <option value="10">10 job offers</option>
-          <option value="15">15 job offers</option>
-          <option value="20">20 job offers</option>
-          <option value="30">30 job offers</option>
-          <option value="50">50 job offers</option>
-          <option value="100">100 job offers</option>
-        </Form.Select>
+            <Form.Select
+              style={{ width: "auto" }}
+              name="elementsPerPage"
+              value={filters.elementsPerPage}
+              onChange={(e) => {
+                setCurrentPage(0);
+                const value = parseInt(e.target.value, 10);
+                setFilters((prevFilters) => ({
+                  ...prevFilters,
+                  elementsPerPage: value,
+                }));
+              }}
+            >
+              <option value="5">5 job offers</option>
+              <option value="10">10 job offers</option>
+              <option value="15">15 job offers</option>
+              <option value="20">20 job offers</option>
+              <option value="30">30 job offers</option>
+              <option value="50">50 job offers</option>
+              <option value="100">100 job offers</option>
+            </Form.Select>
           </Form.Group>
         </Col>
         {me.role === RoleState.OPERATOR && (
           <Col xs={12} xl={4} className="d-flex justify-content-center justify-content-xl-end">
-        <Button className="d-flex align-items-center primaryButton me-4 me-xl-0 mt-2 mt-xl-0 mb-2 mb-xl-0" onClick={() => navigate("/ui/joboffers/add")}>
-          <BsPlus size={"1.5em"} className="me-1" />
-          Add Job Offer
-        </Button>
+            <Button
+              className="d-flex align-items-center primaryButton me-4 me-xl-0 mt-2 mt-xl-0 mb-2 mb-xl-0"
+              onClick={() => navigate("/ui/joboffers/add")}
+            >
+              <BsPlus size={"1.5em"} className="me-1" />
+              Add Job Offer
+            </Button>
           </Col>
         )}
       </Row>
@@ -241,135 +244,131 @@ const JobOffersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
 
       {!loading && jobOffers !== null && (
         <>
-            <Row>
-            <Col xs={12} lg={8} className="order-2 order-lg-1">
+          <Row>
+            <Col xs={12} lg={8} className="order-2 order-lg-1 mt-3">
               {jobOffers?.content.length === 0 ? (
-              <Row className="w-100">
-              <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
-              <h5 className="p-3 text-center">No job offers found with the selected criteria.</h5>
-              <h5 className="p-3 text-center">Try adjusting the filters, or it could be that no job offers have been added yet.</h5>
-              </Col>
-              </Row>
+                <Row className="w-100">
+                  <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
+                    <h5 className="p-3 text-center">No job offers found with the selected criteria.</h5>
+                    <h5 className="p-3 text-center">Try adjusting the filters, or it could be that no job offers have been added yet.</h5>
+                  </Col>
+                </Row>
               ) : (
-              jobOffers?.content.map((joboffer) => (
-              <div
-              key={joboffer.id}
-              className="job-offer-item mb-4 p-3"
-              onClick={() => navigate(`/ui/joboffers/${joboffer.id}`, { state: { jobOfferSelected: joboffer } })}
-              >
-              <JobOfferCard joboffer={joboffer} />
-              </div>
-              ))
+                jobOffers?.content.map((joboffer) => (
+                  <div
+                    key={joboffer.id}
+                    className="job-offer-item mb-4 p-3"
+                    onClick={() => navigate(`/ui/joboffers/${joboffer.id}`, { state: { jobOfferSelected: joboffer } })}
+                  >
+                    <JobOfferCard joboffer={joboffer} />
+                  </div>
+                ))
               )}
 
               {/* Pagination */}
               {jobOffers?.content.length > 0 && (
-              <Row className="mt-auto">
-              <Col className="d-flex justify-content-center mt-4 custom-pagination">
-              <Pagination>
-                <Pagination.First onClick={() => changePage(0)} disabled={currentPage === 0} />
-                <Pagination.Prev onClick={() => changePage(currentPage - 1)} disabled={currentPage === 0} />
+                <Row className="mt-auto">
+                  <Col className="d-flex justify-content-center mt-4 custom-pagination">
+                    <Pagination>
+                      <Pagination.First onClick={() => changePage(0)} disabled={currentPage === 0} />
+                      <Pagination.Prev onClick={() => changePage(currentPage - 1)} disabled={currentPage === 0} />
 
-                {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
-                const startPage = Math.max(Math.min(currentPage - 2, totalPages - 5), 0);
-                const actualPage = startPage + index;
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
+                        const startPage = Math.max(Math.min(currentPage - 2, totalPages - 5), 0);
+                        const actualPage = startPage + index;
 
-                return (
-                <Pagination.Item key={actualPage} active={actualPage === currentPage} onClick={() => changePage(actualPage)}>
-                {actualPage + 1}
-                </Pagination.Item>
-                );
-                })}
+                        return (
+                          <Pagination.Item key={actualPage} active={actualPage === currentPage} onClick={() => changePage(actualPage)}>
+                            {actualPage + 1}
+                          </Pagination.Item>
+                        );
+                      })}
 
-                <Pagination.Next onClick={() => changePage(currentPage + 1)} disabled={currentPage + 1 === totalPages} />
-                <Pagination.Last onClick={() => changePage(totalPages - 1)} disabled={currentPage + 1 === totalPages} />
-              </Pagination>
-              </Col>
-              </Row>
+                      <Pagination.Next onClick={() => changePage(currentPage + 1)} disabled={currentPage + 1 === totalPages} />
+                      <Pagination.Last onClick={() => changePage(totalPages - 1)} disabled={currentPage + 1 === totalPages} />
+                    </Pagination>
+                  </Col>
+                </Row>
               )}
             </Col>
 
             <Col xs={12} lg={4} className="order-1 order-lg-2 mt-3 mb-4">
               <div className="sidebar-search p-4">
-              <h5>Filter Job Offers</h5>
-              <Form>
-              <Form.Group controlId="contractType" className="mb-3">
-              <Form.Label>Contract Type</Form.Label>
-              <Form.Control as="select" name="contractType" value={filters.contractType} onChange={handleFilterChange}>
-                <option value={""}>All</option>
-                {contractTypeList.map((contract, index) => (
-                <option key={index} value={contract}>
-                {toTitleCase(contract)}
-                </option>
-                ))}
-              </Form.Control>
-              </Form.Group>
+                <h5>Filter Job Offers</h5>
+                <Form>
+                  <Form.Group controlId="contractType" className="mb-3">
+                    <Form.Label>Contract Type</Form.Label>
+                    <Form.Control as="select" name="contractType" value={filters.contractType} onChange={handleFilterChange}>
+                      <option value={""}>All</option>
+                      {contractTypeList.map((contract, index) => (
+                        <option key={index} value={contract}>
+                          {toTitleCase(contract)}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
 
-              <Form.Group controlId="location" className="mb-3">
-              <Form.Label>Location</Form.Label>
-              <Form.Control type="text" name="location" placeholder="Enter location" value={filters.location} onChange={handleFilterChange} />
-              </Form.Group>
+                  <Form.Group controlId="location" className="mb-3">
+                    <Form.Label>Location</Form.Label>
+                    <Form.Control type="text" name="location" placeholder="Enter location" value={filters.location} onChange={handleFilterChange} />
+                  </Form.Group>
 
-              <Form.Group controlId="workMode" className="mb-3">
-              <Form.Label>Work Mode</Form.Label>
-              <Form.Control as="select" name="workMode" value={filters.workMode} onChange={handleFilterChange}>
-                <option value="">All</option>
-                {workModeList.map((workMode, index) => (
-                <option key={index} value={workMode}>
-                {toTitleCase(workMode)}
-                </option>
-                ))}
-              </Form.Control>
-              </Form.Group>
+                  <Form.Group controlId="workMode" className="mb-3">
+                    <Form.Label>Work Mode</Form.Label>
+                    <Form.Control as="select" name="workMode" value={filters.workMode} onChange={handleFilterChange}>
+                      <option value="">All</option>
+                      {workModeList.map((workMode, index) => (
+                        <option key={index} value={workMode}>
+                          {toTitleCase(workMode)}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
 
-              <Form.Group controlId="status" className="mb-3">
-              <Form.Label>Status</Form.Label>
-              <Form.Control as="select" name="status" value={filters.status} onChange={handleFilterChange}>
-                <option value={""}>All</option>
-                {Object.values(JobOfferState).map((state, index) => (
-                <option key={index} value={state}>
-                {toTitleCase(state)}
-                </option>
-                ))}
-              </Form.Control>
-              </Form.Group>
+                  <Form.Group controlId="status" className="mb-3">
+                    <Form.Label>Status</Form.Label>
+                    <Form.Control as="select" name="status" value={filters.status} onChange={handleFilterChange}>
+                      <option value={""}>All</option>
+                      {Object.values(JobOfferState).map((state, index) => (
+                        <option key={index} value={state}>
+                          {toTitleCase(state)}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
 
-                <ButtonGroup className="d-flex justify-content-center mt-4 flex-lg-column flex-xl-row w-100">
-                <Col className="text-center mb-lg-2 mb-xl-0 me-2 me-lg-0 me-xl-2 w-100 d-flex align-items-center">
-                  <Button
-                  className="primaryButton w-100"
-                  variant="primary"
-                  onClick={handleFilterClick}
-                  >
-                  <BsSearch className="me-1" />
-                  Filter
-                  </Button>
-                </Col>
+                  <ButtonGroup className="d-flex justify-content-center mt-4 flex-lg-column flex-xl-row w-100">
+                    <Col className="text-center mb-lg-2 mb-xl-0 me-2 me-lg-0 me-xl-2 w-100 d-flex align-items-center">
+                      <Button className="primaryButton w-100" variant="primary" onClick={handleFilterClick}>
+                        <BsSearch className="me-1" />
+                        Filter
+                      </Button>
+                    </Col>
 
-                <Col className="text-center w-100 d-flex align-items-center">
-                  <Button
-                  className="secondaryButton w-100"
-                  variant="primary"
-                  onClick={() =>
-                    setFilters({
-                    contractType: "",
-                    location: "",
-                    workMode: "",
-                    status: "",
-                    elementsPerPage: filters.elementsPerPage,
-                    sortBy: "",
-                    sortDirection: "",
-                    })
-                  }
-                  >
-                  Clear Filters
-                  </Button>
-                </Col>
-                </ButtonGroup>
-              </Form>
+                    <Col className="text-center w-100 d-flex align-items-center">
+                      <Button
+                        className="secondaryButton w-100"
+                        variant="primary"
+                        onClick={() =>
+                          setFilters({
+                            contractType: "",
+                            location: "",
+                            workMode: "",
+                            status: "",
+                            elementsPerPage: filters.elementsPerPage,
+                            sortBy: "",
+                            sortDirection: "",
+                          })
+                        }
+                      >
+                        Clear Filters
+                      </Button>
+                    </Col>
+                  </ButtonGroup>
+                </Form>
               </div>
             </Col>
-            </Row>
+          </Row>
         </>
       )}
     </Container>

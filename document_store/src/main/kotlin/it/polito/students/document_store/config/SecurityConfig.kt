@@ -16,6 +16,8 @@ class SecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         return http
             .authorizeHttpRequests {
+                it.requestMatchers(HttpMethod.GET, "/API/auth").hasAnyAuthority(Roles.ROLE_MANAGER, Roles.ROLE_OPERATOR, Roles.ROLE_GUEST)
+                it.requestMatchers(HttpMethod.GET, "/API/auth/public").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/API/documents").hasAnyAuthority(Roles.ROLE_MANAGER, Roles.ROLE_OPERATOR, Roles.ROLE_GUEST)
                 it.requestMatchers(HttpMethod.GET, "/API/documents/{metadataId}").hasAnyAuthority(Roles.ROLE_MANAGER, Roles.ROLE_OPERATOR, Roles.ROLE_GUEST)
                 it.requestMatchers(HttpMethod.GET, "/API/documents/{metadataId}/data").hasAnyAuthority(Roles.ROLE_MANAGER, Roles.ROLE_OPERATOR, Roles.ROLE_GUEST)

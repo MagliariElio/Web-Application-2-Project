@@ -1,14 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import "./App.css";
 import { MeInterface } from "./interfaces/MeInterface.ts";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useNavigate,
-  useLocation,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Container, Row, Card, Col, Nav, Button } from "react-bootstrap";
 
 import JPAPIAuth from "./apis/JPAuth.ts";
@@ -33,18 +26,12 @@ import PageNotFound from "./views/PageNotFound.tsx";
 import AddCustomerPage from "./views/AddCustomerPage.tsx";
 import AddJobOfferPage from "./views/AddJobOfferPage.tsx";
 import JobOfferDetail from "./views/JobOfferDetailPage.tsx";
-import CustomerPage from "./views/CustomerPage.tsx";
 import AddProfessionalPage from "./views/AddProfessionalPage.tsx";
-import ProfessionalPage from "./views/ProfessionalPage.tsx";
 import EditCustomerPage from "./views/EditCustomerPage.tsx";
 import { RoleState } from "./utils/costants.ts";
 import EditProfessionalPage from "./views/EditProfessionalPage.tsx";
-import {
-  runCustomerTests,
-  runJobOfferTests,
-  runProfessionalTests,
-} from "./testing/TestRunner.ts";
-import { FaSignInAlt, FaUsers } from "react-icons/fa";
+import { runCustomerTests, runJobOfferTests, runProfessionalTests } from "./testing/TestRunner.ts";
+import { FaLock, FaSignInAlt, FaUsers } from "react-icons/fa";
 import AboutUs from "./views/AboutUs.tsx";
 import AnalyticsPage from "./views/AnalyticsPage.tsx";
 import UsersPage from "./views/UsersPage.tsx";
@@ -52,6 +39,8 @@ import { AddUserPage } from "./views/Adduser.tsx";
 import MessagesPage from "./views/MessagesPage.tsx";
 import MessageDetail from "./views/MessageDetail.tsx";
 import SettingsPage from "./views/SettingsPage.tsx";
+import CustomerPage from "./views/CustomerPage.tsx";
+import ProfessionalPage from "./views/ProfessionalPage.tsx";
 
 function App() {
   const [me, setMe] = useState<MeInterface | null>(null);
@@ -60,7 +49,7 @@ function App() {
   const [sidebarOpened, setSidebarOpened] = useState(true);
 
   // Run dei dati di testing
-  const [testsExecuted, setTestsExecuted] = useState(false); // impostare questa a true per non runnare più
+  const [testsExecuted, setTestsExecuted] = useState(true); // impostare questa a true per non runnare più
   const runTests = async () => {
     if (!testsExecuted && me) {
       await runCustomerTests(me);
@@ -83,10 +72,7 @@ function App() {
         const roles = roleResult?.principal?.claims?.realm_access?.roles || [];
 
         const roleUser: RoleState = roles.find(
-          (role: string) =>
-            role === RoleState.GUEST ||
-            role === RoleState.OPERATOR ||
-            role === RoleState.MANAGER
+          (role: string) => role === RoleState.GUEST || role === RoleState.OPERATOR || role === RoleState.MANAGER
         );
 
         if (meResult) {
@@ -123,11 +109,7 @@ function App() {
             left: 0,
           }}
         >
-          <Sidebar
-            opened={sidebarOpened}
-            setOpened={setSidebarOpened}
-            me={me}
-          />
+          <Sidebar opened={sidebarOpened} setOpened={setSidebarOpened} me={me} />
         </Col>
 
         <Col
@@ -141,19 +123,11 @@ function App() {
           }}
         ></Col>
 
-        <Col
-          xs={12}
-          className="text-white d-flex d-md-none flex-column p-0 background-white"
-        >
+        <Col xs={12} className="text-white d-flex d-md-none flex-column p-0 background-white">
           <Topbar opened={sidebarOpened} setOpened={setSidebarOpened} me={me} />
         </Col>
 
-        <Col
-          xs={12}
-          md={sidebarOpened ? 8 : 10}
-          lg={sidebarOpened ? 10 : 11}
-          className="ps-4 pt-2"
-        >
+        <Col xs={12} md={sidebarOpened ? 8 : 10} lg={sidebarOpened ? 10 : 11} className="ps-4 pt-2">
           {/* Navbar */}
           <Row className="w-100 text-white">
             <NavBar me={me} />
@@ -165,19 +139,47 @@ function App() {
 
             <Routes>
               <Route path="/ui/aboutus" element={<AboutUs />} />
-              {!loading && !me?.principal && (
-                <Route path="*" element={<LoginPrompt />} />
-              )}
+              {!loading && !me?.principal && <Route path="*" element={<LoginPrompt />} />}
 
               {!loading && me?.principal && (
                 <>
-                  <Route path="/ui" element={<JobOffersPage me={me} />} />
-                  <Route path="/ui/profile" element={<ProfilePage me={me} />} />
+                  <Route
+                    path="/ui"
+                    element={
+                      me && me.principal !== null ? (
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER || me.role === RoleState.GUEST ? (
+                          <JobOffersPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/ui/profile"
+                    element={
+                      me && me.principal !== null ? (
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER || me.role === RoleState.GUEST ? (
+                          <ProfilePage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
+                      ) : (
+                        <Navigate to="/not-found" />
+                      )
+                    }
+                  />
                   <Route
                     path="/ui/customers"
                     element={
                       me && me.principal !== null ? (
-                        <CustomersPage me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER ? (
+                          <CustomersPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -187,7 +189,11 @@ function App() {
                     path="/ui/customers/:id"
                     element={
                       me && me.principal !== null ? (
-                        <CustomerPage me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER ? (
+                          <CustomerPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -196,10 +202,12 @@ function App() {
                   <Route
                     path="/ui/customers/:id/edit"
                     element={
-                      me &&
-                      me.principal !== null &&
-                      me.role === RoleState.OPERATOR ? (
-                        <EditCustomerPage me={me} />
+                      me && me.principal !== null ? (
+                        me.role === RoleState.OPERATOR ? (
+                          <EditCustomerPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -208,10 +216,12 @@ function App() {
                   <Route
                     path="/ui/professionals/:id/edit"
                     element={
-                      me &&
-                      me.principal !== null &&
-                      me.role === RoleState.OPERATOR ? (
-                        <EditProfessionalPage me={me} />
+                      me && me.principal !== null ? (
+                        me.role === RoleState.OPERATOR ? (
+                          <EditProfessionalPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -221,7 +231,11 @@ function App() {
                     path="/ui/professionals"
                     element={
                       me && me.principal !== null ? (
-                        <ProfessionalsPage me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER ? (
+                          <ProfessionalsPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -231,7 +245,11 @@ function App() {
                     path="/ui/professionals/:id"
                     element={
                       me && me.principal !== null ? (
-                        <ProfessionalPage me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER ? (
+                          <ProfessionalPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -240,10 +258,12 @@ function App() {
                   <Route
                     path="/ui/customers/add"
                     element={
-                      me &&
-                      me.principal !== null &&
-                      me.role === RoleState.OPERATOR ? (
-                        <AddCustomerPage me={me} />
+                      me && me.principal !== null ? (
+                        me.role === RoleState.OPERATOR ? (
+                          <AddCustomerPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -252,10 +272,12 @@ function App() {
                   <Route
                     path="/ui/professionals/add"
                     element={
-                      me &&
-                      me.principal !== null &&
-                      me.role === RoleState.OPERATOR ? (
-                        <AddProfessionalPage me={me} />
+                      me && me.principal !== null ? (
+                        me.role === RoleState.OPERATOR ? (
+                          <AddProfessionalPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -264,10 +286,12 @@ function App() {
                   <Route
                     path="/ui/users/add"
                     element={
-                      me &&
-                      me.principal !== null &&
-                      me.role === RoleState.MANAGER ? (
-                        <AddUserPage me={me} />
+                      me && me.principal !== null ? (
+                        me.role === RoleState.MANAGER ? (
+                          <AddUserPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -276,10 +300,12 @@ function App() {
                   <Route
                     path="/ui/joboffers/add"
                     element={
-                      me &&
-                      me.principal !== null &&
-                      me.role === RoleState.OPERATOR ? (
-                        <AddJobOfferPage me={me} />
+                      me && me.principal !== null ? (
+                        me.role === RoleState.OPERATOR ? (
+                          <AddJobOfferPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -289,27 +315,26 @@ function App() {
                     path="/ui/joboffers/:id"
                     element={
                       me && me.principal !== null ? (
-                        <JobOfferDetail me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER || me.role === RoleState.GUEST ? (
+                          <JobOfferDetail me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
                     }
                   />
-                  <Route
-                    path="/ui/analytics"
-                    element={
-                      me && me.principal !== null ? (
-                        <AnalyticsPage me={me} />
-                      ) : (
-                        <Navigate to="/not-found" />
-                      )
-                    }
-                  />
+
                   <Route
                     path="/ui/users"
                     element={
                       me && me.principal !== null ? (
-                        <UsersPage me={me} />
+                        me.role === RoleState.MANAGER ? (
+                          <UsersPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -319,7 +344,11 @@ function App() {
                     path="/ui/messages"
                     element={
                       me && me.principal !== null ? (
-                        <MessagesPage me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER ? (
+                          <MessagesPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -329,17 +358,11 @@ function App() {
                     path="/ui/messages/:id"
                     element={
                       me && me.principal !== null ? (
-                        <MessageDetail me={me} />
-                      ) : (
-                        <Navigate to="/not-found" />
-                      )
-                    }
-                  />
-                  <Route
-                    path="/ui/settings"
-                    element={
-                      me && me.principal !== null ? (
-                        <SettingsPage me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER ? (
+                          <MessageDetail me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -349,7 +372,11 @@ function App() {
                     path="/ui/joboffers/:id"
                     element={
                       me && me.principal !== null ? (
-                        <JobOfferDetail me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER || me.role === RoleState.GUEST ? (
+                          <JobOfferDetail me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -358,10 +385,12 @@ function App() {
                   <Route
                     path="/ui/analytics"
                     element={
-                      me &&
-                      me.principal !== null &&
-                      me.role === RoleState.MANAGER ? (
-                        <AnalyticsPage me={me} />
+                      me && me.principal !== null ? (
+                        me.role === RoleState.MANAGER ? (
+                          <AnalyticsPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -370,30 +399,12 @@ function App() {
                   <Route
                     path="/ui/users"
                     element={
-                      me &&
-                      me.principal !== null &&
-                      me.role === RoleState.MANAGER ? (
-                        <UsersPage me={me} />
-                      ) : (
-                        <Navigate to="/not-found" />
-                      )
-                    }
-                  />
-                  <Route
-                    path="/ui/messages"
-                    element={
                       me && me.principal !== null ? (
-                        <MessagesPage me={me} />
-                      ) : (
-                        <Navigate to="/not-found" />
-                      )
-                    }
-                  />
-                  <Route
-                    path="/ui/messages/:id"
-                    element={
-                      me && me.principal !== null ? (
-                        <MessageDetail me={me} />
+                        me.role === RoleState.MANAGER ? (
+                          <UsersPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -403,7 +414,11 @@ function App() {
                     path="/ui/settings"
                     element={
                       me && me.principal !== null ? (
-                        <SettingsPage me={me} />
+                        me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER || me.role === RoleState.GUEST ? (
+                          <SettingsPage me={me} />
+                        ) : (
+                          <UnauthorizedPage />
+                        )
                       ) : (
                         <Navigate to="/not-found" />
                       )
@@ -431,10 +446,8 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const navLinkClassnameOpened =
-    "text-white nav-link-hover ms-2 d-flex flex-row align-items-center";
-  const navLinkClassnameClosed =
-    "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center";
+  const navLinkClassnameOpened = "text-white nav-link-hover ms-2 d-flex flex-row align-items-center";
+  const navLinkClassnameClosed = "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center";
 
   return (
     <>
@@ -458,10 +471,7 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
           me.principal !== null && ( // Only logged user links here
             <>
               <Nav.Link
-                className={
-                  (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                  (location.pathname === "/ui" ? " nav-link-active" : "")
-                }
+                className={(opened ? navLinkClassnameOpened : navLinkClassnameClosed) + (location.pathname === "/ui" ? " nav-link-active" : "")}
                 onClick={() => {
                   if (location.pathname !== "/ui") navigate("/ui");
                 }}
@@ -469,62 +479,52 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
                 <BsBriefcaseFill className={opened ? "me-2" : ""} />
                 {opened && "Job Offers"}
               </Nav.Link>
-              <Nav.Link
-                className={
-                  (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                  (location.pathname === "/ui/customers"
-                    ? " nav-link-active"
-                    : "")
-                }
-                onClick={() => {
-                  if (location.pathname !== "/ui/customers")
-                    navigate("/ui/customers");
-                }}
-              >
-                <BsBuildingsFill className={opened ? "me-2" : ""} />
-                {opened && "Customers"}
-              </Nav.Link>
-              <Nav.Link
-                className={
-                  (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                  (location.pathname === "/ui/professionals"
-                    ? " nav-link-active"
-                    : "")
-                }
-                onClick={() => {
-                  if (location.pathname !== "/ui/professionals")
-                    navigate("/ui/professionals");
-                }}
-              >
-                <BsBriefcaseFill className={opened ? "me-2" : ""} />
-                {opened && "Professionals"}
-              </Nav.Link>
-              <Nav.Link
-                className={
-                  (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                  (location.pathname === "/ui/messages"
-                    ? " nav-link-active"
-                    : "")
-                }
-                onClick={() => {
-                  if (location.pathname !== "/ui/messages")
-                    navigate("/ui/messages");
-                }}
-              >
-                <BsChatSquareDotsFill className={opened ? "me-2" : ""} />
-                {opened && "Messages"}
-              </Nav.Link>
+              {(me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER) && (
+                <Nav.Link
+                  className={
+                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) + (location.pathname === "/ui/customers" ? " nav-link-active" : "")
+                  }
+                  onClick={() => {
+                    if (location.pathname !== "/ui/customers") navigate("/ui/customers");
+                  }}
+                >
+                  <BsBuildingsFill className={opened ? "me-2" : ""} />
+                  {opened && "Customers"}
+                </Nav.Link>
+              )}
+              {(me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER) && (
+                <Nav.Link
+                  className={
+                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) + (location.pathname === "/ui/professionals" ? " nav-link-active" : "")
+                  }
+                  onClick={() => {
+                    if (location.pathname !== "/ui/professionals") navigate("/ui/professionals");
+                  }}
+                >
+                  <BsBriefcaseFill className={opened ? "me-2" : ""} />
+                  {opened && "Professionals"}
+                </Nav.Link>
+              )}
+              {(me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER) && (
+                <Nav.Link
+                  className={
+                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) + (location.pathname === "/ui/messages" ? " nav-link-active" : "")
+                  }
+                  onClick={() => {
+                    if (location.pathname !== "/ui/messages") navigate("/ui/messages");
+                  }}
+                >
+                  <BsChatSquareDotsFill className={opened ? "me-2" : ""} />
+                  {opened && "Messages"}
+                </Nav.Link>
+              )}
               {me?.role === RoleState.MANAGER && (
                 <Nav.Link
                   className={
-                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                    (location.pathname === "/ui/analytics"
-                      ? " nav-link-active"
-                      : "")
+                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) + (location.pathname === "/ui/analytics" ? " nav-link-active" : "")
                   }
                   onClick={() => {
-                    if (location.pathname !== "/ui/analytics")
-                      navigate("/ui/analytics");
+                    if (location.pathname !== "/ui/analytics") navigate("/ui/analytics");
                   }}
                 >
                   <BsPieChartFill className={opened ? "me-2" : ""} />
@@ -534,14 +534,10 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               {me?.role === RoleState.MANAGER && (
                 <Nav.Link
                   className={
-                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-                    (location.pathname === "/ui/users"
-                      ? " nav-link-active"
-                      : "")
+                    (opened ? navLinkClassnameOpened : navLinkClassnameClosed) + (location.pathname === "/ui/users" ? " nav-link-active" : "")
                   }
                   onClick={() => {
-                    if (location.pathname !== "/ui/users")
-                      navigate("/ui/users");
+                    if (location.pathname !== "/ui/users") navigate("/ui/users");
                   }}
                 >
                   <BsPersonFill className={opened ? "me-2" : ""} />
@@ -556,14 +552,11 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
         {me !== null && me.principal !== null && (
           <Nav.Link
             className={
-              (opened
-                ? navLinkClassnameOpened + " mt-auto"
-                : navLinkClassnameClosed + " mt-auto") +
+              (opened ? navLinkClassnameOpened + " mt-auto" : navLinkClassnameClosed + " mt-auto") +
               (location.pathname === "/ui/settings" ? " nav-link-active" : "")
             }
             onClick={() => {
-              if (location.pathname !== "/ui/settings")
-                navigate("/ui/settings");
+              if (location.pathname !== "/ui/settings") navigate("/ui/settings");
             }}
           >
             <BsGearFill className={opened ? "me-2" : ""} />
@@ -572,10 +565,7 @@ const Sidebar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
         )}
 
         <Nav.Link
-          className={
-            (opened ? navLinkClassnameOpened : navLinkClassnameClosed) +
-            (location.pathname === "/ui/aboutus" ? " nav-link-active" : "")
-          }
+          className={(opened ? navLinkClassnameOpened : navLinkClassnameClosed) + (location.pathname === "/ui/aboutus" ? " nav-link-active" : "")}
           onClick={() => {
             if (location.pathname !== "/ui/aboutus") navigate("/ui/aboutus");
           }}
@@ -643,13 +633,10 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               <Nav.Link
                 className={
                   "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
-                  (location.pathname === "/ui/customers"
-                    ? " nav-link-active"
-                    : "")
+                  (location.pathname === "/ui/customers" ? " nav-link-active" : "")
                 }
                 onClick={() => {
-                  if (location.pathname !== "/ui/customers")
-                    navigate("/ui/customers");
+                  if (location.pathname !== "/ui/customers") navigate("/ui/customers");
                 }}
               >
                 <>
@@ -662,13 +649,10 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               <Nav.Link
                 className={
                   "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
-                  (location.pathname === "/ui/professionals"
-                    ? " nav-link-active"
-                    : "")
+                  (location.pathname === "/ui/professionals" ? " nav-link-active" : "")
                 }
                 onClick={() => {
-                  if (location.pathname !== "/ui/professionals")
-                    navigate("/ui/professionals");
+                  if (location.pathname !== "/ui/professionals") navigate("/ui/professionals");
                 }}
               >
                 <>
@@ -681,13 +665,10 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               <Nav.Link
                 className={
                   "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
-                  (location.pathname === "/ui/messages"
-                    ? " nav-link-active"
-                    : "")
+                  (location.pathname === "/ui/messages" ? " nav-link-active" : "")
                 }
                 onClick={() => {
-                  if (location.pathname !== "/ui/messages")
-                    navigate("/ui/messages");
+                  if (location.pathname !== "/ui/messages") navigate("/ui/messages");
                 }}
               >
                 <>
@@ -700,13 +681,10 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               <Nav.Link
                 className={
                   "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
-                  (location.pathname === "/ui/analytics"
-                    ? " nav-link-active"
-                    : "")
+                  (location.pathname === "/ui/analytics" ? " nav-link-active" : "")
                 }
                 onClick={() => {
-                  if (location.pathname !== "/ui/analytics")
-                    navigate("/ui/analytics");
+                  if (location.pathname !== "/ui/analytics") navigate("/ui/analytics");
                 }}
               >
                 <>
@@ -743,8 +721,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
               (location.pathname === "/ui/settings" ? " nav-link-active" : "")
             }
             onClick={() => {
-              if (location.pathname !== "/ui/settings")
-                navigate("/ui/settings");
+              if (location.pathname !== "/ui/settings") navigate("/ui/settings");
             }}
           >
             <>
@@ -771,10 +748,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
           </Nav.Link>
         )}
 
-        <Button
-          className="w-100 align-self-center text-white ms-2 bg-transparent border-0 nav-link-hover"
-          onClick={() => setOpened(!opened)}
-        >
+        <Button className="w-100 align-self-center text-white ms-2 bg-transparent border-0 nav-link-hover" onClick={() => setOpened(!opened)}>
           {opened ? <BsCaretUpFill /> : <BsCaretDownFill />}
         </Button>
       </Nav>
@@ -792,16 +766,37 @@ const LoginPrompt = () => {
               <div className="icon-container mb-4">
                 <FaSignInAlt className="icon-login" />
               </div>
-              <Card.Title
-                className="mb-4 fw-bold fs-3"
-                style={{ color: "#343a40" }}
-              >
+              <Card.Title className="mb-4 fw-bold fs-3" style={{ color: "#343a40" }}>
                 Access Required
               </Card.Title>
               <Card.Text className="mb-4 fs-5 text-muted">
-                To continue using this application, please{" "}
-                <strong>log in</strong> with your credentials. Click the
-                properly button to be redirected to the secure login page.
+                To continue using this application, please <strong>log in</strong> with your credentials. Click the properly button to be redirected
+                to the secure login page.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+export const UnauthorizedPage = () => {
+  return (
+    <Container className="mt-5">
+      <Row className="justify-content-center">
+        <Col md={8} lg={6}>
+          <Card className="shadow-lg border-0">
+            <Card.Body className="text-center p-5">
+              <div className="icon-container mb-4">
+                <FaLock className="icon-login" />
+              </div>
+              <Card.Title className="mb-4 fw-bold fs-3" style={{ color: "#343a40" }}>
+                Unauthorized Access
+              </Card.Title>
+              <Card.Text className="mb-4 fs-5 text-muted">
+                You do not have the necessary permissions to view this page. Please ensure you have the correct access rights or{" "}
+                <strong>log in</strong> with an authorized account.
               </Card.Text>
             </Card.Body>
           </Card>
@@ -813,10 +808,7 @@ const LoginPrompt = () => {
 
 export const LoadingSection: FC<{ h: number | null }> = ({ h }) => {
   return (
-    <div
-      className="d-flex justify-content-center align-items-center"
-      style={{ height: h ? `${h}px` : "100vh" }}
-    >
+    <div className="d-flex justify-content-center align-items-center" style={{ height: h ? `${h}px` : "100vh" }}>
       <div className="spinner-border" role="status">
         <span className="sr-only"></span>
       </div>
