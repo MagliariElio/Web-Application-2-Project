@@ -78,12 +78,12 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
             )}
 
             <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-                <Col md={8}>
+                <Col xs={6}>
                     <h3 className="title">Users</h3>
                 </Col>
 
                 {me.role === RoleState.MANAGER && (
-                    <Col md={2} className="d-flex justify-content-end">
+                    <Col xs={6} className="d-flex justify-content-end">
                         <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/users/add")}>
                             <BsPlus size={"1.5em"} className="me-1" />
                             Add User
@@ -123,7 +123,7 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
             {!loading && users !== null && (
                 <>
                     <Row>
-                        <Col md={8}>
+                        <Col xs={12} md={10} lg={6} xl={4}>
                             {users?.length === 0 ? (
                                 <Row className="w-100">
                                     <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
@@ -134,23 +134,24 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                                 users?.map((user) => (
                                     <div key={user.id} className="user-item mb-4 p-3">
                                         <Row className="align-items-center">
-                                            <Col md={8}>
+                                            <Col xs={12}>
                                                 <Row className="mb-2">
-                                                    <Col>
+                                                    <Col xs={8}>
                                                         <strong>{user.firstName} {user.lastName}</strong>
                                                     </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col xs={6}>
+                                                
+                                                
+                                                    <Col xs={12} className="order-2 order-md-1">
                                                         <strong>{user.email}</strong>
                                                     </Col>
-                                                    <Col xs={2}>
+                                                    <Col xs={4} className="order-1 order-md-2 text-end text-md-start">
                                                         <strong>{user.role}</strong>
                                                     </Col>
                                                 </Row>
+                                                
                                             </Col>
                                             {me.role === RoleState.MANAGER && (
-                                                <Col md={2} className="d-flex justify-content-end">
+                                                <Col xs={12} className="d-flex justify-content-end">
                                                     <Button
                                                         variant="danger"
                                                         onClick={() => openDeleteModal(user.id)} // Open confirmation modal

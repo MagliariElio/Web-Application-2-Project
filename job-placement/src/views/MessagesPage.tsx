@@ -162,9 +162,9 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
       )}
 
       {!loading && messages !== null && (
-        <>
+        <div>
           <Row>
-            <Col md={8}>
+            <Col xs={12} lg={7} xl={8} className="order-2 order-lg-1">
               {messages?.content.length === 0 ? (
                 <Row className="w-100">
                   <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
@@ -246,8 +246,8 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
               )}
             </Col>
 
-            <Col md={4}>
-              <div className="sidebar-search p-4">
+            <Col xs={12} lg={5} xl={4} className="order-1 order-lg-2">
+              <div className="sidebar-search p-4 w-100">
                 <h5>Filter Messages</h5>
                 <Form>
                   <Form.Group controlId="state" className="mb-3">
@@ -305,7 +305,7 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
               </div>
             </Col>
           </Row>
-        </>
+        </div>
       )}
     </Container>
   );

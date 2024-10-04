@@ -621,7 +621,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
           </div>
           <hr className="border-top border-light" />
         </div>
-        {me?.principal !== null && ( // Only logged user links here
+        {me !== null && me?.principal !== null && ( // Only logged user links here
           <>
             {opened && (
               <Nav.Link
@@ -696,7 +696,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
                 </>
               </Nav.Link>
             )}
-            {opened && (
+            {opened && me?.role === RoleState.MANAGER && (
               <Nav.Link
                 className={
                   "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +
@@ -715,7 +715,7 @@ const Topbar: FC<SidebarProps> = ({ opened, setOpened, me }) => {
                 </>
               </Nav.Link>
             )}
-            {opened && (
+            {opened && me?.role === RoleState.MANAGER && (
               <Nav.Link
                 className={
                   "text-white nav-link-hover ms-2 d-flex flex-row justify-content-center align-items-center" +

@@ -134,8 +134,8 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
           <h3 className="title">Settings</h3>
         </Col>
       </Row>
-      <Row>
-        <Col md={6}>
+      <Row  className="d-flex justify-content-center">
+        <Col xs={12} lg={8} xl={5}>
           <Form>
             {!editName && (
               <Form.Group as={Row} className="mb-3" controlId="inputName">
@@ -253,8 +253,7 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
             )}
 
             <Form.Group as={Row} className="mb-3" controlId="changePasswordButton">
-              <FormLabel column sm={4}></FormLabel>
-              <Col sm={8} className="d-flex justify-content-start">
+              <Col xs={12} className="d-flex justify-content-center justify-content-md-end">
                 <Button onClick={handleChangePassword} className="primaryButton">
                   <BsPencilSquare size={"1em"} className="me-2" />
                   Change Password

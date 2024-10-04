@@ -158,16 +158,16 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
     {me.role === RoleState.GUEST && <div className="w-100">
         <Row className="w-100">
           <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-            <h5>Only manager and operators can access this content</h5>
+            <h5>Only managers can access this content</h5>
           </Col>
         </Row>
       </div>}
     {(me.role === RoleState.MANAGER) && <div className="w-100">
       <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-        <Col md={9}>
+        <Col xs={6}>
           <h3 className="title">Analytics</h3>
         </Col> 
-        <Col md={1} className="d-flex justify-content-end">
+        <Col xs={6} className="d-flex justify-content-end">
           <Form.Group controlId="dataToDisplay">
             <Form.Select
               style={{ width: "auto" }}
@@ -206,12 +206,13 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
         <div className="border rounded p-3 shadow-sm mt-4">
         {dataToDisplay === "messages" && 
         <>
-        <Row>
+        <Row className="w-100">
           <h2 className="subtitle">Messages</h2>
-          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <div className="analytics-item mb-4 p-3">
-              <Box flexGrow={1}>
+          <Col xs={12} xl={6} className=" d-flex justify-content-center align-items-center mt-5">
+            <div className="analytics-item w-100 mb-4 p-3">
+              <Box className="w-100" >
                 <h5>Number of messages in the different states</h5>
+                
                 <PieChart
                   series={[
                     {
@@ -223,22 +224,22 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                         { id: 4, value: messagesAnalytics.failedMessages, label: 'Failed' },
                         { id: 5, value: messagesAnalytics.discardedMessages, label: 'Discarded' }
                       ],
+                      arcLabel: (item) => `${item.value}`,
                     },
                   ]}
-                  width={500}
                   height={220}
                 />
               </Box>     
             </div>       
           </Col> 
-          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <div className="analytics-item mb-4 p-3">
-              <Box flexGrow={1}>
+          <Col xs={12} xl={6} className="d-flex justify-content-center align-items-center mt-5">
+            <div className="analytics-item w-100 mb-4 p-3">
+              <Box className="w-100">
                 <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-                  <Col md={9}>
+                  <Col xs={12} sm={10}>
                     <h5>Completed messages per month</h5>
                   </Col> 
-                  <Col md={1} className="d-flex justify-content-end">
+                  <Col xs={12} sm={2} className="d-flex justify-content-end">
                     <Form.Group controlId="yearToDisplay">
                       <Form.Select
                         style={{ width: "auto" }}
@@ -288,7 +289,6 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                     completedMessagesPerMonth.november, 
                     completedMessagesPerMonth.december
                   ] },]}
-                  width={500}
                   height={200}
                 />
               </Box>   
@@ -307,9 +307,9 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
           <h5>Average completion time for finalized job offers: {formatDuration(jobOfferAnalytics.AvarageJobOfferCompletionTime)}</h5>
         </Row>
         <Row>
-          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <div className="analytics-item mb-4 p-3">
-              <Box flexGrow={1}>
+          <Col xs={12} xl={6} className=" d-flex justify-content-center align-items-center mt-5">
+            <div className="analytics-item w-100 mb-4 p-3">
+              <Box className="w-100" flexGrow={1}>
                 <h5>Number of job offers in the different states</h5>
                 <PieChart
                   series={[
@@ -322,17 +322,18 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                         { id: 4, value: jobOfferAnalytics.doneJobOffers, label: 'Done' },
                         { id: 5, value: jobOfferAnalytics.abortJobOffers, label: 'Abort' }
                       ],
+                      arcLabel: (item) => `${item.value}`,
                     },
+                    
                   ]}
-                  width={500}
                   height={220}
                 />
               </Box> 
             </div>           
           </Col> 
-          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <div className="analytics-item mb-4 p-3">
-              <Box flexGrow={1}>
+          <Col xs={12} xl={6} className=" d-flex justify-content-center align-items-center mt-5">
+            <div className="analytics-item w-100 mb-4 p-3">
+              <Box className="w-100" flexGrow={1}>
                 <Row className="d-flex flex-row p-0 mb-3 align-items-center">
                   <Col md={9}>
                     <h5>Completed job offers per month</h5>
@@ -387,36 +388,35 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                     completedJobOffersPerMonth.november, 
                     completedJobOffersPerMonth.december
                   ] },]}
-                  width={500}
                   height={200}
                 />
               </Box> 
             </div>           
           </Col> 
-          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <div className="analytics-item mb-4 p-3">
-              <Box flexGrow={1}>
+          <Col xs={12} xl={6} className=" d-flex justify-content-center align-items-center mt-5">
+            <div className="analytics-item w-100 mb-4 p-3">
+              <Box className="w-100" flexGrow={1}>
                 <h5>Number of job offers with differnt contract types</h5>
                 <PieChart
                   series={[
                     {
                       data: [
                         { id: 0, value: jobOfferAnalytics.fullTimeCouner, label: 'Full time' },
-                        { id: 1, value: jobOfferAnalytics.partTimeCounter, label: 'Partr time' },
+                        { id: 1, value: jobOfferAnalytics.partTimeCounter, label: 'Part time' },
                         { id: 2, value: jobOfferAnalytics.contractCounter, label: 'Contract' },
                         { id: 3, value: jobOfferAnalytics.freelanceCounter, label: 'Freelance' }
                       ],
+                      arcLabel: (item) => !isNaN(item.value) ? `${item.value}` : "",
                     },
                   ]}
-                  width={500}
                   height={220}
                 />
               </Box> 
             </div>           
           </Col>
-          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <div className="analytics-item mb-4 p-3">
-              <Box flexGrow={1}>
+          <Col xs={12} xl={6} className=" d-flex justify-content-center align-items-center mt-5">
+            <div className="analytics-item w-100 mb-4 p-3">
+              <Box className="w-100" flexGrow={1}>
                 <h5>Number of job offers with differet working mode</h5>
                 <PieChart
                   series={[
@@ -426,9 +426,9 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                         { id: 1, value: jobOfferAnalytics.hybridCounter, label: 'Hybrid' },
                         { id: 2, value: jobOfferAnalytics.inPersonCounter, label: 'In-Person' },
                       ],
+                      arcLabel: (item) => `${item.value}`,
                     },
                   ]}
-                  width={500}
                   height={220}
                 />
               </Box> 
@@ -440,10 +440,10 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
         {dataToDisplay === "professionals" && 
         <>
         <h2 className="subtitle">Professionals</h2>
-        <Row>
-          <Col className="w-100 h-100 justify-content-center align-items-center mt-5">
-            <div className="analytics-item mb-4 p-3">
-              <Box flexGrow={1}>
+        <Row className="w-100 d-flex justify-content-center">
+        <Col xs={12} xl={6} className="d-flex justify-content-center align-items-center mt-5">
+            <div className="analytics-item w-100 mb-4 p-3">
+              <Box className="w-100" flexGrow={1}>
                 <h5>Number of professionals in the different states</h5>
                 <PieChart
                   series={[
@@ -454,9 +454,9 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                         { id: 2, value: professionalAnalytics.availableForWorkProfessional, label: 'Available for work' },
                         { id: 3, value: professionalAnalytics.notAvailableProfessional, label: 'Unavailable for work' },
                       ],
+                      arcLabel: (item) => `${item.value}`,
                     },
                   ]}
-                  width={500}
                   height={200}
                 />
               </Box>
