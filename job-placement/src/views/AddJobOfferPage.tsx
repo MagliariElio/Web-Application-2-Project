@@ -1,20 +1,42 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Col, Container, Modal, OverlayTrigger, Pagination, Row, Table, Tooltip } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  Col,
+  Container,
+  Modal,
+  OverlayTrigger,
+  Pagination,
+  Row,
+  Table,
+  Tooltip,
+} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { BsX, BsXLg } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
-import { contractTypeList, RoleState, toTitleCase, workModeList } from "../utils/costants";
+import {
+  contractTypeList,
+  RoleState,
+  toTitleCase,
+  workModeList,
+} from "../utils/costants";
 import { Customer } from "../interfaces/Customer";
 import { fetchCustomers } from "../apis/CustomerRequests";
-import { generateJobOffer, generateSkillsAPI, submitJobOffer } from "../apis/JobOfferRequests";
+import {
+  generateJobOffer,
+  generateSkillsAPI,
+  submitJobOffer,
+} from "../apis/JobOfferRequests";
 import { LoadingSection } from "../App";
-import { FaBookOpen, FaBrain, FaMicrochip, FaPlus, FaProjectDiagram, FaRobot, FaTrashAlt } from "react-icons/fa";
+import { FaMicrochip, FaPlus, FaTrashAlt } from "react-icons/fa";
 
 function AddJobOfferPage({ me }: { me: MeInterface }) {
   const navigate = useNavigate();
 
-  const selectedCustomer = useLocation().state as { customer: Customer } | undefined;
+  const selectedCustomer = useLocation().state as
+    | { customer: Customer }
+    | undefined;
 
   const errorRef = useRef<HTMLDivElement | null>(null);
 
@@ -37,12 +59,14 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
   // Customer Selection
   const [showSelectCustomerModal, setShowSelectCustomerModal] = useState(false);
   const handleOpenSelectCustomerModal = () => setShowSelectCustomerModal(true);
-  const handleCloseSelectCustomerModal = () => setShowSelectCustomerModal(false);
+  const handleCloseSelectCustomerModal = () =>
+    setShowSelectCustomerModal(false);
   const handleCustomerSelect = (customer: Customer) => {
     setCustomer(customer);
   };
 
-  const [showGenerateJobOfferModal, setShowGenerateJobOfferModal] = useState(false);
+  const [showGenerateJobOfferModal, setShowGenerateJobOfferModal] =
+    useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -130,7 +154,9 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
     }
 
     if (requiredSkills.length === 0) {
-      setErrorMessage("You must add at least one required skill before saving.");
+      setErrorMessage(
+        "You must add at least one required skill before saving."
+      );
 
       // Scroll to error message when it appears
       if (errorRef.current) {
@@ -210,9 +236,15 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
     <div className="add-job-offer-container">
       <DescriptionGenerateAIModal
         name={"Generate Job Offer with the AI"}
-        placeholderValue={"Enter a brief and detailed description of the job offer"}
-        suggestion_1={"Try to be as precise as possible when describing the job offer details."}
-        suggestion_2={"For example: <i>Generate a job offer for a Java developer with Spring skills and microservices.</i>"}
+        placeholderValue={
+          "Enter a brief and detailed description of the job offer"
+        }
+        suggestion_1={
+          "Try to be as precise as possible when describing the job offer details."
+        }
+        suggestion_2={
+          "For example: <i>Generate a job offer for a Java developer with Spring skills and microservices.</i>"
+        }
         show={showGenerateJobOfferModal}
         handleClose={() => setShowGenerateJobOfferModal(false)}
         onSubmit={generateJobOfferFields}
@@ -220,31 +252,43 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
       <DescriptionGenerateAIModal
         name={"Generate Skills with the AI"}
-        placeholderValue={"Enter a detailed job offer description to generate the required skills"}
-        suggestion_1={"Be specific in the job description to get accurate skills."}
-        suggestion_2={"For example: <i>Generate required skills for a Senior Python Developer with experience in AI and Machine Learning.</i>"}
+        placeholderValue={
+          "Enter a detailed job offer description to generate the required skills"
+        }
+        suggestion_1={
+          "Be specific in the job description to get accurate skills."
+        }
+        suggestion_2={
+          "For example: <i>Generate required skills for a Senior Python Developer with experience in AI and Machine Learning.</i>"
+        }
         show={showGenerateSkillsModal}
         handleClose={() => setShowGenerateSkillsModal(false)}
         onSubmit={generateSkills}
       />
 
       <Row className="d-flex flex-row p-0 mb-5 align-items-center">
-        <Col sm={7}>
-          <h3>Add New Job Offer</h3>
+        <Col xs={11}>
+          <h3 className="">Add New Job Offer</h3>
+        </Col>
+        <Col xs={1} className="d-flex justify-content-end pe-0">
+          <Button
+            className="d-flex align-items-center secondaryButton"
+            onClick={() => navigate("/ui")}
+          >
+            <BsXLg size={"1.5em"} />
+          </Button>
         </Col>
         {me.role === RoleState.OPERATOR && (
-          <Col sm={4} className="d-flex justify-content-end">
-            <Button className="d-flex align-items-center secondaryButton" onClick={() => setShowGenerateJobOfferModal(true)}>
+          <Col sm={12} className="d-flex justify-content-center mt-3">
+            <Button
+              className="d-flex align-items-center secondaryButton"
+              onClick={() => setShowGenerateJobOfferModal(true)}
+            >
               <FaMicrochip style={{ marginRight: "8px" }} />
               Generate Job Offer with AI
             </Button>
           </Col>
         )}
-        <Col sm={1} className="d-flex justify-content-end">
-          <Button className="d-flex align-items-center secondaryButton" onClick={() => navigate("/ui")}>
-            <BsXLg size={"1.5em"} />
-          </Button>
-        </Col>
       </Row>
 
       {loading && <LoadingSection h={null} />}
@@ -268,7 +312,13 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
           <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-4">
-              <Form.Control placeholder="Job Offer Name" value={name} onChange={(e) => setName(e.target.value)} maxLength={255} required />
+              <Form.Control
+                placeholder="Job Offer Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={255}
+                required
+              />
             </Col>
           </Row>
           <Row className="justify-content-center">
@@ -286,8 +336,19 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
           </Row>
           <Row className="justify-content-center">
             <Col xs={12} md={6} lg={3} className="mb-4">
-              <OverlayTrigger overlay={<Tooltip id="contractTypeButton">Select Contract Type</Tooltip>}>
-                <Form.Select style={{ cursor: "pointer" }} value={contractType} onChange={(e) => setContractType(e.target.value)} required>
+              <OverlayTrigger
+                overlay={
+                  <Tooltip id="contractTypeButton">
+                    Select Contract Type
+                  </Tooltip>
+                }
+              >
+                <Form.Select
+                  style={{ cursor: "pointer" }}
+                  value={contractType}
+                  onChange={(e) => setContractType(e.target.value)}
+                  required
+                >
                   <option value="">Select Contract Type</option>
                   {contractTypeList.map((contract, index) => (
                     <option key={index} value={contract}>
@@ -298,8 +359,17 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
               </OverlayTrigger>
             </Col>
             <Col xs={12} md={6} lg={3} className="mb-4">
-              <OverlayTrigger overlay={<Tooltip id="workModeButton">Select Work Mode</Tooltip>}>
-                <Form.Select style={{ cursor: "pointer" }} value={workMode} onChange={(e) => setWorkMode(e.target.value)} required>
+              <OverlayTrigger
+                overlay={
+                  <Tooltip id="workModeButton">Select Work Mode</Tooltip>
+                }
+              >
+                <Form.Select
+                  style={{ cursor: "pointer" }}
+                  value={workMode}
+                  onChange={(e) => setWorkMode(e.target.value)}
+                  required
+                >
                   <option value="">Select Work Mode</option>
                   {workModeList.map((workMode, index) => (
                     <option key={index} value={workMode}>
@@ -312,7 +382,12 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
           </Row>
           <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-4">
-              <Form.Control placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} required />
+              <Form.Control
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                required
+              />
             </Col>
           </Row>
           <Row className="justify-content-center">
@@ -325,7 +400,11 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                 />
               )}
               <Form.Group controlId="customer">
-                <OverlayTrigger overlay={<Tooltip id="customerButton">Select a Customer</Tooltip>}>
+                <OverlayTrigger
+                  overlay={
+                    <Tooltip id="customerButton">Select a Customer</Tooltip>
+                  }
+                >
                   <Form.Control
                     style={{ cursor: "pointer" }}
                     type="text"
@@ -366,7 +445,14 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
 
           <Row className="justify-content-center">
             <Col xs={12} md={12} lg={6} className="mb-4">
-              <Form.Control as="textarea" placeholder="Note" rows={3} value={note} onChange={(e) => setNote(e.target.value)} maxLength={255} />
+              <Form.Control
+                as="textarea"
+                placeholder="Note"
+                rows={3}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                maxLength={255}
+              />
             </Col>
           </Row>
 
@@ -377,7 +463,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                   <hr />
                 </Col>
                 <Col xs="auto">
-                  <h5 className="fw-bold text-primary">Required Skills</h5>
+                  <h5 className="fw-bold primaryTextColor">Required Skills</h5>
                 </Col>
                 <Col>
                   <hr />
@@ -393,79 +479,94 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                 </Row>
               )}
 
-              {requiredSkills.length > 0 &&
-                !generationSkills && (
-                  <Row className="mt-3 d-flex align-items-center justify-content-between">
-                    <Col xs={8} md={8} lg={10}>
-                      <Row className="d-flex flex-wrap ps-2">
-                        {requiredSkills.map((requiredSkill, index) => (
-                          <div
-                            key={index}
-                            style={{ width: "auto" }}
-                            className="text-truncate me-2 tag mb-1"
-                          >
-                            {requiredSkill}
-                            <BsX
-                              size={20}
-                              className="ms-2"
-                              style={{ cursor: "pointer" }}
-                              onClick={() => setRequiredSkills(requiredSkills.filter((_, i) => i !== index))}
-                            />
-                          </div>
-                        ))}
-                      </Row>
+              {requiredSkills.length > 0 && !generationSkills && (
+                <Row className="mt-3 d-flex align-items-center justify-content-between">
+                  <Col xs={10} md={8} lg={10} className="w-100">
+                    <Row className="d-flex flex-wrap ps-2">
+                      {requiredSkills.map((requiredSkill, index) => (
+                        <div
+                          key={index}
+                          style={{ width: "auto" }}
+                          className="text-truncate me-2 tag mb-1"
+                        >
+                          {requiredSkill}
+                          <BsX
+                            size={20}
+                            className="ms-2"
+                            style={{ cursor: "pointer" }}
+                            onClick={() =>
+                              setRequiredSkills(
+                                requiredSkills.filter((_, i) => i !== index)
+                              )
+                            }
+                          />
+                        </div>
+                      ))}
+                    </Row>
+                  </Col>
+                </Row>
+              )}
+
+              {!generationSkills && (
+                <>
+                  <Row className="justify-content-center mt-4">
+                    <Col xs={12} className="mb-2">
+                      <Form.Control
+                        placeholder="Enter a new skill"
+                        value={singleRequiredSkill}
+                        onChange={(e) => setSingleRequiredSkill(e.target.value)}
+                      />
                     </Col>
                   </Row>
-                )}
-                
 
-              <Row className="mt-3 justify-content-center">
-                <Col xs={12} md={8} lg={10}>
-                  <Form.Control
-                    placeholder="Add a skill"
-                    value={singleRequiredSkill}
-                    onChange={(e) => {
-                      setSingleRequiredSkill(e.target.value);
-                    }}
-                    className="mb-2"
-                  />
-                </Col>
-              </Row>
+                  <Row className="justify-content-center mt-2">
+                    <Col xs={6}>
+                      <Button
+                        className="secondaryButton mb-2 d-flex align-items-center justify-content-center me-2 w-100"
+                        onClick={handleAddSkill}
+                        disabled={singleRequiredSkill.trim() === ""}
+                      >
+                        <FaPlus style={{ marginRight: "5px" }} />
+                        Add Skill
+                      </Button>
+                    </Col>
 
-              <Row className="mt-2 justify-content-center">
-                <Col xs={12} md={8} lg={8} className="d-flex justify-content-center">
-                  <Button
-                    className="secondaryButton mb-2 d-flex align-items-center me-2"
-                    onClick={() => setShowGenerateSkillsModal(true)}
-                    disabled={requiredSkills.length > 100}
-                  >
-                    <FaMicrochip style={{ marginRight: "5px" }} />
-                    Generate Skills with AI
-                  </Button>
-                  <Button
-                    className="secondaryDangerButton mb-2 d-flex align-items-center me-2"
-                    onClick={() => setRequiredSkills([])}
-                    disabled={requiredSkills.length === 0}
-                  >
-                    <FaTrashAlt style={{ marginRight: "5px" }} />
-                    Clear
-                  </Button>
-                  <Button
-                    className="secondaryButton mb-2 d-flex align-items-center"
-                    variant="primary"
-                    onClick={handleAddSkill}
-                    disabled={singleRequiredSkill.trim() === ""}
-                  >
-                    <FaPlus style={{ marginRight: "5px" }} />
-                    Add Skill
-                  </Button>
-                </Col>
-              </Row>
+                    <Col xs={6}>
+                      <Button
+                        className="secondaryDangerButton mb-2 d-flex align-items-center justify-content-center me-2 w-100"
+                        onClick={() => setRequiredSkills([])}
+                        disabled={requiredSkills.length === 0}
+                      >
+                        <FaTrashAlt style={{ marginRight: "5px" }} />
+                        Clear
+                      </Button>
+                    </Col>
+                  </Row>
+
+                  <Row className="justify-content-center">
+                    <Col xs={12}>
+                      <Button
+                        className="secondaryButton mb-2 d-flex align-items-center justify-content-center w-100"
+                        onClick={() => setShowGenerateSkillsModal(true)}
+                        disabled={requiredSkills.length > 100}
+                      >
+                        <FaMicrochip style={{ marginRight: "5px" }} />
+                        Generate Skills with AI
+                      </Button>
+                    </Col>
+                  </Row>
+                </>
+              )}
             </Col>
           </Row>
 
           <Row className="mt-5 justify-content-center">
-            <Col xs={12} md={12} lg={3} className="d-flex flex-column justify-content-end align-items-center">
+            <Col
+              xs={12}
+              md={6}
+              lg={3}
+              className="d-flex flex-column justify-content-end align-items-center mb-2 mb-md-0"
+            >
               <Button
                 className="secondaryDangerButton"
                 onClick={() => {
@@ -483,16 +584,28 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
                 Clear Job Offer
               </Button>
             </Col>
-            <Col xs={12} md={12} lg={3} className="d-flex flex-column justify-content-start align-items-center">
-                <Button type="submit" className="primaryButton" disabled={loading}>
+            <Col
+              xs={12}
+              md={6}
+              lg={3}
+              className="d-flex flex-column justify-content-start align-items-center"
+            >
+              <Button
+                type="submit"
+                className="primaryButton"
+                disabled={loading}
+              >
                 {loading ? (
-                  <div className="spinner-border spinner-border-sm" role="status">
-                  <span className="visually-hidden">Loading...</span>
+                  <div
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
                   </div>
                 ) : (
                   "Save Job Offer"
                 )}
-                </Button>
+              </Button>
             </Col>
           </Row>
         </Form>
@@ -521,7 +634,13 @@ const CustomerSelectModal: React.FC<{
     const loadCustomers = async () => {
       try {
         setLoading(true);
-        const result: any = await fetchCustomers(currentPage, searchName, searchSurname, searchSsnCode, searchComment);
+        const result: any = await fetchCustomers(
+          currentPage,
+          searchName,
+          searchSurname,
+          searchSsnCode,
+          searchComment
+        );
         setCustomers(result.content);
         setTotalPages(result.totalPages);
         setLoading(false);
@@ -534,21 +653,36 @@ const CustomerSelectModal: React.FC<{
     if (show) {
       loadCustomers();
     }
-  }, [show, currentPage, searchName, searchSurname, searchSsnCode, searchComment]);
+  }, [
+    show,
+    currentPage,
+    searchName,
+    searchSurname,
+    searchSsnCode,
+    searchComment,
+  ]);
 
-  const handleSearchChangeByName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSearchChangeByName = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setSearchName(event.target.value);
   };
 
-  const handleSearchChangeBySurname = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSearchChangeBySurname = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setSearchSurname(event.target.value);
   };
 
-  const handleSearchChangeBySsnCode = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSearchChangeBySsnCode = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setSearchSsnCode(event.target.value);
   };
 
-  const handleSearchChangeByComment = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSearchChangeByComment = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setSearchComment(event.target.value);
   };
 
@@ -584,7 +718,13 @@ const CustomerSelectModal: React.FC<{
         <Form.Group controlId="search">
           <Row>
             <Col xs={12} sm={6}>
-              <Form.Control type="text" className="mb-2" placeholder="Search by name" value={searchName} onChange={handleSearchChangeByName} />
+              <Form.Control
+                type="text"
+                className="mb-2"
+                placeholder="Search by name"
+                value={searchName}
+                onChange={handleSearchChangeByName}
+              />
             </Col>
             <Col xs={12} sm={6}>
               <Form.Control
@@ -618,13 +758,19 @@ const CustomerSelectModal: React.FC<{
           </Row>
         </Form.Group>
         {loading ? (
-          <div className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: "200px" }}
+          >
             <div className="spinner-border" role="status">
               <span className="sr-only"></span>
             </div>
           </div>
         ) : error ? (
-          <Container className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
+          <Container
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: "200px" }}
+          >
             <Alert variant="danger" className="text-center w-75">
               <h5>{error}</h5>
             </Alert>
@@ -643,8 +789,13 @@ const CustomerSelectModal: React.FC<{
                 {customers.length === 0 && (
                   <tr>
                     <td colSpan={3}>
-                      <div className="d-flex justify-content-center align-items-center" style={{ height: "150px" }}>
-                        <span className="text-muted fw-bold">No Customer Found!</span>
+                      <div
+                        className="d-flex justify-content-center align-items-center"
+                        style={{ height: "150px" }}
+                      >
+                        <span className="text-muted fw-bold">
+                          No Customer Found!
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -666,7 +817,11 @@ const CustomerSelectModal: React.FC<{
             </Table>
             <Pagination className="justify-content-center">
               {getPaginationItems().map((page) => (
-                <Pagination.Item key={page} active={page === currentPage} onClick={() => handlePageChange(page)}>
+                <Pagination.Item
+                  key={page}
+                  active={page === currentPage}
+                  onClick={() => handlePageChange(page)}
+                >
                   {page}
                 </Pagination.Item>
               ))}
@@ -691,7 +846,15 @@ export const DescriptionGenerateAIModal: React.FC<{
   show: boolean;
   handleClose: () => void;
   onSubmit: (description: string) => void;
-}> = ({ name, placeholderValue, suggestion_1, suggestion_2, show, handleClose, onSubmit }) => {
+}> = ({
+  name,
+  placeholderValue,
+  suggestion_1,
+  suggestion_2,
+  show,
+  handleClose,
+  onSubmit,
+}) => {
   const [description, setDescription] = useState<string>("");
 
   const handleSubmit = () => {
@@ -719,7 +882,10 @@ export const DescriptionGenerateAIModal: React.FC<{
             />
             <Form.Text className="text-muted">{suggestion_1}</Form.Text>
             <br />
-            <Form.Text className="text-muted" dangerouslySetInnerHTML={{ __html: suggestion_2 }} />
+            <Form.Text
+              className="text-muted"
+              dangerouslySetInnerHTML={{ __html: suggestion_2 }}
+            />
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -727,7 +893,12 @@ export const DescriptionGenerateAIModal: React.FC<{
         <Button variant="secondary" className="ms-5" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="success" className="me-5" onClick={handleSubmit} disabled={description.length === 0}>
+        <Button
+          variant="success"
+          className="me-5"
+          onClick={handleSubmit}
+          disabled={description.length === 0}
+        >
           Generate
         </Button>
       </Modal.Footer>
