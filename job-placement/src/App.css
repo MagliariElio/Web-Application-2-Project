@@ -897,3 +897,18 @@ button.primaryButton:hover {
     background-position: -200% 0;
   }
 }
+
+.analytics-no-data {
+  display: flex;              
+  align-items: center;      
+  justify-content: center;    
+  width: auto;               
+  border: 2px solid #ccc;    
+  height: 40px;
+  background-color: #f9f9f9;
+  font-weight: bold;         
+  font-size: large;
+  padding: 10px;            
+  box-sizing: border-box;    
+  margin: 90px;             
+}

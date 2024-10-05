@@ -60,7 +60,7 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
     consolidatedJobOffers: 0,
     doneJobOffers: 0,
     abortJobOffers: 0,
-    fullTimeCouner: 0,
+    fullTimeCounter: 0,
     partTimeCounter: 0,
     contractCounter: 0,
     freelanceCounter: 0,
@@ -153,6 +153,10 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
     return result.trim(); // Remove trailing spaces if any
   }
 
+  function isDataEmpty(data: number[]) {
+    return data.every((item) => item <= 0); // Check if all data points are 0 or negative
+  }
+
   return (
     <>
     {me.role === RoleState.GUEST && <UnauthorizedPage />}
@@ -208,7 +212,16 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
             <div className="analytics-item w-100 mb-4 p-3">
               <Box className="w-100" >
                 <h5>Number of messages in the different states</h5>
-                
+                {isDataEmpty([
+                  messagesAnalytics.receivedMessages,
+                  messagesAnalytics.readMessages,
+                  messagesAnalytics.processingMessages,
+                  messagesAnalytics.doneMessages,
+                  messagesAnalytics.failedMessages,
+                  messagesAnalytics.discardedMessages
+                ]) ? (
+                  <h6 className="analytics-no-data">No messages</h6>
+                ) : (
                 <PieChart
                   series={[
                     {
@@ -220,11 +233,11 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                         { id: 4, value: messagesAnalytics.failedMessages, label: 'Failed' },
                         { id: 5, value: messagesAnalytics.discardedMessages, label: 'Discarded' }
                       ],
-                      arcLabel: (item) => `${item.value}`,
+                      arcLabel: (item) => item.value > 0 ? `${item.value}` : "",
                     },
                   ]}
                   height={220}
-                />
+                />)}
               </Box>     
             </div>       
           </Col> 
@@ -265,28 +278,46 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                     </Form.Group>
                   </Col>
                 </Row>
-                <BarChart
-                  xAxis={[{ scaleType: 'band', data: [
-                    'Jan', 'Feb', 'Mar', 'Apr',
-                     'May', 'June', 'July', 'Aug',
-                      'Sept', 'Oct', 'Nov', 'Dec'] 
-                    }]}
-                  series={[{ data: [
-                    completedMessagesPerMonth.january, 
-                    completedMessagesPerMonth.february, 
-                    completedMessagesPerMonth.march, 
-                    completedMessagesPerMonth.april, 
-                    completedMessagesPerMonth.may, 
-                    completedMessagesPerMonth.june, 
-                    completedMessagesPerMonth.july, 
-                    completedMessagesPerMonth.august, 
-                    completedMessagesPerMonth.september, 
-                    completedMessagesPerMonth.october, 
-                    completedMessagesPerMonth.november, 
-                    completedMessagesPerMonth.december
-                  ] },]}
-                  height={200}
-                />
+                {isDataEmpty([
+                  completedMessagesPerMonth.january, 
+                  completedMessagesPerMonth.february, 
+                  completedMessagesPerMonth.march, 
+                  completedMessagesPerMonth.april, 
+                  completedMessagesPerMonth.may, 
+                  completedMessagesPerMonth.june, 
+                  completedMessagesPerMonth.july, 
+                  completedMessagesPerMonth.august, 
+                  completedMessagesPerMonth.september, 
+                  completedMessagesPerMonth.october, 
+                  completedMessagesPerMonth.november, 
+                  completedMessagesPerMonth.december
+                ]) ? (
+                  <h6 className="analytics-no-data">No completed messages</h6>
+                ) : (
+                  <BarChart
+                    xAxis={[{ scaleType: 'band', data: [
+                      'Jan', 'Feb', 'Mar', 'Apr',
+                       'May', 'June', 'July', 'Aug',
+                        'Sept', 'Oct', 'Nov', 'Dec'] 
+                      }]}
+                    series={[{ data: [
+                      completedMessagesPerMonth.january, 
+                      completedMessagesPerMonth.february, 
+                      completedMessagesPerMonth.march, 
+                      completedMessagesPerMonth.april, 
+                      completedMessagesPerMonth.may, 
+                      completedMessagesPerMonth.june, 
+                      completedMessagesPerMonth.july, 
+                      completedMessagesPerMonth.august, 
+                      completedMessagesPerMonth.september, 
+                      completedMessagesPerMonth.october, 
+                      completedMessagesPerMonth.november, 
+                      completedMessagesPerMonth.december
+                    ] },]}
+                    height={200}
+                  />
+                )
+                }
               </Box>   
             </div>         
           </Col>        
@@ -307,7 +338,17 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
             <div className="analytics-item w-100 mb-4 p-3">
               <Box className="w-100" flexGrow={1}>
                 <h5>Number of job offers in the different states</h5>
-                <PieChart
+                {isDataEmpty([
+                  jobOfferAnalytics.createdJobOffers,
+                  jobOfferAnalytics.selectionPhaseJobOffers,
+                  jobOfferAnalytics.candidateProposalJobOffers,
+                  jobOfferAnalytics.consolidatedJobOffers,
+                  jobOfferAnalytics.doneJobOffers,
+                  jobOfferAnalytics.abortJobOffers
+                ]) ? (
+                  <h6 className="analytics-no-data">No job offers</h6>
+                ) : (
+                  <PieChart
                   series={[
                     {
                       data: [
@@ -318,12 +359,12 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                         { id: 4, value: jobOfferAnalytics.doneJobOffers, label: 'Done' },
                         { id: 5, value: jobOfferAnalytics.abortJobOffers, label: 'Abort' }
                       ],
-                      arcLabel: (item) => `${item.value}`,
+                      arcLabel: (item) => item.value > 0 ? `${item.value}` : "",
                     },
                     
                   ]}
                   height={220}
-                />
+                />)}
               </Box> 
             </div>           
           </Col> 
@@ -364,7 +405,23 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                     </Form.Group>
                   </Col>
                 </Row>
-                <BarChart
+                {isDataEmpty([
+                  completedJobOffersPerMonth.january, 
+                  completedJobOffersPerMonth.february, 
+                  completedJobOffersPerMonth.march, 
+                  completedJobOffersPerMonth.april, 
+                  completedJobOffersPerMonth.may, 
+                  completedJobOffersPerMonth.june, 
+                  completedJobOffersPerMonth.july, 
+                  completedJobOffersPerMonth.august, 
+                  completedJobOffersPerMonth.september, 
+                  completedJobOffersPerMonth.october, 
+                  completedJobOffersPerMonth.november, 
+                  completedJobOffersPerMonth.december
+                ]) ? (
+                  <h6 className="analytics-no-data">No completed job offers</h6>
+                ) : (
+                  <BarChart
                   xAxis={[{ scaleType: 'band', data: [
                     'Jan', 'Feb', 'Mar', 'Apr',
                      'May', 'June', 'July', 'Aug',
@@ -386,6 +443,8 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
                   ] },]}
                   height={200}
                 />
+                )
+                }
               </Box> 
             </div>           
           </Col> 
@@ -393,20 +452,29 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
             <div className="analytics-item w-100 mb-4 p-3">
               <Box className="w-100" flexGrow={1}>
                 <h5>Number of job offers with differnt contract types</h5>
-                <PieChart
-                  series={[
-                    {
-                      data: [
-                        { id: 0, value: jobOfferAnalytics.fullTimeCouner, label: 'Full time' },
-                        { id: 1, value: jobOfferAnalytics.partTimeCounter, label: 'Part time' },
-                        { id: 2, value: jobOfferAnalytics.contractCounter, label: 'Contract' },
-                        { id: 3, value: jobOfferAnalytics.freelanceCounter, label: 'Freelance' }
-                      ],
-                      arcLabel: (item) => !isNaN(item.value) ? `${item.value}` : "",
-                    },
-                  ]}
-                  height={220}
-                />
+                {isDataEmpty([
+                  jobOfferAnalytics.fullTimeCounter,
+                  jobOfferAnalytics.partTimeCounter,
+                  jobOfferAnalytics.contractCounter,
+                  jobOfferAnalytics.freelanceCounter
+                ]) ? (
+                  <h6 className="analytics-no-data">No job offers</h6>
+                ) : (
+                  <PieChart
+                    series={[
+                      {
+                        data: [
+                          { id: 0, value: jobOfferAnalytics.fullTimeCounter, label: 'Full time' },
+                          { id: 1, value: jobOfferAnalytics.partTimeCounter, label: 'Part time' },
+                          { id: 2, value: jobOfferAnalytics.contractCounter, label: 'Contract'},
+                          { id: 3, value: jobOfferAnalytics.freelanceCounter, label: 'Freelance' }
+                        ],
+                        arcLabel: (item) => item.value > 0 ? `${item.value}` : "",
+                      },
+                    ]}
+                    height={220}
+                  />
+                )}
               </Box> 
             </div>           
           </Col>
@@ -414,19 +482,27 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
             <div className="analytics-item w-100 mb-4 p-3">
               <Box className="w-100" flexGrow={1}>
                 <h5>Number of job offers with differet working mode</h5>
-                <PieChart
-                  series={[
-                    {
-                      data: [
-                        { id: 0, value: jobOfferAnalytics.remoteCounter, label: 'Remote' },
-                        { id: 1, value: jobOfferAnalytics.hybridCounter, label: 'Hybrid' },
-                        { id: 2, value: jobOfferAnalytics.inPersonCounter, label: 'In-Person' },
-                      ],
-                      arcLabel: (item) => `${item.value}`,
-                    },
-                  ]}
-                  height={220}
-                />
+                {isDataEmpty([
+                  jobOfferAnalytics.remoteCounter,
+                  jobOfferAnalytics.hybridCounter,
+                  jobOfferAnalytics.inPersonCounter
+                ]) ? (
+                  <h6 className="analytics-no-data">No job offers</h6>
+                ) : (
+                  <PieChart
+                    series={[
+                      {
+                        data: [
+                          { id: 0, value: jobOfferAnalytics.remoteCounter, label: 'Remote' },
+                          { id: 1, value: jobOfferAnalytics.hybridCounter, label: 'Hybrid' },
+                          { id: 2, value: jobOfferAnalytics.inPersonCounter, label: 'In-Person' },
+                        ],
+                        arcLabel: (item) => item.value > 0 ? `${item.value}` : "",
+                      },
+                    ]}
+                    height={220}
+                  />
+                )}
               </Box> 
             </div>           
           </Col>       
@@ -441,20 +517,29 @@ const AnalyticsPage = ({ me }: { me: MeInterface }) => {
             <div className="analytics-item w-100 mb-4 p-3">
               <Box className="w-100" flexGrow={1}>
                 <h5>Number of professionals in the different states</h5>
-                <PieChart
-                  series={[
-                    {
-                      data: [
-                        { id: 0, value: professionalAnalytics.employedProfessional, label: 'Employed' },
-                        { id: 1, value: professionalAnalytics.unemployedProfessional, label: 'Unemployed' },
-                        { id: 2, value: professionalAnalytics.availableForWorkProfessional, label: 'Available for work' },
-                        { id: 3, value: professionalAnalytics.notAvailableProfessional, label: 'Unavailable for work' },
-                      ],
-                      arcLabel: (item) => `${item.value}`,
-                    },
-                  ]}
-                  height={200}
-                />
+                {isDataEmpty([
+                  professionalAnalytics.employedProfessional,
+                  professionalAnalytics.unemployedProfessional,
+                  professionalAnalytics.availableForWorkProfessional,
+                  professionalAnalytics.notAvailableProfessional
+                ]) ? (
+                  <h6 className="analytics-no-data">No professionals</h6>
+                ) : (
+                  <PieChart
+                    series={[
+                      {
+                        data: [
+                          { id: 0, value: professionalAnalytics.employedProfessional, label: 'Employed' },
+                          { id: 1, value: professionalAnalytics.unemployedProfessional, label: 'Unemployed' },
+                          { id: 2, value: professionalAnalytics.availableForWorkProfessional, label: 'Available for work' },
+                          { id: 3, value: professionalAnalytics.notAvailableProfessional, label: 'Unavailable for work' },
+                        ],
+                        arcLabel: (item) => item.value > 0 ? `${item.value}` : "",
+                      },
+                    ]}
+                    height={200}
+                  />
+                )}
               </Box>
             </div>            
           </Col>       

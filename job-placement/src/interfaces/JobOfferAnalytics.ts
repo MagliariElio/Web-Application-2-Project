@@ -6,7 +6,7 @@ export interface JobOfferAnalytics {
     consolidatedJobOffers: number;
     doneJobOffers: number;
     abortJobOffers: number;
-    fullTimeCouner: number;
+    fullTimeCounter: number;
     partTimeCounter: number;
     contractCounter: number;
     freelanceCounter: number;

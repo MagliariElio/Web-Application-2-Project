@@ -232,23 +232,28 @@ const MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
                         <h5 className="me-2" style={{ marginBottom: 0 }}>
                           Priority:{" "}
                         </h5>
-                        <Form.Group controlId="priority">
-                          <Form.Select
-                            style={{ width: "auto" }}
-                            name="priority"
-                            value={priority}
-                            onChange={(e) => {
-                              setPriority(e.target.value);
-                              handlePriorityChange();
-                            }}
-                          >
-                            <option value="LOW">Low</option>
-                            <option value="MEDIUM_LOW">Medium-low</option>
-                            <option value="MEDIUM">Medium</option>
-                            <option value="MEDIUM_HIGH">Medium-high</option>
-                            <option value="HIGH">High</option>
-                          </Form.Select>
-                        </Form.Group>
+                        {me.role === RoleState.OPERATOR && 
+                          <Form.Group controlId="priority">
+                            <Form.Select
+                              style={{ width: "auto" }}
+                              name="priority"
+                              value={priority}
+                              onChange={(e) => {
+                                setPriority(e.target.value);
+                                handlePriorityChange();
+                              }}
+                            >
+                              <option value="LOW">Low</option>
+                              <option value="MEDIUM_LOW">Medium-low</option>
+                              <option value="MEDIUM">Medium</option>
+                              <option value="MEDIUM_HIGH">Medium-high</option>
+                              <option value="HIGH">High</option>
+                            </Form.Select>
+                          </Form.Group>
+                        }
+                        {me.role !== RoleState.OPERATOR &&
+                          <p style={{ marginLeft: "10px", marginBottom: 0 }}>{messageSelected.priority}</p>
+                        }
                       </div>
                     </Col>
                   )}

@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { MeInterface } from "../interfaces/MeInterface";
-import { Alert, Button, Col, Container, Row, Toast, ToastContainer, Modal } from "react-bootstrap";
+import { Alert, Button, Col, Container, Row, Toast, ToastContainer, Modal, Form } from "react-bootstrap";
 import { useEffect, useRef, useState } from "react";
 import { BsPlus } from "react-icons/bs";
 import { RoleState } from "../utils/costants";
-import { deleteUser, fetchUsers } from "../apis/KeycloakRequests";
+import { deleteUser, fetchUsers, updateUserRole } from "../apis/KeycloakRequests";  // <-- Added updateUserRole API
 import { KeycloakUser } from "../interfaces/KeycloakUser";
 import { FaEnvelope, FaTrashAlt, FaUserTie } from "react-icons/fa";
 
@@ -21,6 +21,13 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState<string | null>(null);
+  
+  // Role modification state
+  const [showRoleModal, setShowRoleModal] = useState(false); // For role modal visibility
+  const [userIdToModifyRole, setUserIdToModifyRole] = useState<string | null>(null); // User for role modification
+  const [newRole, setNewRole] = useState<string>(""); // Store selected role
+
+  const roles = [RoleState.MANAGER, RoleState.OPERATOR, RoleState.GUEST]; // Available roles
 
   const handleDelete = async () => {
     if (userIdToDelete) {
@@ -41,6 +48,28 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   const openDeleteModal = (userId: string) => {
     setUserIdToDelete(userId);
     setShowModal(true);
+  };
+
+  const openRoleModal = (userId: string, currentRole: string) => {
+    setUserIdToModifyRole(userId);
+    setNewRole(currentRole);
+    setShowRoleModal(true); // Open role modal
+  };
+
+  const handleRoleChange = async () => {
+    if (userIdToModifyRole && newRole) {
+      try {
+        await updateUserRole(userIdToModifyRole, newRole); // Call API to update role
+        setUsers(users.map((user) => user.id === userIdToModifyRole ? { ...user, role: newRole } : user)); // Update role in state
+        setShowRoleModal(false);
+      } catch (error) {
+        console.error("Error updating user role:", error);
+        setErrorMessage("Failed to update user role. Please try again.");
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
   };
 
   useEffect(() => {
@@ -78,20 +107,21 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
         </ToastContainer>
       )}
 
-            <Row className="d-flex flex-row p-0 mb-3 align-items-center">
-                <Col xs={6}>
-                    <h3 className="title">Users</h3>
-                </Col>
+      <Row className="d-flex flex-row p-0 mb-3 align-items-center">
+        <Col xs={6}>
+          <h3 className="title">Users</h3>
+        </Col>
 
-                {me.role === RoleState.MANAGER && (
-                    <Col xs={6} className="d-flex justify-content-end">
-                        <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/users/add")}>
-                            <BsPlus size={"1.5em"} className="me-1" />
-                            Add User
-                        </Button>
-                    </Col>
-                )}
-            </Row>
+        {me.role === RoleState.MANAGER && (
+          <Col xs={6} className="d-flex justify-content-end">
+            <Button className="d-flex align-items-center primaryButton" onClick={() => navigate("/ui/users/add")}>
+              <BsPlus size={"1.5em"} className="me-1" />
+              Add User
+            </Button>
+          </Col>
+        )}
+      </Row>
+
       {errorMessage && (
         <Row className="justify-content-center" ref={errorRef}>
           <Col xs={12} md={10} lg={6}>
@@ -102,66 +132,48 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
         </Row>
       )}
 
-      {loading && (
-        <Row>
-          <Col md={8}>
-            <div className="loading-card"></div>
-            <div className="loading-card"></div>
-            <div className="loading-card"></div>
-            <div className="loading-card"></div>
-            <div className="loading-card"></div>
-            <div className="loading-card"></div>
-          </Col>
-          <Col md={4}>
-            <div className="loading-card"></div>
-            <div className="loading-card"></div>
-            <div className="loading-card"></div>
-          </Col>
-        </Row>
-      )}
-
       {!loading && users !== null && (
-        
-          <Row>
-            <Col xs={12} md={10} lg={7} xl={5} >
-              {users?.length === 0 ? (
-                <Row className="w-100">
-                  <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
-                    <h5 className="p-5">No users found.</h5>
-                  </Col>
-                </Row>
+        <Row>
+          <Col xs={12} md={10} lg={7} xl={5}>
+            {users?.length === 0 ? (
+              <Row className="w-100">
+                <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
+                  <h5 className="p-5">No users found.</h5>
+                </Col>
+              </Row>
             ) : (
-                users?.map((user) => (
-                    <div key={user.id} className="user-item mb-4 p-3">
-                        <Row className="align-items-center">
-                            <Col xs={12}>
-                                <Row className="mb-2">
-                                    <Col xs={8}>
-                                        <strong>{user.firstName} {user.lastName}</strong>
-                                    </Col>
-                                    <Col xs={12} className="order-2 order-md-1">
-                                        <strong>{user.email}</strong>
-                                    </Col>
-                                    <Col xs={4} className="order-1 order-md-2 text-end text-md-start">
-                                        <strong>{user.role}</strong>
-                                    </Col>
-                                </Row>
-                            </Col>
-                            {me.role === RoleState.MANAGER && (
-                                <Col xs={12} className="d-flex justify-content-end">
-                                    <Button
-                                        variant="danger"
-                                        onClick={() => openDeleteModal(user.id)} // Open confirmation modal
-                                    >
-                                        Delete
-                                    </Button>
-                                </Col>
-                            )}
-                        </Row>
-                    </div>
-                ))
+              users?.map((user) => (
+                <div key={user.id} className="user-item mb-4 p-3">
+                  <Row className="align-items-center">
+                    <Col xs={12}>
+                      <Row className="mb-2">
+                        <Col xs={8}>
+                          <strong>{user.firstName} {user.lastName}</strong>
+                        </Col>
+                        <Col xs={12} className="order-2 order-md-1">
+                          <strong>{user.email}</strong>
+                        </Col>
+                        <Col xs={4} className="order-1 order-md-2 text-end text-md-start">
+                          <strong>{user.role}</strong>
+                        </Col>
+                      </Row>
+                    </Col>
+
+                    {me.role === RoleState.MANAGER && me.principal.claims.sub !== user.id && (
+                      <Col xs={12} className="d-flex justify-content-end">
+                        <Button variant="warning" className="me-2" onClick={() => openRoleModal(user.id, user.role)}>
+                          Change Role
+                        </Button>
+                        <Button variant="danger" onClick={() => openDeleteModal(user.id)}>
+                          Delete
+                        </Button>
+                      </Col>
+                    )}
+                  </Row>
+                </div>
+              ))
             )}
-            </Col>
+          </Col>
         </Row>
       )}
 
@@ -184,6 +196,31 @@ const UsersPage: React.FC<{ me: MeInterface }> = ({ me }) => {
           </Button>
           <Button variant="danger" className="me-5" onClick={handleDelete}>
             Confirm Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Role Change Modal */}
+      <Modal show={showRoleModal} onHide={() => setShowRoleModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Change User Role</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Select a new role:</Form.Label>
+            <Form.Select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
+              {roles.map((role) => (
+                <option key={role} value={role}>{role}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowRoleModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleRoleChange}>
+            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>

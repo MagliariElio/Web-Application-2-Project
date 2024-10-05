@@ -135,6 +135,8 @@ export async function fetchUsers(): Promise<KeycloakUser[]> {
             },
             body: JSON.stringify([roleDetails]), // Role details include the role ID
           });
+
+          console.log("Assign role: " + JSON.stringify(assignRoleResponse))
       
           if (!assignRoleResponse.ok) {
             throw new Error(`Error assigning role: ${assignRoleResponse.statusText}`);
@@ -335,4 +337,65 @@ export async function fetchUsers(): Promise<KeycloakUser[]> {
             throw error;
         }
     }
+
+    export async function updateUserRole(userId: string, newRole: string): Promise<void> {
+      const roleMappingsUrl = `http://localhost:9090/admin/realms/job-connect/users/${userId}/role-mappings/realm`;
+      const allowedRoles = ['MANAGER', 'OPERATOR', 'GUEST']; // Roles we want to remove if they exist
+  
+      try {
+          // Fetch access token
+          const accessToken = await fetchAccessToken();
+  
+          // Step 1: Fetch the current roles assigned to the user
+          const response = await fetch(roleMappingsUrl, {
+              method: 'GET',
+              headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'Content-Type': 'application/json',
+              },
+          });
+  
+          if (!response.ok) {
+              throw new Error(`Error fetching current roles for user ${userId}: ${response.statusText}`);
+          }
+  
+          const currentRoles = await response.json();
+  
+          // Step 2: Filter out the roles in the allowedRoles set
+          const rolesToRemove = currentRoles.filter((role: any) =>
+              allowedRoles.includes(role.name)
+          );
+  
+          if (rolesToRemove.length > 0) {
+              // Step 3: Remove the filtered roles
+              const removeRolesResponse = await fetch(roleMappingsUrl, {
+                  method: 'DELETE',
+                  headers: {
+                      'Authorization': `Bearer ${accessToken}`,
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(rolesToRemove),
+              });
+  
+              if (!removeRolesResponse.ok) {
+                  throw new Error(`Error removing old roles for user ${userId}: ${removeRolesResponse.statusText}`);
+              }
+  
+              console.log(`Removed roles for user ${userId}: ${rolesToRemove.map((role: any) => role.name).join(', ')}`);
+          }
+  
+          // Step 4: Fetch the new role details by role name (to get role ID)
+          const newRoleDetails = await fetchRoleByName(newRole, accessToken);
+  
+          // Step 5: Assign the new role to the user
+          await assignRoleToUser(userId, newRoleDetails, accessToken);
+  
+          console.log(`Updated user ${userId} with new role ${newRole}.`);
+  
+      } catch (error) {
+          console.error(`Failed to update user role for user ${userId}:`, error);
+          throw error;
+      }
+  }
+  
     

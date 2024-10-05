@@ -9,13 +9,12 @@ import {
   Alert,
   Modal,
   Toast,
-  ToastContainer
+  ToastContainer,
 } from "react-bootstrap";
 import { MeInterface } from "../interfaces/MeInterface";
 import { toTitleCase } from "../utils/costants";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { changeUserPassword, updateUserName } from "../apis/KeycloakRequests";
-import { useLocation } from "react-router-dom";
 import { BsPencilSquare } from "react-icons/bs";
 
 const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
@@ -27,9 +26,11 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const location = useLocation();
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [surnameError, setSurnameError] = useState<string | null>(null);
+
   const [success, setSuccess] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -41,15 +42,24 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
     setShowPasswordModal(false); // Close the modal
     setNewPassword(""); // Reset the password fields
     setConfirmPassword("");
-    setPasswordError(""); // Reset error message
+    setPasswordError(null); // Reset error message
   };
 
   const handleSavePassword = () => {
-    if (newPassword !== confirmPassword) {
-      setPasswordError("Oops! The passwords don’t match. Make sure they are the same.");
+    // Reset error state before validation
+    setPasswordError(null);
+
+    if (!newPassword.trim() || !confirmPassword.trim()) {
+      setPasswordError("Both fields must be filled.");
       return;
     }
-    // Logic for saving the new password
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match.");
+      return;
+    }
+
+    // Save password logic here
     try {
       changeUserPassword(me.principal.attributes.sub, newPassword);
       setSuccess(true);
@@ -57,76 +67,53 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
       setTimeout(() => {
         setShowAlert(false);
       }, 3000);
+      handleClosePasswordModal(); // Close modal on success
     } catch (e) {
-      setErrorMessage("Error updating user password");
-      setSuccess(false);
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 3000);
+      setPasswordError("Error updating password.");
     }
-    setShowPasswordModal(false); // Close the modal on success
-    setNewPassword(""); // Reset fields
-    setConfirmPassword("");
-    setPasswordError(""); // Reset error message
-  };
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const errorRef = useRef<HTMLDivElement | null>(null);
-
-  const handleInputNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
-
-  const handleInputSurnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSurname(e.target.value);
   };
 
   const handleSaveNameClicked = () => {
-    updateUserName(me.principal.attributes.sub, name, surname)
+    setNameError(null);
+    setSurnameError(null);
+
+    if (!name.trim()) {
+      setNameError("Name cannot be empty.");
+      return;
+    }
+
+    if (!surname.trim()) {
+      setSurnameError("Surname cannot be empty.");
+      return;
+    }
+
+    updateUserName(me.principal.attributes.sub, name.trim(), surname.trim())
       .then(() => {
-        console.log("User name updated");
         setSuccess(true);
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
         }, 3000);
+        setEditName(false);
+        setEditSurname(false);
       })
-      .catch((error) => {
-        console.log("Error during user update: ", error);
-        setErrorMessage("Error updating user data");
-        setSuccess(false);
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
+      .catch(() => {
+        setNameError("Error updating user data.");
       });
-    setEditName(false);
-    setEditSurname(false);
   };
 
   return (
     <Container fluid className="profile-container mt-4">
       {showAlert && (
         <ToastContainer position="top-end" className="p-3">
-          <Toast bg={success ? "success" : "danger"} show={success != null} onClose={() => (location.state = null)}>
+          <Toast bg={success ? "success" : "danger"} show={success != null}>
             <Toast.Header>
-              <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
               <strong className="me-auto">JobConnect</strong>
               <small>now</small>
             </Toast.Header>
-            <Toast.Body>{success ? "Operation correctly executed!" : "Operation failed!"}</Toast.Body>
+            <Toast.Body>{success ? "Operation successfully executed!" : "Operation failed!"}</Toast.Body>
           </Toast>
         </ToastContainer>
-      )}
-      {errorMessage && (
-        <Row className="justify-content-center" ref={errorRef}>
-          <Col xs={12} md={10} lg={6}>
-            <Alert variant="danger" onClose={() => setErrorMessage("")} className="d-flex mt-3 justify-content-center align-items-center" dismissible>
-              {errorMessage}
-            </Alert>
-          </Col>
-        </Row>
       )}
 
       <Row className="mb-4">
@@ -134,7 +121,8 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
           <h3 className="title">Settings</h3>
         </Col>
       </Row>
-      <Row  className="d-flex justify-content-center">
+
+      <Row className="d-flex justify-content-center">
         <Col xs={12} lg={8} xl={5}>
           <Form>
             {!editName && (
@@ -169,7 +157,12 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
 
                 <Col sm={8}>
                   <div className="d-flex align-items-center">
-                    <FormControl type="text" value={name || ""} onChange={handleInputNameChange} />
+                    <FormControl
+                      type="text"
+                      value={name || ""}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter name"
+                    />
                     <Button variant="success" size="sm" className="ms-2" onClick={handleSaveNameClicked}>
                       Save
                     </Button>
@@ -185,12 +178,13 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                       Cancel
                     </Button>
                   </div>
+                  {nameError && <p style={{ color: "red" }}>{nameError}</p>}
                 </Col>
               </Form.Group>
             )}
 
             {!editSurname && (
-              <Form.Group as={Row} className="mb-3" controlId="inputName">
+              <Form.Group as={Row} className="mb-3" controlId="inputSurname">
                 <FormLabel column sm={4}>
                   Surname:
                 </FormLabel>
@@ -214,14 +208,19 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
             )}
 
             {editSurname && (
-              <Form.Group as={Row} className="mb-3" controlId="inputName">
+              <Form.Group as={Row} className="mb-3" controlId="inputSurname">
                 <FormLabel column sm={4}>
                   Surname:
                 </FormLabel>
 
                 <Col sm={8}>
                   <div className="d-flex align-items-center">
-                    <FormControl type="text" value={surname || ""} onChange={handleInputSurnameChange} />
+                    <FormControl
+                      type="text"
+                      value={surname || ""}
+                      onChange={(e) => setSurname(e.target.value)}
+                      placeholder="Enter surname"
+                    />
                     <Button variant="success" size="sm" className="ms-2" onClick={handleSaveNameClicked}>
                       Save
                     </Button>
@@ -237,6 +236,7 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                       Cancel
                     </Button>
                   </div>
+                  {surnameError && <p style={{ color: "red" }}>{surnameError}</p>}
                 </Col>
               </Form.Group>
             )}
@@ -276,7 +276,13 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                 New Password:
               </FormLabel>
               <Col sm={8}>
-                <FormControl type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" />
+                <FormControl
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+                {passwordError && newPassword.trim() === "" && <p style={{ color: "red" }}>{passwordError}</p>}
               </Col>
             </Form.Group>
 
@@ -291,10 +297,11 @@ const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm new password"
                 />
+                {passwordError && confirmPassword.trim() === "" && <p style={{ color: "red" }}>{passwordError}</p>}
               </Col>
             </Form.Group>
 
-            {passwordError && (
+            {passwordError && newPassword !== confirmPassword && (
               <Row className="mb-3">
                 <Col>
                   <p style={{ color: "red" }}>{passwordError}</p>
