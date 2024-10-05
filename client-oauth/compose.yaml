@@ -19,6 +19,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: password
     volumes:
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./keycloak-theme/my-custom-theme:/opt/keycloak/themes/my-custom-theme
     command:
       - start-dev
       - --import-realm

@@ -52,10 +52,16 @@ function App() {
   const [testsExecuted, setTestsExecuted] = useState(true); // impostare questa a true per non runnare più
   const runTests = async () => {
     if (!testsExecuted && me) {
-      await runCustomerTests(me);
-      await runProfessionalTests(me);
-      await runJobOfferTests(me);
-      setTestsExecuted(true);
+      try{
+        await runCustomerTests(me);
+        await runProfessionalTests(me);
+        await runJobOfferTests(me);
+        setTestsExecuted(true);
+      }
+      catch(err){
+        console.error("Error running tests:", err);
+      }
+      
     }
   };
   useEffect(() => {
