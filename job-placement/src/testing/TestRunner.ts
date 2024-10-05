@@ -46,7 +46,7 @@ export const runCustomerTests = async (me: MeInterface) => {
 
 export const runProfessionalTests = async (me: MeInterface) => {
   for (const professional of testProfessionals) {
-    await createProfessional(professional, [], me);
+    await createProfessional(professional.professional, professional.files, me);
   }
 };
 
