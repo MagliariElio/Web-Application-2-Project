@@ -1,13 +1,4 @@
 
-const myFile = await fetch('http://localhost:5173/src/testing/CustomerTests.ts ')
-  .then(response => response.blob())  // Get the file as a Blob
-  .then(blob => {
-    // Create a File object from the Blob
-    const file = new File([blob], 'CustomerTests.ts', {
-      type: 'application/typescript',
-    });
-    return file;
-  })
 
 export const testProfessionals = [
   {
@@ -27,7 +18,6 @@ export const testProfessionals = [
     dailyRate: 400
     },
     files: [
-      myFile
     ]
   },
   {
