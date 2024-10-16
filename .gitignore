@@ -30,3 +30,6 @@ replay_pid*
 
 prometheus-grafana-loki/loki/chunks/
 prometheus-grafana-loki/loki/boltdb-shipper-cache/
+
+logs/
+prometheus-grafana-loki/

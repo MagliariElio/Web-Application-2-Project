@@ -291,11 +291,23 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
                       <Button
                         className="secondaryButton"
                         variant="primary"
-                        onClick={() =>
+                        onClick={() => {
                           setFilters({
                             state: "",
                           })
-                        }
+                          fetchMessages(0, pageSize, "")
+                            .then((result) => {
+                              console.log("Messages fetched: ", result);
+                              setMessages(result);
+                              setLoading(false);
+                            })
+                            .catch((error) => {
+                              setErrorMessage("Error fetching the filtered messages");
+                              setLoading(false);
+                              console.log(error);
+                              throw new Error("GET /API/messages : Network response was not ok");
+                            });
+                        }}
                       >
                         Clear Filters
                       </Button>

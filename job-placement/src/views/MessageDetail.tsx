@@ -85,6 +85,19 @@ const MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
 
       // Update the state with the new message
       setMessageSelected(newMessage);
+      try {
+        // Fetch the message history
+        const result = await fetchMessagesHistory(messageSelected.id);
+        setHistory(result);
+        setLoading(false);
+      } catch (error) {
+        setErrorMessage("Error fetching message history, please reload the page: " + error);
+        setLoading(false);
+        console.log(error);
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }
       setLoading(false);
       setShowModal(false);
     } catch (error) {
@@ -280,8 +293,7 @@ const MessageDetail: React.FC<{ me: MeInterface }> = ({ me }) => {
                     <Row className="w-100">
                       <Col className="w-100 d-flex justify-content-center align-items-center mt-5">
                         <h5 className="p-5">
-                          No job offers found with the selected criteria. Try adjusting the filters, or it could be that no messages have been
-                          received yet.
+                          No history
                         </h5>
                       </Col>
                     </Row>
