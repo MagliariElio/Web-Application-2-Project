@@ -350,7 +350,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 <Col xs={4} md={6} lg={1}>
                   <Col className="mb-0">
                     <Button
-                      className="secondaryDangerButton w-100"
+                      className="secondaryDangerButton w-100  d-flex align-items-center justify-content-center"
                       onClick={() => {
                         setEmails(emails.filter((_e, i) => i !== index));
                       }}
@@ -422,7 +422,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 <Col xs={4} md={6} lg={1}>
                   <Col className="mb-0">
                     <Button
-                      className="secondaryDangerButton w-100"
+                      className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                       onClick={() => {
                         setTelephones(
                           telephones.filter((_e, i) => i !== index)
@@ -492,7 +492,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 <Col xs={4} md={6} lg={1}>
                   <Col className="mb-0">
                     <Button
-                      className="secondaryDangerButton w-100"
+                      className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                       onClick={() => {
                         setAddresses(addresses.filter((_e, i) => i !== index));
                       }}
@@ -677,7 +677,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 <Col xs={4} md={6} lg={1}>
                   <Col className="mb-0">
                     <Button
-                      className="secondaryDangerButton w-100"
+                      className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                       onClick={() => {
                         setAttachments(
                           attachments.filter((_e, i) => i !== index)
@@ -699,9 +699,18 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 value={singleAttachment == null ? "" : undefined}
                 type="file"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.files && e.target.files.length > 0) {
+                    if (e.target.files && e.target.files.length > 0) {
+                    if (e.target.files[0].size > 1048576) {
+                      setErrorMessage(
+                      "The file size must be less than 1MB"
+                      );
+                        window.scrollTo({ top: 0, behavior: "smooth" });  
+                      
+                      return;
+                    }
                     setSingleAttachment(e.target.files[0]);
-                  }
+                    
+                    }
                 }}
               />
             </Form.Group>
