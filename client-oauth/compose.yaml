@@ -14,9 +14,6 @@ services:
     image: keycloak/keycloak:latest
     ports:
       - '9090:8080'
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: password
     volumes:
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
       - ./keycloak-theme/my-custom-theme:/opt/keycloak/themes/my-custom-theme

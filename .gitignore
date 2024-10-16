@@ -27,3 +27,6 @@ hs_err_pid*
 replay_pid*
 
 */loki/wal/*
+
+prometheus-grafana-loki/loki/chunks/
+prometheus-grafana-loki/loki/boltdb-shipper-cache/

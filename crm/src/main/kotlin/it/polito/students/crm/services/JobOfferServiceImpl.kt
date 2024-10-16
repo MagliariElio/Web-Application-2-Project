@@ -468,7 +468,7 @@ class JobOfferServiceImpl(
             }
 
             JobStatusEnum.ABORT -> {
-                oldState = oldJobOffer.professional!!.employmentState
+                oldState = oldJobOffer.professional?.employmentState
                 oldJobOffer.status = nextStatus
                 oldJobOffer.professional?.employmentState = EmploymentStateEnum.UNEMPLOYED
                 oldJobOffer.professional?.let {

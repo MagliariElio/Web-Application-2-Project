@@ -1,2 +1,0 @@
-Domande:
-- chiedere come organizzare la presentazione, bisogna presentare il backend e frontend o solo backend?

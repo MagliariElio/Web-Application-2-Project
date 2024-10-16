@@ -1329,7 +1329,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
             {/* Professional Section */}
             {professional && (
-              <Row className="border-top pt-3 mb-3">
+              <Row className="border-top pt-3 mb-3 d-flex align-items-center">
                 <Col xs={12}>
                   <Form.Group as={Row} controlId="professionalId">
                     <Form.Label column xs={6} className="fw-bold">
@@ -1337,22 +1337,26 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                     </Form.Label>
 
                     {/* Buttons Section */}
-                    <Col xs={6} className="text-end">
-                    {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
-                      <OverlayTrigger overlay={<Tooltip id="profileApplicationButton">Profile</Tooltip>}>
-                        <Button variant="primary" className="me-2 text-center secondaryButton" onClick={() => navigate(`/ui/professionals/${professional.id}`)}>
-                          <FaUser className="me-1" />
-                          Profile
-                        </Button>
-                      </OverlayTrigger>
-                    )}
-                    </Col>
-                    <Col xs={12} className="d-flex justify-content-center mt-3">
-                      {jobOffer?.status === JobOfferState.CONSOLIDATED && me.role === RoleState.OPERATOR && !isEditing && (
+                    <Col xs={4} className="text-end">
+                    {jobOffer?.status === JobOfferState.CONSOLIDATED && me.role === RoleState.OPERATOR && !isEditing && (
                         <OverlayTrigger overlay={<Tooltip id="revokeApplicationButton">Revoke Acceptance</Tooltip>}>
                           <Button variant="danger" onClick={() => setShowModalRevokeApplication(true)}>
                             <FaTrash className="me-1" />
                             Revoke
+                          </Button>
+                        </OverlayTrigger>
+                      )}
+                    </Col>
+                    <Col xs={2} className="text-end">
+                      {(me.role === RoleState.MANAGER || me.role === RoleState.OPERATOR) && (
+                        <OverlayTrigger overlay={<Tooltip id="profileApplicationButton">Profile</Tooltip>}>
+                          <Button
+                            variant="primary"
+                            className="me-2 text-center secondaryButton"
+                            onClick={() => navigate(`/ui/professionals/${professional.id}`)}
+                          >
+                            <FaUser className="me-1" />
+                            Profile
                           </Button>
                         </OverlayTrigger>
                       )}
@@ -1397,7 +1401,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
 
             {/* Professional Candidates */}
             {!isEditing && (
-              <Row className="border-top pt-3 mb-3">
+              <Row className="border-top pt-3 mb-3 d-flex align-items-center">
                 <Col xs={6} className="d-flex align-items-center">
                   <strong className="me-2">Professional Candidates</strong>
 
@@ -1420,19 +1424,19 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                 {(jobOffer?.status === JobOfferState.CREATED || jobOffer?.status === JobOfferState.SELECTION_PHASE) &&
                   me.role === RoleState.OPERATOR && (
                     <>
-                      <Col xs={6} className="text-end">
+                      {/* Si attiva quando si aggiunge un nuovo professional candidato */}
+                      <Col xs={3} className="text-end">
+                        {isModifyCandidatesList && !loadingCandidateProfessional && (
+                          <Button variant="success" onClick={handleGoToSelectionPhase}>
+                            Confirm
+                          </Button>
+                        )}
+                      </Col>
+                      <Col xs={3} className="text-end">
                         <Button className="primaryButton" onClick={handleOpenProfessionalCandidateModal}>
                           Add Candidate
                         </Button>
                       </Col>
-                      {isModifyCandidatesList && !loadingCandidateProfessional && (
-                        <Col xs={12} className="text-center mt-3">
-                          {/* Si attiva quando si aggiunge un nuovo professional candidato */}
-                          <Button variant="success" onClick={handleGoToSelectionPhase}>
-                            Confirm
-                          </Button>
-                        </Col>
-                      )}
                     </>
                   )}
 
@@ -1973,7 +1977,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   me.role === RoleState.OPERATOR &&
                   candidateProposalProfessionalList.length > 0 &&
                   !loadingCandidateProposalProfessional && (
-                    <Col xs={12} className="d-flex justify-content-center mt-3">
+                    <Col xs={3} className="d-flex justify-content-center mt-3">
                       <Button variant="danger" onClick={() => setShowModalCancellAllApplications(true)}>
                         Cancell All
                       </Button>
@@ -1984,7 +1988,7 @@ const JobOfferDetail = ({ me }: { me: MeInterface }) => {
                   me.role === RoleState.OPERATOR &&
                   candidateProposalProfessionalList.length > 0 &&
                   !loadingCandidateProposalProfessional && (
-                    <Col xs={12} className="d-flex justify-content-center mt-3">
+                    <Col xs={3} className="d-flex justify-content-center mt-3">
                       <OverlayTrigger overlay={<Tooltip id="confirmRequestButton">Confirm Request</Tooltip>}>
                         <Button variant="success" onClick={() => setShowModalConfirmCandidates(true)}>
                           Confirm
