@@ -699,9 +699,18 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 value={singleAttachment == null ? "" : undefined}
                 type="file"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.files && e.target.files.length > 0) {
+                    if (e.target.files && e.target.files.length > 0) {
+                    if (e.target.files[0].size > 1048576) {
+                      setErrorMessage(
+                      "The file size must be less than 1MB"
+                      );
+                        window.scrollTo({ top: 0, behavior: "smooth" });  
+                      
+                      return;
+                    }
                     setSingleAttachment(e.target.files[0]);
-                  }
+                    
+                    }
                 }}
               />
             </Form.Group>

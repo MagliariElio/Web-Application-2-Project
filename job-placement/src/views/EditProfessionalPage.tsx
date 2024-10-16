@@ -805,10 +805,10 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       if (e.target.files && e.target.files.length > 0) {
                         if(e.target.files[0].size > 1048576) {
-                          setErrorMessage("The maximum file size is 10MB.");
-                          if (errorRef.current) {
-                            errorRef.current.scrollIntoView({ behavior: "smooth" });
-                          }
+                          setErrorMessage("The maximum file size is 1MB");
+                          
+                            window.scrollTo({ top: 0, behavior: "smooth" });  
+                          
                           return;
                         }
                         setSingleAttachment(e.target.files[0]);
