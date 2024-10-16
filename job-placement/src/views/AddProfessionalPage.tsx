@@ -350,7 +350,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 <Col xs={4} md={6} lg={1}>
                   <Col className="mb-0">
                     <Button
-                      className="secondaryDangerButton w-100"
+                      className="secondaryDangerButton w-100  d-flex align-items-center justify-content-center"
                       onClick={() => {
                         setEmails(emails.filter((_e, i) => i !== index));
                       }}
@@ -422,7 +422,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 <Col xs={4} md={6} lg={1}>
                   <Col className="mb-0">
                     <Button
-                      className="secondaryDangerButton w-100"
+                      className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                       onClick={() => {
                         setTelephones(
                           telephones.filter((_e, i) => i !== index)
@@ -492,7 +492,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 <Col xs={4} md={6} lg={1}>
                   <Col className="mb-0">
                     <Button
-                      className="secondaryDangerButton w-100"
+                      className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                       onClick={() => {
                         setAddresses(addresses.filter((_e, i) => i !== index));
                       }}
@@ -677,7 +677,7 @@ function AddProfessionalPage({ me }: { me: MeInterface }) {
                 <Col xs={4} md={6} lg={1}>
                   <Col className="mb-0">
                     <Button
-                      className="secondaryDangerButton w-100"
+                      className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                       onClick={() => {
                         setAttachments(
                           attachments.filter((_e, i) => i !== index)

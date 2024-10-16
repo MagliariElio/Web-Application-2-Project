@@ -296,9 +296,10 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
 
           <Form onSubmit={handleSubmit}>
             {errorMessage && (
-              <Row className="justify-content-center" ref={errorRef}>
+              <Row className="justify-content-center">
                 <Col xs={12} md={10} lg={6}>
                   <Alert
+                   ref={errorRef}
                     variant="danger"
                     onClose={() => setErrorMessage("")}
                     className="d-flex mt-3 justify-content-center align-items-center"
@@ -430,7 +431,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                     <Col xs={4} md={6} lg={1}>
                       <Col className="mb-0">
                         <Button
-                          className="secondaryDangerButton w-100"
+                          className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                           onClick={() => {
                             setEmails(emails.filter((_e, i) => i !== index));
                           }}
@@ -502,7 +503,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                     <Col xs={4} md={6} lg={1}>
                       <Col className="mb-0">
                         <Button
-                          className="secondaryDangerButton w-100"
+                          className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                           onClick={() => {
                             setTelephones(
                               telephones.filter((_e, i) => i !== index)
@@ -577,7 +578,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                     <Col xs={4} md={6} lg={1}>
                       <Col className="mb-0">
                         <Button
-                          className="secondaryDangerButton w-100"
+                          className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                           onClick={() => {
                             setAddresses(
                               addresses.filter((_e, i) => i !== index)
@@ -774,7 +775,7 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                     <Col xs={4} md={6} lg={1}>
                       <Col className="mb-0">
                         <Button
-                          className="secondaryDangerButton w-100"
+                          className="secondaryDangerButton w-100 d-flex align-items-center justify-content-center"
                           onClick={() => {
                             if ("id" in attachment) {
                               setRemovedAttachments([
@@ -803,6 +804,13 @@ function EditProfessionalPage({ me }: { me: MeInterface }) {
                     type="file"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       if (e.target.files && e.target.files.length > 0) {
+                        if(e.target.files[0].size > 1048576) {
+                          setErrorMessage("The maximum file size is 10MB.");
+                          if (errorRef.current) {
+                            errorRef.current.scrollIntoView({ behavior: "smooth" });
+                          }
+                          return;
+                        }
                         setSingleAttachment(e.target.files[0]);
                       }
                     }}
