@@ -1,6 +1,6 @@
 positions:
-  /var/log/analytics/spring.log: "959359"
-  /var/log/comunication-manager/spring.log: "568300"
-  /var/log/crm/spring.log: "1268531"
-  /var/log/document-store/spring.log: "1181066"
-  /var/log/gateway/spring.log: "3157765"
+  /var/log/analytics/spring.log: "611382"
+  /var/log/comunication-manager/spring.log: "51626"
+  /var/log/crm/spring.log: "1512195"
+  /var/log/document-store/spring.log: "456522"
+  /var/log/gateway/spring.log: "5578501"

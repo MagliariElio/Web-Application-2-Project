@@ -283,6 +283,7 @@ function AddJobOfferPage({ me }: { me: MeInterface }) {
             <Button
               className="d-flex align-items-center secondaryButton"
               onClick={() => setShowGenerateJobOfferModal(true)}
+              disabled={loading}
             >
               <FaMicrochip style={{ marginRight: "8px" }} />
               Generate Job Offer with AI
