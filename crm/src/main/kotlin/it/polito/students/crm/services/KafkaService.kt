@@ -3,24 +3,31 @@ package it.polito.students.crm.services
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.polito.students.crm.controllers.CrmMessagesController
 import it.polito.students.crm.dtos.CreateMessageDTO
+import it.polito.students.crm.dtos.MessageAnalyticsDTO
 import it.polito.students.crm.utils.ErrorsPage.Companion.BODY_MISSING_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.CHANNEL_MISSING_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.ERROR_MESSAGE_PRIORITY_NOT_FOUND
 import it.polito.students.crm.utils.ErrorsPage.Companion.PRIORITY_MISSING_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.SENDER_MISSING_ERROR
 import it.polito.students.crm.utils.ErrorsPage.Companion.SUBJECT_MISSING_ERROR
+import it.polito.students.crm.utils.KafkaTopics
 import it.polito.students.crm.utils.PhoneOrMailOption
 import it.polito.students.crm.utils.SuccessPage
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Service
 class KafkaConsumer(
     private val messageService: MessageService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val kafkaProducer: KafkaProducerService
 ) {
     private val logger = LoggerFactory.getLogger(KafkaConsumer::class.java)
+    private val formatter = DateTimeFormatter.ofPattern("MMMMyyyy", Locale.ENGLISH)
 
     @KafkaListener(topics = ["email_message_cm_to_crm"], groupId = "cm-to-crm-email-message-group")
     fun consume(messageJson: String) {
@@ -38,7 +45,11 @@ class KafkaConsumer(
 
             val senderType = PhoneOrMailOption.MAIL
             CrmMessagesController.checkPriorityIsValid(message.priority)
-            messageService.storeMessage(message, senderType)
+            val messageSaved = messageService.storeMessage(message, senderType)
+            kafkaProducer.sendMessage(
+                KafkaTopics.TOPIC_MESSAGE,
+                MessageAnalyticsDTO(null, messageSaved.actualState, LocalDate.now().format(formatter).lowercase())
+            )
             logger.info(SuccessPage.MESSAGE_SENT_SUCCESSFULLY)
         } catch (e: IllegalArgumentException) {
             logger.error("Error: ${e.javaClass} - $ERROR_MESSAGE_PRIORITY_NOT_FOUND: ${e.message}")

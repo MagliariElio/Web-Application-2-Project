@@ -168,7 +168,7 @@ const MessagesPage: React.FC<{ me: MeInterface }> = ({ me }) => {
               {messages?.content.length === 0 ? (
                 <Row className="w-100">
                   <Col className="w-100 d-flex flex-column justify-content-center align-items-center mt-5">
-                    <h5 className="p-3 text-center">No job offers found with the selected criteria.</h5>
+                    <h5 className="p-3 text-center">No messages found with the selected criteria.</h5>
                     <h5 className="p-3 text-center">Try adjusting the filters, or it could be that no messages have been added yet.</h5>
                   </Col>
                 </Row>

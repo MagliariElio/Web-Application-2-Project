@@ -185,6 +185,7 @@ class KafkaConsumerService (
 
                 JobStatusEnum.DONE -> {
                     counterService.incrementMessages(JobStatusCounters.DONE_COUNTER)
+                    counterService.incrementMessages(date + "CompletedJobOfferCounter")
                     if (creationTime != null && endTime != null) {
                         val elapsedMinutes = Duration.between(creationTime, endTime).toMinutes()
                         counterService.incrementMessages("CompletedJobOffersForAvarage")

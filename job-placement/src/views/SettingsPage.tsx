@@ -17,7 +17,7 @@ import { useState } from "react";
 import { changeUserPassword, updateUserName } from "../apis/KeycloakRequests";
 import { BsPencilSquare } from "react-icons/bs";
 
-const SettingsPage: React.FC<{ me: MeInterface }> = ({ me }) => {
+const SettingsPage: React.FC<{ me: MeInterface, setMe: React.Dispatch<React.SetStateAction<MeInterface | null>> }> = ({ me, setMe }) => {
   const [name, setName] = useState<string>(me.name);
   const [surname, setSurname] = useState<string>(me.surname);
   const [editName, setEditName] = useState<boolean>(false);

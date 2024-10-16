@@ -421,7 +421,7 @@ function App() {
                     element={
                       me && me.principal !== null ? (
                         me.role === RoleState.OPERATOR || me.role === RoleState.MANAGER || me.role === RoleState.GUEST ? (
-                          <SettingsPage me={me} />
+                          <SettingsPage me={me} setMe={setMe}/>
                         ) : (
                           <UnauthorizedPage />
                         )
