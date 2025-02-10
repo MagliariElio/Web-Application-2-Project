@@ -1,3 +1,9 @@
+### Teacher: Malnati Giovanni
+### Grade: 30 cum laude
+### Politecnico di Torino
+
+---
+
 # KEYCLOAK credentials
 
 - Username: `admin`
